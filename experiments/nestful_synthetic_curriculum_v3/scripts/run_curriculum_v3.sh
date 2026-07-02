@@ -55,8 +55,12 @@ if [ "$PREFLIGHT_STATUS" = "PASS_PROTOTYPE_ONLY" ] && [ "${ALLOW_PROTOTYPE_TRAIN
   exit 1
 fi
 
-TS="$(date +%Y%m%d_%H%M%S)"
-export OUTPUT_ROOT="$V3/outputs/runs/$TS"
+if [ -n "${OUTPUT_ROOT:-}" ]; then
+  echo "[curriculum_v3] resuming existing OUTPUT_ROOT=$OUTPUT_ROOT"
+else
+  TS="$(date +%Y%m%d_%H%M%S)"
+  export OUTPUT_ROOT="$V3/outputs/runs/$TS"
+fi
 export RUN_PY="$V3/run.py"
 export CONFIG="${CONFIG:-$PARTIAL/config.yaml}"
 export VAL_JSONL="$DEV"

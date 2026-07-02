@@ -314,6 +314,36 @@ except Exception:
 PYEOF
 }
 
+# Return 0 when $1 is a directory containing adapter_config.json.
+_adapter_valid() {
+    [ -n "${1:-}" ] && [ -f "$1/adapter_config.json" ]
+}
+
+# Resolve a checkpoint path: prefer $1 if valid, else newest adapter_epoch_* under $2.
+_resolve_checkpoint() {
+    local preferred="$1" ckpt_root="$2"
+    if _adapter_valid "$preferred"; then
+        echo "$preferred"
+        return 0
+    fi
+    local best="" best_n=0
+    local d n
+    for d in "$ckpt_root"/adapter_epoch_*; do
+        [ -d "$d" ] || continue
+        _adapter_valid "$d" || continue
+        n="${d##*adapter_epoch_}"
+        if [ "$n" -gt "$best_n" ] 2>/dev/null; then
+            best_n="$n"
+            best="$d"
+        fi
+    done
+    if [ -n "$best" ]; then
+        echo "$best"
+        return 0
+    fi
+    return 1
+}
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  Helper: float comparison a <= b
 # ══════════════════════════════════════════════════════════════════════════════
@@ -701,10 +731,37 @@ for N in $STAGES; do
                 exit 1
             fi
         elif [ -n "$CURRENT_CHECKPOINT" ]; then
+            _INHERITED_CKPT="$(_resolve_checkpoint "$CURRENT_CHECKPOINT" "$STAGE_OUT/checkpoints" || true)"
+            if [ -z "$_INHERITED_CKPT" ]; then
+                echo "[stage $N] ERROR: inherited checkpoint missing or invalid: $CURRENT_CHECKPOINT" >&2
+                echo "  Fix: set CHECKPOINT_IN to an existing adapter dir under $STAGE_OUT/checkpoints" >&2
+                exit 1
+            fi
+            if [ "$_INHERITED_CKPT" != "$CURRENT_CHECKPOINT" ]; then
+                echo "  [ckpt] inherited path missing; using $_INHERITED_CKPT instead of $CURRENT_CHECKPOINT"
+                CURRENT_CHECKPOINT="$_INHERITED_CKPT"
+            fi
             CKPT_ARG="--checkpoint $CURRENT_CHECKPOINT"
         fi
         # Only the first executed epoch is a resume boundary; clear it afterwards.
         _RESUME_BOUNDARY=0
+
+        GENERIC_CKPT="$STAGE_OUT/checkpoints/adapter_epoch_1"
+        _SNAP_RESTORE=""
+        # Each curriculum epoch runs with training.epochs=1, so grpo_train always writes
+        # adapter_epoch_1. When resuming from adapter_epoch_{E-1} and that path IS the
+        # generic slot (notably E=2 after E=1), snapshot it before train overwrites it.
+        if [ "$EPOCH" -gt 1 ] && [ "$DRY_RUN" != "1" ]; then
+            _PREV_E=$((EPOCH - 1))
+            _PREV_DIR="$STAGE_OUT/checkpoints/adapter_epoch_${_PREV_E}"
+            if [ -d "$_PREV_DIR" ] && [ "$_PREV_DIR" = "$GENERIC_CKPT" ]; then
+                _SNAP="$STAGE_OUT/checkpoints/.snap_epoch_${_PREV_E}"
+                rm -rf "$_SNAP"
+                cp -a "$_PREV_DIR" "$_SNAP"
+                _SNAP_RESTORE="$_PREV_E"
+                echo "  [ckpt] preserved adapter_epoch_${_PREV_E} before train (trainer overwrites generic slot)"
+            fi
+        fi
 
         echo ""
         echo "  ── Stage $N / Epoch $EPOCH / $MAX_EPOCHS_PER_STAGE ──────────────────────────────"
@@ -733,9 +790,14 @@ for N in $STAGES; do
             $CKPT_ARG
 
         # Rename generic adapter_epoch_1 → adapter_epoch_N (train always writes epoch_1)
-        GENERIC_CKPT="$STAGE_OUT/checkpoints/adapter_epoch_1"
         if [ "$DRY_RUN" != "1" ] && [ -d "$GENERIC_CKPT" ] && [ ! -d "$CKPT_DIR" ]; then
             mv "$GENERIC_CKPT" "$CKPT_DIR"
+        fi
+        if [ -n "$_SNAP_RESTORE" ] && [ -d "$STAGE_OUT/checkpoints/.snap_epoch_${_SNAP_RESTORE}" ]; then
+            rm -rf "$STAGE_OUT/checkpoints/adapter_epoch_${_SNAP_RESTORE}"
+            mv "$STAGE_OUT/checkpoints/.snap_epoch_${_SNAP_RESTORE}" \
+               "$STAGE_OUT/checkpoints/adapter_epoch_${_SNAP_RESTORE}"
+            echo "  [ckpt] restored adapter_epoch_${_SNAP_RESTORE} after rename"
         fi
         if [ "$DRY_RUN" = "1" ]; then
             echo "[DRY_RUN] would checkpoint: $CKPT_DIR"
@@ -1101,8 +1163,19 @@ with open(e.get("_SUMMARY", "curriculum_summary.jsonl"), "a") as f:
     f.write(json.dumps(row) + "\n")
 PYEOF
 
-    # Carry best checkpoint forward to next stage
+    # Carry best checkpoint forward to next stage (must exist on disk)
     if [ -n "$BEST_EPOCH_CKPT" ]; then
+        _NEXT_CKPT="$(_resolve_checkpoint "$BEST_EPOCH_CKPT" "$STAGE_OUT/checkpoints" || true)"
+        if [ -z "$_NEXT_CKPT" ]; then
+            echo "[stage $N] ERROR: best checkpoint path missing: $BEST_EPOCH_CKPT" >&2
+            echo "  Contents of $STAGE_OUT/checkpoints:" >&2
+            ls -la "$STAGE_OUT/checkpoints" >&2 || true
+            exit 1
+        fi
+        if [ "$_NEXT_CKPT" != "$BEST_EPOCH_CKPT" ]; then
+            echo "[stage $N] WARNING: best ckpt $BEST_EPOCH_CKPT missing; using $_NEXT_CKPT for next stage"
+            BEST_EPOCH_CKPT="$_NEXT_CKPT"
+        fi
         CURRENT_CHECKPOINT="$BEST_EPOCH_CKPT"
     fi
     FINAL_CHECKPOINT="$CURRENT_CHECKPOINT"
