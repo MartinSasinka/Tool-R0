@@ -1,0 +1,182 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 4,
+  "verified_input": 423,
+  "selected_count": 400,
+  "n_final": 400,
+  "shortfall": 0,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "4": 400
+  },
+  "dependency_depth_distribution": {
+    "4": 400
+  },
+  "top_call_patterns": [
+    [
+      "extend_num->extend_num->extend_num->extend_num",
+      2
+    ],
+    [
+      "add_or_divide->add_or_divide->add_or_divide->add_or_divide",
+      2
+    ],
+    [
+      "product_except_index->product_except_index->product_except_index->product_except_index",
+      2
+    ],
+    [
+      "evaluate_instruction->evaluate_instruction->evaluate_instruction->evaluate_instruction",
+      2
+    ],
+    [
+      "remove_less_or_equal_to_3->scale_and_shift_numpy_array->fraction_positive->count_most_frequent_elements",
+      1
+    ],
+    [
+      "list_all_files->count_ngrams->count_ngrams->write_nested_list_to_csv",
+      1
+    ],
+    [
+      "get_volume_of_sphere_from_diameter->get_volume_of_sphere_from_diameter->get_volume_of_sphere_from_diameter->is_monotonic",
+      1
+    ],
+    [
+      "remove_non_letters->list_chunks->flat_list->disjoint",
+      1
+    ],
+    [
+      "escape_reserved_keywords->escape_special_characters->concatenate_with_space->is_message_of_type",
+      1
+    ],
+    [
+      "standard_gaussian_pdf->standard_gaussian_pdf->standard_gaussian_pdf->almost_equal",
+      1
+    ],
+    [
+      "camel_case_to_underscore->find_first_substring->newton_raphson_sqrt->max_abs",
+      1
+    ],
+    [
+      "factorize->sum_of_square_of_even_numbers->get_standard_deviation->reminder",
+      1
+    ],
+    [
+      "calculate_summation->find_difference->find_difference->dict_from_keys",
+      1
+    ],
+    [
+      "fib->f_of_x->bit_length->check_image_dimensions",
+      1
+    ],
+    [
+      "flatten_non_negative_integers->sum_and_index->num_evens_list_comprehension->x_and_y",
+      1
+    ],
+    [
+      "cumulative_list->cumulative_list->cumulative_list->size_of_X",
+      1
+    ],
+    [
+      "convert_to_set_then_back_to_list->multiply_max_k_vector->max_elements->multiply_max_k_vector",
+      1
+    ],
+    [
+      "convert_string_ascii->count_common_words->highest_power_of_two->highest_power_of_two",
+      1
+    ],
+    [
+      "scrape_data->concatenate_and_count->count_character_occurrences->is_overlapping_strings",
+      1
+    ],
+    [
+      "sum_multiples_of_n->median_without_sorting->my_concat->median_without_sorting",
+      1
+    ]
+  ],
+  "unique_tool_names": 893,
+  "top_tool_names": [
+    [
+      "extend_num",
+      10
+    ],
+    [
+      "sqrt_rounded_up",
+      9
+    ],
+    [
+      "compute_square_roots",
+      9
+    ],
+    [
+      "add_or_divide",
+      8
+    ],
+    [
+      "concat_ignore_trailing_zeros",
+      8
+    ],
+    [
+      "product_except_index",
+      8
+    ],
+    [
+      "evaluate_instruction",
+      8
+    ],
+    [
+      "remove_less_or_equal_to_3",
+      7
+    ],
+    [
+      "expand_and_replace",
+      7
+    ],
+    [
+      "power_modulo",
+      7
+    ],
+    [
+      "safe_div",
+      7
+    ],
+    [
+      "scale_and_shift_numpy_array",
+      6
+    ],
+    [
+      "count_ngrams",
+      6
+    ],
+    [
+      "polynomial_expression",
+      6
+    ],
+    [
+      "smallest_x",
+      6
+    ],
+    [
+      "int_div",
+      6
+    ],
+    [
+      "exponential_model",
+      6
+    ],
+    [
+      "difference_sum",
+      6
+    ],
+    [
+      "my_calculator",
+      6
+    ],
+    [
+      "add_and_shift",
+      6
+    ]
+  ],
+  "created_at": "2026-06-10T18:43:04.222128+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_4_4call.jsonl"
+}

@@ -243,8 +243,8 @@ experiments/*.tar
 models/
 **/models--*/
 
-# Local datasets (regenerate or mount on pod)
-data/
+# Local datasets at repo root only (do NOT block experiments/*/data/)
+/data/
 !data/.gitkeep
 
 # Env secrets
@@ -271,8 +271,8 @@ nestful_results/
 helper_calculations/output/
 scripts/.verify_artifacts/
 
-# Root-level run outputs (keep eval/*.py scripts trackable)
-outputs/
+# Root-level run outputs only (experiment outputs use local .gitignore)
+/outputs/
 
 # Partial/minimal experiment heavy outputs (minimal already has outputs/ locally)
 experiments/nestful_mtgrpo_partial/outputs/

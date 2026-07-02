@@ -1,0 +1,60 @@
+Step1 generation report — epoch 5
+Generated at: 2026-06-11T17:36:10.145825+00:00
+
+OpenRouter requests: 102
+Generation attempts (tasks): 102
+Raw responses logged: 102
+Parsed candidates written: 49
+Parse failures: 6
+Unknown tool rejects (post-parse): 0
+Context budget rejects (post-parse): 47
+Target prompt tokens: 2048
+Target max completion tokens: 4096
+
+Output length distribution (written candidates):
+  len=5: 47
+  len=4: 1
+  len=6: 1
+
+Top tool names:
+  remove_first: 3
+  split_without_empty_strings: 2
+  find_closest_root: 2
+  get_all_subs: 2
+  find_start_end_indices: 2
+  is_empty_string: 2
+  get_values_at_indices: 2
+  rand_int_between: 1
+  parse_range_description: 1
+  translate_dictionary: 1
+  calculate_mean_of_array: 1
+  type_and_value: 1
+  rename_column: 1
+  logistic: 1
+  get_all_users: 1
+
+Tool schema conflicts: 4 (see C:\Users\Šunka\Documents\GitHub\Tool-R0\curricullum\data\reports\tool_schema_conflicts.json)
+
+Accepted previews (up to 5):
+--- accepted 1 ---
+{"candidate_id": "cand-e5-560afd38d1db", "raw_id": "raw-e5-req000004-slot03", "input": "At our distribution center, we have a fixed sample identifier of 5 for a quality check. The process requires: 1) Use the random integer generator with low=5 and high=5 to generate the sample ID (which", "output_len": 5}
+--- accepted 2 ---
+{"candidate_id": "cand-e5-d6bc115f0687", "raw_id": "raw-e5-req000005-slot04", "input": "A radio transmitter outputs a signal at 0.5 volts. We need to convert this to dBm, then apply the logistic function to that dBm value to get a normalized metric. Next, we need to check if the string r", "output_len": 5}
+--- accepted 3 ---
+{"candidate_id": "cand-e5-8f14f943414a", "raw_id": "raw-e5-req000008-slot00", "input": "A logistics company has 12 containers each holding 45 crates. Each crate contains 8 boxes. A box has a volume of 0.25 m³. The cargo density is 400 kg/m³. Shipping cost is $2.50 per kg. What is the tot", "output_len": 5}
+--- accepted 4 ---
+{"candidate_id": "cand-e5-7ada90d13b2e", "raw_id": "raw-e5-req000010-slot02", "input": "A logistics company tracks shipments by IP origin. For each of three regions (192.168.1.1, 10.0.0.1, 172.16.0.1), they convert the IP to a 32-bit integer, then check if the integer starts with the dig", "output_len": 5}
+--- accepted 5 ---
+{"candidate_id": "cand-e5-9ed7fdb5f0cc", "raw_id": "raw-e5-req000011-slot03", "input": "A network engineer logs multiple session durations in seconds: 3661, 7200, and 5400. First, split the string '3661 7200 5400' into individual numbers. Then, for each duration, format it as HH:MM:SS. F", "output_len": 5}
+
+Rejected previews (up to 5):
+--- rejected 1 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e5-req000001-slot00", "raw": ""}
+--- rejected 2 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e5-req000002-slot01", "raw": ""}
+--- rejected 3 (input_too_long) ---
+{"reason": "input_too_long", "raw_id": "raw-e5-req000003-slot02", "est": {"prompt_tokens_est": 1101, "completion_tokens_est": 844, "total_tokens_est": 1945, "input_chars": 617, "tools_json_chars": 1246, "output_json_chars": 493, "tool_count": 4}, "input": "A computer science lab is studying the distribution of online votes. They collect a set of vote counts: [15, 22, 33, 9, "}
+--- rejected 4 (input_too_long) ---
+{"reason": "input_too_long", "raw_id": "raw-e5-req000006-slot05", "est": {"prompt_tokens_est": 1229, "completion_tokens_est": 899, "total_tokens_est": 2128, "input_chars": 582, "tools_json_chars": 1666, "output_json_chars": 659, "tool_count": 5}, "input": "We have a list of 5 objects: first is a 'Box' with weight 4, second is a 'Crate' with weight 2, third is a 'Pallet' with"}
+--- rejected 5 (input_too_long) ---
+{"reason": "input_too_long", "raw_id": "raw-e5-req000007-slot06", "est": {"prompt_tokens_est": 1239, "completion_tokens_est": 864, "total_tokens_est": 2103, "input_chars": 562, "tools_json_chars": 1716, "output_json_chars": 554, "tool_count": 5}, "input": "Our lab has a set of 5 sample batches, each batch yields a 2D grid of purity readings: [[82.5, 79.3], [88.1, 85.7], [91."}

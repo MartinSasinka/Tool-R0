@@ -1,0 +1,178 @@
+{
+  "stage": "step2_verify_candidates",
+  "epoch": 1,
+  "dependency_mode": "strict_chain",
+  "use_executor": true,
+  "input_count": 773,
+  "verified_count": 600,
+  "rejected_count": 173,
+  "rejection_reasons": {
+    "tool_missing_parameters": 40,
+    "call_invalid_arg_value": 48,
+    "duplicate_output_sequence": 3,
+    "tool_missing_description": 1,
+    "exec_unknown_function:split": 1,
+    "exec_executor_mismatch": 9,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/home/user/script.py'": 1,
+    "exec_ibm_runtime_error:gaierror:[Errno 11001] getaddrinfo failed": 1,
+    "exec_ibm_runtime_error:ValueError:File path '/data/shipments/2025/03/15/manifest_v2.1.pdf' does not exist.": 1,
+    "exec_ibm_runtime_error:TypeError:a bytes-like object is required, not 'list'": 3,
+    "exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'shape'": 5,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/app.log'": 1,
+    "exec_timeout": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'keyfile.bin'": 1,
+    "exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'list'": 2,
+    "exec_ibm_runtime_error:ValueError:invalid literal for int() with base 10: 'A3F'": 1,
+    "exec_ibm_runtime_error:IndexError:list index out of range": 1,
+    "exec_ibm_runtime_error:TypeError:zeros_like(): argument 'input' (position 1) must be Tensor, not float": 1,
+    "exec_ibm_runtime_error:ValueError:not enough values to unpack (expected 3, got 2)": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/weights.txt'": 1,
+    "exec_unknown_function:get_value": 1,
+    "exec_ibm_runtime_error:TypeError:'int' object is not iterable": 1,
+    "exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'make'": 1,
+    "exec_ibm_runtime_error:TypeError:bad operand type for unary -: 'list'": 1,
+    "exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +: 'int' and 'str'": 1,
+    "exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'split'": 2,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/shipment_manifest_2025.csv'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'sales_2024Q1.csv.gz'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/build_20241028.log'": 1,
+    "exec_ibm_runtime_error:TypeError:can't multiply sequence by non-int of type 'numpy.float64'": 1,
+    "exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'name'": 1,
+    "exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'tag'": 1,
+    "exec_ibm_runtime_error:TypeError:int() argument must be a string, a bytes-like object or a real number, not 'list'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/patients.json'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'dictionary.pickle'": 1,
+    "exec_ibm_runtime_error:ValueError:File path 'D:/archives/2024/invoices/INV-239874.pdf' does not exist.": 1,
+    "exec_unknown_function:smallest_element": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/etc/qkd/firmware_v3.bin'": 1,
+    "exec_ibm_runtime_error:TypeError:unsupported operand type(s) for /: 'list' and 'float'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.json'": 1,
+    "exec_ibm_runtime_error:TypeError:the JSON object must be str, bytes or bytearray, not dict": 1,
+    "exec_ibm_runtime_error:ValueError:Invalid table name format": 1,
+    "exec_unknown_function:split_and_create_dict": 1,
+    "exec_unknown_function:swap_items": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'campaign_log.txt'": 1,
+    "exec_ibm_runtime_error:TypeError:ord() expected a character, but string of length 8 found": 1,
+    "exec_ibm_runtime_error:ValueError:Invalid unit: C": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/etc/recommender/config.json'": 1,
+    "exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'flatten'": 2,
+    "exec_unknown_function:parse_names_ages": 1,
+    "exec_unknown_function:list_to_tensor": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/measurements.txt'": 1,
+    "exec_ibm_runtime_error:ValueError:Invalid camera name format": 1,
+    "exec_ibm_runtime_error:TypeError:unsupported operand type(s) for >>: 'str' and 'int'": 1,
+    "exec_ibm_runtime_error:ValueError:Unknown format code 'x' for object of type 'str'": 1,
+    "exec_ibm_runtime_error:ValueError:Invalid percentage string": 1,
+    "exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'name'": 1,
+    "exec_ibm_runtime_error:ValueError:Invalid input: invalid unit 'bits'": 1,
+    "exec_ibm_runtime_error:NameError:name 'original_file' is not defined": 1,
+    "exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'reshape'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'cycle_count.bin'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'access_log.json'": 1,
+    "exec_ibm_runtime_error:TypeError:type str doesn't define __round__ method": 1,
+    "exec_ibm_runtime_error:TypeError:strptime() argument 1 must be str, not datetime.datetime": 1,
+    "exec_ibm_runtime_error:KeyError:'string'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/sensors.csv'": 1,
+    "exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'start_date,end_date\\\\n2024-01-01,2024-01-10\\\\n2024-02-15,2024-02-20\\\\n2024-03-01,2024-03-15'": 1,
+    "exec_ibm_runtime_error:KeyError:'object_name'": 1
+  },
+  "contamination_rejections": 3,
+  "context_rejections": 0,
+  "duplicate_rejections": 3,
+  "prompt_tokens_median": 1016.0,
+  "completion_tokens_median": 230.0,
+  "target_prompt_tokens": 2048,
+  "target_max_completion_tokens": 4096,
+  "output_length_distribution": {
+    "1": 600
+  },
+  "dependency_depth_distribution": {
+    "1": 600
+  },
+  "unique_tool_names": 515,
+  "top_tool_names": [
+    [
+      "probability_of_decay",
+      3
+    ],
+    [
+      "timestamp_difference",
+      3
+    ],
+    [
+      "calculate_profit_percentage",
+      3
+    ],
+    [
+      "calculate_kp",
+      3
+    ],
+    [
+      "three_sum_count",
+      3
+    ],
+    [
+      "cumulative_list",
+      3
+    ],
+    [
+      "square_edge_by_perimeter",
+      3
+    ],
+    [
+      "compute_entropy",
+      3
+    ],
+    [
+      "convert_to_cm_with_precision",
+      3
+    ],
+    [
+      "polygon",
+      2
+    ],
+    [
+      "circle_area",
+      2
+    ],
+    [
+      "convert_to_int_or_default",
+      2
+    ],
+    [
+      "parse_and_format_exception",
+      2
+    ],
+    [
+      "get_sum_of_foo",
+      2
+    ],
+    [
+      "divide_without_div",
+      2
+    ],
+    [
+      "hypotenuse_length",
+      2
+    ],
+    [
+      "extract_filename_extension_from_path",
+      2
+    ],
+    [
+      "convert_to_HHMMSS",
+      2
+    ],
+    [
+      "cube_density",
+      2
+    ],
+    [
+      "extract_cookie",
+      2
+    ]
+  ],
+  "created_at": "2026-06-09T11:22:32.097691+00:00",
+  "out_json": "curricullum/data/verified_toolr0/epoch_1_verified.json",
+  "rejected_json": "curricullum/data/rejected_toolr0/epoch_1_rejected.json"
+}

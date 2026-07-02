@@ -1,0 +1,86 @@
+{
+  "exec_available": true,
+  "in_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic",
+  "out_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum",
+  "stages": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "per_stage": {
+    "1": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_1_1call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_1_1call.jsonl",
+      "total": 400,
+      "kept": 400,
+      "removed": 0,
+      "remove_reasons": {},
+      "repair_reasons": {}
+    },
+    "2": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_2_2call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_2_2call.jsonl",
+      "total": 400,
+      "kept": 381,
+      "removed": 19,
+      "remove_reasons": {
+        "gold_answer_unresolved": 19
+      },
+      "repair_reasons": {}
+    },
+    "3": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_3_3call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_3_3call.jsonl",
+      "total": 400,
+      "kept": 381,
+      "removed": 19,
+      "remove_reasons": {
+        "gold_answer_unresolved": 19
+      },
+      "repair_reasons": {}
+    },
+    "4": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_4_4call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_4_4call.jsonl",
+      "total": 400,
+      "kept": 384,
+      "removed": 16,
+      "remove_reasons": {
+        "gold_answer_unresolved": 15,
+        "missing_field:gold_answer": 1
+      },
+      "repair_reasons": {}
+    },
+    "5": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_5_5call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_5_5call.jsonl",
+      "total": 400,
+      "kept": 375,
+      "removed": 25,
+      "remove_reasons": {
+        "gold_answer_unresolved": 25
+      },
+      "repair_reasons": {}
+    },
+    "6": {
+      "input_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_6_6call.jsonl",
+      "output_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_6_6call.jsonl",
+      "total": 268,
+      "kept": 236,
+      "removed": 32,
+      "remove_reasons": {
+        "gold_answer_unresolved": 32
+      },
+      "repair_reasons": {}
+    }
+  },
+  "totals": {
+    "total": 2268,
+    "kept": 2157,
+    "removed": 111,
+    "repaired": 0
+  }
+}

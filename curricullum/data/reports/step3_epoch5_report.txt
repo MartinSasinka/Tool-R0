@@ -1,0 +1,55 @@
+Step3 selection report — epoch 5
+
+Verified input: 406
+Selected: 400
+Target n_final: 400
+Shortfall: 0
+
+Selection skips:
+
+Output length distribution (selected):
+  len=5: 400
+
+Dependency depth distribution (selected):
+  depth=5: 400
+
+Top call-name sequences:
+  multiply->multiply->multiply->multiply->multiply: 2
+  compose_file_path->compose_file_path->compose_file_path->compose_file_path->compose_file_path: 2
+  divide_by_zero->divide_by_zero->divide_by_zero->divide_by_zero->divide_by_zero: 2
+  def_func->def_func->def_func->def_func->def_func: 2
+  new_foo->new_foo->new_foo->new_foo->new_foo: 2
+  multiply_integers->multiply_integers->multiply_integers->multiply_integers->multiply_integers: 2
+  euclid_gcd->euclid_gcd->euclid_gcd->euclid_gcd->euclid_gcd: 2
+  rhombus_area->rhombus_area->rhombus_area->rhombus_area->rhombus_area: 2
+  flatten_array->count_bins->count_bins->count_bins->count_bins: 1
+  sum_with_type_check->matrix_multiply_scalar->matrix_multiply_scalar->matrix_multiply_scalar->matrix_multiply_scalar: 1
+
+Top tool names:
+  f_of_x: 17
+  add_or_divide: 16
+  add_and_shift: 12
+  def_func: 12
+  multiply_integers: 12
+  rhombus_area: 11
+  divide_by_zero: 11
+  euclid_gcd: 11
+  matrix_multiply_scalar: 10
+  multiply: 10
+  compose_file_path: 10
+  new_foo: 10
+  calculate_capacitor_energy: 10
+  power: 9
+  fib: 9
+
+Selected previews (up to 5):
+--- 1 ---
+{"sample_id": "synthetic-epoch5-000001", "candidate_id": "cand-e5-9d90ebf39943", "raw_id": "raw-e5-req000971-slot04", "input": "In a smart factory, sensor readings are grouped by production line: [[2,4],[6,8,10],[12,14,16,18,20]]. For each reading value, the alert count is [1,2,3,4,5,6,7,8,9,10]. Flatten the nested readings. T", "output_len": 5, "dependency_depth": 5}
+--- 2 ---
+{"sample_id": "synthetic-epoch5-000002", "candidate_id": "cand-e5-8d4eb339d43e", "raw_id": "raw-e5-req000032-slot03", "input": "Our company's resource allocation matrix for project budgets is [[1000, 2000], [3000, 4000]]. Due to growth, we need to apply an annual growth factor equal to the sum of the base growth (1.2) and the ", "output_len": 5, "dependency_depth": 5}
+--- 3 ---
+{"sample_id": "synthetic-epoch5-000003", "candidate_id": "cand-e5-9ed3d0830617", "raw_id": "raw-e5-req000092-slot00", "input": "I am running a Monte Carlo simulation where the probability density at the current mean is used as the mean for the next iteration. Starting with a standard normal distribution (mu=0, sigma=1), comput", "output_len": 5, "dependency_depth": 5}
+--- 4 ---
+{"sample_id": "synthetic-epoch5-000004", "candidate_id": "cand-e5-30155a459b8b", "raw_id": "raw-e5-req001405-slot04", "input": "A treasure map lists clue numbers in sorted order: 1, 3, 5, 7, 9. You need to find the index of clue 5. Then, search for the value equal to that index. Then search for the value equal to the index fro", "output_len": 5, "dependency_depth": 5}
+--- 5 ---
+{"sample_id": "synthetic-epoch5-000005", "candidate_id": "cand-e5-e2c83bff23eb", "raw_id": "raw-e5-req001694-slot06", "input": "At our warehouse, batch numbers are binary-coded. Batch '10' decimal is 2. We run a forced quality check on batch 2, then look up a symmetric discount table (with values 10,20,20,30) for batch number ", "output_len": 5, "dependency_depth": 5}

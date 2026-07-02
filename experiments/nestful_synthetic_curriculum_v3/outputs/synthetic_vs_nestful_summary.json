@@ -1,0 +1,16 @@
+{
+  "kl_motif_type": 0.5302136844772503,
+  "covered": [
+    "long_chain"
+  ],
+  "under": [
+    "fan_in (15.2% nestful vs 1.0% syn)"
+  ],
+  "over": [
+    "linear_dependency (70.7% syn vs 51.4% nestful)"
+  ],
+  "missing": [
+    "fan_out",
+    "independent_calls"
+  ]
+}

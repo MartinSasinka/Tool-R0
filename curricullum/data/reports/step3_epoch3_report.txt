@@ -1,0 +1,55 @@
+Step3 selection report — epoch 3
+
+Verified input: 512
+Selected: 400
+Target n_final: 400
+Shortfall: 0
+
+Selection skips:
+
+Output length distribution (selected):
+  len=3: 400
+
+Dependency depth distribution (selected):
+  depth=3: 400
+
+Top call-name sequences:
+  round_to_multiple->round_to_multiple->round_to_multiple: 2
+  mod_range->greet_world_or_name->count_words_in_words: 1
+  rectangle_perimeter->sqrt_function->rectangle_perimeter: 1
+  str_concat->safe_index->safe_index: 1
+  bitwise_and->get_day_of_week_phrase->image_filename: 1
+  second_occurrence_index->kth_element->shape_area: 1
+  format_list_of_ints->duplicate_sentence_checker->format_headers: 1
+  convert_binary_to_decimal->multiple_of_three->remove_integer: 1
+  parse_name_value_pairs->replace_with_lengths->find_different_keys: 1
+  check_logical_implication->check_logical_implication->check_logical_implication: 1
+
+Top tool names:
+  round_to_multiple: 7
+  multiply_by_two_or_three: 7
+  find_max_3: 5
+  format_with_leading_zeros: 5
+  add_or_divide: 5
+  string_with_length: 5
+  add: 5
+  change_extension_regex: 5
+  build_key: 4
+  sum_of_first_n_integers: 4
+  find_max_of_two_numbers: 4
+  remove_trailing_slash: 4
+  handle_zero_division: 4
+  escape_string: 4
+  duplicate_string: 4
+
+Selected previews (up to 5):
+--- 1 ---
+{"sample_id": "synthetic-epoch3-000001", "candidate_id": "cand-e3-b0db3ddd9e89", "raw_id": "raw-e3-req004182-slot01", "input": "Our word frequency analysis system uses a modulo-based personalization. For a user code 25, first compute 25 mod 10 to get a remainder. Then create a greeting using that remainder as the name (e.g., '", "output_len": 3, "dependency_depth": 3}
+--- 2 ---
+{"sample_id": "synthetic-epoch3-000002", "candidate_id": "cand-e3-b04d523b071d", "raw_id": "raw-e3-req003893-slot02", "input": "A farmer has a rectangular plot of land measuring 120 meters in length and 50 meters in width. He first needs the perimeter to estimate fencing. Then he decides to create a square garden where each si", "output_len": 3, "dependency_depth": 3}
+--- 3 ---
+{"sample_id": "synthetic-epoch3-000003", "candidate_id": "cand-e3-34c9c78b7b11", "raw_id": "raw-e3-req002804-slot03", "input": "I have two parts of a tracking code: 'TRK' and '987654'. I need to concatenate them to get the full code, then find where '987' appears, then find where '654' starts after that. What is the final inde", "output_len": 3, "dependency_depth": 3}
+--- 4 ---
+{"sample_id": "synthetic-epoch3-000004", "candidate_id": "cand-e3-8717bbd28781", "raw_id": "raw-e3-req002659-slot08", "input": "At a digital photo lab, we have two batches: one with 7 landscape shots and another with 3 portrait shots. The bitwise AND of these counts gives the day of the week when the photos were taken. The pho", "output_len": 3, "dependency_depth": 3}
+--- 5 ---
+{"sample_id": "synthetic-epoch3-000005", "candidate_id": "cand-e3-455c938f2378", "raw_id": "raw-e3-req003498-slot07", "input": "A mechanic's pattern code 'xyxzyzxz' indicates the positions of available part sizes. The second occurrence of 'x' in this code points to the index in the size list [10,20,30,40,50,60,70,80] for the r", "output_len": 3, "dependency_depth": 3}

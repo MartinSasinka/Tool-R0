@@ -1,0 +1,5 @@
+cluster_id,motif_type,num_examples,typical_num_calls,dependency_pattern,reference_pattern,tool_family_pattern,output_type_pattern,common_failure_mode,synthetic_generation_recipe
+linear_dependency__too_few_calls,linear_dependency,43,2.4,linear_dependency,linear,mixed,scalar,too_few_calls,Generate linear_dependency tasks with too_few_calls failure mode; target ~2 calls; include distractors and reference chains.
+long_chain__too_few_calls,long_chain,29,7.1,long_chain,linear,mixed,scalar,too_few_calls,Generate long_chain tasks with too_few_calls failure mode; target ~7 calls; include distractors and reference chains.
+fan_in__too_few_calls,fan_in,12,3.5,fan_in,reuse,mixed,scalar,too_few_calls,Generate fan_in tasks with too_few_calls failure mode; target ~4 calls; include distractors and reference chains.
+independent_calls__too_few_calls,independent_calls,3,3.0,independent_calls,linear,mixed,string,too_few_calls,Generate independent_calls tasks with too_few_calls failure mode; target ~3 calls; include distractors and reference chains.

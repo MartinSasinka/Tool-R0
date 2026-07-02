@@ -1,0 +1,358 @@
+Step2 verification report — epoch 2
+
+Input candidates: 1549
+Verified: 673
+Rejected: 876
+Dependency mode: strict_chain
+Contamination rejections: 0
+Context budget rejections: 0
+Prompt tokens est (verified median): 1035.0
+Completion tokens est (verified median): 384.0
+Duplicate rejections: 0
+
+Rejection reasons:
+  missing_nested_dependency: 202
+  tool_missing_parameters: 60
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 2: 'a': 1
+  call_invalid_arg_value: 170
+  exec_unknown_function:split: 1
+  exec_ibm_runtime_error:TypeError:object of type 'int' has no len(): 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'dictionary.pickle': 3
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'split': 8
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'ndim': 2
+  exec_ibm_runtime_error:HTTPError:HTTP Error 404: Not Found: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'shape': 6
+  exec_ibm_runtime_error:ValueError:Path does not exist: 2
+  exec_ibm_runtime_error:Exception:Error reading log file: [Errno 2] No such file or directory: '/var/log/access.log': 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'method': 1
+  exec_ibm_runtime_error:ValueError:Input must be an integer: 2
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'id': 1
+  exec_executor_mismatch: 14
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.gz': 1
+  exec_ibm_runtime_error:TypeError:vars() argument must have __dict__ attribute: 2
+  exec_ibm_runtime_error:TypeError:list.append() takes exactly one argument (2 given): 2
+  exec_ibm_runtime_error:AttributeError:'datetime.datetime' object has no attribute 'split': 1
+  exec_ibm_runtime_error:ValueError:Two adjacent characters found: 2
+  exec_ibm_runtime_error:TypeError:'>' not supported between instances of 'str' and 'int': 4
+  exec_ibm_runtime_error:KeyError:'user_id': 1
+  exec_ibm_runtime_error:TypeError:'>' not supported between instances of 'int' and 'str': 1
+  exec_ibm_runtime_error:AttributeError:'NoneType' object has no attribute 'unsqueeze': 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'list': 14
+  exec_malformed_tool_call:my_sum:my_sum needs 2 positional arg(s) ['a', 'b'], got 1 from keys ['args']: 3
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +: 'float' and 'str': 1
+  exec_ibm_runtime_error:TypeError:int() argument must be a string, a bytes-like object or a real number, not 'dict': 1
+  exec_ibm_runtime_error:TypeError:can't multiply sequence by non-int of type 'str': 1
+  exec_ibm_runtime_error:ValueError:Input must be a list of lists: 1
+  exec_ibm_runtime_error:TypeError:not all arguments converted during string formatting: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for &: 'float' and 'int': 2
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'employees.csv': 2
+  exec_ibm_runtime_error:KeyError:'name': 2
+  exec_ibm_runtime_error:ValueError:not enough values to unpack (expected 2, got 1): 7
+  exec_unknown_function:tuple_list_to_dict: 1
+  exec_ibm_runtime_error:TypeError:'int' object is not iterable: 11
+  exec_unknown_function:match_regex_any_type: 2
+  exec_ibm_runtime_error:KeyError:'attributes': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'gpu_requests.txt': 1
+  exec_ibm_runtime_error:Exception:Input string must contain at least one word.: 2
+  exec_ibm_runtime_error:ValueError:Invalid Markdown header format: 2
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'reshape': 2
+  exec_ibm_runtime_error:TypeError:unsupported format string passed to dict.__format__: 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'isdigit': 1
+  exec_ibm_runtime_error:TypeError:can only concatenate str (not "float") to str: 1
+  exec_ibm_runtime_error:Exception:Object is missing field.: 1
+  exec_ibm_runtime_error:TypeError:'<' not supported between instances of 'tuple' and 'int': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'ExperimentData2024Json': 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'dict': 3
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +=: 'int' and 'str': 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'essay_words.csv': 1
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 16: '#1A2B3C': 1
+  exec_ibm_runtime_error:AxisError:axis 1 is out of bounds for array of dimension 1: 1
+  exec_ibm_runtime_error:TypeError:strptime() argument 1 must be str, not datetime.datetime: 7
+  exec_ibm_runtime_error:TypeError:the JSON object must be str, bytes or bytearray, not list: 2
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'syslog_20250301120000.log': 1
+  wrong_call_count: 8
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'game_scores.json': 1
+  exec_ibm_runtime_error:TypeError:the JSON object must be str, bytes or bytearray, not dict: 7
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'x': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'coordinates.txt': 1
+  exec_unknown_function:parse_names_ages: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data_a.txt': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'serials.json': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/image.json': 2
+  exec_ibm_runtime_error:KeyError:'children': 1
+  exec_ibm_runtime_error:TypeError:unhashable type: 'list': 5
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 10: '365 kg': 1
+  exec_ibm_runtime_error:TypeError:attribute name must be string, not 'int': 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'split': 2
+  exec_ibm_runtime_error:TypeError:'float' object cannot be interpreted as an integer: 7
+  exec_ibm_runtime_error:KeyError:'key': 1
+  exec_ibm_runtime_error:TypeError:a bytes-like object is required, not 'dict': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/inventory.csv': 1
+  exec_ibm_runtime_error:TypeError:'str' object cannot be interpreted as an integer: 2
+  exec_ibm_runtime_error:TypeError:cannot unpack non-iterable int object: 1
+  exec_ibm_runtime_error:ValueError:Unsupported type.: 2
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/server.log': 1
+  exec_ibm_runtime_error:KeyError:'object_name': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'inventory.bin': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/events.json': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'float' and 'str': 1
+  exec_unknown_function:get_byte_size: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'name': 4
+  exec_ibm_runtime_error:ValueError:Unknown format code 'd' for object of type 'float': 1
+  exec_ibm_runtime_error:RecursionError:maximum recursion depth exceeded while calling a Python object: 1
+  exec_ibm_runtime_error:ValueError:Directory path is not valid.: 1
+  exec_ibm_runtime_error:TypeError:unsupported format string passed to list.__format__: 2
+  exec_ibm_runtime_error:ValueError:too many values to unpack (expected 2): 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for //: 'int' and 'bytearray': 1
+  exec_ibm_runtime_error:IndexError:string index out of range: 3
+  exec_ibm_runtime_error:TypeError:The input is not a list or is empty: 1
+  exec_ibm_runtime_error:TypeError:expected str, bytes or os.PathLike object, not list: 1
+  exec_ibm_runtime_error:TypeError:'>=' not supported between instances of 'list' and 'int': 1
+  exec_ibm_runtime_error:TypeError:can't multiply sequence by non-int of type 'float': 2
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 10: 'FF': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for *: 'dict' and 'float': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +: 'bool' and 'str': 1
+  invalid_reference_field: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'dict' and 'float': 1
+  exec_ibm_runtime_error:TypeError:object of type 'numpy.float64' has no len(): 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'code_review.txt': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.txt': 2
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'get': 1
+  exec_unknown_function:reverse_list_order: 2
+  exec_ibm_runtime_error:TypeError:'float' object is not iterable: 3
+  exec_ibm_runtime_error:ValueError:The truth value of an array with more than one element is ambiguous. Use a.any() or a.all(): 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'items.txt': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'shipments.csv': 1
+  exec_unknown_function:sample_indices: 1
+  exec_ibm_runtime_error:TypeError:must be real number, not list: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'edges.txt': 1
+  exec_ibm_runtime_error:FileExistsError:The directory /data/out already exists: 1
+  exec_ibm_runtime_error:TypeError:sort(): argument 'input' (position 1) must be Tensor, not list: 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'float': 3
+  exec_ibm_runtime_error:TypeError:eval() arg 1 must be a string, bytes or code object: 2
+  exec_ibm_runtime_error:TypeError:'<' not supported between instances of 'list' and 'int': 1
+  exec_ibm_runtime_error:TypeError:'>=' not supported between instances of 'datetime.datetime' and 'int': 1
+  exec_ibm_runtime_error:AttributeError:'ellipsis' object has no attribute 'split': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/opt/app/version.txt': 1
+  exec_ibm_runtime_error:TypeError:Input is not a function.: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'NoneType' and 'int': 1
+  exec_ibm_runtime_error:TypeError:join() argument must be str, bytes, or os.PathLike object, not 'list': 1
+  exec_ibm_runtime_error:TypeError:argument of type 'bool' is not iterable: 1
+  exec_unknown_function:list_to_tensor: 2
+  exec_ibm_runtime_error:ValueError:Invalid number of arguments: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'python_logs.txt': 1
+  exec_ibm_runtime_error:TypeError:can only concatenate str (not "int") to str: 3
+  exec_ibm_runtime_error:TypeError:must be real number, not str: 2
+  exec_ibm_runtime_error:AttributeError:'tuple' object has no attribute 'startswith': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'stock_pairs.jsonl': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'groups.txt': 1
+  exec_ibm_runtime_error:TypeError:cannot convert 'str' object to bytes: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'make': 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'server_logs.txt': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'config.txt': 2
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'to_sql': 1
+  exec_unknown_function:get_value: 2
+  exec_unknown_function:createSupportTicket: 1
+  exec_ibm_runtime_error:ValueError:Unknown format code 'b' for object of type 'float': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/home/user/data.txt': 1
+  exec_ibm_runtime_error:ValueError:Invalid JSON format: 1
+  exec_unknown_function:convert_dict_keys_to_camel_case: 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'items': 1
+  exec_ibm_runtime_error:AttributeError:'float' object has no attribute 'name': 1
+  exec_ibm_runtime_error:ValueError:Invalid rig abbreviation.: 1
+  exec_ibm_runtime_error:TypeError:only integer scalar arrays can be converted to a scalar index: 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'servers.txt': 1
+  exec_ibm_runtime_error:AttributeError:'NoneType' object has no attribute 'find': 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'state': 1
+  exec_ibm_runtime_error:TypeError:can't multiply sequence by non-int of type 'tuple': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/app/errors.log': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'sales_report.csv': 1
+  exec_ibm_runtime_error:TypeError:'datetime.datetime' object is not iterable: 1
+  exec_ibm_runtime_error:FileExistsError:The directory /data/ already exists: 1
+  exec_ibm_runtime_error:IndexError:list index out of range: 2
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'dtype': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for /: 'list' and 'int': 1
+  exec_ibm_runtime_error:TypeError:argument of type 'NoneType' is not iterable: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.json': 1
+  exec_malformed_tool_call:remove_duplicates_using_set:remove_duplicates_using_set needs 2 positional arg(s) ['list1', 'list2'], got 1 from keys ['lst']: 1
+  exec_malformed_tool_call:concatenate_strings:concatenate_strings needs 2 positional arg(s) ['s1', 's2'], got 1 from keys ['strings']: 1
+  exec_ibm_runtime_error:KeyError:'temperature': 1
+  exec_ibm_runtime_error:TypeError:int() can't convert non-string with explicit base: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'main.py': 1
+  exec_unknown_function:collate: 1
+  exec_ibm_runtime_error:KeyError:'snippet': 1
+  exec_ibm_runtime_error:ModuleNotFoundError:No module named 'os path': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'config.json': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'rectangle.json': 1
+  exec_ibm_runtime_error:TypeError:'>' not supported between instances of 'list' and 'int': 2
+  exec_ibm_runtime_error:AssertionError:Integer must be between 0 and 255: 1
+  exec_ibm_runtime_error:TypeError:x and y must be integers: 2
+  exec_unknown_function:create_dict_from_list_pairs: 2
+  exec_ibm_runtime_error:TypeError:unhashable type: 'dict': 1
+  exec_ibm_runtime_error:AttributeError:'NoneType' object has no attribute 'rstrip': 1
+  exec_ibm_runtime_error:Exception:Invalid path: 1
+  exec_ibm_runtime_error:TypeError:'<' not supported between instances of 'str' and 'int': 1
+  exec_unknown_function:list_length: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'split': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'predictions.log': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'replace': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'items': 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'access.log': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/a.txt': 1
+  exec_unknown_function:create_edge_dict: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/responses.csv': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'view': 1
+  exec_ibm_runtime_error:Exception:One or more arguments are not integers: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'execute': 1
+  exec_ibm_runtime_error:ValueError:n must be an integer: 1
+  tool_missing_description: 2
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'encode': 2
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'find': 1
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 10: 'apple': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +: 'int' and 'list': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'config.bin': 1
+  exec_ibm_runtime_error:TypeError:list indices must be integers or slices, not list: 1
+  exec_ibm_runtime_error:ValueError:File path '/home/user/project/version_3.yaml' does not exist.: 1
+  exec_ibm_runtime_error:AssertionError:Input must be a tuple: 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'unsqueeze': 1
+  exec_ibm_runtime_error:KeyError:'department_name': 1
+  exec_ibm_runtime_error:ValueError:All arguments must be boolean values.: 1
+  exec_ibm_runtime_error:TypeError:'NoneType' object is not iterable: 4
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'lower': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for &: 'str' and 'int': 1
+  exec_ibm_runtime_error:TypeError:'<=' not supported between instances of 'NoneType' and 'int': 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'decode': 1
+  exec_ibm_runtime_error:TypeError:'float' object is not subscriptable: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for %: 'list' and 'int': 1
+  exec_ibm_runtime_error:AttributeError:'bool' object has no attribute 'split': 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'int': 3
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/series.json': 1
+  exec_ibm_runtime_error:ValueError:The input must be an int or float type, got <class 'tuple'>.: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'feature': 1
+  exec_ibm_runtime_error:ValueError:time data '"15 March 2025"' does not match format '%d %B %Y': 1
+  exec_ibm_runtime_error:TypeError:slice indices must be integers or None or have an __index__ method: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'keys': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'list' and 'list': 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'encode': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'file1.txt': 2
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'stations.csv': 1
+  exec_ibm_runtime_error:TypeError:collection must be a tuple: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/projects.txt': 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'replace': 1
+  exec_ibm_runtime_error:TypeError:'numpy.float64' object is not iterable: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'encode': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.jsonl': 1
+  exec_ibm_runtime_error:ValueError:time data 'IMG_20231201 143000jpg' does not match format '%Y-%m-%d %H:%M:%S': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for ** or pow(): 'NoneType' and 'int': 1
+  exec_ibm_runtime_error:AttributeError:'int' object has no attribute 'lower': 1
+  exec_ibm_runtime_error:TypeError:can't concat str to bytes: 1
+  exec_unknown_function:sum_along_dims: 1
+  exec_ibm_runtime_error:TypeError:Invalid input. Input must be a string.: 1
+  exec_ibm_runtime_error:TypeError:Both inputs must be NumPy arrays.: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'access_log.json': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/access.log': 1
+  exec_unknown_function:get_rectangle_area: 1
+  exec_ibm_runtime_error:ValueError:No time zone found: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/tmp/data.bin': 1
+  exec_ibm_runtime_error:ValueError:Sample larger than population or is negative: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'sort_values': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'int' and 'str': 1
+  exec_ibm_runtime_error:TypeError:polynomial() missing 1 required positional argument: 'a': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'size': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'sum': 1
+  exec_ibm_runtime_error:TypeError:int() argument must be a string, a bytes-like object or a real number, not 'NoneType': 1
+  exec_ibm_runtime_error:IndexError:tuple index out of range: 1
+  exec_ibm_runtime_error:TypeError:module, class, method, function, traceback, frame, or code object was expected, got str: 1
+  exec_ibm_runtime_error:TypeError:ord() expected a character, but string of length 18 found: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for -: 'str' and 'int': 1
+  exec_ibm_runtime_error:TypeError:unsupported format string passed to tuple.__format__: 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'append': 1
+  exec_ibm_runtime_error:TypeError:type dict doesn't define __round__ method: 1
+  exec_ibm_runtime_error:UFuncTypeError:ufunc 'add' did not contain a loop with signature matching types (dtype('<U5'), dtype('<U5')) -> None: 1
+  exec_ibm_runtime_error:TypeError:any() received an invalid combination of arguments - got (bool), but expected one of:
+ * (Tensor input, *, Tensor out = None)
+ * (Tensor input, tuple of ints dim = None, bool keepdim = False, *, Tensor out = None)
+ * (Tensor input, int dim, bool keepdim = False, *, Tensor out = None)
+ * (Tensor input, name dim, bool keepdim = False, *, Tensor out = None)
+: 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute '__name__': 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'age': 2
+  missing_gold_answer: 1
+  exec_ibm_runtime_error:TypeError:expected str, bytes or os.PathLike object, not float: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'related_ids': 1
+  exec_ibm_runtime_error:AttributeError:'WindowsPath' object has no attribute 'strip': 1
+  exec_ibm_runtime_error:TypeError:'int' object is not subscriptable: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for <<: 'str' and 'int': 1
+  exec_ibm_runtime_error:AssertionError:x must be a positive number greater than 0: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'get': 1
+  exec_ibm_runtime_error:TypeError:expected str, bytes or os.PathLike object, not NoneType: 1
+  exec_unknown_function:assign_indices: 1
+  call_unknown_arg: 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'tuple': 1
+  exec_ibm_runtime_error:ValueError:could not convert string to float: 'The default stock count is 42.': 1
+  exec_ibm_runtime_error:TypeError:must be real number, not NoneType: 1
+  exec_ibm_runtime_error:error:missing ), unterminated subpattern at position 0: 1
+  exec_ibm_runtime_error:KeyError:'order_id': 1
+  exec_unknown_function:check_same_length: 1
+  exec_ibm_runtime_error:TypeError:stat: path should be string, bytes, os.PathLike or integer, not dict: 1
+  exec_ibm_runtime_error:ValueError:Input must be a list.: 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'decode': 2
+  exec_ibm_runtime_error:KeyError:'supplier_name': 1
+  exec_malformed_tool_call:format_message:format_message needs 2 positional arg(s) ['message', 'placeholders'], got 1 from keys ['name']: 1
+  exec_ibm_runtime_error:TypeError:quote_from_bytes() expected bytes: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'rstrip': 1
+  exec_ibm_runtime_error:AttributeError:'tuple' object has no attribute 'shape': 1
+  exec_ibm_runtime_error:TypeError:encoding without a string argument: 1
+  exec_ibm_runtime_error:TypeError:Population must be a sequence.  For dicts or sets, use sorted(d).: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'prices.csv': 1
+  exec_unknown_function:split_and_create_dict: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'expandtabs': 1
+  exec_ibm_runtime_error:RuntimeError:shape '[8]' is invalid for input of size 4: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'server.log': 1
+
+Output length distribution (verified):
+  len=2: 673
+
+Dependency depth distribution (verified):
+  depth=2: 673
+
+Top tool names (verified):
+  multiply_without_star: 5
+  sum_next: 4
+  sum_of_range: 4
+  multiply_max_k_vector: 4
+  find_first_index: 4
+  median_without_sorting: 4
+  polygon: 3
+  matrix_scale_multiply: 3
+  create_id: 3
+  largest_10_divisor: 3
+  find_object_index: 3
+  convert_bytes_string_to_string: 3
+  filter_product_labels: 3
+  cube_integer_sum: 3
+  area_rectangle: 3
+
+Accepted previews (up to 5):
+--- accepted 1 ---
+{"candidate_id": "cand-e2-71185e73b4a0", "raw_id": "raw-e2-req000001-slot00", "input": "We are designing a gear system. First, we need the side length of a hexagonal nut that fits exactly in a circle of radius 10. Then, use that side length as the radius for a triangular gear. What is th", "output_len": 2, "dependency_depth": 2, "gold_answer": "21.93245422464302"}
+--- accepted 2 ---
+{"candidate_id": "cand-e2-033b5dda3678", "raw_id": "raw-e2-req000003-slot02", "input": "We have a string 'abacaba' and need to know the number of unique substrings of length 3. Then we need to sum the first that many integers. What is the final sum?", "output_len": 2, "dependency_depth": 2, "gold_answer": "10"}
+--- accepted 3 ---
+{"candidate_id": "cand-e2-8aa57781d1ce", "raw_id": "raw-e2-req000007-slot06", "input": "We have a list of integers: [3, 7, 1, 9, 2, 5, 4, 8]. First, find the smallest unused number in this list, then take that number and use it as the scale factor to multiply each element of the matrix [", "output_len": 2, "dependency_depth": 2, "gold_answer": "[[12, 24], [36, 48]]"}
+--- accepted 4 ---
+{"candidate_id": "cand-e2-9d130b69187b", "raw_id": "raw-e2-req000009-slot08", "input": "I have a string '1024' that needs to be converted to a number, after which the odd-indexed elements in the resulting array from splitting the number's digits should be doubled. The original string is ", "output_len": 2, "dependency_depth": 2, "gold_answer": "[\"$var_1.output_0$\"]"}
+--- accepted 5 ---
+{"candidate_id": "cand-e2-db9bc5fb4a1a", "raw_id": "raw-e2-req000018-slot05", "input": "We have a list of 5 integers: 4, 9, 16, 25, 36. First, compute the square root of each integer. Then, compute the variance of the resulting list of square roots. What is the variance?", "output_len": 2, "dependency_depth": 2, "gold_answer": "2.5"}
+
+Rejected previews (up to 5):
+--- rejected 1 (missing_nested_dependency) ---
+{"candidate_id": "cand-e2-c898e0849fce", "raw_id": "raw-e2-req000002-slot01", "input": "We have two flow interfaces: 'eth0:10G' and 'eth1:25G'. Their names need to be split by comma. After splitting, we need to extract the port name and interface type for the first interface. First, spli"}
+--- rejected 2 (tool_missing_parameters) ---
+{"candidate_id": "cand-e2-d565ed35b0aa", "raw_id": "raw-e2-req000004-slot03", "input": "We have two delivery addresses: '123 John Street, Apt 4B' and '456 Jane Avenue, Suite 7C'. First, find the name (John or Jane) from the longer address string. Then, using that name, get the greeting f"}
+--- rejected 3 (exec_ibm_runtime_error:ValueError:invalid literal for int() with base 2: 'a') ---
+{"candidate_id": "cand-e2-a05fdf2e3b5b", "raw_id": "raw-e2-req000005-slot04", "input": "I have a list of product codes: ['apple', 'banana', 'avocado', 'cherry', 'date']. I need to first find the codes that contain the letter 'a', then remove duplicate characters from each code (e.g., 'ap"}
+--- rejected 4 (call_invalid_arg_value) ---
+{"candidate_id": "cand-e2-5675df8fbfdb", "raw_id": "raw-e2-req000006-slot05", "input": "We have a greeting template: 'Hello {name}, welcome to {place}.' The name is stored in lowercase as 'john doe', and the place is 'new york city'. The system requires names to be in title case. First, "}
+--- rejected 5 (missing_nested_dependency) ---
+{"candidate_id": "cand-e2-6fdb29670b32", "raw_id": "raw-e2-req000008-slot07", "input": "A hospital has a 1.20-meter-wide and 2.50-meter-long rectangular room. The floor is to be covered with ceramic tiles, each measuring 0.30 meters by 0.30 meters. How many tiles are needed?"}

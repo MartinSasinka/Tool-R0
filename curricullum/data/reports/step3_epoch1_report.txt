@@ -1,0 +1,55 @@
+Step3 selection report — epoch 1
+
+Verified input: 601
+Selected: 400
+Target n_final: 400
+Shortfall: 0
+
+Selection skips:
+
+Output length distribution (selected):
+  len=1: 400
+
+Dependency depth distribution (selected):
+  depth=1: 400
+
+Top call-name sequences:
+  convert_to_cm_with_precision: 3
+  cumulative_list: 3
+  calculate_profit_percentage: 3
+  probability_of_decay: 3
+  format_datetime_object: 2
+  timestamp_difference: 2
+  sum_of_all_continuous_sequences: 2
+  ssd: 2
+  get_string_numbers: 2
+  calculate_kp: 2
+
+Top tool names:
+  convert_to_cm_with_precision: 3
+  cumulative_list: 3
+  calculate_profit_percentage: 3
+  probability_of_decay: 3
+  format_datetime_object: 2
+  timestamp_difference: 2
+  sum_of_all_continuous_sequences: 2
+  ssd: 2
+  get_string_numbers: 2
+  calculate_kp: 2
+  circle_area: 2
+  convert_to_int_or_default: 2
+  divide_int: 2
+  diff_ticks: 2
+  convert_to_HHMMSS: 2
+
+Selected previews (up to 5):
+--- 1 ---
+{"sample_id": "synthetic-epoch1-000001", "candidate_id": "cand-e1-df2f0780753b", "raw_id": "raw-e1-req000287-slot06", "input": "Our event logger records timestamps as Python datetime objects. For a specific event that occurred at '2025-07-21 08:30:00', we need to format it using the '%Y-%m-%d-%H-%M' format string for logging p", "output_len": 1, "dependency_depth": 1}
+--- 2 ---
+{"sample_id": "synthetic-epoch1-000002", "candidate_id": "cand-e1-feaa40546163", "raw_id": "raw-e1-req000857-slot02", "input": "A logistics company recorded the following ratings for its delivery service in the last month: [4.2, 3.8, 4.5, 4.0, 3.5, 4.8, 4.1, 3.9, 4.3, 4.6, 3.7, 4.4]. To evaluate performance, they need the aver", "output_len": 1, "dependency_depth": 1}
+--- 3 ---
+{"sample_id": "synthetic-epoch1-000003", "candidate_id": "cand-e1-f4067a83f935", "raw_id": "raw-e1-req000465-slot02", "input": "Our e-commerce system stores product images as encoded data objects. We have a record containing 5 product dictionaries each with 'id', 'name', and 'image_data' fields. After encoding this list of 5 o", "output_len": 1, "dependency_depth": 1}
+--- 4 ---
+{"sample_id": "synthetic-epoch1-000004", "candidate_id": "cand-e1-ad12c87667fc", "raw_id": "raw-e1-req000116-slot03", "input": "Our server node is named 'webserver-prod-01'. What is its short hostname?", "output_len": 1, "dependency_depth": 1}
+--- 5 ---
+{"sample_id": "synthetic-epoch1-000005", "candidate_id": "cand-e1-7910a3b5fb89", "raw_id": "raw-e1-req000274-slot07", "input": "A startup has three initial funding rounds: $237,500, $408,200, and $592,800. What is the average funding amount across these rounds?", "output_len": 1, "dependency_depth": 1}

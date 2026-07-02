@@ -1,0 +1,64 @@
+{
+  "seed": 1234,
+  "val_fraction": 0.12,
+  "clean_dir": "experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum",
+  "stages": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "per_stage": [
+    {
+      "stage": 1,
+      "source": "experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_1_1call.jsonl",
+      "total": 400,
+      "train": 352,
+      "val": 48,
+      "train_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_train_stage1.jsonl",
+      "val_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_val_stage1.jsonl",
+      "train_md5": "1d5d17c33fd925eac9e4634b5055319b",
+      "val_md5": "06b749c4c9e6685edbf62e2f8cd04e4c"
+    },
+    {
+      "stage": 2,
+      "source": "experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_2_2call.jsonl",
+      "total": 381,
+      "train": 335,
+      "val": 46,
+      "train_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_train_stage2.jsonl",
+      "val_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_val_stage2.jsonl",
+      "train_md5": "9d3451992ac4a333576758b21664d42d",
+      "val_md5": "ff864079f537b3a839cbbfc83eb22bb7"
+    },
+    {
+      "stage": 3,
+      "source": "experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_3_3call.jsonl",
+      "total": 381,
+      "train": 335,
+      "val": 46,
+      "train_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_train_stage3.jsonl",
+      "val_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_val_stage3.jsonl",
+      "train_md5": "30c64022ad5a004bcb8b97667b7e2dd9",
+      "val_md5": "890b83d3a9b4535e92497fa4ad6f9360"
+    },
+    {
+      "stage": 4,
+      "source": "experiments\\nestful_mtgrpo_minimal\\data\\clean_curriculum\\epoch_4_4call.jsonl",
+      "total": 384,
+      "train": 338,
+      "val": 46,
+      "train_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_train_stage4.jsonl",
+      "val_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_val_stage4.jsonl",
+      "train_md5": "25f5f51999d046358ad62570396d3645",
+      "val_md5": "ce9f43087396e8dfc5d65ffb49759c4e"
+    }
+  ],
+  "note": "Validation is SYNTHETIC and held out from training. nestful_data.jsonl stays the clean test set.",
+  "train_total": 1360,
+  "val_total": 186,
+  "train_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_train.jsonl",
+  "val_file": "experiments\\nestful_mtgrpo_minimal\\data\\splits\\synthetic_val.jsonl",
+  "train_md5": "804f744215ceb54c5550fb03811ddb5e",
+  "val_md5": "4c2eb9f2eb24dabd1f6610f9d3ab19d6"
+}

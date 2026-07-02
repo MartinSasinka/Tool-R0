@@ -1,0 +1,60 @@
+{
+  "stages": {
+    "stage1_linear_simple": {
+      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage1_linear_simple.jsonl",
+      "count": 417,
+      "motif_coverage": {
+        "linear_dependency": 241,
+        "independent_calls": 176
+      }
+    },
+    "stage2_reference_reuse": {
+      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage2_reference_reuse.jsonl",
+      "count": 223,
+      "motif_coverage": {
+        "argument_transformation": 40,
+        "reference_reuse": 47,
+        "simple_fan_in": 46,
+        "object_or_list_output": 68,
+        "linear_dependency": 22
+      }
+    },
+    "stage3_structural_motifs": {
+      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage3_structural_motifs.jsonl",
+      "count": 119,
+      "motif_coverage": {
+        "argument_transformation": 16,
+        "fan_in": 84,
+        "fan_out": 19
+      }
+    },
+    "stage4_nestful_like_mixed": {
+      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage4_nestful_like_mixed.jsonl",
+      "count": 271,
+      "motif_coverage": {
+        "distractor_tools": 27,
+        "long_chain": 166,
+        "alternative_valid_traces": 27,
+        "baseline_failure_inspired": 24,
+        "independent_calls": 27
+      }
+    }
+  },
+  "unassigned_count": 0,
+  "stage_minimums": {
+    "stage1_linear_simple": 250,
+    "stage2_reference_reuse": 200,
+    "stage3_structural_motifs": 80,
+    "stage4_nestful_like_mixed": 120
+  },
+  "stage_minimum_shortfalls": {},
+  "advance_gates": {
+    "require_dev_win_above_baseline": true,
+    "min_margin": 0.005,
+    "max_regression_rate_on_baseline_wins": 0.05,
+    "min_strict_trace_pass_retention": 0.7,
+    "max_avg_call_count_drop": 0.2,
+    "max_dead_group_rate": 0.7,
+    "do_not_enter_stage3_unless_stage2_beats_baseline": true
+  }
+}

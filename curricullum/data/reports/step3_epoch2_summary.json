@@ -1,0 +1,182 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 2,
+  "verified_input": 673,
+  "selected_count": 400,
+  "n_final": 400,
+  "shortfall": 0,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "2": 400
+  },
+  "dependency_depth_distribution": {
+    "2": 400
+  },
+  "top_call_patterns": [
+    [
+      "vecnorm->invert_channels",
+      1
+    ],
+    [
+      "find_target_string_in_list->get_sum",
+      1
+    ],
+    [
+      "multiply_string->pixels_match",
+      1
+    ],
+    [
+      "longest_substring_no_duplicates->extend_num",
+      1
+    ],
+    [
+      "fibonacci_element->multiply_and_add",
+      1
+    ],
+    [
+      "find_smallest->mutate_point",
+      1
+    ],
+    [
+      "sum_matrix->min_max_format",
+      1
+    ],
+    [
+      "sum_if_int->join_with_sign",
+      1
+    ],
+    [
+      "convert_ascii_to_text->replace_a_with_e",
+      1
+    ],
+    [
+      "get_file_names_with_ext->add_tab",
+      1
+    ],
+    [
+      "euclid_gcd->range_check",
+      1
+    ],
+    [
+      "replace_value->my_int",
+      1
+    ],
+    [
+      "find_intersection->find_first_even_number",
+      1
+    ],
+    [
+      "concatenate_with_separator->replace_grace_hopper",
+      1
+    ],
+    [
+      "create_new_list_of_tuples->find_missing",
+      1
+    ],
+    [
+      "extract_ip_address->replace_wildcard",
+      1
+    ],
+    [
+      "extract_last_4->pad_num",
+      1
+    ],
+    [
+      "square_root_list->vectorized_variance",
+      1
+    ],
+    [
+      "bitwise_lowest_set_bit_retrieval->convert_degree_to_radian",
+      1
+    ],
+    [
+      "replace_double_curly_braces->remove_first_last_and_middle",
+      1
+    ]
+  ],
+  "unique_tool_names": 673,
+  "top_tool_names": [
+    [
+      "get_sum",
+      3
+    ],
+    [
+      "calculate_summation",
+      3
+    ],
+    [
+      "matrix_scale_multiply",
+      3
+    ],
+    [
+      "sum_next",
+      3
+    ],
+    [
+      "sum_func",
+      3
+    ],
+    [
+      "find_first_index",
+      3
+    ],
+    [
+      "filter_product_labels",
+      3
+    ],
+    [
+      "find_object_index",
+      3
+    ],
+    [
+      "babylonian_sqrt",
+      3
+    ],
+    [
+      "find_target_string_in_list",
+      2
+    ],
+    [
+      "multiply_string",
+      2
+    ],
+    [
+      "find_smallest",
+      2
+    ],
+    [
+      "sum_matrix",
+      2
+    ],
+    [
+      "add_tab",
+      2
+    ],
+    [
+      "range_check",
+      2
+    ],
+    [
+      "my_int",
+      2
+    ],
+    [
+      "find_first_even_number",
+      2
+    ],
+    [
+      "concatenate_with_separator",
+      2
+    ],
+    [
+      "convert_degree_to_radian",
+      2
+    ],
+    [
+      "extract_element_text",
+      2
+    ]
+  ],
+  "created_at": "2026-06-09T08:17:24.871590+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_2_2call.jsonl"
+}

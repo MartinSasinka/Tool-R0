@@ -1,0 +1,11 @@
+{
+  "status": "partial_tool_realism",
+  "math_only_synthetic": false,
+  "tool_name_diversity_nestful": 4202,
+  "tool_name_diversity_v3": 25,
+  "family_overlap": 0.323,
+  "bigram_overlap": 0.0091,
+  "trigram_overlap": 0.0417,
+  "scalar_output_share": 0.832,
+  "non_scalar_output_share": 0.168
+}

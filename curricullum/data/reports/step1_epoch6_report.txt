@@ -1,0 +1,62 @@
+Step1 generation report — epoch 6
+Generated at: 2026-06-11T19:57:37.885597+00:00
+
+OpenRouter requests: 1877
+Generation attempts (tasks): 1877
+Raw responses logged: 1877
+Parsed candidates written: 551
+Parse failures: 896
+Unknown tool rejects (post-parse): 2
+Context budget rejects (post-parse): 428
+Target prompt tokens: 2048
+Target max completion tokens: 4096
+
+Output length distribution (written candidates):
+  len=6: 543
+  len=7: 3
+  len=9: 1
+  len=5: 3
+  len=3: 1
+
+Top tool names:
+  get_or_fallback: 7
+  sum_and_avg: 6
+  remove_function_closures: 5
+  extract_even_pairs: 5
+  purchase_order_details: 5
+  is_alphanumeric_underscore: 5
+  convert_string_to_array: 5
+  expand_tilde: 4
+  concat_if_tuple_and_strings: 4
+  generate_range: 4
+  create_service_account: 4
+  valid_parentheses: 4
+  conjugate_complex: 4
+  calculate_word_frequency_map: 4
+  sum_of_squares_of_odd_numbers: 4
+
+Tool schema conflicts: 4 (see C:\Users\Šunka\Documents\GitHub\Tool-R0\curricullum\data\reports\tool_schema_conflicts.json)
+
+Accepted previews (up to 5):
+--- accepted 1 ---
+{"candidate_id": "cand-e6-f19707fb6f19", "raw_id": "raw-e6-req000002-slot01", "input": "We are standardizing file names for a project. The main data file is 'financial_report_2024.xlsx'. We need to generate a backup template by replacing '.txt' with its extension. Then we need to create ", "output_len": 6}
+--- accepted 2 ---
+{"candidate_id": "cand-e6-0495c66187eb", "raw_id": "raw-e6-req000003-slot02", "input": "A company has three product lines: Alpha, Beta, and Gamma. For Alpha, the base is 12.5 and height is 8.2 (triangle-shaped packaging). For Beta, the base is 9.6 and height is 5.4. For Gamma, the base i", "output_len": 6}
+--- accepted 3 ---
+{"candidate_id": "cand-e6-da45b0bdb63f", "raw_id": "raw-e6-req000004-slot03", "input": "My team processes nested file paths. First, take 'rawdata' and run it through the file path processor. Then format that result. Then process the formatted output again. Then apply two layers of indent", "output_len": 6}
+--- accepted 4 ---
+{"candidate_id": "cand-e6-b073bb838d8e", "raw_id": "raw-e6-req000006-slot05", "input": "In our warehouse, two production lines produce component weights encoded in hexadecimal for tracking. For Line 1, the base weight is obtained by adding the pallet weight (A hex) and container weight (", "output_len": 6}
+--- accepted 5 ---
+{"candidate_id": "cand-e6-d49475448b7f", "raw_id": "raw-e6-req000008-slot01", "input": "A triangular solar panel has a base of 12.5 m and height of 8.4 m. Its efficiency is 22%. The panel's frame is made from a special alloy; the alloy's composition is stored in a JSON object with a 'tem", "output_len": 6}
+
+Rejected previews (up to 5):
+--- rejected 1 (input_too_long) ---
+{"reason": "input_too_long", "raw_id": "raw-e6-req000001-slot00", "est": {"prompt_tokens_est": 1127, "completion_tokens_est": 998, "total_tokens_est": 2125, "input_chars": 528, "tools_json_chars": 1415, "output_json_chars": 596, "tool_count": 4}, "input": "A marine biology lab measured the growth rates (cm/day) of two algae species: species A = [10, 20, 30] and species B = ["}
+--- rejected 2 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e6-req000005-slot04", "raw": ""}
+--- rejected 3 (input_too_long) ---
+{"reason": "input_too_long", "raw_id": "raw-e6-req000007-slot00", "est": {"prompt_tokens_est": 1109, "completion_tokens_est": 970, "total_tokens_est": 2079, "input_chars": 557, "tools_json_chars": 1331, "output_json_chars": 511, "tool_count": 4}, "input": "A logistics firm receives two shipments. Shipment A: 48 crates, each 36 kg. Shipment B: 32 crates, each 42 kg. A 5% cust"}
+--- rejected 4 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e6-req000010-slot03", "raw": ""}
+--- rejected 5 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e6-req000011-slot04", "raw": ""}

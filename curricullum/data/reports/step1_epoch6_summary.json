@@ -1,0 +1,118 @@
+{
+  "stage": "step1_gen_candidates",
+  "epoch": 6,
+  "nestful_path": "eval/data/NESTFUL-main/data_v2/nestful_data.jsonl",
+  "model": "deepseek/deepseek-v4-flash",
+  "seed_mode": "schema_only",
+  "dependency_mode": "dag_chain",
+  "parallel_workers": 16,
+  "allow_new_tools": false,
+  "api_requests": 1877,
+  "api_attempts_tasks": 1877,
+  "raw_responses_logged": 1877,
+  "raw_log_path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\raw_toolr0\\epoch_6_topup_candidates_raw_responses.jsonl",
+  "parse_failures": 896,
+  "unknown_tool_rejects": 2,
+  "budget_rejects": 428,
+  "target_prompt_tokens": 2048,
+  "target_max_completion_tokens": 4096,
+  "tool_menu_min": 4,
+  "tool_menu_max": 9,
+  "max_input_chars": 512,
+  "written_candidates": 551,
+  "output_length_distribution": {
+    "6": 543,
+    "7": 3,
+    "9": 1,
+    "5": 3,
+    "3": 1
+  },
+  "unique_tool_names": 2341,
+  "top_tool_names": [
+    [
+      "get_or_fallback",
+      7
+    ],
+    [
+      "sum_and_avg",
+      6
+    ],
+    [
+      "remove_function_closures",
+      5
+    ],
+    [
+      "extract_even_pairs",
+      5
+    ],
+    [
+      "purchase_order_details",
+      5
+    ],
+    [
+      "is_alphanumeric_underscore",
+      5
+    ],
+    [
+      "convert_string_to_array",
+      5
+    ],
+    [
+      "expand_tilde",
+      4
+    ],
+    [
+      "concat_if_tuple_and_strings",
+      4
+    ],
+    [
+      "generate_range",
+      4
+    ],
+    [
+      "create_service_account",
+      4
+    ],
+    [
+      "valid_parentheses",
+      4
+    ],
+    [
+      "conjugate_complex",
+      4
+    ],
+    [
+      "calculate_word_frequency_map",
+      4
+    ],
+    [
+      "sum_of_squares_of_odd_numbers",
+      4
+    ],
+    [
+      "arg_parser",
+      4
+    ],
+    [
+      "first_number",
+      4
+    ],
+    [
+      "format_with_leading_zeros",
+      4
+    ],
+    [
+      "get_weight_matrix",
+      4
+    ],
+    [
+      "convert_to_positive_integer",
+      4
+    ]
+  ],
+  "schema_conflict_count": 4,
+  "schema_conflicts_report": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\reports\\tool_schema_conflicts.json",
+  "created_at": "2026-06-11T19:57:37.885597+00:00",
+  "elapsed_seconds": 39255.56843876839,
+  "out_json": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\raw_toolr0\\epoch_6_topup_candidates.json"
+}

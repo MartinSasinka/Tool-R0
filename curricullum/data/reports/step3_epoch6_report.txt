@@ -1,0 +1,58 @@
+Step3 selection report — epoch 6
+
+Verified input: 268
+Selected: 268
+Target n_final: 400
+Shortfall: 132
+
+Selection skips:
+
+Output length distribution (selected):
+  len=6: 268
+
+Dependency depth distribution (selected):
+  depth=6: 44
+  depth=4: 102
+  depth=5: 87
+  depth=3: 35
+
+Top call-name sequences:
+  extend_num->extend_num->extend_num->extend_num->extend_num->extend_num: 2
+  check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum: 2
+  absolute_sum->absolute_sum->absolute_sum->absolute_sum->absolute_sum->absolute_sum: 2
+  random_between->random_between->random_between->random_between->random_between->human_readable_size: 1
+  square_edge_by_area->square_edge_by_area->square_edge_by_area->square_edge_by_area->square_edge_by_area->shuffle_sort: 1
+  square_perimeter->check_input_and_sum->square_perimeter->check_input_and_sum->check_input_and_sum->check_input_and_sum: 1
+  calculate_total_apples_oranges->sum_even_integers->fibonacci_dp->calculate_vertical_velocity->calculate_vertical_velocity->calculate_vertical_velocity: 1
+  get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix: 1
+  evaluate_boolean_expression->evaluate_boolean_expression->evaluate_boolean_expression->evaluate_boolean_expression->copy_object->capitalize_sentence: 1
+  get_year->get_digit_sum->remap_range->get_digit_sum->get_digit_sum->remap_range: 1
+
+Top tool names:
+  check_input_and_sum: 16
+  extend_num: 15
+  subtract: 15
+  absolute_sum: 15
+  calculate_average_speed: 12
+  bitwise_and: 11
+  round_to_multiple: 11
+  replace_with_target: 10
+  floor_divide_without_div: 10
+  multiply_without_operator: 10
+  floor_division: 9
+  byte_order: 9
+  volume_cylinder: 9
+  def_func: 9
+  evaluate_instruction: 9
+
+Selected previews (up to 5):
+--- 1 ---
+{"sample_id": "synthetic-epoch6-000001", "candidate_id": "cand-e6-59baf6799ab2", "raw_id": "raw-e6-req001379-slot04", "input": "We are calibrating a buffer size for a data pipeline. The initial fixed reference is exactly 100 bytes. We then generate a second reference equal to the first. Next, we combine both references into a ", "output_len": 6, "dependency_depth": 6}
+--- 2 ---
+{"sample_id": "synthetic-epoch6-000002", "candidate_id": "cand-e6-2cea2499ed93", "raw_id": "raw-e6-req001805-slot04", "input": "I have a square field of 256 square meters. I calculate the side length. Then I treat that side as the area of another square and calculate its side, and so on four times. Then I combine all side leng", "output_len": 6, "dependency_depth": 6}
+--- 3 ---
+{"sample_id": "synthetic-epoch6-000003", "candidate_id": "cand-e6-7f889e8a8c27", "raw_id": "raw-e6-req001034-slot01", "input": "Our farm has a square plot of side 3 units. We add a 5-unit buffer to its perimeter to get a new perimeter value, then use that as the side for a larger square plot to calculate its perimeter. We then", "output_len": 6, "dependency_depth": 6}
+--- 4 ---
+{"sample_id": "synthetic-epoch6-000004", "candidate_id": "cand-e6-07c7d8e747f6", "raw_id": "raw-e6-req000088-slot03", "input": "We have fruit sales: 2 apples per day and 3 oranges per day for 3 days. The sum of even total fruits is taken as acceleration. The Fibonacci number at that position becomes initial velocity. First, fi", "output_len": 6, "dependency_depth": 6}
+--- 5 ---
+{"sample_id": "synthetic-epoch6-000005", "candidate_id": "cand-e6-795a7d913b22", "raw_id": "raw-e6-req001866-slot05", "input": "We are building a small neural network with sequential weight projections. Our initial data arrays are A=[[1]], B=[[2]]. Compute W1 = weight(A,B). Then use W1 as source with new target C=[[3]] to get ", "output_len": 6, "dependency_depth": 6}

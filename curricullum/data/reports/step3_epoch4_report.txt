@@ -1,0 +1,55 @@
+Step3 selection report — epoch 4
+
+Verified input: 423
+Selected: 400
+Target n_final: 400
+Shortfall: 0
+
+Selection skips:
+
+Output length distribution (selected):
+  len=4: 400
+
+Dependency depth distribution (selected):
+  depth=4: 400
+
+Top call-name sequences:
+  extend_num->extend_num->extend_num->extend_num: 2
+  add_or_divide->add_or_divide->add_or_divide->add_or_divide: 2
+  product_except_index->product_except_index->product_except_index->product_except_index: 2
+  evaluate_instruction->evaluate_instruction->evaluate_instruction->evaluate_instruction: 2
+  remove_less_or_equal_to_3->scale_and_shift_numpy_array->fraction_positive->count_most_frequent_elements: 1
+  list_all_files->count_ngrams->count_ngrams->write_nested_list_to_csv: 1
+  get_volume_of_sphere_from_diameter->get_volume_of_sphere_from_diameter->get_volume_of_sphere_from_diameter->is_monotonic: 1
+  remove_non_letters->list_chunks->flat_list->disjoint: 1
+  escape_reserved_keywords->escape_special_characters->concatenate_with_space->is_message_of_type: 1
+  standard_gaussian_pdf->standard_gaussian_pdf->standard_gaussian_pdf->almost_equal: 1
+
+Top tool names:
+  extend_num: 10
+  sqrt_rounded_up: 9
+  compute_square_roots: 9
+  add_or_divide: 8
+  concat_ignore_trailing_zeros: 8
+  product_except_index: 8
+  evaluate_instruction: 8
+  remove_less_or_equal_to_3: 7
+  expand_and_replace: 7
+  power_modulo: 7
+  safe_div: 7
+  scale_and_shift_numpy_array: 6
+  count_ngrams: 6
+  polynomial_expression: 6
+  smallest_x: 6
+
+Selected previews (up to 5):
+--- 1 ---
+{"sample_id": "synthetic-epoch4-000001", "candidate_id": "cand-e4-fc702522a27e", "raw_id": "raw-e4-req000088-slot07", "input": "We have a list of raw sensor readings: [12, -5, 7, 0, 3, 8, -2, 15, 1, 6]. First, remove all elements <= 3 to get the valid readings. Then scale those by alpha=2 and shift by beta=1. Next, compute the", "output_len": 4, "dependency_depth": 4}
+--- 2 ---
+{"sample_id": "synthetic-epoch4-000002", "candidate_id": "cand-e4-14219a8999e9", "raw_id": "raw-e4-req000512-slot07", "input": "I have a directory at /data/words containing files named with single words: apple, banana, cherry, date. I need to analyze the file names. First, get the list of all files. Then count how many unique ", "output_len": 4, "dependency_depth": 4}
+--- 3 ---
+{"sample_id": "synthetic-epoch4-000003", "candidate_id": "cand-e4-2b8ef1aa13a3", "raw_id": "raw-e4-req000381-slot04", "input": "A materials lab synthesizes spherical catalyst particles where the diameter of each successive particle equals the volume (in mm³) of the previous particle. Starting with a 10 mm diameter particle, co", "output_len": 4, "dependency_depth": 4}
+--- 4 ---
+{"sample_id": "synthetic-epoch4-000004", "candidate_id": "cand-e4-b80c6c6682aa", "raw_id": "raw-e4-req002198-slot05", "input": "Our system log contains a corrupted entry with the string '!!@@##'. First, remove any non-letter/digit characters to isolate the special characters. Then chunk the resulting list into groups of 2 (sta", "output_len": 4, "dependency_depth": 4}
+--- 5 ---
+{"sample_id": "synthetic-epoch4-000005", "candidate_id": "cand-e4-92f110eea6a1", "raw_id": "raw-e4-req000014-slot05", "input": "Our digital archive uses nested folder names that sometimes contain Python reserved keywords. For indexing, we need to first escape the reserved keywords in 'import', then escape any special character", "output_len": 4, "dependency_depth": 4}

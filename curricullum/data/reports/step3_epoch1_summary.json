@@ -1,0 +1,182 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 1,
+  "verified_input": 601,
+  "selected_count": 400,
+  "n_final": 400,
+  "shortfall": 0,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "1": 400
+  },
+  "dependency_depth_distribution": {
+    "1": 400
+  },
+  "top_call_patterns": [
+    [
+      "convert_to_cm_with_precision",
+      3
+    ],
+    [
+      "cumulative_list",
+      3
+    ],
+    [
+      "calculate_profit_percentage",
+      3
+    ],
+    [
+      "probability_of_decay",
+      3
+    ],
+    [
+      "format_datetime_object",
+      2
+    ],
+    [
+      "timestamp_difference",
+      2
+    ],
+    [
+      "sum_of_all_continuous_sequences",
+      2
+    ],
+    [
+      "ssd",
+      2
+    ],
+    [
+      "get_string_numbers",
+      2
+    ],
+    [
+      "calculate_kp",
+      2
+    ],
+    [
+      "circle_area",
+      2
+    ],
+    [
+      "convert_to_int_or_default",
+      2
+    ],
+    [
+      "divide_int",
+      2
+    ],
+    [
+      "diff_ticks",
+      2
+    ],
+    [
+      "convert_to_HHMMSS",
+      2
+    ],
+    [
+      "kelvin_to_fahrenheit",
+      2
+    ],
+    [
+      "cube_density",
+      2
+    ],
+    [
+      "negate_prob",
+      2
+    ],
+    [
+      "bits_to_num",
+      2
+    ],
+    [
+      "extract_alphanumeric",
+      2
+    ]
+  ],
+  "unique_tool_names": 362,
+  "top_tool_names": [
+    [
+      "convert_to_cm_with_precision",
+      3
+    ],
+    [
+      "cumulative_list",
+      3
+    ],
+    [
+      "calculate_profit_percentage",
+      3
+    ],
+    [
+      "probability_of_decay",
+      3
+    ],
+    [
+      "format_datetime_object",
+      2
+    ],
+    [
+      "timestamp_difference",
+      2
+    ],
+    [
+      "sum_of_all_continuous_sequences",
+      2
+    ],
+    [
+      "ssd",
+      2
+    ],
+    [
+      "get_string_numbers",
+      2
+    ],
+    [
+      "calculate_kp",
+      2
+    ],
+    [
+      "circle_area",
+      2
+    ],
+    [
+      "convert_to_int_or_default",
+      2
+    ],
+    [
+      "divide_int",
+      2
+    ],
+    [
+      "diff_ticks",
+      2
+    ],
+    [
+      "convert_to_HHMMSS",
+      2
+    ],
+    [
+      "kelvin_to_fahrenheit",
+      2
+    ],
+    [
+      "cube_density",
+      2
+    ],
+    [
+      "negate_prob",
+      2
+    ],
+    [
+      "bits_to_num",
+      2
+    ],
+    [
+      "extract_alphanumeric",
+      2
+    ]
+  ],
+  "created_at": "2026-06-09T08:17:14.325092+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_1_1call.jsonl"
+}

@@ -1,0 +1,182 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 3,
+  "verified_input": 512,
+  "selected_count": 400,
+  "n_final": 400,
+  "shortfall": 0,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "3": 400
+  },
+  "dependency_depth_distribution": {
+    "3": 400
+  },
+  "top_call_patterns": [
+    [
+      "round_to_multiple->round_to_multiple->round_to_multiple",
+      2
+    ],
+    [
+      "mod_range->greet_world_or_name->count_words_in_words",
+      1
+    ],
+    [
+      "rectangle_perimeter->sqrt_function->rectangle_perimeter",
+      1
+    ],
+    [
+      "str_concat->safe_index->safe_index",
+      1
+    ],
+    [
+      "bitwise_and->get_day_of_week_phrase->image_filename",
+      1
+    ],
+    [
+      "second_occurrence_index->kth_element->shape_area",
+      1
+    ],
+    [
+      "format_list_of_ints->duplicate_sentence_checker->format_headers",
+      1
+    ],
+    [
+      "convert_binary_to_decimal->multiple_of_three->remove_integer",
+      1
+    ],
+    [
+      "parse_name_value_pairs->replace_with_lengths->find_different_keys",
+      1
+    ],
+    [
+      "check_logical_implication->check_logical_implication->check_logical_implication",
+      1
+    ],
+    [
+      "convert_camel_to_underscore->create_dictionary_from_lists->keep_keys",
+      1
+    ],
+    [
+      "transform_logs->traverse_and_sort_keys->traverse_and_sort_keys",
+      1
+    ],
+    [
+      "build_key->create_hash_md5->substring_check",
+      1
+    ],
+    [
+      "read_config->check_nested_dict->check_nested_dict",
+      1
+    ],
+    [
+      "generate_geometric_progression->find_mean_index->find_sum_indices",
+      1
+    ],
+    [
+      "bitwise_left_rotation->ternary_like_condition->create_filenames",
+      1
+    ],
+    [
+      "consonants_only->escape_html->count_empty_strings",
+      1
+    ],
+    [
+      "longest_consecutive_ones->repeat_string_python2->convert_to_fixed_length_records",
+      1
+    ],
+    [
+      "sample_variance->get_power_of_two->multiply_without_star",
+      1
+    ],
+    [
+      "calculate_density->percentage_grade->replace_ip_in_domain",
+      1
+    ]
+  ],
+  "unique_tool_names": 840,
+  "top_tool_names": [
+    [
+      "round_to_multiple",
+      7
+    ],
+    [
+      "multiply_by_two_or_three",
+      7
+    ],
+    [
+      "find_max_3",
+      5
+    ],
+    [
+      "format_with_leading_zeros",
+      5
+    ],
+    [
+      "add_or_divide",
+      5
+    ],
+    [
+      "string_with_length",
+      5
+    ],
+    [
+      "add",
+      5
+    ],
+    [
+      "change_extension_regex",
+      5
+    ],
+    [
+      "build_key",
+      4
+    ],
+    [
+      "sum_of_first_n_integers",
+      4
+    ],
+    [
+      "find_max_of_two_numbers",
+      4
+    ],
+    [
+      "remove_trailing_slash",
+      4
+    ],
+    [
+      "handle_zero_division",
+      4
+    ],
+    [
+      "escape_string",
+      4
+    ],
+    [
+      "duplicate_string",
+      4
+    ],
+    [
+      "area_rectangle",
+      4
+    ],
+    [
+      "get_digit_sum",
+      4
+    ],
+    [
+      "calculate_summation",
+      4
+    ],
+    [
+      "replace_abc_with_macro",
+      4
+    ],
+    [
+      "subtract",
+      4
+    ]
+  ],
+  "created_at": "2026-06-09T11:23:33.705687+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_3_3call.jsonl"
+}

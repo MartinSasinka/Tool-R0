@@ -1,0 +1,223 @@
+{
+  "nestful_path": "eval/data/NESTFUL-main/data_v2/nestful_data.jsonl",
+  "conflict_count": 4,
+  "conflicts": [
+    {
+      "tool_name": "divide",
+      "variant_count": 2,
+      "canonical_schema_fingerprint": "5761e14201ac9dcaaab00e12eaaf53b265f56ff7",
+      "canonical_occurrences": 1415,
+      "selected_canonical_schema": {
+        "name": "divide",
+        "description": "divides two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        },
+        "output_parameters": {
+          "result": {
+            "description": "The division result",
+            "type": "int or float"
+          }
+        }
+      },
+      "rejected_alternative_schemas": [
+        {
+          "schema_fingerprint": "204052d348eddda8391275501fa8fa5df6355274",
+          "occurrences": 1,
+          "schema": {
+            "name": "divide",
+            "description": "Divides `a` by `b` and returns the quotient as a float.\n\nIf `b` is zero, raises a `ZeroDivisionError` exception.",
+            "parameters": {
+              "a": {
+                "description": "The numerator.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              },
+              "b": {
+                "description": "The denominator.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              }
+            },
+            "output_parameters": {
+              "output_0": {
+                "description": "",
+                "type": "number"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "tool_name": "permutation",
+      "variant_count": 2,
+      "canonical_schema_fingerprint": "277eba6792cc93f88cf01a8868b2057e7a4ac1b4",
+      "canonical_occurrences": 172,
+      "selected_canonical_schema": {
+        "name": "permutation",
+        "description": "Calculate the number of permutations of n items taken r at a time",
+        "parameters": {
+          "arg_0": {
+            "description": "Total number of items",
+            "type": "int"
+          },
+          "arg_1": {
+            "description": "Number of items being arranged",
+            "type": "int"
+          }
+        },
+        "output_parameters": {
+          "result": {
+            "description": "Number of permutations",
+            "type": "int"
+          }
+        }
+      },
+      "rejected_alternative_schemas": [
+        {
+          "schema_fingerprint": "368d6d3daded48eaf28975ba0c184ec8b9535b1d",
+          "occurrences": 1,
+          "schema": {
+            "name": "permutation",
+            "description": "Calculates the number of permutations of `k` items chosen from a set of `n` items.",
+            "parameters": {
+              "k": {
+                "description": "The number of items to choose.",
+                "type": "integer"
+              },
+              "n": {
+                "description": "The total number of items.",
+                "type": "integer"
+              }
+            },
+            "output_parameters": {
+              "output_0": {
+                "description": "The number of permutations if `k` is less than or equal to `n`, otherwise `-1`.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "tool_name": "sqrt",
+      "variant_count": 2,
+      "canonical_schema_fingerprint": "507f9449fce8abddf48582d66da74c5579925ea7",
+      "canonical_occurrences": 207,
+      "selected_canonical_schema": {
+        "name": "sqrt",
+        "description": "Calculate the square root of a non-negative number.",
+        "parameters": {
+          "arg_0": {
+            "description": "The input number",
+            "type": "int"
+          }
+        },
+        "output_parameters": {
+          "result": {
+            "description": "the square root of the provided number",
+            "type": "int"
+          }
+        }
+      },
+      "rejected_alternative_schemas": [
+        {
+          "schema_fingerprint": "add911f4f67e464502bcd0b4a461347aeab3f4c7",
+          "occurrences": 1,
+          "schema": {
+            "name": "sqrt",
+            "description": "Calculates the square root of a given value.",
+            "parameters": {
+              "value": {
+                "description": "The value to calculate the square root of.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              }
+            },
+            "output_parameters": {
+              "output_0": {
+                "description": "",
+                "type": "number"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "tool_name": "max_number",
+      "variant_count": 2,
+      "canonical_schema_fingerprint": "8d931374d4da3034d8234545b2b3db6735201e28",
+      "canonical_occurrences": 190,
+      "selected_canonical_schema": {
+        "name": "max_number",
+        "description": "Find the maximum value among the given numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "A list of numbers",
+            "type": "list of float"
+          }
+        },
+        "output_parameters": {
+          "result": {
+            "description": "Maximum value",
+            "type": "float"
+          }
+        }
+      },
+      "rejected_alternative_schemas": [
+        {
+          "schema_fingerprint": "7c4cb3d9142e8b98c35f7c493f0bfed25ecc755c",
+          "occurrences": 1,
+          "schema": {
+            "name": "max_number",
+            "description": "Returns the larger of the two numbers `x` and `y`. If the two numbers are equal, returns `x` as the larger number.",
+            "parameters": {
+              "x": {
+                "description": "The first number.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              },
+              "y": {
+                "description": "The second number.",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              }
+            },
+            "output_parameters": {
+              "output_0": {
+                "description": "",
+                "type": [
+                  "integer",
+                  "number"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

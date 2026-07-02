@@ -1,0 +1,58 @@
+Step1 generation report — epoch 4
+Generated at: 2026-06-10T18:42:06.314342+00:00
+
+OpenRouter requests: 395
+Generation attempts (tasks): 395
+Raw responses logged: 395
+Parsed candidates written: 223
+Parse failures: 154
+Unknown tool rejects (post-parse): 0
+Context budget rejects (post-parse): 18
+Target prompt tokens: 2048
+Target max completion tokens: 4096
+
+Output length distribution (written candidates):
+  len=4: 223
+
+Top tool names:
+  check_one_attribute: 4
+  is_string_literal: 4
+  is_all_uppercase: 3
+  count_unique_ints: 3
+  get_job_status: 3
+  compute_mean_tensor_reduction_numpy: 3
+  replace_first_star: 3
+  remove_trailing_slash: 3
+  surface_sphere: 3
+  count_keywords: 3
+  create_document_keys: 3
+  hex_to_float: 3
+  download_and_deserialize: 3
+  find_byte_sequence: 3
+  get_model_info: 2
+
+Tool schema conflicts: 4 (see C:\Users\Šunka\Documents\GitHub\Tool-R0\curricullum\data\reports\tool_schema_conflicts.json)
+
+Accepted previews (up to 5):
+--- accepted 1 ---
+{"candidate_id": "cand-e4-021827cfcdac", "raw_id": "raw-e4-req000001-slot00", "input": "A logistics company has 48 pallets, each weighing 36 kg. They need to sort the pallets by weight into groups of 2D vectors (weight, count). First, compute the total weight. Then, check if that total w", "output_len": 4}
+--- accepted 2 ---
+{"candidate_id": "cand-e4-c3fce0e26a6f", "raw_id": "raw-e4-req000006-slot05", "input": "I have a measurement value of 7. I want to format it as a string, then extract the number back, then identify its data type, and finally identify the type of that type string. What is the final metada", "output_len": 4}
+--- accepted 3 ---
+{"candidate_id": "cand-e4-62d9b387fca1", "raw_id": "raw-e4-req000007-slot06", "input": "Our warehouse tracks shipments as tuples (product code, quantity): [('Alpha',10), ('Beta',7), ('Gamma',12)]. We need to map these to strings, count word frequency, check if the mapped code 'Alpha10' e", "output_len": 4}
+--- accepted 4 ---
+{"candidate_id": "cand-e4-5c43c5b00664", "raw_id": "raw-e4-req000008-slot07", "input": "In a dynamic heap database, the root node index is the square root of 324 (approximated to 0 decimals). Then we find its parent in a heap of 20, then the parent of that parent in a heap of 10 (after a", "output_len": 4}
+--- accepted 5 ---
+{"candidate_id": "cand-e4-5bba26d81b02", "raw_id": "raw-e4-req000011-slot02", "input": "I have a Product class with properties: name='Widget', price=19.99, stock=150. I need to retrieve these properties, format them into a string, apply a discount by replacing the price with 14.99, and t", "output_len": 4}
+
+Rejected previews (up to 5):
+--- rejected 1 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e4-req000002-slot01", "raw": ""}
+--- rejected 2 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e4-req000003-slot02", "raw": ""}
+--- rejected 3 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e4-req000004-slot03", "raw": ""}
+--- rejected 4 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e4-req000005-slot04", "raw": ""}
+--- rejected 5 (json_parse_failed) ---
+{"reason": "json_parse_failed", "raw_id": "raw-e4-req000009-slot00", "raw": ""}

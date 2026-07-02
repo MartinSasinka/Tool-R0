@@ -1,0 +1,6 @@
+motif_type,count
+linear_dependency,956
+long_chain,595
+fan_in,282
+independent_calls,27
+fan_out,1

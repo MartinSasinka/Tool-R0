@@ -1,0 +1,12 @@
+{
+  "label": "before pilot prep (500-task math-only)",
+  "status": "prototype_only",
+  "math_only_synthetic": true,
+  "tool_name_diversity_nestful": 4202,
+  "tool_name_diversity_v3": 9,
+  "family_overlap": 0.1942,
+  "bigram_overlap": 0.0111,
+  "trigram_overlap": 0.0342,
+  "scalar_output_share": 1.0,
+  "non_scalar_output_share": 0.0
+}

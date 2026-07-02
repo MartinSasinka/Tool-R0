@@ -1,0 +1,128 @@
+Step2 verification report — epoch 1
+
+Input candidates: 773
+Verified: 600
+Rejected: 173
+Dependency mode: strict_chain
+Contamination rejections: 3
+Context budget rejections: 0
+Prompt tokens est (verified median): 1016.0
+Completion tokens est (verified median): 230.0
+Duplicate rejections: 3
+
+Rejection reasons:
+  tool_missing_parameters: 40
+  call_invalid_arg_value: 48
+  duplicate_output_sequence: 3
+  tool_missing_description: 1
+  exec_unknown_function:split: 1
+  exec_executor_mismatch: 9
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/home/user/script.py': 1
+  exec_ibm_runtime_error:gaierror:[Errno 11001] getaddrinfo failed: 1
+  exec_ibm_runtime_error:ValueError:File path '/data/shipments/2025/03/15/manifest_v2.1.pdf' does not exist.: 1
+  exec_ibm_runtime_error:TypeError:a bytes-like object is required, not 'list': 3
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'shape': 5
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/app.log': 1
+  exec_timeout: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'keyfile.bin': 1
+  exec_ibm_runtime_error:TypeError:expected string or bytes-like object, got 'list': 2
+  exec_ibm_runtime_error:ValueError:invalid literal for int() with base 10: 'A3F': 1
+  exec_ibm_runtime_error:IndexError:list index out of range: 1
+  exec_ibm_runtime_error:TypeError:zeros_like(): argument 'input' (position 1) must be Tensor, not float: 1
+  exec_ibm_runtime_error:ValueError:not enough values to unpack (expected 3, got 2): 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/weights.txt': 1
+  exec_unknown_function:get_value: 1
+  exec_ibm_runtime_error:TypeError:'int' object is not iterable: 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'make': 1
+  exec_ibm_runtime_error:TypeError:bad operand type for unary -: 'list': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for +: 'int' and 'str': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'split': 2
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/shipment_manifest_2025.csv': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'sales_2024Q1.csv.gz': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/var/log/build_20241028.log': 1
+  exec_ibm_runtime_error:TypeError:can't multiply sequence by non-int of type 'numpy.float64': 1
+  exec_ibm_runtime_error:AttributeError:'dict' object has no attribute 'name': 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'tag': 1
+  exec_ibm_runtime_error:TypeError:int() argument must be a string, a bytes-like object or a real number, not 'list': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/patients.json': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'dictionary.pickle': 1
+  exec_ibm_runtime_error:ValueError:File path 'D:/archives/2024/invoices/INV-239874.pdf' does not exist.: 1
+  exec_unknown_function:smallest_element: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/etc/qkd/firmware_v3.bin': 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for /: 'list' and 'float': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'data.json': 1
+  exec_ibm_runtime_error:TypeError:the JSON object must be str, bytes or bytearray, not dict: 1
+  exec_ibm_runtime_error:ValueError:Invalid table name format: 1
+  exec_unknown_function:split_and_create_dict: 1
+  exec_unknown_function:swap_items: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'campaign_log.txt': 1
+  exec_ibm_runtime_error:TypeError:ord() expected a character, but string of length 8 found: 1
+  exec_ibm_runtime_error:ValueError:Invalid unit: C: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/etc/recommender/config.json': 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'flatten': 2
+  exec_unknown_function:parse_names_ages: 1
+  exec_unknown_function:list_to_tensor: 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/measurements.txt': 1
+  exec_ibm_runtime_error:ValueError:Invalid camera name format: 1
+  exec_ibm_runtime_error:TypeError:unsupported operand type(s) for >>: 'str' and 'int': 1
+  exec_ibm_runtime_error:ValueError:Unknown format code 'x' for object of type 'str': 1
+  exec_ibm_runtime_error:ValueError:Invalid percentage string: 1
+  exec_ibm_runtime_error:AttributeError:'str' object has no attribute 'name': 1
+  exec_ibm_runtime_error:ValueError:Invalid input: invalid unit 'bits': 1
+  exec_ibm_runtime_error:NameError:name 'original_file' is not defined: 1
+  exec_ibm_runtime_error:AttributeError:'list' object has no attribute 'reshape': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'cycle_count.bin': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'access_log.json': 1
+  exec_ibm_runtime_error:TypeError:type str doesn't define __round__ method: 1
+  exec_ibm_runtime_error:TypeError:strptime() argument 1 must be str, not datetime.datetime: 1
+  exec_ibm_runtime_error:KeyError:'string': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: '/data/sensors.csv': 1
+  exec_ibm_runtime_error:FileNotFoundError:[Errno 2] No such file or directory: 'start_date,end_date\\n2024-01-01,2024-01-10\\n2024-02-15,2024-02-20\\n2024-03-01,2024-03-15': 1
+  exec_ibm_runtime_error:KeyError:'object_name': 1
+
+Output length distribution (verified):
+  len=1: 600
+
+Dependency depth distribution (verified):
+  depth=1: 600
+
+Top tool names (verified):
+  probability_of_decay: 3
+  timestamp_difference: 3
+  calculate_profit_percentage: 3
+  calculate_kp: 3
+  three_sum_count: 3
+  cumulative_list: 3
+  square_edge_by_perimeter: 3
+  compute_entropy: 3
+  convert_to_cm_with_precision: 3
+  polygon: 2
+  circle_area: 2
+  convert_to_int_or_default: 2
+  parse_and_format_exception: 2
+  get_sum_of_foo: 2
+  divide_without_div: 2
+
+Accepted previews (up to 5):
+--- accepted 1 ---
+{"candidate_id": "cand-e1-29b0f6960d46", "raw_id": "raw-e1-req000001-slot00", "input": "We are designing a circular wheel with radius 20 cm and plan to place 12 equally spaced spokes. The distance between the outer ends of adjacent spokes forms a regular polygon side. Calculate that side", "output_len": 1, "dependency_depth": 1, "gold_answer": "10.471975511965978"}
+--- accepted 2 ---
+{"candidate_id": "cand-e1-1d6f58c6780d", "raw_id": "raw-e1-req000003-slot02", "input": "A linguist is studying the word 'MISSISSIPPI' for unique trigram patterns. How many distinct substrings of length 3 appear in the word?", "output_len": 1, "dependency_depth": 1, "gold_answer": 7}
+--- accepted 3 ---
+{"candidate_id": "cand-e1-d496eda4aeb1", "raw_id": "raw-e1-req000007-slot06", "input": "A radio transmitter outputs a signal with a strength of 47.3 in an arbitrary metric. Convert this value to dBm to check if it meets the regulatory limit of 16 dBm.", "output_len": 1, "dependency_depth": 1, "gold_answer": 16.748227}
+--- accepted 4 ---
+{"candidate_id": "cand-e1-8f374401d9e4", "raw_id": "raw-e1-req000008-slot07", "input": "A sample of radioactive iodine-131 has a half-life of 8.02 days. If we observe the sample for exactly 12.5 days, what is the probability that a given atom will decay during that time? (Express the pro", "output_len": 1, "dependency_depth": 1, "gold_answer": 0.6606}
+--- accepted 5 ---
+{"candidate_id": "cand-e1-a47381c0097f", "raw_id": "raw-e1-req000009-slot08", "input": "The weather forecast gives a 32% chance of rain on Saturday and a 57% chance on Sunday. Assuming the two days are independent, what is the probability of rain on at least one day?", "output_len": 1, "dependency_depth": 1, "gold_answer": 0.7076}
+
+Rejected previews (up to 5):
+--- rejected 1 (tool_missing_parameters) ---
+{"candidate_id": "cand-e1-61c304f0c8cd", "raw_id": "raw-e1-req000002-slot01", "input": "Our inventory tracking system concatenates product codes with commas. We have a combined string: 'PROD-1001X,PROD-1002Y,PROD-1003Z,PROD-1004W,PROD-1005V'. What list of codes will be output after split"}
+--- rejected 2 (call_invalid_arg_value) ---
+{"candidate_id": "cand-e1-3559bf8dcaef", "raw_id": "raw-e1-req000005-slot04", "input": "In a LaTeX document, we need to escape special characters. We have an escape dictionary: {'$': '\\\\$', '%': '\\\\%', '_': '\\\\_', '\\\\': '\\\\textbackslash{}'}. The string to process is 'The total_cost is $1"}
+--- rejected 3 (tool_missing_parameters) ---
+{"candidate_id": "cand-e1-6bf4155f802e", "raw_id": "raw-e1-req000010-slot09", "input": "Our logistics system encodes packages with IDs that include letters and digits. For example, package ID 'O1-2345-6' has a dash. We need to verify if this ID contains the character '1' to apply a speci"}
+--- rejected 4 (tool_missing_parameters) ---
+{"candidate_id": "cand-e1-02fd49e1e28c", "raw_id": "raw-e1-req000018-slot03", "input": "Our logistics team needs to convert a shipment weight from kilograms to pounds for customs. The shipment weighs 127.5 kg. Using the conversion tool, what is the weight in pounds?"}
+--- rejected 5 (tool_missing_parameters) ---
+{"candidate_id": "cand-e1-c51d2cc01b3d", "raw_id": "raw-e1-req000024-slot09", "input": "Our factory produced the following number of widgets each day last week: 23, 44, 56, 71, 38, 92, 15. The quality team wants to know the average production on days where the output was an even number. "}

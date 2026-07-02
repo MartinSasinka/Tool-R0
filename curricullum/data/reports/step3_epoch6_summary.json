@@ -1,0 +1,185 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 6,
+  "verified_input": 268,
+  "selected_count": 268,
+  "n_final": 400,
+  "shortfall": 132,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "6": 268
+  },
+  "dependency_depth_distribution": {
+    "6": 44,
+    "4": 102,
+    "5": 87,
+    "3": 35
+  },
+  "top_call_patterns": [
+    [
+      "extend_num->extend_num->extend_num->extend_num->extend_num->extend_num",
+      2
+    ],
+    [
+      "check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum->check_input_and_sum",
+      2
+    ],
+    [
+      "absolute_sum->absolute_sum->absolute_sum->absolute_sum->absolute_sum->absolute_sum",
+      2
+    ],
+    [
+      "random_between->random_between->random_between->random_between->random_between->human_readable_size",
+      1
+    ],
+    [
+      "square_edge_by_area->square_edge_by_area->square_edge_by_area->square_edge_by_area->square_edge_by_area->shuffle_sort",
+      1
+    ],
+    [
+      "square_perimeter->check_input_and_sum->square_perimeter->check_input_and_sum->check_input_and_sum->check_input_and_sum",
+      1
+    ],
+    [
+      "calculate_total_apples_oranges->sum_even_integers->fibonacci_dp->calculate_vertical_velocity->calculate_vertical_velocity->calculate_vertical_velocity",
+      1
+    ],
+    [
+      "get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix->get_weight_matrix",
+      1
+    ],
+    [
+      "evaluate_boolean_expression->evaluate_boolean_expression->evaluate_boolean_expression->evaluate_boolean_expression->copy_object->capitalize_sentence",
+      1
+    ],
+    [
+      "get_year->get_digit_sum->remap_range->get_digit_sum->get_digit_sum->remap_range",
+      1
+    ],
+    [
+      "floor_division->floor_division->floor_division->floor_division->degree_to_radian->floor_division",
+      1
+    ],
+    [
+      "find_interval_distance->bitwise_and->bitwise_and->bitwise_and->bitwise_and->bitwise_and",
+      1
+    ],
+    [
+      "split_and_format_words->count_common_words->retrieve_cyclic_elements->sum_every_second->calculate_density->calculate_density",
+      1
+    ],
+    [
+      "url_from_parts->url_from_parts->url_from_parts->url_from_parts->url_from_parts->url_from_parts",
+      1
+    ],
+    [
+      "extend_num->byte_order->extend_num->byte_order->extend_num->byte_order",
+      1
+    ],
+    [
+      "volume_cylinder->volume_cylinder->add_with_rounding->add_with_rounding->volume_cylinder->add_with_rounding",
+      1
+    ],
+    [
+      "find_perfect_squares_num->find_perfect_squares_num->find_perfect_squares_num->abs_limited_to->find_perfect_squares_num->abs_limited_to",
+      1
+    ],
+    [
+      "change_language_code->replace_extension->hmac_sha256->get_or_fallback->replace_extension->hmac_sha256",
+      1
+    ],
+    [
+      "exp_n->exp_n->exp_n->exp_n->exp_n->calculate_profit_percentage",
+      1
+    ],
+    [
+      "permutation->permutation->calculate_mod->min_with_default->calculate_mod->calculate_mod",
+      1
+    ]
+  ],
+  "unique_tool_names": 611,
+  "top_tool_names": [
+    [
+      "check_input_and_sum",
+      16
+    ],
+    [
+      "extend_num",
+      15
+    ],
+    [
+      "subtract",
+      15
+    ],
+    [
+      "absolute_sum",
+      15
+    ],
+    [
+      "calculate_average_speed",
+      12
+    ],
+    [
+      "bitwise_and",
+      11
+    ],
+    [
+      "round_to_multiple",
+      11
+    ],
+    [
+      "replace_with_target",
+      10
+    ],
+    [
+      "floor_divide_without_div",
+      10
+    ],
+    [
+      "multiply_without_operator",
+      10
+    ],
+    [
+      "floor_division",
+      9
+    ],
+    [
+      "byte_order",
+      9
+    ],
+    [
+      "volume_cylinder",
+      9
+    ],
+    [
+      "def_func",
+      9
+    ],
+    [
+      "evaluate_instruction",
+      9
+    ],
+    [
+      "combine_characters",
+      9
+    ],
+    [
+      "add_with_rounding",
+      8
+    ],
+    [
+      "power_of_scalar",
+      8
+    ],
+    [
+      "inverse_log",
+      8
+    ],
+    [
+      "power_without_pow",
+      8
+    ]
+  ],
+  "created_at": "2026-06-11T19:58:17.177969+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_6_6call.jsonl"
+}

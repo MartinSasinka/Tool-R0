@@ -1,0 +1,116 @@
+{
+  "stage": "step1_gen_candidates",
+  "epoch": 5,
+  "nestful_path": "eval/data/NESTFUL-main/data_v2/nestful_data.jsonl",
+  "model": "deepseek/deepseek-v4-flash",
+  "seed_mode": "schema_only",
+  "dependency_mode": "strict_chain",
+  "parallel_workers": 16,
+  "allow_new_tools": false,
+  "api_requests": 102,
+  "api_attempts_tasks": 102,
+  "raw_responses_logged": 102,
+  "raw_log_path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\raw_toolr0\\epoch_5_topup_candidates_raw_responses.jsonl",
+  "parse_failures": 6,
+  "unknown_tool_rejects": 0,
+  "budget_rejects": 47,
+  "target_prompt_tokens": 2048,
+  "target_max_completion_tokens": 4096,
+  "tool_menu_min": 4,
+  "tool_menu_max": 8,
+  "max_input_chars": 512,
+  "written_candidates": 49,
+  "output_length_distribution": {
+    "5": 47,
+    "4": 1,
+    "6": 1
+  },
+  "unique_tool_names": 264,
+  "top_tool_names": [
+    [
+      "remove_first",
+      3
+    ],
+    [
+      "split_without_empty_strings",
+      2
+    ],
+    [
+      "find_closest_root",
+      2
+    ],
+    [
+      "get_all_subs",
+      2
+    ],
+    [
+      "find_start_end_indices",
+      2
+    ],
+    [
+      "is_empty_string",
+      2
+    ],
+    [
+      "get_values_at_indices",
+      2
+    ],
+    [
+      "rand_int_between",
+      1
+    ],
+    [
+      "parse_range_description",
+      1
+    ],
+    [
+      "translate_dictionary",
+      1
+    ],
+    [
+      "calculate_mean_of_array",
+      1
+    ],
+    [
+      "type_and_value",
+      1
+    ],
+    [
+      "rename_column",
+      1
+    ],
+    [
+      "logistic",
+      1
+    ],
+    [
+      "get_all_users",
+      1
+    ],
+    [
+      "get_priority_tasks",
+      1
+    ],
+    [
+      "convert_voltage_to_dbm",
+      1
+    ],
+    [
+      "is_overlapping_strings",
+      1
+    ],
+    [
+      "sum_of_elements",
+      1
+    ],
+    [
+      "function_1",
+      1
+    ]
+  ],
+  "schema_conflict_count": 4,
+  "schema_conflicts_report": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\reports\\tool_schema_conflicts.json",
+  "created_at": "2026-06-11T17:36:10.145825+00:00",
+  "elapsed_seconds": 1227.422969341278,
+  "out_json": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\raw_toolr0\\epoch_5_topup_candidates.json"
+}

@@ -1,0 +1,15 @@
+{
+  "total": 1030,
+  "stage_minimums": {
+    "stage1_linear_simple": 250,
+    "stage2_reference_reuse": 200,
+    "stage3_structural_motifs": 80,
+    "stage4_nestful_like_mixed": 120
+  },
+  "stage_mins_config": {
+    "stage1_linear_simple": 250,
+    "stage2_reference_reuse": 200,
+    "stage3_structural_motifs": 80,
+    "stage4_nestful_like_mixed": 120
+  }
+}

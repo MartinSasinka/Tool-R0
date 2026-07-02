@@ -1,0 +1,182 @@
+{
+  "stage": "step3_select_curriculum",
+  "epoch": 5,
+  "verified_input": 406,
+  "selected_count": 400,
+  "n_final": 400,
+  "shortfall": 0,
+  "selection_skips": {},
+  "output_length_distribution": {
+    "5": 400
+  },
+  "dependency_depth_distribution": {
+    "5": 400
+  },
+  "top_call_patterns": [
+    [
+      "multiply->multiply->multiply->multiply->multiply",
+      2
+    ],
+    [
+      "compose_file_path->compose_file_path->compose_file_path->compose_file_path->compose_file_path",
+      2
+    ],
+    [
+      "divide_by_zero->divide_by_zero->divide_by_zero->divide_by_zero->divide_by_zero",
+      2
+    ],
+    [
+      "def_func->def_func->def_func->def_func->def_func",
+      2
+    ],
+    [
+      "new_foo->new_foo->new_foo->new_foo->new_foo",
+      2
+    ],
+    [
+      "multiply_integers->multiply_integers->multiply_integers->multiply_integers->multiply_integers",
+      2
+    ],
+    [
+      "euclid_gcd->euclid_gcd->euclid_gcd->euclid_gcd->euclid_gcd",
+      2
+    ],
+    [
+      "rhombus_area->rhombus_area->rhombus_area->rhombus_area->rhombus_area",
+      2
+    ],
+    [
+      "flatten_array->count_bins->count_bins->count_bins->count_bins",
+      1
+    ],
+    [
+      "sum_with_type_check->matrix_multiply_scalar->matrix_multiply_scalar->matrix_multiply_scalar->matrix_multiply_scalar",
+      1
+    ],
+    [
+      "gaussian_density->gaussian_density->gaussian_density->gaussian_density->generate_sql_statement",
+      1
+    ],
+    [
+      "split_int_to_digits->recursive_binary_search->recursive_binary_search->recursive_binary_search->recursive_binary_search",
+      1
+    ],
+    [
+      "convert_binary_to_integer->randint_range->lookup_symmetric_table->randint_range->detect_overlapping_time_slot",
+      1
+    ],
+    [
+      "sqrt_rounded_up->bitwise_left_rotation->sqrt_rounded_up->sum_with_type_check->bitwise_left_rotation",
+      1
+    ],
+    [
+      "countSegments->create_list_if_valid->find_target_string_in_list->extend_range->find_target_string_in_list",
+      1
+    ],
+    [
+      "matrix_multiply_scalar->polygon_orientation->matrix_multiply_scalar->matrix_multiply_scalar->polygon_orientation",
+      1
+    ],
+    [
+      "find_difference->find_constant_sum_subarrays->point_on_line->find_constant_sum_subarrays->point_on_line",
+      1
+    ],
+    [
+      "remove_text_between_brackets->replace_string_with_spaces->add_hyphen->str_list_join->str_list_join",
+      1
+    ],
+    [
+      "validate_and_sum->unit_step->select_and_sort->select_and_sort->translate_to_dict",
+      1
+    ],
+    [
+      "arithmetic_list->last_element->find_prime_composites->append_and_return->last_element",
+      1
+    ]
+  ],
+  "unique_tool_names": 787,
+  "top_tool_names": [
+    [
+      "f_of_x",
+      17
+    ],
+    [
+      "add_or_divide",
+      16
+    ],
+    [
+      "add_and_shift",
+      12
+    ],
+    [
+      "def_func",
+      12
+    ],
+    [
+      "multiply_integers",
+      12
+    ],
+    [
+      "rhombus_area",
+      11
+    ],
+    [
+      "divide_by_zero",
+      11
+    ],
+    [
+      "euclid_gcd",
+      11
+    ],
+    [
+      "matrix_multiply_scalar",
+      10
+    ],
+    [
+      "multiply",
+      10
+    ],
+    [
+      "compose_file_path",
+      10
+    ],
+    [
+      "new_foo",
+      10
+    ],
+    [
+      "calculate_capacitor_energy",
+      10
+    ],
+    [
+      "power",
+      9
+    ],
+    [
+      "fib",
+      9
+    ],
+    [
+      "divide_zero_safe",
+      9
+    ],
+    [
+      "element_counts",
+      9
+    ],
+    [
+      "polynomial_expression",
+      9
+    ],
+    [
+      "add_with_rounding",
+      9
+    ],
+    [
+      "calculate_profit",
+      9
+    ]
+  ],
+  "created_at": "2026-06-11T17:37:03.771704+00:00",
+  "out_jsonl": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\curricullum\\data\\filtered_toolr0_synthetic\\epoch_5_5call.jsonl"
+}
