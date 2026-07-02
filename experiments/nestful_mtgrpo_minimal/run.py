@@ -1075,6 +1075,9 @@ def mode_val_eval(config: dict, checkpoint: str | None) -> int:
         json.dump(metrics, fh, indent=2, ensure_ascii=False)
     print(f"[val_eval] react_win_rate={win} -> {ep_name}", flush=True)
 
+    from nestful_official_score import _reset_sigalrm
+    _reset_sigalrm()
+
     # Hard-fail guard: a null validation Win means the official scorer could not
     # produce a number, so checkpoint selection / early stopping would silently
     # run on an invalid signal (this is exactly what broke the previous run: 6/8

@@ -85,6 +85,27 @@ def _patch_signal_alarm_for_win_rate() -> None:
     _SIGNAL_PATCHED = True
 
 
+def _reset_sigalrm() -> None:
+    """Cancel any pending IBM scorer alarm and restore the default handler.
+
+    ``scorer.calculate_ans`` installs a global SIGALRM handler; if the timer is
+    not cleared on the success path it can fire during unrelated shutdown (e.g.
+    vLLM worker join) and abort the curriculum orchestrator.
+    """
+    import signal
+
+    if not hasattr(signal, "SIGALRM"):
+        return
+    try:
+        signal.alarm(0)
+    except (AttributeError, OSError, ValueError):
+        pass
+    try:
+        signal.signal(signal.SIGALRM, signal.SIG_DFL)
+    except (AttributeError, OSError, ValueError):
+        pass
+
+
 def _ensure_scorer_on_path() -> None:
     if _NESTFUL_SRC not in sys.path:
         sys.path.insert(0, _NESTFUL_SRC)
@@ -250,6 +271,7 @@ def score_items(
         # Never emit a null Win: an empty/failed win list scores 0.0 so downstream
         # checkpoint selection has a concrete (conservative) number.
         out["win_rate"] = (sum(wins) / len(wins)) if wins else 0.0
+    _reset_sigalrm()
     return out
 
 
@@ -347,6 +369,7 @@ def score_items_per_sample(
                     rec["execution_error"] = f"{type(exc).__name__}: {exc}"
 
             results.append(rec)
+    _reset_sigalrm()
     return results
 
 

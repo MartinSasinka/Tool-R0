@@ -103,7 +103,6 @@ def calculate_ans(func_calls, spec_lib, executable_func_dir):
     
     except TimeoutError: 
         print("The program timed out!") 
-        signal.alarm(0)
         return False
     
     except Exception as e:
@@ -112,6 +111,8 @@ def calculate_ans(func_calls, spec_lib, executable_func_dir):
         print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
         return False
+    finally:
+        signal.alarm(0)
     
 def calculate_win_score(pred_func_calls, gold_ans, tools, executable_func_dir):
     if not pred_func_calls:

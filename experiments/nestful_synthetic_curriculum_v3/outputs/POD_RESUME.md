@@ -36,8 +36,12 @@ else `adapter_epoch_2`, else highest `adapter_epoch_*` with `adapter_config.json
 
 ## 2. Resume stage 2 only
 
+**Always use `run_curriculum_v3.sh`** (not `run_curriculum.sh` directly) — it creates
+`OUTPUT_ROOT/data_base/*.jsonl` symlinks to the synthetic curriculum.
+
 ```bash
 cd /workspace/Tool-R0/Tool-R0
+git pull   # SIGALRM fix + symlink repair + cached baseline
 
 RUN=experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150
 CKPT="$RUN/stage_1/checkpoints/adapter_epoch_2"   # adjust after ls above
@@ -51,6 +55,7 @@ ALLOW_PROTOTYPE_TRAINING=1 USE_VLLM=1 \
   ROLLOUT_DP_GPUS="1,2,3" DP_LEARNER_GPU=0 \
   OUTPUT_ROOT="$RUN" \
   CHECKPOINT_IN="$CKPT" \
+  INIT_FROM=checkpoint \
   STAGES="2" \
   bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh
 ```

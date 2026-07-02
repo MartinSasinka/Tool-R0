@@ -127,6 +127,35 @@ if [ "$ONLY_FINAL_EVAL" = "1" ]; then
 fi
 DATA_BASE="${DATA_BASE:-$ROOT/data/filtered_toolr0_synthetic}"
 
+# Normalize run paths to absolute (resume / symlink safety).
+if [ -d "$OUTPUT_ROOT" ]; then
+    OUTPUT_ROOT="$(cd "$OUTPUT_ROOT" && pwd)"
+elif [ -n "$OUTPUT_ROOT" ]; then
+    OUTPUT_ROOT="$(cd "$(dirname "$OUTPUT_ROOT")" 2>/dev/null && pwd)/$(basename "$OUTPUT_ROOT")"
+fi
+if [ -d "$DATA_BASE" ]; then
+    DATA_BASE="$(cd "$DATA_BASE" && pwd)"
+fi
+
+# Auto-repair v3 mixed-replay symlinks when resuming via run_curriculum.sh directly.
+_v3_curr="$ROOT/../nestful_synthetic_curriculum_v3/outputs/curriculum_v3"
+if [ -d "$_v3_curr" ] && [ -n "$DATA_BASE" ]; then
+    _need_repair=0
+    for _n in 1 2 3 4; do
+        _f="$DATA_BASE/epoch_${_n}_${_n}call.jsonl"
+        if [ ! -f "$_f" ]; then _need_repair=1; break; fi
+    done
+    if [ "$_need_repair" = "1" ]; then
+        echo "[data] repairing DATA_BASE symlinks from $_v3_curr ..."
+        mkdir -p "$DATA_BASE"
+        ln -sf "$_v3_curr/stage1_linear_simple.jsonl" "$DATA_BASE/epoch_1_1call.jsonl"
+        ln -sf "$_v3_curr/stage2_reference_reuse.jsonl" "$DATA_BASE/epoch_2_2call.jsonl"
+        ln -sf "$_v3_curr/stage3_structural_motifs.jsonl" "$DATA_BASE/epoch_3_3call.jsonl"
+        ln -sf "$_v3_curr/stage4_nestful_like_mixed.jsonl" "$DATA_BASE/epoch_4_4call.jsonl"
+        DATA_BASE="$(cd "$DATA_BASE" && pwd)"
+    fi
+fi
+
 # ── Stabilized-curriculum knobs (safe defaults; only active when enabled) ──────
 #   INIT_FROM                 baseline | checkpoint  (checkpoint requires CHECKPOINT_IN)
 #   CURRICULUM_MIXED_REPLAY   1 = stage N trains on a weighted mix of stages 1..N
@@ -564,27 +593,40 @@ if [ "$REGRESSION_GUARD" = "1" ] && [ -z "$REGRESSION_BASELINE_WIN" ] \
             _GUARD_VAL="$ROOT/data/splits/synthetic_val.jsonl"
         fi
     fi
-    echo "[regression-guard] measuring baseline (no-adapter) dev ReAct Win on $_GUARD_VAL ..."
-    _build_vllm_overrides eval
     _GUARD_OUT="$OUTPUT_ROOT/baseline_dev_eval"
-    mkdir -p "$_GUARD_OUT"
-    set +e
-    _run_logged "$_GUARD_OUT/val_eval.log" \
-        "$PYTHON" "$RUN_PY" \
-        --mode val_eval \
-        --config "$CONFIG" \
-        --override "experiment.output_dir=$_GUARD_OUT" \
-        --override "validation.subset_size=$VAL_SUBSET_SIZE" \
-        --override "validation.require_win_rate=false" \
-        --override "validation.stage=0" \
-        --override "validation.epoch=0" \
-        --override "paths.full_nestful_jsonl=$_GUARD_VAL" \
-        --override "model.lora_adapter=null" \
-        "${VLLM_OVERRIDES[@]}"
-    set -e
     _GUARD_METRICS="$_GUARD_OUT/metrics_epoch_0.json"
     if [ -f "$_GUARD_METRICS" ]; then
         REGRESSION_BASELINE_WIN=$(_json_get "$_GUARD_METRICS" "react_win_rate" "")
+        if [ -n "$REGRESSION_BASELINE_WIN" ]; then
+            echo "[regression-guard] reusing cached baseline dev ReAct Win = $REGRESSION_BASELINE_WIN"
+            echo "  (from $_GUARD_METRICS — delete dir to re-measure)"
+        fi
+    fi
+    if [ -z "$REGRESSION_BASELINE_WIN" ]; then
+        echo "[regression-guard] measuring baseline (no-adapter) dev ReAct Win on $_GUARD_VAL ..."
+        _build_vllm_overrides eval
+        mkdir -p "$_GUARD_OUT"
+        set +e
+        _run_logged "$_GUARD_OUT/val_eval.log" \
+            "$PYTHON" "$RUN_PY" \
+            --mode val_eval \
+            --config "$CONFIG" \
+            --override "experiment.output_dir=$_GUARD_OUT" \
+            --override "validation.subset_size=$VAL_SUBSET_SIZE" \
+            --override "validation.require_win_rate=false" \
+            --override "validation.stage=0" \
+            --override "validation.epoch=0" \
+            --override "paths.full_nestful_jsonl=$_GUARD_VAL" \
+            --override "model.lora_adapter=null" \
+            "${VLLM_OVERRIDES[@]}"
+        _GUARD_RC=$?
+        set -e
+        if [ -f "$_GUARD_METRICS" ]; then
+            REGRESSION_BASELINE_WIN=$(_json_get "$_GUARD_METRICS" "react_win_rate" "")
+        fi
+        if [ "$_GUARD_RC" -ne 0 ] && [ -n "$REGRESSION_BASELINE_WIN" ]; then
+            echo "[regression-guard] WARNING: baseline val_eval exit=$_GUARD_RC but metrics present — continuing"
+        fi
     fi
     if [ -n "$REGRESSION_BASELINE_WIN" ]; then
         echo "[regression-guard] baseline dev ReAct Win = $REGRESSION_BASELINE_WIN "\
@@ -626,6 +668,8 @@ for N in $STAGES; do
     # Sanity check train data
     if [ "$DRY_RUN" != "1" ] && [ ! -f "$TRAIN_JSONL" ]; then
         echo "[stage $N] ERROR: train data not found: $TRAIN_JSONL" >&2
+        echo "  For v3 resume run: bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh" >&2
+        echo "  (creates DATA_BASE symlinks under OUTPUT_ROOT/data_base)" >&2
         exit 1
     fi
 

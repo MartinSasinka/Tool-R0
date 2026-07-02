@@ -61,6 +61,13 @@ else
   TS="$(date +%Y%m%d_%H%M%S)"
   export OUTPUT_ROOT="$V3/outputs/runs/$TS"
 fi
+# Always use absolute paths so symlinks and DATA_BASE survive cwd changes.
+if [ -d "$OUTPUT_ROOT" ]; then
+  OUTPUT_ROOT="$(cd "$OUTPUT_ROOT" && pwd)"
+else
+  OUTPUT_ROOT="$(cd "$(dirname "$OUTPUT_ROOT")" 2>/dev/null && pwd)/$(basename "$OUTPUT_ROOT")"
+fi
+export OUTPUT_ROOT
 export RUN_PY="$V3/run.py"
 export CONFIG="${CONFIG:-$PARTIAL/config.yaml}"
 export VAL_JSONL="$DEV"
@@ -74,6 +81,11 @@ export REGRESSION_EARLY_ABORT="${REGRESSION_EARLY_ABORT:-1}"
 export NUM_GENERATIONS="${NUM_GENERATIONS:-4}"
 export EXTRA_TRAIN_OVERRIDES_STR="${EXTRA_TRAIN_OVERRIDES_STR:---override reward.train_policy=execution_aware_v2_1_motif --override training.kl_beta=0.15 --override training.max_epochs_per_stage=2}"
 
+# Resume: CHECKPOINT_IN requires INIT_FROM=checkpoint (baseline ignores the adapter).
+if [ -n "${CHECKPOINT_IN:-}" ]; then
+  export INIT_FROM="${INIT_FROM:-checkpoint}"
+fi
+
 if echo "$STAGES" | grep -qE '(^| )3( |$)|(^| )4( |$)'; then
   echo "[curriculum_v3] ERROR: stage 3/4 require explicit advance_gates on pod (dev Win vs baseline)" >&2
   exit 1
@@ -82,10 +94,29 @@ fi
 # TODO: per-stage TRAIN_JSONL from curriculum_manifest (not epoch_N_Ncall.jsonl).
 export DATA_BASE="$OUTPUT_ROOT/data_base"
 mkdir -p "$DATA_BASE"
-ln -sf "$CURR/stage1_linear_simple.jsonl" "$DATA_BASE/epoch_1_1call.jsonl"
-ln -sf "$CURR/stage2_reference_reuse.jsonl" "$DATA_BASE/epoch_2_2call.jsonl"
-ln -sf "$CURR/stage3_structural_motifs.jsonl" "$DATA_BASE/epoch_3_3call.jsonl"
-ln -sf "$CURR/stage4_nestful_like_mixed.jsonl" "$DATA_BASE/epoch_4_4call.jsonl"
+DATA_BASE="$(cd "$DATA_BASE" && pwd)"
+export DATA_BASE
+
+_link_stage_file() {
+  local stage_file="$1" link_name="$2"
+  local target="$CURR/$stage_file"
+  local link="$DATA_BASE/$link_name"
+  if [ ! -f "$target" ]; then
+    echo "[curriculum_v3] ERROR: missing curriculum file: $target" >&2
+    exit 1
+  fi
+  ln -sf "$target" "$link"
+  if [ ! -f "$link" ]; then
+    echo "[curriculum_v3] ERROR: failed to link $link -> $target" >&2
+    exit 1
+  fi
+}
+
+_link_stage_file "stage1_linear_simple.jsonl" "epoch_1_1call.jsonl"
+_link_stage_file "stage2_reference_reuse.jsonl" "epoch_2_2call.jsonl"
+_link_stage_file "stage3_structural_motifs.jsonl" "epoch_3_3call.jsonl"
+_link_stage_file "stage4_nestful_like_mixed.jsonl" "epoch_4_4call.jsonl"
+echo "[curriculum_v3] DATA_BASE=$DATA_BASE (symlinks verified)"
 
 echo "[curriculum_v3] CONFIG=$CONFIG"
 echo "[curriculum_v3] RUN_PY=$RUN_PY"
@@ -97,6 +128,14 @@ echo "[curriculum_v3] reward override: execution_aware_v2_1_motif via v3/run.py"
 if [ "${DRY_RUN:-0}" = "1" ]; then
   echo "[curriculum_v3] DRY_RUN=1 — skipping training invocation"
   exit 0
+fi
+
+if [ -n "${CHECKPOINT_IN:-}" ] && [ "${DRY_RUN:-0}" != "1" ]; then
+  if [ ! -f "$CHECKPOINT_IN/adapter_config.json" ]; then
+    echo "[curriculum_v3] ERROR: CHECKPOINT_IN is not a valid adapter: $CHECKPOINT_IN" >&2
+    exit 1
+  fi
+  echo "[curriculum_v3] CHECKPOINT_IN=$CHECKPOINT_IN INIT_FROM=$INIT_FROM"
 fi
 
 USE_VLLM="${USE_VLLM:-1}" \
