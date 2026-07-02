@@ -1,0 +1,15 @@
+{
+  "run": "baseline_react",
+  "model": "baseline (no LoRA)",
+  "paradigm": "react",
+  "source_input": "outputs\\final_eval_baseline_react\\final_eval_trajectories.jsonl",
+  "f1_func": 0.894,
+  "f1_param": 0.36,
+  "partial_sequence_accuracy": 0.13,
+  "full_sequence_accuracy": 0.0,
+  "num_examples": 1861,
+  "num_pred_parsing_errors": 0,
+  "num_missing_in_dataset": 0,
+  "win_rate": 0.544,
+  "win_source": "recomputed"
+}

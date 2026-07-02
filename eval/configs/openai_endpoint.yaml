@@ -1,0 +1,23 @@
+# Config for OpenAI-compatible API endpoint.
+# Works with vLLM serve, TGI, or any OpenAI-compatible server.
+
+profile_name: api_model
+
+model:
+  backend: openai
+  # model_name is sent in the API request
+  model_name: Qwen/Qwen2.5-1.5B-Instruct
+  # Set OPENAI_API_BASE and OPENAI_API_KEY via environment variables or .env
+  # api_base: http://localhost:8000/v1
+  # api_key: from-env
+  temperature: 0.0
+  max_new_tokens: 512
+
+batch_size: 1  # API calls are sequential
+
+# BFCL categories
+bfcl_categories:
+  - simple
+  - multiple
+  - parallel
+  - irrelevance

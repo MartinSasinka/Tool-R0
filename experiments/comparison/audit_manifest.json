@@ -1,0 +1,113 @@
+{
+  "audit_datetime": "2026-06-29T19:46:29",
+  "git_commit": "fd222c7ee35821fb769719dba4cc49329456bb0c",
+  "git_commit_note": "upstream 'initial code added'; experiments/ tree is untracked working state (not in this commit)",
+  "model": {
+    "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "finetuning": "qlora r=16 alpha=32 dropout=0.05"
+  },
+  "datasets": {
+    "nestful_eval": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\NESTFUL-main\\data_v2\\nestful_data.jsonl",
+      "md5": "b08c47ac2edc40f759fda13899eecccb",
+      "bytes": 8373968
+    },
+    "train_stage1": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_1_1call.jsonl",
+      "md5": "c08e87cfb8da18fec7c2f4f3e01fdad0",
+      "bytes": 882353
+    },
+    "train_stage2": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_2_2call.jsonl",
+      "md5": "26e846ab1274540e702ec08f9af095aa",
+      "bytes": 930535
+    },
+    "train_stage3": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_3_3call.jsonl",
+      "md5": "0fa076dc6ffb308fbc94fcde8f1e6502",
+      "bytes": 1000873
+    },
+    "train_stage4": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_4_4call.jsonl",
+      "md5": "cea1ddb938d4ed6334de823946eb3ad4",
+      "bytes": 1064737
+    },
+    "train_stage5": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_5_5call.jsonl",
+      "md5": "467342b2ff57b7bf8435fe9b3a5dcde7",
+      "bytes": 1129583
+    },
+    "train_stage6": {
+      "path": "experiments\\nestful_mtgrpo_minimal\\data\\filtered_toolr0_synthetic\\epoch_6_6call.jsonl",
+      "md5": "b516e0c288103be7d3a3e15fc7c014bc",
+      "bytes": 802820
+    }
+  },
+  "code_versions_md5": {
+    "scorer": "d07f539b12cbaa1b2704d08779884fa7",
+    "reward_strict": "c8f14682d477378924e74ae5a9afa29f",
+    "reward_partial": "2183c6faf4fdfccdc6761522e344343c",
+    "reward_execution": "96e9b85fed0f4bab2207d8f31a649da6",
+    "parser": "8a782c6c784e2c3253878fc3cced0ad5",
+    "executor": "271b47e6da11824dba02eb7c317cb8a3",
+    "rollout": "454d0380ebeed145c2ac8a94e259cd1c",
+    "prompt": "5eeb3eb7bc967dad86684b6ca6787843",
+    "grpo_train": "3f39fb61cfeca6e21a442aecde3f9681"
+  },
+  "generation": {
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "num_generations": 4,
+    "max_turns_train": "gold_n",
+    "max_turns_eval": "gold_n + 1 (cap gold_n+4)",
+    "max_new_tokens_train": 2048,
+    "max_new_tokens_eval": 2560,
+    "seed": 42
+  },
+  "training": {
+    "learning_rate": 1e-06,
+    "kl_beta": 0.02,
+    "grad_accum": 4,
+    "per_device_bs": 1,
+    "max_grad_norm": 1.0,
+    "epochs_per_stage_max": 4,
+    "mt_grpo_mode": "turn_level_minimal",
+    "gamma": 1.0,
+    "lambda_episode": 1.0,
+    "normalize_advantage": true,
+    "mask_clipped_from_update": true
+  },
+  "curriculum": {
+    "train_stages": "1 2 3 4 (synthetic, N-call each, 400 tasks/stage)",
+    "advance_threshold_strict_pass": 0.5,
+    "plateau_patience": 2,
+    "carry_forward_selection": "best strict_gold_trace_pass per stage (NOT Win)"
+  },
+  "reward_train_policy": {
+    "minimal": "strict_gold_trace",
+    "partial": "partial_gold_trace",
+    "execution_aware": "available, not yet used in a full run"
+  },
+  "eval": {
+    "dataset": "NESTFUL nestful_data.jsonl n=1861",
+    "paradigms": [
+      "react",
+      "direct"
+    ],
+    "scorer": "official NESTFUL src/scorer.py (Win via IBM executable_functions)",
+    "eval_prompt": "SYSTEM_PROMPT + _EVAL_HARDENING",
+    "eval_parser": "lenient",
+    "train_prompt": "SYSTEM_PROMPT only",
+    "train_parser": "strict"
+  },
+  "checkpoints_final_eval": [
+    "partial_s1_e4",
+    "partial_s2_e2",
+    "partial_s3_e2",
+    "partial_s4_e1",
+    "minimal_s1_e4",
+    "minimal_s2_e4",
+    "minimal_s4e2",
+    "baseline"
+  ]
+}

@@ -1,0 +1,4 @@
+run,n_turns,strict_parse_rate,lenient_parse_rate,parse_recovery_rate,terminal_rate
+partial_s1_e4_react,5686,0.974,0.9768,0.0028,0.2705
+partial_s4_e1_react,5156,0.641,0.8759,0.2349,0.2062
+baseline_react,5623,0.9691,0.9724,0.0034,0.2694

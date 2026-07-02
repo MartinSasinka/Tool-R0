@@ -1,0 +1,15 @@
+{
+  "run": "stage4e2_react",
+  "model": "curriculum s4e2",
+  "paradigm": "react",
+  "source_input": "outputs\\final_eval_stage4_epoch2_react\\final_eval_trajectories.jsonl",
+  "f1_func": 0.153,
+  "f1_param": 0.131,
+  "partial_sequence_accuracy": 0.05,
+  "full_sequence_accuracy": 0.001,
+  "num_examples": 1861,
+  "num_pred_parsing_errors": 0,
+  "num_missing_in_dataset": 0,
+  "win_rate": 0.325,
+  "win_source": "recomputed"
+}

@@ -1,0 +1,64 @@
+model:
+  name: Qwen/Qwen3-4B-Instruct-2507
+  dtype: bfloat16
+  load_in_4bit: false
+  attn_implementation: flash_attention_2
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+grpo:
+  num_generations: 4
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 5.0e-6
+  beta: 0.02
+  temperature: 0.7
+  top_p: 0.95
+  max_prompt_length: 4096
+  logging_steps: 1
+  save_steps: 0
+  loss_type: grpo
+  log_completions: true
+
+training:
+  num_train_epochs: 1.0
+  max_steps: null
+  gradient_checkpointing: true
+
+# Tool-R0 + IBM execution reward weights
+reward_weights:
+  format: 0.20
+  call_match: 0.30
+  exec_match: 0.50
+
+stages:
+  stage_1:
+    name: stage1_1call_toolr0
+    data_path: curricullum/data/filtered_toolr0_synthetic/epoch_1_1call.jsonl
+    max_completion_length: 1536
+    num_calls: 1
+
+  stage_2:
+    name: stage2_2call_toolr0
+    data_path: curricullum/data/filtered_toolr0_synthetic/epoch_2_2call.jsonl
+    max_completion_length: 2048
+    num_calls: 2
+
+  stage_3:
+    name: stage3_3call_toolr0
+    data_path: curricullum/data/filtered_toolr0_synthetic/epoch_3_3call.jsonl
+    max_completion_length: 3072
+    num_calls: 3
+
+checkpoints_root: curricullum/checkpoints/qwen3_4b_lora_grpo_toolr0

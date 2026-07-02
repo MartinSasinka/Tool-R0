@@ -1,0 +1,17 @@
+profile,parser,num_tasks,num_rollouts_per_task,final_answer_accuracy,f1_func,f1_param,partial_sequence_accuracy,full_sequence_accuracy,win_rate,avg_pred_calls
+results1/curriculum_baseline,stored,1861,8,0.6832,0.914,0.427,0.143,0.0,0.59,2.091
+results1/curriculum_baseline,reparse,1861,8,0.6832,0.879,0.417,0.135,0.0,0.542,1.824
+results1/curriculum_stage1_1call,stored,1861,8,0.6801,0.924,0.428,0.145,0.0,0.599,2.085
+results1/curriculum_stage1_1call,reparse,1861,8,0.6801,0.889,0.415,0.133,0.0,0.545,1.786
+results1/curriculum_stage2_2call,stored,1861,8,0.6844,0.916,0.419,0.144,0.0,0.598,2.138
+results1/curriculum_stage2_2call,reparse,1861,8,0.6844,0.876,0.408,0.133,0.0,0.558,1.824
+results1/curriculum_stage3_3call,stored,1861,8,0.6791,0.918,0.434,0.146,0.0,0.599,2.163
+results1/curriculum_stage3_3call,reparse,1861,8,0.6791,0.89,0.421,0.137,0.0,0.553,1.859
+results_v2_20260617/curriculum_stage_3_epoch1,stored,1861,4,0.7074,0.941,0.447,0.158,0.0,0.669,2.502
+results_v2_20260617/curriculum_stage_3_epoch1,reparse,1861,4,0.7074,0.935,0.449,0.161,0.001,0.638,2.333
+results_v2_20260617/curriculum_stage_5_epoch2,stored,1861,4,0.7014,0.951,0.453,0.163,0.0,0.67,2.539
+results_v2_20260617/curriculum_stage_5_epoch2,reparse,1861,4,0.7014,0.943,0.453,0.166,0.0,0.64,2.386
+results_toolr0/curriculum_baseline,stored,1861,8,0.6742,0.898,0.421,0.14,0.0,0.585,2.041
+results_toolr0/curriculum_baseline,reparse,1861,8,0.6742,0.859,0.409,0.129,0.0,0.542,1.739
+results_toolr0/curriculum_stage3_3call,stored,1861,8,0.7077,0.947,0.447,0.157,0.0,0.656,2.369
+results_toolr0/curriculum_stage3_3call,reparse,1861,8,0.7077,0.917,0.434,0.149,0.001,0.593,2.091

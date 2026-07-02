@@ -1,0 +1,16 @@
+evaluation:
+  dev_split: experiments/nestful_mtgrpo_minimal/data/splits/nestful_dev.jsonl
+  test_split: experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl
+  headline_metric: react_win_rate
+  diagnostics:
+    - full_acc
+    - partial_acc
+    - f1_func
+    - f1_param
+    - strict_trace_pass
+    - avg_num_calls
+    - zero_tool_calls
+    - clipped_completion_rate
+    - parse_error_rate
+    - motif_level_win
+    - win_loss_overlap_vs_baseline

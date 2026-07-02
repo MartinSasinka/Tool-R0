@@ -1,3 +1,5 @@
+# Avoid with Qwen3.5 + TRL/GRPO until transformers fixes weight remap under ZeRO-3 (issue #45313).
+# Prefer deepseed_zero2.yaml for Qwen/Qwen3.5-* checkpoints.
 compute_environment: LOCAL_MACHINE
 debug: false
 deepspeed_config:
@@ -13,7 +15,7 @@ machine_rank: 0
 main_training_function: main
 mixed_precision: bf16
 num_machines: 1
-num_processes: 3 # num gpus
+num_processes: 2 # num gpus (overridden by --num_processes in shell scripts)
 rdzv_backend: static
 same_network: true
 tpu_env: []

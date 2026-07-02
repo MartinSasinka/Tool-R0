@@ -1,0 +1,15 @@
+{
+  "run": "stage4e2_direct",
+  "model": "curriculum s4e2",
+  "paradigm": "direct",
+  "source_input": "outputs\\stage4_epoch2_direct\\direct_predictions.jsonl",
+  "f1_func": 0.917,
+  "f1_param": 0.616,
+  "partial_sequence_accuracy": 0.272,
+  "full_sequence_accuracy": 0.152,
+  "num_examples": 1861,
+  "num_pred_parsing_errors": 0,
+  "num_missing_in_dataset": 0,
+  "win_rate": 0.243,
+  "win_source": "recomputed"
+}

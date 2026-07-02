@@ -1,0 +1,15 @@
+{
+  "run": "baseline_direct",
+  "model": "baseline (no LoRA)",
+  "paradigm": "direct",
+  "source_input": "outputs\\baseline_direct\\direct_predictions.jsonl",
+  "f1_func": 0.921,
+  "f1_param": 0.65,
+  "partial_sequence_accuracy": 0.294,
+  "full_sequence_accuracy": 0.169,
+  "num_examples": 1861,
+  "num_pred_parsing_errors": 0,
+  "num_missing_in_dataset": 0,
+  "win_rate": 0.292,
+  "win_source": "recomputed"
+}

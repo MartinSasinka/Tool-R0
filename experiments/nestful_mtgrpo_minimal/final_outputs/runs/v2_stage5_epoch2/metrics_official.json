@@ -1,0 +1,15 @@
+{
+  "run": "v2_stage5_epoch2",
+  "model": "curriculum s5e2",
+  "paradigm": "react(4-rollout)",
+  "source_input": "..\\..\\curricullum\\evaluation\\results_v2_20260617\\curriculum_stage_5_epoch2_multiturn_predictions.jsonl",
+  "f1_func": 0.951,
+  "f1_param": 0.453,
+  "partial_sequence_accuracy": 0.163,
+  "full_sequence_accuracy": 0.0,
+  "num_examples": 1861,
+  "num_pred_parsing_errors": 0,
+  "num_missing_in_dataset": 0,
+  "win_rate": null,
+  "win_source": "needs_linux"
+}

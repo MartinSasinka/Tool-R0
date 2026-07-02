@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -205,3 +205,89 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- ML / RunPod / experiment artifacts (keep repo clone small) ---
+# Checkpoints & adapters — train on pod or fetch from HF/S3; do NOT commit
+**/checkpoints/
+**/checkpoints */
+**/checkpoints*/
+**/best_react_win_adapter/
+**/best_*_adapter/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.ckpt
+*.adapter
+
+# Training / eval run outputs (reports in git are OK if committed explicitly)
+**/outputs/runs/
+**/outputs/final_eval*/
+**/outputs/**/stage_*/
+wandb/
+mlruns/
+tensorboard/
+lightning_logs/
+
+# Large archives & pod bundles
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+tool-r0-pod.tar.gz
+experiments/*.tar
+
+# Hugging Face / model caches (download on pod)
+.cache/
+**/.cache/huggingface/
+models/
+**/models--*/
+
+# Local datasets (regenerate or mount on pod)
+data/
+!data/.gitkeep
+
+# Env secrets
+.env.local
+.env.*.local
+
+# --- Project-specific local artifact dirs (main source of ~2k untracked files) ---
+# Curriculum pipeline: keep *.py / *.sh / README; ignore weights & eval dumps
+curricullum/checkpoints/
+curricullum/checkpoints*/
+curricullum/training/
+curricullum/evaluation/results*/
+curricullum/evaluation/wandb_analysis/
+curricullum/evaluation/**/results_*/
+
+# Generated media / tables / notebooks outputs
+media/
+
+# Eval & visualization artifacts
+eval/results/
+vizualisation/runs/
+nestful_evaluation/analysis_outputs/
+nestful_results/
+helper_calculations/output/
+scripts/.verify_artifacts/
+
+# Root-level run outputs (keep eval/*.py scripts trackable)
+outputs/
+
+# Partial/minimal experiment heavy outputs (minimal already has outputs/ locally)
+experiments/nestful_mtgrpo_partial/outputs/
+
+# Binary / scratch
+*.npy
+*.npz
+_smoke_missing_nestful_repo/
+qwen2.5-1.5b-instruct-tool-r0/
+
+# Optional: ignore all experiment outputs except small CPU reports you want tracked.
+# Uncomment if you prefer never committing generated jsonl under outputs/:
+# experiments/**/outputs/**/*.jsonl
+# !experiments/**/outputs/**/README.md
+# !experiments/**/outputs/**/*.md
+# !experiments/**/outputs/**/*.csv
+# !experiments/**/outputs/**/*.json
+

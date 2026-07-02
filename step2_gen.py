@@ -8,6 +8,7 @@ Outputs intermediate JSON file for probe.py to process.
 Full-weights checkpoints expected (HF-compatible dirs).
 """
 
+import vllm_compat  # noqa: F401  (monkey-patch for vLLM 0.8.4 + transformers 5.x)
 from transformers import AutoTokenizer
 
 
@@ -25,6 +26,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 from vllm import LLM, SamplingParams
+
+from run_logging import append_jsonl, trace_sample_limit, write_json
 
 
 DOMAINS = [
@@ -151,9 +154,11 @@ def sample_spec():
     if context_type == "multi_turn":
         num_calls = 1
     else:
-        num_calls = random.choices([1, 2], weights=[0.8, 0.2], k=1)[0]
+        num_calls = random.choices([1, 2, 3], weights=[0.5, 0.3, 0.2], k=1)[0]
 
+    nested = False
     if num_calls > 1:
+        nested = random.random() < 0.5
         tool_menu_size = random.choices([3, 4, 5], weights=[0.3, 0.4, 0.3], k=1)[0]
     else:
         bucket = random.choices(["SMALL5", "LARGE"], weights=[0.4, 0.6], k=1)[0]
@@ -166,6 +171,7 @@ def sample_spec():
         "num_calls": num_calls,
         "tool_menu_size": tool_menu_size,
         "context_type": context_type,
+        "nested": nested,
     }
 
 _PLACEHOLDER_PATTERNS = [
@@ -457,27 +463,25 @@ def fingerprints(question: str, tools: List[Dict[str, Any]], calls: List[Dict[st
 
 SYSTEM_PROMPT_GENERATOR_TEMPLATE = """You are an expert task generator for tool-calling agents.
 
-FIRST, in your private scratch-pad, reason step-by-step to design a realistic, non-trivial task that cannot be solved without correctly calling one or sometimes multiple tools.
+Think carefully about the task design, then output EXACTLY the three XML blocks shown below (and nothing else outside them).
 
 CONTROL SPEC (MUST FOLLOW EXACTLY):
 - Domain: {domain}
 - Context type: {context_type}  (single_turn or multi_turn)
 - Number of available tools: {tool_menu_size} (<available_tools>)
 - Number of gold tool calls: {num_calls} (<tool_call_answer>)
+- Nested dependencies: {nested}  (true = later calls MUST reference earlier call results)
 
 RULES TO SATISFY THE SPEC:
 1) You MUST output exactly {tool_menu_size} tools in <available_tools>.
 2) You MUST output exactly {num_calls} tool calls (JSON list length) in <tool_call_answer>.
 3) Domain must be {domain}. Do not drift into other domains.
 4) If context_type=multi_turn, embed a short conversation in <question> like: "# Conversation\\nUser: ...\\nAgent: ...\\nUser: ...\\nAgent: ..."
-5) Tool arguments must be flat primitives only (no lists, no nested objects).
+5) Tool arguments must be flat primitives (no lists, no nested objects), EXCEPT when referencing results of earlier calls (see rule 7).
 6) The function values (<value1>, <value2>, ...) MUST be present inside user question (<question>...</question>), otherwise agent cannot solve the task.
+7) If nested=true AND num_calls > 1, at least one later call MUST use $var_N.result$ as an argument value to reference the output of an earlier call (N is the 1-based call index). Example: first call gets data, second call uses $var_1.result$ as input. The <question> should describe a task that naturally chains these calls.
 
-THEN, without revealing your reasoning, output the following four blocks in the exact format, NOTHING ELSE:
-
-<think>
-Your private reasoning here.
-</think>
+OUTPUT FORMAT (three blocks, nothing else):
 
 <question>
 Write a natural user question (no bullet points, no meta-instructions, no placeholders).
@@ -593,6 +597,8 @@ def main():
     ap.add_argument("--temp_gen", type=float, default=0.7)
     ap.add_argument("--seed", type=int, default=13)
 
+    ap.add_argument("--tokenizer", type=str, default=None,
+                    help="Explicit tokenizer path/name (use if checkpoint tokenizer_config is broken)")
     ap.add_argument("--tensor_parallel_size", type=int, default=1)
     ap.add_argument("--gpu_memory_utilization", type=float, default=0.90)
     ap.add_argument("--max_model_len", type=int, default=4096)
@@ -603,19 +609,41 @@ def main():
 
     args = ap.parse_args()
     random.seed(args.seed)
+    preview_limit = trace_sample_limit()
 
     print(f"[cfg] generator_model={args.generator_model}", file=sys.stderr)
     print(f"[cfg] out_intermediate_json={args.out_intermediate_json}", file=sys.stderr)
+    write_json(
+        "generation_config.json",
+        {
+            "stage": "step2_gen",
+            "generator_model": args.generator_model,
+            "out_intermediate_json": args.out_intermediate_json,
+            "n_generate": args.n_generate,
+            "max_tokens_gen": args.max_tokens_gen,
+            "temp_gen": args.temp_gen,
+            "seed": args.seed,
+            "tensor_parallel_size": args.tensor_parallel_size,
+            "gpu_memory_utilization": args.gpu_memory_utilization,
+            "max_model_len": args.max_model_len,
+            "dedup_by": args.dedup_by,
+            "keep_per_fingerprint": args.keep_per_fingerprint,
+        },
+    )
 
+    tokenizer_name = args.tokenizer or args.generator_model
     llm_gen = LLM(
         model=args.generator_model,
+        tokenizer=tokenizer_name,
         tensor_parallel_size=args.tensor_parallel_size,
         gpu_memory_utilization=args.gpu_memory_utilization,
         max_model_len=args.max_model_len,
         enforce_eager=True,
+        trust_remote_code=True,
+        hf_overrides={"language_model_only": True},
     )
 
-    tok = AutoTokenizer.from_pretrained(args.generator_model, trust_remote_code=True)
+    tok = AutoTokenizer.from_pretrained(tokenizer_name, trust_remote_code=True)
 
     batch_size = 256
     candidates: List[Sample] = []
@@ -634,6 +662,8 @@ def main():
     rejection_reasons = {}
     sample_raw_outputs = []
     rejected_raws: List[str] = []
+    accepted_previews = 0
+    rejected_previews = 0
 
     for bi in range(n_batches):
         cur = min(batch_size, total - bi * batch_size)
@@ -658,6 +688,18 @@ def main():
                 reason = "empty_output"
                 rejection_reasons[reason] = rejection_reasons.get(reason, 0) + 1
                 rejected_raws.append(raw)
+                if rejected_previews < preview_limit:
+                    append_jsonl(
+                        "rejected_samples.jsonl",
+                        {
+                            "batch_index": bi,
+                            "reason": reason,
+                            "gen_spec": spec,
+                            "prompt_preview": prompt,
+                            "raw_preview": raw,
+                        },
+                    )
+                    rejected_previews += 1
                 if len(sample_raw_outputs) < 3:
                     sample_raw_outputs.append(f"[EMPTY OUTPUT] prompt_len={len(prompt)}")
                 continue
@@ -667,6 +709,18 @@ def main():
                 rejected += 1
                 rejection_reasons[reason] = rejection_reasons.get(reason, 0) + 1
                 rejected_raws.append(raw)
+                if rejected_previews < preview_limit:
+                    append_jsonl(
+                        "rejected_samples.jsonl",
+                        {
+                            "batch_index": bi,
+                            "reason": reason,
+                            "gen_spec": spec,
+                            "prompt_preview": prompt,
+                            "raw_preview": raw,
+                        },
+                    )
+                    rejected_previews += 1
 
                 if reason in {"placeholder_question", "placeholder_or_prompt_echo"} and len(sample_raw_outputs) < 3:
                     sample_raw_outputs.append(raw[:500])
@@ -679,6 +733,19 @@ def main():
             s.meta["domain"] = spec["domain"]
             s.meta["quality_score"] = simple_quality_score(s)
             candidates.append(s)
+            if accepted_previews < preview_limit:
+                append_jsonl(
+                    "accepted_samples.jsonl",
+                    {
+                        "batch_index": bi,
+                        "question": s.question,
+                        "tools": s.tools,
+                        "calls": s.calls,
+                        "quality_score": s.meta["quality_score"],
+                        "gen_spec": spec,
+                    },
+                )
+                accepted_previews += 1
 
         if (bi + 1) % 10 == 0:
             print(f"[gen] batch {bi+1}/{n_batches} kept={len(candidates)} rejected={rejected}", file=sys.stderr)
@@ -750,6 +817,19 @@ def main():
     output_data = [sample_to_dict(s) for s in deduped]
     with open(args.out_intermediate_json, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
+
+    write_json(
+        "generation_summary.json",
+        {
+            "stage": "step2_gen",
+            "kept_before_dedup": len(candidates),
+            "rejected": rejected,
+            "deduped": len(deduped),
+            "rejection_reasons_top20": top,
+            "domain_distribution": sorted_domains,
+            "output_path": args.out_intermediate_json,
+        },
+    )
 
     print(f"[out] wrote {len(deduped)} samples to {args.out_intermediate_json}", file=sys.stderr)
 

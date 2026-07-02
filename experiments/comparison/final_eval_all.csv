@@ -1,0 +1,17 @@
+experiment,checkpoint,paradigm,f1_func,f1_param,partial,full,win_rate,num_examples
+baseline,baseline (no LoRA),direct,0.921,0.65,0.294,0.169,0.292,1861
+mtgrpo_minimal,s1_e4,direct,0.914,0.646,0.292,0.164,0.278,1861
+mtgrpo_minimal,s1_e4,react,0.898,0.367,0.133,0.0,0.532,1860
+mtgrpo_minimal,s2_e4,direct,0.911,0.641,0.289,0.166,0.272,1861
+mtgrpo_minimal,s2_e4,react,0.736,0.346,0.122,0.001,0.513,1860
+baseline,baseline (no LoRA),react,0.894,0.36,0.13,0.0,0.544,1861
+mtgrpo_minimal,curriculum s4e2,react,0.153,0.131,0.05,0.001,0.325,1861
+mtgrpo_minimal,curriculum s4e2,direct,0.917,0.616,0.272,0.152,0.243,1861
+mtgrpo_partial,s1_e4,direct,0.919,0.648,0.292,0.163,0.274,1861
+mtgrpo_partial,s1_e4,react,0.926,0.374,0.137,0.0,0.543,1861
+mtgrpo_partial,s2_e2,direct,0.918,0.643,0.291,0.163,0.272,1861
+mtgrpo_partial,s2_e2,react,0.808,0.375,0.134,0.001,0.533,1861
+mtgrpo_partial,s3_e2,direct,0.912,0.635,0.288,0.158,0.268,1861
+mtgrpo_partial,s3_e2,react,0.472,0.262,0.094,0.001,0.479,1861
+mtgrpo_partial,s4_e1,direct,0.932,0.647,0.291,0.164,0.274,1861
+mtgrpo_partial,s4_e1,react,0.35,0.23,0.084,0.001,0.45,1861

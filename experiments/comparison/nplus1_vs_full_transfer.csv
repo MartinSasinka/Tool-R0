@@ -1,0 +1,8 @@
+experiment,checkpoint,stage,epoch,local_final_answer_pass,local_strict_gold_trace_pass,full_react_win_rate,full_direct_win_rate,transfer_gap
+mtgrpo_minimal,s1_e4,1,4,0.4696,0.3777,0.532,0.278,-0.0624
+mtgrpo_minimal,s2_e4,2,4,0.4939,0.0934,0.513,0.272,-0.0191
+mtgrpo_minimal,curriculum s4e2,4,2,0.0867,0.0,0.325,0.243,-0.2383
+mtgrpo_partial,s1_e4,1,4,0.6568,0.3974,0.543,0.274,0.1138
+mtgrpo_partial,s2_e2,2,2,0.5971,0.1474,0.533,0.272,0.0641
+mtgrpo_partial,s3_e2,3,2,0.536,0.052,0.479,0.268,0.057
+mtgrpo_partial,s4_e1,4,1,0.5145,0.0231,0.45,0.274,0.0645

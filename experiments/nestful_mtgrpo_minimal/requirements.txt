@@ -1,0 +1,41 @@
+# NESTFUL MT-GRPO Minimal — conservative dependencies.
+# Versions are intentionally unpinned (lower bounds / comments) so the artifact
+# works against an existing CUDA-compatible stack on a DGX node.
+#
+# For DGX environments, prefer the already-installed CUDA-compatible PyTorch
+# build. Do NOT blindly reinstall torch if the cluster provides a working CUDA
+# stack (a fresh `pip install torch` can pull a CPU-only or mismatched wheel).
+
+torch            # use the cluster-provided CUDA build if present
+transformers>=4.44
+accelerate>=0.33
+datasets>=2.20
+peft>=0.12
+trl>=0.9
+bitsandbytes>=0.43   # required for qlora (4-bit) loading
+pyyaml>=6.0
+tqdm>=4.66
+numpy>=1.24
+safetensors>=0.4
+scikit-learn>=1.3   # official NESTFUL scorer: macro-F1 (MultiLabelBinarizer)
+jsonlines>=4.0      # required by data/NESTFUL-main/src/utils.py (official scorer)
+
+# --- Optional (install as needed) ---
+# pytest>=8.0          # unit tests: python -m pytest tests/ -q
+wandb>=0.16             # online logging when WANDB_API_KEY / WANDB_PROJECT is set
+hf_transfer>=0.1        # required when HF_HUB_ENABLE_HF_TRANSFER=1 (common on RunPod)
+
+# vLLM — fast generation engine, opt-in (hardware.use_vllm: true).
+# CRITICAL on DGX: plain `pip install vllm` pulls CUDA-13 wheels (libcudart.so.13).
+# With torch 2.11+cu128 you MUST install from wheels.vllm.ai cu128/cu129 index:
+#   pip uninstall -y vllm
+#   pip install vllm==0.23.0 \
+#     --extra-index-url https://wheels.vllm.ai/0.23.0/cu128 \
+#     --extra-index-url https://download.pytorch.org/whl/cu128
+# Verify: python -c "from vllm import LLM; print('ok')"
+
+# Flash Attention 2 — opt-in (hardware.use_flash_attention: true).
+# Reduces HF model activation VRAM by ~30-40%, speeds up attention 2-4x.
+# vLLM uses FA internally regardless of this flag.
+# Requires compilation (~5-15 min): pip install flash-attn --no-build-isolation
+# flash-attn>=2.5

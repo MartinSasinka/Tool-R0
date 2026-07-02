@@ -1,0 +1,46 @@
+generation:
+  total_tasks: 1030
+  random_seed: 42
+  balance_by:
+    - motif_type
+    - num_calls_bucket
+    - dependency_depth
+    - output_type
+    - baseline_failure_cluster
+
+stage_minimums:
+  stage1_linear_simple: 250
+  stage2_reference_reuse: 200
+  stage3_structural_motifs: 80
+  stage4_nestful_like_mixed: 120
+
+nestful_topup_tasks: 130
+
+nestful_motif_boost:
+  linear_dependency: 90
+  long_chain: 100
+  fan_in: 30
+
+target_distribution:
+  source: experiments/nestful_synthetic_curriculum_v3/outputs/nestful_motif_distribution.json
+  matching_strategy: weighted_sampling
+  max_kl_divergence_allowed: 0.10
+
+nestful_motif_types:
+  - linear_dependency
+  - long_chain
+  - fan_in
+  - fan_out
+  - independent_calls
+
+stage2_motif_mix:
+  reference_reuse: 0.25
+  fan_in: 0.20
+  linear_dependency: 0.15
+  object_or_list_output: 0.15
+  argument_transformation: 0.15
+  string_list_mixed: 0.10
+
+stage1_motif_mix:
+  linear_dependency: 0.70
+  independent_calls: 0.30

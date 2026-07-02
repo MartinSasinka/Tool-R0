@@ -1,0 +1,14 @@
+case,strict,partial,execution,exec_cap
+perfect_gold_trace,1.0,1.0,1.0,
+correct_answer_alt_path,0.0,0.3,0.9,
+no_tool_call,0.0,0.0,0.0,no_tool_call
+too_few_calls_wrong,0.0,0.35,0.425,
+executable_wrong_answer,0.0,0.7,0.55,
+invalid_reference,1.0,1.0,0.9,
+wrong_tool_name,0.0,0.65,0.95,
+wrong_arg_keys,0.0,0.79,0.97,
+extra_calls,0.0,1.0,1.0,
+missing_calls,0.0,0.35,0.425,
+parse_error,0.0,0.35,0.0,parse_error
+clipped_rollout,0.0,0.0,0.0,clipped
+executor_error,0.0,0.595,0.36,

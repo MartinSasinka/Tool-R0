@@ -1,0 +1,4 @@
+run,model,paradigm,rollout,source_input,metrics_file,num_examples,executor_accuracy_pct,f1_func,f1_param,partial,full,win_rate,win_source
+v2_baseline,baseline (no LoRA),react(4-rollout),—,,,,67.18,,,,,,
+v2_stage3_epoch1,curriculum s3e1,react(4-rollout),idx0,curricullum\evaluation\results_v2_20260617\curriculum_stage_3_epoch1_multiturn_predictions.jsonl,runs\v2_stage3_epoch1\metrics_official.json,1861,70.74,0.941,0.447,0.158,0.0,,needs_linux
+v2_stage5_epoch2,curriculum s5e2,react(4-rollout),idx0,curricullum\evaluation\results_v2_20260617\curriculum_stage_5_epoch2_multiturn_predictions.jsonl,runs\v2_stage5_epoch2\metrics_official.json,1861,70.14,0.951,0.453,0.163,0.0,,needs_linux

@@ -1,0 +1,12 @@
+aspect,train,eval,status,evidence
+system_prompt,SYSTEM_PROMPT,SYSTEM_PROMPT + _EVAL_HARDENING,WARNING,prompt.py:251 (eval_hardening only in eval)
+parser,strict (parse_tool_call lenient=False),lenient (lenient=True),WARNING,grpo_train.py:260 vs rollout.py:284
+max_turns,gold_n,gold_n + 1 (cap gold_n+4),WARNING,grpo_train.py:436 vs rollout.py:218-222
+format_taught,one tool call/turn + label + $varN refs + [] terminal,same contract reinforced by hardening,PASS,prompt.py SYSTEM_PROMPT vs _EVAL_HARDENING (compatible)
+gold_trace_leak_in_prompt,none (history = model's own turns + real obs),none,PASS,prompt.py build_messages; rollout.py history
+gold_answer_leak_in_prompt,none,none,PASS,build_user_content = question + tools only
+no_tool_shortcut_offered,explicitly forbidden first turn; [] only after real obs,same,PASS,SYSTEM_PROMPT rules 'NEVER emit empty finish on first turn'
+terminal_too_easy,[] gated behind 'most recent observation IS the final answer',same,PASS,SYSTEM_PROMPT
+react_continue_after_obs,explicit 'do NOT finish if intermediate result',same,PASS,SYSTEM_PROMPT
+eval_prompt_same_for_baseline_and_ckpt,yes,yes,PASS,final_eval runs identical config for baseline+ckpt
+OVERALL,train and eval prompts/parser/turn-budget differ but are FORMAT-COMPATIBLE,baseline+ckpt evaluated identically,WARNING,recommend unifying train==eval prompt+parser+turn budget before next run

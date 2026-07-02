@@ -1,0 +1,15 @@
+case,strict_legacy,partial_legacy,partial_v2,execution_v1,execution_v2,exec_v2_cap
+perfect_gold_trace,1.0,1.0,1.0,1.0,1.0,
+correct_final_answer_via_alternative_path,0.0,0.3,0.3,0.9,0.55,final_no_gold_trace
+no_tool_call,0.0,0.0,0.0,0.0,0.0,no_tool_call
+terminal_before_first_successful_tool,0.0,0.245,0.0,0.0,0.0,terminal_before_first_successful_tool
+too_few_calls_wrong_answer,0.0,0.35,0.35,0.425,0.25,too_few_calls_wrong_answer
+valid_executable_trajectory_wrong_answer,0.0,0.7,0.6,0.55,0.35,not_final
+invalid_reference,0.0,0.595,0.4,0.26,0.245,
+wrong_tool_name,0.0,0.0,0.0,0.375,0.25,
+wrong_argument_keys,0.0,0.14,0.14,0.395,0.25,too_few_calls_wrong_answer
+extra_calls_correct_answer,0.0,1.0,1.0,1.0,0.98,
+extra_calls_wrong_answer,0.0,0.7,0.5,0.55,0.35,not_final
+parse_error,0.0,0.0,0.0,0.0,0.0,parse_error
+clipped_rollout,0.0,0.0,0.0,0.0,0.0,clipped
+executor_error,0.0,0.595,0.4,0.36,0.25,executor_error

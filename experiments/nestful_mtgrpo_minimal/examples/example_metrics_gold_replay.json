@@ -1,0 +1,20 @@
+{
+  "_note": "SYNTHETIC EXAMPLE — not a real experiment result. Shows expected metrics.json shape when executor runs in gold_replay mode.",
+  "num_tasks": 50,
+  "executor_mode": "gold_replay",
+  "solution_equivalent_reportable": false,
+  "win_rate_reportable": false,
+  "warning": "Alternative-path metrics are limited because non-gold calls cannot be genuinely executed.",
+  "strict_gold_trace_pass": 0.42,
+  "full_sequence_accuracy": 0.42,
+  "partial_sequence_accuracy": 0.61,
+  "f1_func": 0.74,
+  "f1_param": 0.68,
+  "final_answer_pass": 0.44,
+  "solution_equivalent_pass": null,
+  "win_rate": null,
+  "strict_fail_but_solution_equivalent_pass": null,
+  "alternative_valid_solution_pass": null,
+  "correct_answer_but_unsupported_trace": null,
+  "clipped_completion_rate": 0.06
+}

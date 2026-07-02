@@ -1,0 +1,26 @@
+training:
+  model: Qwen/Qwen3-4B-Instruct-2507
+  method: GRPO
+  finetuning: QLoRA
+  lr: 5.0e-7
+  lr_min: 2.0e-7
+  kl_beta: 0.15
+  num_generations: 4
+  max_epochs_per_stage: 2
+  early_stopping_metric: real_dev_react_win
+  regression_guard: true
+  learner_gpu: 0
+  rollout_gpus: [1, 2, 3]
+
+data:
+  train_base: experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3
+  val_jsonl: experiments/nestful_mtgrpo_minimal/data/splits/nestful_dev.jsonl
+  test_jsonl: experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl
+
+anti_drift:
+  save_best_only_if_dev_win_above_baseline: true
+  stop_if_dev_win_below_baseline_margin: -0.005
+  max_avg_call_count_drop: 0.20
+  max_strict_trace_drop: 0.30
+  max_dead_group_rate_two_epochs: 0.80
+  do_not_enter_stage3_unless_stage2_beats_baseline: true

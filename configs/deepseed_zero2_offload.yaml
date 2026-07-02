@@ -1,0 +1,24 @@
+# ZeRO-2 + Adam states on CPU — frees several GB per GPU during optimizer.step().
+# Use for GRPO + ~4B VLM on 40GB: ZeRO-2 alone replicates full weights on every GPU; AdamW
+# still needs large GPU buffers unless optimizer state is offloaded.
+# Slower step time than deepseed_zero2.yaml; export TOOL_R0_DEEPSPEED_CONFIG=./configs/deepseed_zero2.yaml if VRAM allows.
+compute_environment: LOCAL_MACHINE
+debug: false
+deepspeed_config:
+  deepspeed_multinode_launcher: standard
+  offload_optimizer_device: cpu
+  offload_param_device: none
+  zero_stage: 2
+distributed_type: DEEPSPEED
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 2
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

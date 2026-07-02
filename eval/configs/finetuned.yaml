@@ -1,0 +1,43 @@
+# Fine-tuned model config.
+# Evaluates the Tool-R0 trained model.
+#
+# Before running, set:  export CUDA_VISIBLE_DEVICES=0,1,2,4
+# (excludes GPU 3 which is the DGX Display adapter)
+
+profile_name: finetuned
+
+model:
+  backend: vllm
+  # Full path to the checkpoint directory (must contain config.json).
+  # After fix_checkpoint_for_vllm, LoRA adapters are auto-merged into a full HF
+  # checkpoint here, so vLLM loads it like any other model — no --enable-lora.
+  model_path: qwen3-4b-tool-r0/iter3_solver/checkpoint-50
+  # Optional: only relevant for VLM bases (Qwen3.5-VL). Text-only Qwen3 ignores this.
+  # base_model_for_configs: Qwen/Qwen3-4B-Instruct-2507
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.90
+  # max_model_len 8192 + max_new_tokens 4096 stop multi-call <tool_call_answer> truncation
+  # observed on NESTFUL/BFCL with the previous 4096/512 budget.
+  max_model_len: 12288
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 4096
+  stop_tokens:
+    - "</tool_call_answer>"
+
+batch_size: 8
+
+# BFCL categories to evaluate
+# AST = ground-truth matching, Exec = real function execution
+bfcl_categories:
+  - simple
+  - multiple
+  - parallel
+  - irrelevance
+  - exec_simple
+  - exec_multiple
+  - exec_parallel
+  - exec_parallel_multiple
+
+# ToolAlpaca dataset path (auto-detected if not set)
+# toolalpaca_dataset_path: data/toolalpaca/eval_simulated.json

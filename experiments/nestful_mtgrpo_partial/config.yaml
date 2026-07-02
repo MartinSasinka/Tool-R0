@@ -1,0 +1,226 @@
+# NESTFUL MT-GRPO PARTIAL — standalone config.
+#
+# Identical to ../nestful_mtgrpo_minimal/config.yaml EXCEPT the reward: training
+# uses a PARTIAL (graded) gold-trace reward instead of the strict binary one.
+#
+# Path resolution (handled by this folder's run.py):
+#   - INPUT data paths (paths.*, model.lora_adapter) resolve against the sibling
+#     ../nestful_mtgrpo_minimal/  (the dataset lives there — no duplication).
+#   - OUTPUT paths (experiment.output_dir, model.output_adapter_dir) resolve
+#     against THIS folder.
+
+experiment:
+  name: nestful_mtgrpo_partial
+  seed: 42
+  output_dir: outputs
+
+paths:
+  train_jsonl: data/filtered_toolr0_synthetic/epoch_3_3call.jsonl
+  eval_jsonl: data/filtered_toolr0_synthetic/epoch_4_4call.jsonl
+  all_stages_jsonl: data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl
+  # Stage files: data/filtered_toolr0_synthetic/epoch_N_Ncall.jsonl  (N=1..6)
+  full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
+  ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
+
+model:
+  base_model: Qwen/Qwen3-4B-Instruct-2507
+  lora_adapter: null                 # path to existing adapter for eval; null = base model
+  output_adapter_dir: outputs/checkpoints
+
+executor:
+  mode: auto                         # auto | full | gold_replay
+  ibm_call_timeout: 30.0
+
+hardware:
+  device: auto
+  num_gpus: auto
+  bf16: true
+  gradient_checkpointing: true
+  load_in_4bit: true                 # qlora default for 1x A100 40GB
+  qlora: true
+
+  use_vllm: false
+  vllm_tensor_parallel_size: 1
+  vllm_gpu_memory_utilization: 0.85  # eval-only default; overridden to 0.45 for train
+  vllm_enforce_eager: false
+  vllm_weight_sync: after_epoch
+
+  # ── Data-parallel rollouts (opt-in; multi-GPU TRAINING speedup) ──────────────
+  # Empty / null = OFF (single in-process vLLM engine). When set to a list of GPU
+  # ids, TRAIN rollouts run one vLLM engine per GPU while the HF learner stays on
+  # visible GPU 0. Workers pick the PARTIAL reward from reward.train_policy below,
+  # so partial-credit training is preserved across the process boundary.
+  # Wired by ROLLOUT_DP_GPUS in run_curriculum.sh. Example 4-GPU: [1, 2, 3].
+  rollout_data_parallel_gpus: null
+  vllm_gpu_memory_utilization_dp: 0.85
+
+  use_flash_attention: false
+
+finetuning:
+  method: qlora                      # lora | qlora
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: auto
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+data:
+  train_stage: 3
+  eval_stage: 4
+  max_train_tasks: null
+  max_eval_tasks: null
+  eval_paradigm: react
+  num_icl_examples: 1
+
+generation:
+  max_turns: auto
+  max_extra_turns_eval: 1
+  max_new_tokens_smoke: 1024
+  max_new_tokens_train: 2048
+  max_new_tokens_eval: 2560
+  max_new_tokens_direct: 1024
+  max_new_tokens: 2048
+  max_prompt_tokens: 4096
+  max_model_length: 6144
+  temperature: 0.7
+  top_p: 0.95
+  num_generations: 4
+
+  # Tool-observation truncation — bounds how much of a tool's return value is
+  # ever serialised into the next-turn <tool_response>. Without this a tool that
+  # returns a huge list/string/array explodes the prompt past the context window
+  # and crashes vLLM ("decoder prompt longer than the maximum model length").
+  # Set any value to 0 to disable that particular cap.
+  observation_limits:
+    max_str_chars: 2000      # truncate any single string to this many chars
+    max_items: 200           # truncate any single list/dict to this many items
+    max_total_chars: 6000    # hard cap on the whole <tool_response> payload
+
+training:
+  epochs: 3
+  learning_rate: 1.0e-6
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4
+  kl_beta: 0.10                      # stabilized v2.1 default (was 0.02/0.05 — anti-forgetting)
+  max_grad_norm: 1.0
+  save_every_epoch: true
+  eval_after_epoch: true
+  mask_clipped_from_update: true
+
+# NOTE: the advancement gate still reads the strict `strict_gold_trace_pass` from
+# the per-epoch rollout_eval (eval is UNCHANGED). With partial-reward training the
+# train-loop's logged mean_reward is the PARTIAL reward, but the gate threshold
+# below is compared against the strict eval pass rate, so it keeps its meaning.
+curriculum:
+  advance_threshold: 0.50
+  plateau_patience: 2
+  max_epochs_per_stage: 4
+  gate_mode: warn
+
+# Per-epoch validation (val_eval mode) — drives checkpoint selection + early stopping.
+validation:
+  subset_size: 0                       # 0 = full VAL_JSONL (nestful_dev.jsonl in v2.1)
+  require_win_rate: true               # hard-fail if official Win cannot be computed
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  REWARD — the ONLY substantive difference from nestful_mtgrpo_minimal.
+# ─────────────────────────────────────────────────────────────────────────────
+reward:
+  # train_policy selects the TRAINING reward (eval is always strict + official):
+  #   strict            -> reward.py            (binary gold-trace, sibling default)
+  #   partial_gold_trace-> partial_reward.py    (graded gold-trace, this exp default)
+  #   execution_aware   -> execution_reward.py  (NEW execution-aware reward, v1)
+  # Default stays partial_gold_trace. Switch to the new reward via this key or
+  #   --override reward.train_policy=execution_aware
+  train_policy: partial_gold_trace
+  final_eval_shadow_policy: solution_equivalent
+  binary_only: false
+  format_as_gate: true
+
+# Partial (graded) reward weights. Per-turn weights sum to 1.0 (a perfect turn
+# scores 1.0); episode weights sum to 1.0 (a perfect episode scores 1.0, on the
+# same [0,1] scale as the strict reward).
+#   turn_score_i = w_name*1{name} + w_keys*1{name&keys} + w_exec*1{name&keys&exec}
+#   R = w_trace*mean(turn_score) + w_final*1{final_answer}
+#       - length_penalty * max(0, num_calls-gold_n)/gold_n      (clipped to [0,1])
+partial_reward:
+  w_name: 0.4
+  w_keys: 0.3
+  w_exec: 0.3
+  w_trace: 0.7
+  w_final: 0.3
+  length_penalty: 0.0                 # 0 = off; >0 penalizes emitting extra calls
+
+# Execution-aware reward (v1) — used ONLY when reward.train_policy=execution_aware.
+# Shifts the main signal from gold-trace fidelity to execution success:
+#   R = w_final*tool_final_answer_pass + w_executable*executable_trajectory
+#     + w_completeness*tool_use_completeness + w_references*valid_references
+#     + w_gold_trace*small_gold_trace_progress            (clipped to [0,1])
+# Component weights sum to 1.0 (a perfect episode scores 1.0). Caps guard against
+# shortcuts (parse_error / no_tool_call / terminal-before-tool -> 0; non-executable
+# or too-few-calls+wrong-answer are bounded). See execution_reward.py.
+execution_reward:
+  w_final: 0.45
+  w_executable: 0.20
+  w_completeness: 0.15
+  w_references: 0.10
+  w_gold_trace: 0.10
+  cap_not_executable: 0.10            # all calls errored -> reward bounded by this
+  cap_incomplete_wrong: 0.50         # too few calls AND wrong answer -> bounded
+
+# Execution-aware reward (v2, HARDENED) — used when reward.train_policy=execution_aware_v2.
+# Anti trace-drift tuning (see nestful_core/rewards.py:_V2_EXEC_DEFAULTS): lower
+# w_final, higher w_gold_trace/w_completeness, floor GATED on real gold-trace match,
+# an explicit cap for "correct answer but drifted trace", and a short-trace penalty.
+#   R = w_final*final + w_executable*executable + w_completeness*completeness
+#     + w_references*valid_refs + w_gold_trace*gold_progress      (clipped to [0,1])
+execution_reward_v2:
+  w_final: 0.35
+  w_executable: 0.15
+  w_completeness: 0.20
+  w_references: 0.10
+  w_gold_trace: 0.20
+  cap_executor_error: 0.25
+  cap_invalid_reference: 0.30
+  cap_not_executable: 0.25
+  cap_too_few_wrong: 0.25
+  cap_not_final: 0.35
+  cap_final_no_gold_trace: 0.55       # correct answer but trace != gold -> bounded
+  gold_trace_min_for_final: 0.50      # gold_progress below this counts as drifted
+  floor_executable_final: 0.70        # was 0.85 (unconditional) — now gated below
+  floor_gold_trace_min: 0.75          # floor applies only if trace really follows gold
+  extra_call_penalty: 0.02
+  extra_call_penalty_max: 0.10
+  short_trace_penalty: 0.10           # per MISSING call vs gold (anti collapsed trace)
+  short_trace_penalty_max: 0.40
+
+# Turn-level MT-GRPO credit assignment. With the partial reward, per-turn r_t are
+# GRADED floats in [0,1] (not 0/1); the trainer math is identical.
+#   G_t = sum_{k=t}^{T} gamma^(k-t) * r_k  +  lambda_episode * gamma^(T-t+1) * R_episode
+mt_grpo:
+  enabled: true
+  mode: turn_level_minimal
+  gamma: 1.0
+  lambda_episode: 1.0
+  normalize_advantage: true
+  fallback_episode_level_if_needed: true
+
+token_budget:
+  # 24GB-GPU budgets — see nestful_mtgrpo_minimal/config.yaml for rationale.
+  # Observation truncation (generation.observation_limits) is the overflow guard;
+  # these larger windows just avoid clipping legitimate long multi-turn tasks.
+  stage_defaults:
+    "1": { max_prompt_tokens: 1536, max_new_tokens: 1280, vllm_max_model_length: 4096 }
+    "2": { max_prompt_tokens: 3072, max_new_tokens: 2048, vllm_max_model_length: 8192 }
+    "3": { max_prompt_tokens: 4096, max_new_tokens: 2048, vllm_max_model_length: 8192 }
+    "4": { max_prompt_tokens: 6144, max_new_tokens: 2560, vllm_max_model_length: 10240 }
+    "5": { max_prompt_tokens: 7168, max_new_tokens: 3072, vllm_max_model_length: 12288 }
+    "6": { max_prompt_tokens: 7168, max_new_tokens: 3072, vllm_max_model_length: 12288 }
+
+logging:
+  use_wandb: false
+  wandb_project: nestful-curriculum-toolr0-partial
+  log_samples: true

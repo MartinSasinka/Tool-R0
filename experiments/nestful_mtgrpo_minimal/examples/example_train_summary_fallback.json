@@ -1,0 +1,11 @@
+{
+  "_note": "SYNTHETIC EXAMPLE — not a real experiment result. Shows expected train_summary.json shape when fallback to episode-level occurred. IMPORTANT: if fallback_used=true the run must NOT be presented as turn-level MT-GRPO.",
+  "epochs": 1,
+  "num_tasks": 200,
+  "steps": 50,
+  "experimental": true,
+  "mt_grpo_mode": "episode_level",
+  "fallback_used": true,
+  "gamma": 1.0,
+  "lambda_episode": 1.0
+}

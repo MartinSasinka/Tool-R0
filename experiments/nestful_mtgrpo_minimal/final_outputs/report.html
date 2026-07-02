@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NESTFUL — výsledky a porovnání s benchmarkem</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #141a2e;
+    --panel-2: #1b2340;
+    --ink: #e8ecf6;
+    --muted: #9aa6c2;
+    --line: #283154;
+    --accent: #6ea8fe;
+    --accent-2: #8b5cf6;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --baseline: #6ea8fe;
+    --finetuned: #f59e0b;
+    --paper: #64748b;
+    --ours: #34d399;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 70% -10%, #1d2748 0%, var(--bg) 55%);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  header {
+    padding: 56px 24px 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 { margin: 0 0 8px; font-size: 2.1rem; letter-spacing: -0.02em; }
+  header p { margin: 4px auto; max-width: 760px; color: var(--muted); }
+  .badge {
+    display: inline-block; margin-top: 14px; padding: 6px 14px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--accent);
+    font-size: 0.82rem; font-weight: 600;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    padding: 12px; background: rgba(11,16,32,0.85); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600;
+    padding: 6px 12px; border-radius: 8px; transition: all .15s;
+  }
+  nav a:hover { color: var(--ink); background: var(--panel-2); }
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+  section { margin: 40px 0; }
+  h2 { font-size: 1.5rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 .num { color: var(--accent); font-weight: 700; margin-right: 8px; }
+  .lead { color: var(--muted); margin: 0 0 20px; max-width: 820px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px; margin: 16px 0;
+  }
+  .chart-wrap { position: relative; height: 380px; }
+  .chart-wrap.tall { height: 460px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 820px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { padding: 9px 10px; text-align: center; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: .04em; }
+  td:first-child, th:first-child { text-align: left; }
+  tbody tr:hover { background: var(--panel-2); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:6px; font-size:.72rem; font-weight:700; }
+  .tag.ours { background: rgba(52,211,153,.15); color: var(--good); }
+  .tag.paper { background: rgba(100,116,139,.2); color: #aab6cf; }
+  .metric-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+  }
+  .metric-card h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--accent); }
+  .metric-card .formula {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 10px; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.8rem; color: var(--warn); margin: 8px 0; overflow-x: auto;
+  }
+  .metric-card p { margin: 6px 0 0; font-size: 0.88rem; color: var(--muted); }
+  .callout {
+    border-left: 3px solid var(--warn); background: rgba(251,191,36,.07);
+    padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 14px 0; font-size: 0.9rem;
+  }
+  .callout.good { border-color: var(--good); background: rgba(52,211,153,.07); }
+  .callout.info { border-color: var(--accent); background: rgba(110,168,254,.07); }
+  .legend-row { display:flex; gap:18px; flex-wrap:wrap; margin: 6px 0 2px; font-size:.82rem; color:var(--muted); }
+  .legend-row span { display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:11px; height:11px; border-radius:3px; display:inline-block; }
+  code { background: var(--bg); padding: 1px 6px; border-radius: 5px; font-size: 0.85em; color: var(--warn); }
+  .small { font-size: 0.82rem; color: var(--muted); }
+  footer { text-align:center; color:var(--muted); font-size:.82rem; padding: 30px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>NESTFUL — výsledky a porovnání s benchmarkem</h1>
+  <p>Vyhodnocení modelu <strong>Qwen3-4B-Instruct-2507</strong> (baseline vs. curriculum finetuning)
+     na 1861 úlohách NESTFUL, přepočítané <strong>oficiálním NESTFUL scorerem</strong>,
+     a porovnání s modely z NESTFUL paperu.</p>
+  <span class="badge">Direct &amp; ReAct · 1-shot ICL · oficiální macro-F1 + grounded Partial/Full + Win Rate</span>
+</header>
+
+<nav>
+  <a href="#ours">Naše výsledky</a>
+  <a href="#benchmark">Porovnání s paperem</a>
+  <a href="#metrics">Co metriky znamenají</a>
+  <a href="#curriculum">Curriculum</a>
+  <a href="#caveats">Výhrady</a>
+</nav>
+
+<main>
+
+  <!-- ============ OUR RESULTS ============ -->
+  <section id="ours">
+    <h2><span class="num">1</span>Naše výsledky na NESTFULu</h2>
+    <p class="lead">Čtyři běhy: <strong>baseline</strong> (bez LoRA) a <strong>curriculum finetuned</strong>
+      (pilot, stage&nbsp;4 / epocha&nbsp;2), každý ve dvou paradigmatech — <strong>Direct</strong>
+      (jednorázová generace celé sekvence) a <strong>ReAct</strong> (multi-turn s exekucí). Všech 1861 úloh.</p>
+
+    <div class="legend-row">
+      <span><span class="dot" style="background:var(--baseline)"></span> baseline</span>
+      <span><span class="dot" style="background:var(--finetuned)"></span> curriculum s4e2</span>
+    </div>
+    <div class="grid-2">
+      <div class="panel"><div class="chart-wrap"><canvas id="chartDirect"></canvas></div>
+        <p class="small" style="text-align:center;margin-top:8px">Direct paradigma (srovnatelné s paperem)</p></div>
+      <div class="panel"><div class="chart-wrap"><canvas id="chartReact"></canvas></div>
+        <p class="small" style="text-align:center;margin-top:8px">ReAct paradigma (multi-turn)</p></div>
+    </div>
+
+    <div class="panel">
+      <table>
+        <thead><tr>
+          <th>Běh</th><th>Paradigma</th><th>F1 Func</th><th>F1 Param</th><th>Partial</th><th>Full</th><th>Win Rate</th>
+        </tr></thead>
+        <tbody id="ourTable"></tbody>
+      </table>
+    </div>
+
+    <div class="callout info">
+      <strong>Win Rate odhalil dvě věci, které strukturní metriky nezachytí:</strong><br />
+      (1) <strong>ReAct má vyšší Win Rate než Direct</strong> (baseline 0.544 vs 0.292) — Win je execution-based,
+      takže ReAct se častěji „protrefí" ke správné finální odpovědi, i když nereprodukuje gold-trace strukturu
+      (proto nízké Partial/Full).<br />
+      (2) <strong>Finetuned je horší v obou paradigmatech</strong> — v Direct jen mírně na Win Rate (0.292→0.243),
+      v ReAct dramaticky (kolaps F1 0.894→0.153). Příčina: mrňavý pilotní trénink (16 úloh) poškodil zejména
+      ReAct chování modelu.
+    </div>
+  </section>
+
+  <!-- ============ BENCHMARK COMPARISON ============ -->
+  <section id="benchmark">
+    <h2><span class="num">2</span>Porovnání s NESTFUL benchmarkem (paper)</h2>
+    <p class="lead">NESTFUL paper (Basu et al., EMNLP 2025) reportuje <strong>Direct Prompting</strong> výsledky pro řadu
+      modelů. Níže je náš <strong>Qwen3-4B baseline (Direct, 1-shot)</strong> vedle vybraných modelů z paperu
+      (taktéž 1-shot ICL — stejný setup jako náš).</p>
+
+    <div class="legend-row">
+      <span><span class="dot" style="background:var(--ours)"></span> náš model (Qwen3-4B)</span>
+      <span><span class="dot" style="background:var(--paper)"></span> modely z paperu</span>
+    </div>
+    <div class="panel"><div class="chart-wrap tall"><canvas id="chartBench"></canvas></div></div>
+
+    <div class="callout">
+      <strong>Bezpečná interpretace (NE „4B překonává velké modely"):</strong> náš model vykazuje
+      <strong>vysokou formátovou / function-name compliance</strong> (čistý parseable JSON → vysoké F1 Func),
+      ale <strong>execution-oriented metriky (Full Acc, Win Rate) zůstávají pod GPT-4o a DeepSeek-V3</strong>.
+      Vysoké F1 Func je z velké části artefakt nasycené macro metriky a formátu, ne důkaz lepšího řešení úlohy
+      — netvrdíme tedy převahu nad velkými modely podle F1. Realističtější obrázek dávají
+      <strong>Full / Win</strong> (sekundárně Partial).
+    </div>
+
+    <div class="panel">
+      <table>
+        <thead><tr>
+          <th>Model</th><th>#Params</th><th>F1 Func</th><th>F1 Param</th><th>Partial</th><th>Full</th><th>Win Rate</th>
+        </tr></thead>
+        <tbody id="benchTable"></tbody>
+      </table>
+      <p class="small" style="margin-top:10px">Paper hodnoty: NESTFUL Table 1, Direct Prompting, <strong>one-shot ICL</strong>
+        (<a href="https://arxiv.org/abs/2409.03797v3" style="color:var(--accent)">arXiv:2409.03797 <strong>v3</strong></a>
+        = EMNLP 2025, ověřeno z arxiv.org/html/2409.03797v3). Pozn.: starší <strong>v2</strong> má jiná čísla
+        (např. Llama-405B F1 Func 0.21, bez GPT-4o) — zde používáme konzistentně v3. Naše hodnoty: oficiální
+        scorer, Direct, 1-shot.</p>
+    </div>
+  </section>
+
+  <!-- ============ METRICS EXPLAINED ============ -->
+  <section id="metrics">
+    <h2><span class="num">3</span>Co jednotlivé metriky znamenají a jak se počítají</h2>
+    <p class="lead">Všechny metriky pocházejí z oficiálního NESTFUL scoreru. Rozsah 0–1 (vyšší = lepší).</p>
+
+    <div class="grid-2">
+      <div class="metric-card">
+        <h3>F1 Func</h3>
+        <div class="formula">F1 přes množinu názvů funkcí (korpusové macro)</div>
+        <p>Měří, zda model volá <strong>správné funkce</strong> (jen názvy, bez pořadí a argumentů).
+          Počítá se jako <strong>macro-F1</strong> přes ~900 tříd (názvů funkcí) pomocí
+          <code>MultiLabelBinarizer</code> + <code>f1_score</code>. Macro = průměr přes třídy, ne přes vzorky —
+          proto u řídkého slovníku vychází <strong>vysoko</strong> (viz výhrady).</p>
+      </div>
+      <div class="metric-card">
+        <h3>F1 Param</h3>
+        <div class="formula">F1 přes dvojice (funkce, jméno_parametru)</div>
+        <p>Jako F1 Func, ale třídy jsou <strong>páry funkce + parametr</strong>. Měří, zda model používá
+          správné argumenty správných funkcí. Přísnější než F1 Func.</p>
+      </div>
+      <div class="metric-card">
+        <h3>Partial Sequence Accuracy</h3>
+        <div class="formula">% pozic, kde (název + argumenty) sedí s goldem</div>
+        <p>Po <strong>groundingu proměnných</strong> (reference <code>$var2.result$</code> se přepíše na
+          producenta) a zarovnání délek se porovná každý krok sekvence. Partial = podíl správných pozic.
+          Mnohem těžší než F1, protože vyžaduje i správné <strong>pořadí a hodnoty</strong>.</p>
+      </div>
+      <div class="metric-card">
+        <h3>Full Sequence Accuracy</h3>
+        <div class="formula">1, pokud sedí CELÁ sekvence; jinak 0 (průměr přes úlohy)</div>
+        <p>Nejpřísnější strukturní metrika: celá predikovaná sekvence callů se musí přesně shodovat s gold
+          sekvencí (po groundingu). U ReAct je často <strong>0</strong>, protože model dává konkrétní hodnoty
+          místo <code>$varN$</code> referencí.</p>
+      </div>
+      <div class="metric-card" style="grid-column: 1 / -1;">
+        <h3>Win Rate <span class="small" style="color:var(--muted)">(execution-based)</span></h3>
+        <div class="formula">% úloh, kde predikované cally jdou SPUSTIT a dají správnou gold odpověď</div>
+        <p>Jediná metrika založená na <strong>reálné exekuci</strong>: scorer spustí predikované funkce
+          (s timeoutem přes <code>signal.SIGALRM</code> — proto jen Linux) a porovná finální výsledek s gold
+          odpovědí (s tolerancí na zaokrouhlení). <strong>Toleruje alternativní cesty</strong> — model může
+          dojít ke správné odpovědi jinou (validní) sekvencí, proto bývá Win &gt; Full Accuracy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CURRICULUM ============ -->
+  <section id="curriculum">
+    <h2><span class="num">4</span>Curriculum trénink — progrese</h2>
+    <p class="lead">Pilotní curriculum (malý eval per stupeň). Stupně postupují k delším sekvencím (1-call → 4-call+).
+      <code>strict_gold_trace_pass</code> = přesná reprodukce gold trace; <code>off_f1_func</code> = oficiální re-score.</p>
+    <div class="panel"><div class="chart-wrap"><canvas id="chartCurriculum"></canvas></div></div>
+    <div class="callout">
+      <strong>strict_gold_trace_pass padá s obtížností:</strong> stage&nbsp;1 ≈ 0.38 → stage&nbsp;3 ≈ 0.01 →
+      stage&nbsp;4 = 0.00. Model se delší multi-call sekvence v pilotu (16 úloh/epocha) nikdy nenaučil
+      reprodukovat. Reálné zlepšení ukázala až větší <code>results_v2</code> varianta (+3.5&nbsp;pp executor accuracy).
+    </div>
+  </section>
+
+  <!-- ============ CAVEATS ============ -->
+  <section id="caveats">
+    <h2><span class="num">5</span>Výhrady k interpretaci</h2>
+    <div class="callout">
+      <strong>„F1 ≈ 90 %" neznamená 90 % úspěšnost.</strong> F1 Func je korpusové <strong>macro-F1 přes ~904 názvů funkcí</strong>,
+      kde <strong>881 z 904 tříd je singleton/near-singleton</strong> (≤2 výskyty) a 84 % volání jsou jen
+      <code>add/subtract/multiply/divide</code>. Macro průměruje třídy stejně → pojmenování (často zjevně nabízené)
+      funkce táhne metriku k ~0.92. Pro kontext uvádíme i <strong>micro-F1 (~0.84)</strong> a per-task
+      <strong>set-match (~0.31)</strong> / <strong>seq-match (~0.28)</strong>. Skutečnou úspěšnost úlohy ukazují
+      <strong>Full Acc / Win Rate</strong> (sekundárně Partial).
+    </div>
+    <div class="callout">
+      <strong>ReAct vs Direct nejsou přímo srovnatelné s paperem.</strong> Paper Table 1 je <strong>Direct Prompting</strong>.
+      ReAct emituje konkrétní hodnoty místo <code>$varN$</code> referencí → Full ≈ 0, nižší Partial. Pro
+      paper-srovnatelná čísla používej naše <strong>Direct</strong> řádky.
+    </div>
+    <div class="callout good">
+      <strong>Metodika je jednotná.</strong> Všechny běhy přepočítané <em>stejným</em> oficiálním NESTFUL scorerem
+      ze surových predikcí/trajektorií — žádné míchání definic. Win Rate pro 4 hlavní běhy přepočten na Linuxu.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Generováno z <code>final_outputs/consolidated_metrics.json</code> · oficiální scorer <code>nestful_official_score.py</code> ·
+  paper data: NESTFUL (Basu et al., EMNLP 2025 = arXiv:2409.03797 v3, Table 1, one-shot ICL)
+</footer>
+
+<script>
+// ---------- DATA ----------
+const OURS = {
+  baseline_direct:  { f1f:0.921, f1p:0.65,  part:0.294, full:0.169, win:0.292 },
+  baseline_react:   { f1f:0.894, f1p:0.36,  part:0.130, full:0.000, win:0.544 },
+  finetuned_direct: { f1f:0.917, f1p:0.616, part:0.272, full:0.152, win:0.243 },
+  finetuned_react:  { f1f:0.153, f1p:0.131, part:0.050, full:0.001, win:0.325 },
+};
+
+// NESTFUL paper, arXiv:2409.03797 v3 / EMNLP 2025, Table 1, Direct Prompting, ONE-shot ICL
+// (verified from arxiv.org/html/2409.03797v3; v2 numbers differ and are NOT used here)
+const PAPER = [
+  { model:"GPT-4o (2024-08)",     params:"UNK",  f1f:0.73, f1p:0.41, part:0.38, full:0.28, win:0.59 },
+  { model:"DeepSeek-V3",          params:"685B", f1f:0.69, f1p:0.36, part:0.27, full:0.09, win:0.43 },
+  { model:"Llama-3.1-405B",       params:"405B", f1f:0.41, f1p:0.14, part:0.08, full:0.03, win:0.10 },
+  { model:"Llama-3.1-70B",        params:"70B",  f1f:0.41, f1p:0.19, part:0.15, full:0.04, win:0.09 },
+  { model:"Granite-20B-FC",       params:"20B",  f1f:0.64, f1p:0.20, part:0.17, full:0.02, win:0.05 },
+  { model:"Llama-3.1-8B-Instruct",params:"8B",   f1f:0.64, f1p:0.19, part:0.17, full:0.06, win:0.06 },
+  { model:"xLAM-7b-fc-r",         params:"7B",   f1f:0.49, f1p:0.17, part:0.15, full:0.00, win:0.03 },
+  { model:"ToolACE-8B",           params:"8B",   f1f:0.43, f1p:0.13, part:0.13, full:0.00, win:0.00 },
+];
+
+const CURRICULUM = [
+  { lbl:"s1e1", strict:0.343, f1f:0.759, part:0.256 },
+  { lbl:"s1e2", strict:0.361, f1f:0.773, part:0.258 },
+  { lbl:"s1e3", strict:0.356, f1f:0.759, part:0.251 },
+  { lbl:"s1e4", strict:0.378, f1f:0.787, part:0.262 },
+  { lbl:"s2e1", strict:0.150, f1f:0.698, part:0.102 },
+  { lbl:"s2e3", strict:0.113, f1f:0.798, part:0.100 },
+  { lbl:"s2e4", strict:0.093, f1f:0.780, part:0.106 },
+  { lbl:"s3e1", strict:0.012, f1f:0.546, part:0.032 },
+  { lbl:"s3e2", strict:0.008, f1f:0.396, part:0.031 },
+  { lbl:"s3e3", strict:0.000, f1f:0.397, part:0.038 },
+  { lbl:"s4e1", strict:0.000, f1f:0.478, part:0.013 },
+  { lbl:"s4e2", strict:0.000, f1f:0.473, part:0.043 },
+];
+
+// ---------- CHART THEME ----------
+Chart.defaults.color = "#9aa6c2";
+Chart.defaults.borderColor = "#283154";
+Chart.defaults.font.family = "-apple-system, Segoe UI, Roboto, sans-serif";
+const METRIC_LABELS = ["F1 Func","F1 Param","Partial","Full","Win Rate"];
+const C_BASE = "#6ea8fe", C_FT = "#f59e0b";
+
+function groupedBar(canvasId, baseObj, ftObj) {
+  new Chart(document.getElementById(canvasId), {
+    type: "bar",
+    data: {
+      labels: METRIC_LABELS,
+      datasets: [
+        { label:"baseline", backgroundColor:C_BASE, borderRadius:5,
+          data:[baseObj.f1f, baseObj.f1p, baseObj.part, baseObj.full, baseObj.win] },
+        { label:"curriculum s4e2", backgroundColor:C_FT, borderRadius:5,
+          data:[ftObj.f1f, ftObj.f1p, ftObj.part, ftObj.full, ftObj.win] },
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      scales:{ y:{ beginAtZero:true, max:1, ticks:{ stepSize:0.2 } } },
+      plugins:{ legend:{ position:"top" },
+        tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } } },
+    },
+  });
+}
+groupedBar("chartDirect", OURS.baseline_direct, OURS.finetuned_direct);
+groupedBar("chartReact",  OURS.baseline_react,  OURS.finetuned_react);
+
+// ---------- BENCHMARK CHART ----------
+const benchModels = ["Náš Qwen3-4B", ...PAPER.map(p=>p.model)];
+const benchColors = benchModels.map((_,i)=> i===0 ? "#34d399" : "#64748b");
+function benchData(key, ourVal){ return [ourVal, ...PAPER.map(p=>p[key])]; }
+
+new Chart(document.getElementById("chartBench"), {
+  type:"bar",
+  data:{
+    labels: benchModels,
+    datasets:[
+      { label:"F1 Func",  backgroundColor:"#6ea8fe", borderRadius:4, data:benchData("f1f", OURS.baseline_direct.f1f) },
+      { label:"Partial",  backgroundColor:"#a78bfa", borderRadius:4, data:benchData("part", OURS.baseline_direct.part) },
+      { label:"Full",     backgroundColor:"#f472b6", borderRadius:4, data:benchData("full", OURS.baseline_direct.full) },
+      { label:"Win Rate", backgroundColor:"#34d399", borderRadius:4, data:benchData("win", OURS.baseline_direct.win) },
+    ],
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    scales:{ y:{ beginAtZero:true, max:1, ticks:{ stepSize:0.2 } },
+             x:{ ticks:{ maxRotation:45, minRotation:30, font:{ size:10 } } } },
+    plugins:{ legend:{ position:"top" },
+      tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } } },
+  },
+});
+
+// ---------- CURRICULUM CHART ----------
+new Chart(document.getElementById("chartCurriculum"), {
+  type:"line",
+  data:{
+    labels: CURRICULUM.map(d=>d.lbl),
+    datasets:[
+      { label:"strict_gold_trace_pass", borderColor:"#f59e0b", backgroundColor:"#f59e0b22",
+        tension:.3, fill:true, data:CURRICULUM.map(d=>d.strict) },
+      { label:"official F1 Func", borderColor:"#6ea8fe", backgroundColor:"transparent",
+        tension:.3, borderDash:[6,4], data:CURRICULUM.map(d=>d.f1f) },
+      { label:"official Partial", borderColor:"#34d399", backgroundColor:"transparent",
+        tension:.3, data:CURRICULUM.map(d=>d.part) },
+    ],
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    scales:{ y:{ beginAtZero:true, max:1, ticks:{ stepSize:0.2 } } },
+    plugins:{ legend:{ position:"top" },
+      tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } } },
+  },
+});
+
+// ---------- TABLES ----------
+function fmt(v){ return v==null ? "—" : v.toFixed(3); }
+const ourRows = [
+  ["baseline","Direct", OURS.baseline_direct],
+  ["baseline","ReAct",  OURS.baseline_react],
+  ["curriculum s4e2","Direct", OURS.finetuned_direct],
+  ["curriculum s4e2","ReAct",  OURS.finetuned_react],
+];
+document.getElementById("ourTable").innerHTML = ourRows.map(([m,p,d])=>
+  `<tr><td><span class="tag ours">${m}</span></td><td>${p}</td>
+   <td>${fmt(d.f1f)}</td><td>${fmt(d.f1p)}</td><td>${fmt(d.part)}</td><td>${fmt(d.full)}</td>
+   <td><strong>${fmt(d.win)}</strong></td></tr>`).join("");
+
+const od = OURS.baseline_direct;
+const benchAll = [
+  { model:"Náš Qwen3-4B (baseline)", params:"4B", f1f:od.f1f, f1p:od.f1p, part:od.part, full:od.full, win:od.win, ours:true },
+  ...PAPER.map(p=>({...p, ours:false})),
+];
+document.getElementById("benchTable").innerHTML = benchAll.map(p=>
+  `<tr><td><span class="tag ${p.ours?'ours':'paper'}">${p.model}</span></td><td>${p.params}</td>
+   <td>${fmt(p.f1f)}</td><td>${fmt(p.f1p)}</td><td>${fmt(p.part)}</td><td>${fmt(p.full)}</td>
+   <td><strong>${fmt(p.win)}</strong></td></tr>`).join("");
+</script>
+</body>
+</html>

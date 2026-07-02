@@ -1,0 +1,204 @@
+# NESTFUL MT-GRPO Minimal — standalone config.
+# Paths are relative to THIS folder (resolved by run.py), not the shell cwd.
+# imports nothing from curricullum/ or nestful_evaluation/.
+
+experiment:
+  name: nestful_mtgrpo_minimal
+  seed: 42
+  output_dir: outputs
+
+paths:
+  train_jsonl: data/filtered_toolr0_synthetic/epoch_3_3call.jsonl
+  eval_jsonl: data/filtered_toolr0_synthetic/epoch_4_4call.jsonl
+  all_stages_jsonl: data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl
+  # Stage files: data/filtered_toolr0_synthetic/epoch_N_Ncall.jsonl  (N=1..6)
+  full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
+  ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
+
+model:
+  base_model: Qwen/Qwen3-4B-Instruct-2507
+  lora_adapter: null                 # path to existing adapter for eval; null = base model
+  output_adapter_dir: outputs/checkpoints
+
+executor:
+  mode: auto                         # auto | full | gold_replay
+  ibm_call_timeout: 30.0
+
+hardware:
+  device: auto
+  num_gpus: auto
+  bf16: true
+  gradient_checkpointing: true
+  load_in_4bit: true                 # qlora default for 1x A100 40GB
+  qlora: true
+
+  # vLLM — opt-in. Set use_vllm: true for ~5-10x faster rollout generation.
+  # Eval only:  no HF model loaded; gpu_memory_utilization can be 0.85 (safe on 40GB)
+  # Train+vLLM: HF model (QLoRA ~3-5GB) + vLLM (bf16 ~8-10GB) ≈ 15GB total on 40GB
+  use_vllm: false
+  vllm_tensor_parallel_size: 1
+  vllm_gpu_memory_utilization: 0.85  # eval-only default; overridden to 0.45 for train
+  vllm_enforce_eager: false          # set true to debug CUDA graph issues
+  # Adapter sync strategy for train rollouts (vLLM uses updated adapter each epoch):
+  #   after_epoch  — save adapter at end of epoch, vLLM hot-swaps via LoRARequest
+  vllm_weight_sync: after_epoch
+
+  # ── Data-parallel rollouts (opt-in; multi-GPU TRAINING speedup) ──────────────
+  # Empty / null = OFF (single in-process vLLM engine, unchanged behaviour).
+  # When set to a list of GPU ids, TRAIN rollouts run in worker processes — one
+  # vLLM engine per GPU (tensor_parallel_size forced to 1) — while the HF QLoRA
+  # learner is pinned to visible GPU 0. This parallelises the dominant cost
+  # (num_generations episodes per task) across the otherwise-idle GPUs.
+  # The train process MUST see all listed GPUs (run_curriculum.sh handles the
+  # CUDA_VISIBLE_DEVICES wiring when ROLLOUT_DP_GPUS is exported).
+  # Example for 4×24-32GB: learner on GPU 0, rollouts on GPUs 1,2,3 → [1, 2, 3].
+  rollout_data_parallel_gpus: null
+  # GPU memory fraction for a rollout worker (owns its GPU alone — no HF model).
+  vllm_gpu_memory_utilization_dp: 0.85
+
+  # Flash Attention 2 for the HF model (QLoRA training + log-prob computation).
+  # vLLM always uses FA internally regardless of this flag.
+  # Requires: pip install flash-attn  (compiled, ~5-15 min on first install)
+  # Effect: ~30-40% lower activation VRAM, 2-4x faster attention in HF model.
+  # Especially valuable when use_vllm=true (both compete for the same 40GB).
+  # Set false if flash-attn is not installed or causes issues.
+  use_flash_attention: false
+
+finetuning:
+  method: qlora                      # lora | qlora
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: auto               # auto -> [q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj]
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+data:
+  train_stage: 3
+  eval_stage: 4
+  max_train_tasks: null              # null = all tasks in the JSONL (recommended for overnight)
+  max_eval_tasks: null               # null = all eval tasks
+
+  # ── Mixed curriculum replay (opt-in; reward UNCHANGED) ───────────────────────
+  # When mixed_replay: true, stage N trains on a weighted MIX of the per-stage
+  # files for stages 1..N (mixed_stage_files) instead of a single stage file.
+  # run_curriculum.sh sets these via --override when CURRICULUM_MIXED_REPLAY=1.
+  #   mixed_stage_files: CSV/list of per-stage JSONL paths (stage 1..N)
+  #   replay_weights:    CSV/list of sampling weights (uniform if empty/omitted)
+  mixed_replay: false
+  mixed_stage_files: null
+  replay_weights: null
+
+  # Final-eval scoring paradigm (compared against the NESTFUL paper):
+  #   react  — our multi-turn rollout (paper Table 2; high Win Rate, low Part/Full Acc)
+  #   direct — single-shot full-sequence generation w/ ICL (paper Table 1)
+  # Both write outputs/<run>/metrics_official.json via the REAL NESTFUL scorer.
+  eval_paradigm: react
+  num_icl_examples: 1                # in-context examples for direct paradigm (1 or 3)
+
+# Per-epoch VALIDATION (mode val_eval) — drives early stopping on ReAct Win Rate.
+# Reward UNCHANGED; this only evaluates. run_curriculum.sh sets epoch/stage and
+# subset_size via --override when EVAL_EVERY_EPOCH=1.
+validation:
+  subset_size: 0                     # 0 = full NESTFUL; >0 = deterministic subset
+  subset_ids_path: null              # default: <output_dir>/validation_subset_ids.json
+  subset_jsonl: null                 # default: <output_dir>/validation_subset.jsonl
+  epoch: null                        # filled by the curriculum loop
+  stage: null                        # filled by the curriculum loop
+  metric: react_win_rate
+
+generation:
+  max_turns: auto                    # auto -> gold_num_turns (+ extra for eval)
+  max_extra_turns_eval: 1
+  # Stage 4 historically had comp_peak=2559 and 44% clipping at 2560,
+  # so 1024 is only safe for smoke. Use larger budgets for train/eval.
+  max_new_tokens_smoke: 1024
+  max_new_tokens_train: 2048
+  max_new_tokens_eval: 2560
+  max_new_tokens_direct: 1024        # single-shot full sequence (direct paradigm)
+  max_new_tokens: 2048               # fallback when a mode-specific value is absent
+  max_prompt_tokens: 4096
+  max_model_length: 6144
+  temperature: 0.7
+  top_p: 0.95
+  num_generations: 4
+
+  # Tool-observation truncation — bounds how much of a tool's return value is
+  # ever serialised into the next-turn <tool_response>. Without this a tool that
+  # returns a huge list/string/array explodes the prompt past the context window
+  # and crashes vLLM ("decoder prompt longer than the maximum model length").
+  # Set any value to 0 to disable that particular cap.
+  observation_limits:
+    max_str_chars: 2000      # truncate any single string to this many chars
+    max_items: 200           # truncate any single list/dict to this many items
+    max_total_chars: 6000    # hard cap on the whole <tool_response> payload
+
+training:
+  epochs: 3                          # epochs per stage (overridable via EPOCHS env / --override)
+  learning_rate: 1.0e-6
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4
+  kl_beta: 0.02
+  max_grad_norm: 1.0
+  save_every_epoch: true
+  eval_after_epoch: true
+  # Clipped (max_new_tokens reached) episodes: reward 0 AND masked from GRPO update.
+  mask_clipped_from_update: true
+
+# Curriculum advancement policy (used by run_curriculum.sh multi-epoch loop).
+# This mirrors the logic from curricullum/train/run_curriculum_training.py:
+#   advance if strict_gold_trace_pass >= advance_threshold
+#               OR no improvement for plateau_patience consecutive epochs
+#               OR max_epochs_per_stage reached (always advance, never hard-stop)
+# GATE_MODE=warn  — log failures, always continue to next stage (overnight default)
+# GATE_MODE=stop  — hard stop on gate failure (use for careful interactive runs)
+curriculum:
+  advance_threshold: 0.50           # strict_gold_trace_pass rate to advance early
+  plateau_patience: 2               # epochs without improvement → advance anyway
+  max_epochs_per_stage: 4           # hard upper limit; always advances (never stops run)
+  gate_mode: warn                   # warn | stop  (warn = never abort the overnight run)
+
+reward:
+  train_policy: strict_gold_trace        # ONLY strict for training
+  final_eval_shadow_policy: solution_equivalent
+  binary_only: true
+  format_as_gate: true
+
+# Turn-level MT-GRPO-style credit assignment. Training rewards are derived ONLY
+# from the gold trace: per-turn r_t (strict_gold_turn_reward) + final episode
+# R_episode (strict_gold_trace_episode_reward). solution_equivalent / win_rate /
+# any soft signal are NEVER used here.
+#   G_t = sum_{k=t}^{T} gamma^(k-t) * r_k  +  lambda_episode * gamma^(T-t+1) * R_episode
+mt_grpo:
+  enabled: true
+  mode: turn_level_minimal          # turn_level_minimal | episode_level
+  gamma: 1.0
+  lambda_episode: 1.0
+  normalize_advantage: true
+  fallback_episode_level_if_needed: true
+
+# Stage-aware token budget (derived from prior W&B / sample analysis).
+# Interpretation: the main VRAM saving is reduced reserved capacity, not shorter
+# generated outputs. Do NOT reduce completion budget based only on p95; peak
+# length and clipped_ratio matter more.
+token_budget:
+  # vllm_max_model_length sets the engine context window for each stage. 24GB
+  # cards hold a much bigger KV cache than the old 40GB-conservative defaults, so
+  # these are raised to leave generous headroom (prompt + completion + margin).
+  # Observation truncation (generation.observation_limits) is the real overflow
+  # guard; the larger window just means legitimate long multi-turn tasks no
+  # longer hit the cap. The engine's max_model_len = max of these across stages.
+  stage_defaults:
+    "1": { max_prompt_tokens: 1536, max_new_tokens: 1280, vllm_max_model_length: 4096 }
+    "2": { max_prompt_tokens: 3072, max_new_tokens: 2048, vllm_max_model_length: 8192 }
+    "3": { max_prompt_tokens: 4096, max_new_tokens: 2048, vllm_max_model_length: 8192 }
+    "4": { max_prompt_tokens: 6144, max_new_tokens: 2560, vllm_max_model_length: 10240 }
+    "5": { max_prompt_tokens: 7168, max_new_tokens: 3072, vllm_max_model_length: 12288 }
+    "6": { max_prompt_tokens: 7168, max_new_tokens: 3072, vllm_max_model_length: 12288 }
+
+logging:
+  use_wandb: false
+  wandb_project: nestful-curriculum-toolr0
+  log_samples: true

@@ -1,0 +1,51 @@
+stages:
+  stage1_linear_simple:
+    motifs:
+      - linear_dependency
+      - independent_calls
+    max_calls: 2
+    reference_complexity: low
+
+  stage2_reference_reuse:
+    motifs:
+      - linear_dependency
+      - reference_reuse
+      - simple_fan_in
+      - object_or_list_output
+      - argument_transformation
+    max_calls: 3
+    reference_complexity: medium
+
+  stage3_structural_motifs:
+    motifs:
+      - fan_in
+      - fan_out
+      - object_or_list_output
+      - argument_transformation
+    max_calls: 5
+    reference_complexity: medium_high
+
+  stage4_nestful_like_mixed:
+    motifs:
+      - long_chain
+      - distractor_tools
+      - baseline_failure_inspired
+      - alternative_valid_traces
+      - independent_calls
+    max_calls: 8
+    reference_complexity: high
+
+stage_minimums:
+  stage1_linear_simple: 250
+  stage2_reference_reuse: 200
+  stage3_structural_motifs: 80
+  stage4_nestful_like_mixed: 120
+
+advance_gates:
+  require_dev_win_above_baseline: true
+  min_margin: 0.005
+  max_regression_rate_on_baseline_wins: 0.05
+  min_strict_trace_pass_retention: 0.70
+  max_avg_call_count_drop: 0.20
+  max_dead_group_rate: 0.70
+  do_not_enter_stage3_unless_stage2_beats_baseline: true

@@ -1,0 +1,32 @@
+{
+  "run_name": "qwen3_4b_lora_curriculum_run1",
+  "input_predictions": {
+    "base": "curricullum/evaluation/results/curriculum_baseline_multiturn_predictions.jsonl",
+    "stage1_1call": "curricullum/evaluation/results/curriculum_stage1_1call_multiturn_predictions.jsonl",
+    "stage2_2call": "curricullum/evaluation/results/curriculum_stage2_2call_multiturn_predictions.jsonl",
+    "stage3_3call": "curricullum/evaluation/results/curriculum_stage3_3call_multiturn_predictions.jsonl"
+  },
+  "optional_predictions": {
+    "stage4_4call": null,
+    "tool_r0_baseline": "eval/results/nestful/baseline_multiturn_predictions.jsonl"
+  },
+  "gold_data_path": "eval/data/NESTFUL-main/data_v2/nestful_data.jsonl",
+  "output_dir": "vizualisation/runs/qwen3_4b_lora_curriculum_run1",
+  "checkpoints_order": [
+    "base",
+    "stage1_1call",
+    "stage2_2call",
+    "stage3_3call"
+  ],
+  "rollout_policy": "all_rollouts",
+  "summary_aggregation": "best_score",
+  "dimensionality_reduction": {
+    "method": "pca",
+    "fallback_method": "pca",
+    "random_seed": 42
+  },
+  "figures": {
+    "formats": ["png", "pdf"],
+    "dpi": 300
+  }
+}

@@ -1,0 +1,5 @@
+run,model,paradigm,source_input,metrics_file,num_examples,num_pred_parsing_errors,f1_func,f1_param,partial,full,win_rate,win_source
+baseline_react,baseline (no LoRA),react,outputs\final_eval_baseline_react\final_eval_trajectories.jsonl,runs\baseline_react\metrics_official.json,1861,0,0.894,0.36,0.13,0.0,0.544,recomputed
+baseline_direct,baseline (no LoRA),direct,outputs\baseline_direct\direct_predictions.jsonl,runs\baseline_direct\metrics_official.json,1861,0,0.921,0.65,0.294,0.169,0.292,recomputed
+stage4e2_react,curriculum s4e2,react,outputs\final_eval_stage4_epoch2_react\final_eval_trajectories.jsonl,runs\stage4e2_react\metrics_official.json,1861,0,0.153,0.131,0.05,0.001,0.325,recomputed
+stage4e2_direct,curriculum s4e2,direct,outputs\stage4_epoch2_direct\direct_predictions.jsonl,runs\stage4e2_direct\metrics_official.json,1861,0,0.917,0.616,0.272,0.152,0.243,recomputed

@@ -1,0 +1,21 @@
+# AppWorld eval config using OpenAI-compatible backend.
+#
+# Use this when AppWorld and vLLM run in SEPARATE environments:
+#   Terminal 1 (vLLM env): python -m vllm.entrypoints.openai.api_server --model MODEL --port 8001
+#   Terminal 2 (appworld env): python -m eval.run_eval --benchmark appworld --config eval/configs/appworld_openai.yaml ...
+
+profile_name: baseline
+
+model:
+  backend: openai
+  api_base: "http://localhost:8001/v1"
+  api_key: "EMPTY"
+  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  model_path: "Qwen/Qwen2.5-1.5B-Instruct"
+  temperature: 0.0
+  max_new_tokens: 512
+
+batch_size: 1
+
+appworld_dataset: train
+appworld_max_difficulty: 1

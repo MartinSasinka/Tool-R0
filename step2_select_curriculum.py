@@ -27,6 +27,8 @@ Output JSON: list of selected dicts including:
   - combined_confidence (optional if enabled)
 """
 
+import vllm_compat  # noqa: F401  (monkey-patch for vLLM 0.8.4 + transformers 5.x)
+
 import argparse
 import json
 import math
@@ -41,6 +43,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
+
+from run_logging import append_jsonl, trace_sample_limit, write_json
 
 
 _PLACEHOLDER_PATTERNS = [
@@ -571,6 +575,26 @@ def main():
 
     args = ap.parse_args()
     t0 = time.time()
+    preview_limit = trace_sample_limit()
+
+    write_json(
+        "curriculum_config.json",
+        {
+            "stage": "step2_select_curriculum",
+            "judge_model": args.judge_model,
+            "in_json": args.in_json,
+            "out_json": args.out_json,
+            "n_final": args.n_final,
+            "batch_size": args.batch_size,
+            "max_tokens_judge": args.max_tokens_judge,
+            "temp_judge": args.temp_judge,
+            "mix_easy": args.mix_easy,
+            "mix_medium": args.mix_medium,
+            "mix_hard": args.mix_hard,
+            "seed": args.seed,
+            "default_diff": args.default_diff,
+        },
+    )
 
     items = load_items(args.in_json)
     if not items:
@@ -587,6 +611,8 @@ def main():
         gpu_memory_utilization=args.gpu_memory_utilization,
         max_model_len=args.max_model_len,
         enforce_eager=True,
+        trust_remote_code=True,
+        hf_overrides={"language_model_only": True},
     )
     tok = AutoTokenizer.from_pretrained(args.judge_model, trust_remote_code=True)
 
@@ -623,9 +649,37 @@ def main():
     print("[select] domains top20:", Counter(it.domain for it in selected).most_common(20), file=sys.stderr)
     print("[select] diff:", Counter(it.difficulty for it in selected), file=sys.stderr)
 
+    for idx, it in enumerate(selected[:preview_limit]):
+        append_jsonl(
+            "selected_curriculum_samples.jsonl",
+            {
+                "index": idx,
+                "question": it.question,
+                "tools": it.tools,
+                "calls": it.calls,
+                "domain": it.domain,
+                "difficulty": it.difficulty,
+                "judge_used_fallback": it.judge_used_fallback,
+                "judge_raw": it.judge_raw,
+                "combined_confidence": it.combined_confidence,
+            },
+        )
+
     write_output(args.out_json, selected, args.enable_conf_blend, args.conf_alpha)
 
     dt = time.time() - t0
+    write_json(
+        "curriculum_summary.json",
+        {
+            "stage": "step2_select_curriculum",
+            "loaded_items": len(items),
+            "selected_items": len(selected),
+            "selected_domains_top20": Counter(it.domain for it in selected).most_common(20),
+            "selected_difficulty_counts": Counter(it.difficulty for it in selected),
+            "output_path": args.out_json,
+            "elapsed_seconds": dt,
+        },
+    )
     print(f"[done] wrote -> {args.out_json} in {dt:.1f}s", file=sys.stderr)
 
 

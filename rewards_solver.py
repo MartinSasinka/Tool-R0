@@ -4,7 +4,12 @@ import re
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
-import wandb
+try:
+    import wandb
+except ImportError:
+    wandb = None  # type: ignore[assignment]
+
+from run_logging import append_jsonl, trace_sample_limit
 
 LAMBDA_NAME = 0.2
 LAMBDA_PARAM_NAMES = 0.3
@@ -12,7 +17,8 @@ LAMBDA_PARAM_VALUES = 0.5
 
 EXTRA_CALL_PENALTY_ALPHA = 0.25
 
-REQUIRE_THINK_TAG = True
+REQUIRE_THINK_TAG = False
+_SOLVER_TRACE_COUNTS: Dict[str, int] = {}
 
 TAG_PATTERNS = {
     "redacted_reasoning": re.compile(r"<think>(.*?)</think>", re.DOTALL | re.IGNORECASE),
@@ -452,6 +458,10 @@ def accuracy_reward_func(prompts, completions, answer, **kwargs) -> List[float]:
     if not isinstance(answer, list):
         answer = [answer] if answer is not None else []
 
+    step_key = str(kwargs.get("step", "unknown"))
+    trace_limit = trace_sample_limit()
+    logged_for_step = _SOLVER_TRACE_COUNTS.get(step_key, 0)
+
     for idx, (prompt, completion) in enumerate(zip(prompts, completions, strict=True)):
         _sep("SOLVER STEP")
 
@@ -463,6 +473,19 @@ def accuracy_reward_func(prompts, completions, answer, **kwargs) -> List[float]:
         if fields is None:
             _block("Solver Output (RAW)", _short(comp, n=5000))
             _block("Error", "Missing <tool_call_answer> (or <think> if REQUIRE_THINK_TAG=True)")
+            if is_main_process() and logged_for_step < trace_limit:
+                append_jsonl(
+                    "solver_trajectories.jsonl",
+                    {
+                        "trainer_step": kwargs.get("step"),
+                        "question": user_prompt,
+                        "raw_completion": comp,
+                        "parse_error": "missing_tool_call_answer_or_think",
+                        "accuracy_reward": 0.0,
+                    },
+                    step_name="step3_solver_train",
+                )
+                logged_for_step += 1
             rewards.append(0.0)
             continue
 
@@ -470,6 +493,20 @@ def accuracy_reward_func(prompts, completions, answer, **kwargs) -> List[float]:
         if predicted_calls is None:
             _block("Solver <tool_call_answer> (RAW)", _short(fields["tool_call_answer"], n=5000))
             _block("Error", "Failed to parse tool_call_answer")
+            if is_main_process() and logged_for_step < trace_limit:
+                append_jsonl(
+                    "solver_trajectories.jsonl",
+                    {
+                        "trainer_step": kwargs.get("step"),
+                        "question": user_prompt,
+                        "raw_completion": comp,
+                        "tool_call_answer_raw": fields["tool_call_answer"],
+                        "parse_error": "failed_to_parse_tool_call_answer",
+                        "accuracy_reward": 0.0,
+                    },
+                    step_name="step3_solver_train",
+                )
+                logged_for_step += 1
             rewards.append(0.0)
             continue
 
@@ -510,7 +547,7 @@ def accuracy_reward_func(prompts, completions, answer, **kwargs) -> List[float]:
         print(f"ACCURACY REWARD: {score:.3f}\n")
 
         step = kwargs.get("step", None)
-        if is_main_process() and wandb.run is not None:
+        if is_main_process() and wandb is not None and wandb.run is not None:
 
             wandb.log({
                 "solver/name_score": diag["mean_name_score"],
@@ -527,6 +564,23 @@ def accuracy_reward_func(prompts, completions, answer, **kwargs) -> List[float]:
                 "solver/num_gt_calls": diag["num_gt_calls"],
             }, step=step, commit=False)
 
+        if is_main_process() and logged_for_step < trace_limit:
+            append_jsonl(
+                "solver_trajectories.jsonl",
+                {
+                    "trainer_step": kwargs.get("step"),
+                    "question": user_prompt,
+                    "raw_completion": comp,
+                    "predicted_calls": predicted_calls,
+                    "ground_truth_calls": ground_truth_calls,
+                    "accuracy_reward": score,
+                    "diagnostics": diag,
+                },
+                step_name="step3_solver_train",
+            )
+            logged_for_step += 1
+
         rewards.append(float(max(0.0, min(1.0, score))))
 
+    _SOLVER_TRACE_COUNTS[step_key] = logged_for_step
     return rewards

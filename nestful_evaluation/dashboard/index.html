@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NESTFUL Eval Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css"/>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <nav class="topnav">
+    <h1>NESTFUL Dashboard</h1>
+    <a href="#overview" data-section>Overview</a>
+    <a href="#difficulty" data-section>Difficulty</a>
+    <a href="#domains" data-section>Domains</a>
+    <a href="#failures" data-section>Failures</a>
+    <a href="#heatmap" data-section>Heatmap</a>
+    <a href="#tools" data-section>Tools</a>
+    <a href="#gold" data-section>Gold Types</a>
+    <a href="#explorer" data-section>Explorer</a>
+    <a href="#subsets" data-section>SFT/KD</a>
+    <span id="generated-at" style="margin-left:auto;font-size:12px;color:#94a3b8"></span>
+  </nav>
+
+  <div class="container">
+    <div id="load-banner" class="load-banner hidden">
+      <span id="load-status">Load dashboard_data.json:</span>
+      <input type="file" id="file-input" accept=".json"/>
+      <span style="font-size:12px;color:#94a3b8">Or: <code>python -m http.server</code> in analysis_outputs/</span>
+    </div>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2>1. Overview</h2>
+      <p class="hint">Task-level pass rate is more informative than rollout-level accuracy because it reveals whether a task is systematically hard or merely unstable.</p>
+      <div id="overview-cards" class="cards"></div>
+    </section>
+
+    <!-- 2. Difficulty -->
+    <section id="difficulty">
+      <h2>2. Task Difficulty Distribution</h2>
+      <p class="hint">Hard-fail tasks are good candidates for targeted distillation. Unstable tasks are useful for robustness training.</p>
+      <div class="chart-row">
+        <div id="chart-difficulty" class="chart-box"></div>
+        <div id="chart-pass-hist" class="chart-box"></div>
+      </div>
+    </section>
+
+    <!-- 3. Domains -->
+    <section id="domains">
+      <h2>3. Problem Domain Analysis</h2>
+      <p class="hint">Which kinds of tasks are most difficult for the model?</p>
+      <div id="chart-domains" class="chart-box"></div>
+      <div class="table-wrap" id="domain-table"></div>
+    </section>
+
+    <!-- 4. Failure modes -->
+    <section id="failures">
+      <h2>4. Failure Mode Analysis</h2>
+      <p class="hint">Tool schema errors should be separated from reasoning errors because they require different training data.</p>
+      <div id="chart-failure-modes" class="chart-box"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Mode</th><th>Failed rollouts</th><th>Tasks</th><th>% of failures</th>
+            <th>Avg task pass</th><th>Explanation</th><th>Training strategy</th>
+          </tr></thead>
+          <tbody id="failure-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Heatmap -->
+    <section id="heatmap">
+      <h2>5. Heatmap: Domains vs Failure Modes</h2>
+      <p class="hint">Are string tasks failing on structured output? Are arithmetic tasks failing on reasoning or tool arguments?</p>
+      <div id="chart-heatmap" class="chart-box" style="min-height:420px"></div>
+    </section>
+
+    <!-- 6. Tools -->
+    <section id="tools">
+      <h2>6. Tool-Use Analysis</h2>
+      <div id="tool-stats"></div>
+      <div class="chart-row">
+        <div id="chart-malformed-tools" class="chart-box"></div>
+        <div id="chart-failed-tools" class="chart-box"></div>
+      </div>
+      <div class="table-wrap" id="malformed-examples"></div>
+    </section>
+
+    <!-- 7. Gold types -->
+    <section id="gold">
+      <h2>7. Gold Answer Type Analysis</h2>
+      <p class="hint">If list, dict, bool, or string answers have lower pass rates than numeric answers, the model may struggle with type fidelity and exact output formatting.</p>
+      <div id="chart-gold-types" class="chart-box"></div>
+      <div class="table-wrap" id="gold-table"></div>
+    </section>
+
+    <!-- 8. Explorer -->
+    <section id="explorer">
+      <h2>8. Task Explorer</h2>
+      <p class="hint">Click a row to inspect all rollouts for that task.</p>
+      <div class="filters">
+        <label>Search <input id="filter-search" type="text" placeholder="prompt or task id"/></label>
+        <label>Bucket <select id="filter-bucket"></select></label>
+        <label>Failure <select id="filter-mode"></select></label>
+        <label>Domain <select id="filter-domain"></select></label>
+        <label>Gold type <select id="filter-gtype"></select></label>
+        <label>Malformed <select id="filter-malformed">
+          <option value="">All</option><option value="yes">Yes</option><option value="no">No</option>
+        </select></label>
+        <label>Pass min <input id="filter-pass-min" type="number" min="0" style="width:60px"/></label>
+        <label>Pass max <input id="filter-pass-max" type="number" min="0" style="width:60px"/></label>
+        <span id="explorer-count" style="margin-left:auto;color:#94a3b8;font-size:13px"></span>
+      </div>
+      <div class="export-bar">
+        <button class="btn secondary small" onclick="exportVisibleTasks('csv')">Export visible CSV</button>
+        <button class="btn secondary small" onclick="exportVisibleTasks('json')">Export visible JSON</button>
+        <button class="btn secondary small" onclick="exportPreset('hard')">Export hard tasks</button>
+        <button class="btn secondary small" onclick="exportPreset('unstable')">Export unstable</button>
+        <button class="btn secondary small" onclick="exportPreset('schema')">Export schema repair</button>
+        <button class="btn secondary small" onclick="exportPreset('typed')">Export typed API</button>
+        <button class="btn secondary small" onclick="exportPreset('reasoning')">Export reasoning</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead id="explorer-thead"></thead>
+          <tbody id="explorer-tbody"></tbody>
+        </table>
+      </div>
+      <p id="explorer-truncated" style="font-size:12px;color:#94a3b8"></p>
+      <div id="task-detail" class="detail-panel"></div>
+    </section>
+
+    <!-- 9. Subsets -->
+    <section id="subsets">
+      <h2>9. Training Subset Recommendations</h2>
+      <p class="hint">Concrete subsets for SFT and knowledge distillation.</p>
+      <div id="subset-grid" class="subset-grid"></div>
+    </section>
+
+    <footer>NESTFUL diagnostic dashboard — open via local HTTP server for best results</footer>
+  </div>
+  <script src="dashboard.js"></script>
+</body>
+</html>

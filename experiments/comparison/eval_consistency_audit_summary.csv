@@ -1,0 +1,16 @@
+check,result,status,evidence
+same_eval_prompt_baseline_and_ckpt,yes (SYSTEM_PROMPT+_EVAL_HARDENING for both),PASS,prompt.py build_messages eval_hardening=eval_like; run_curriculum final_eval baseline+ckpt same config
+same_parser_eval,yes (lenient for both),PASS,rollout.py:284
+same_executor_eval,yes (full mode both),PASS,executor mode=auto->full
+same_scorer,yes (official NESTFUL scorer),PASS,nestful_official_score.py
+same_dataset_n,1861 for all runs,PASS,final_eval_all.csv num_examples col
+parse_errors_eval,0 for all runs,PASS,metrics_official.json num_pred_parsing_errors=0
+direct_vs_react_not_swapped,react Win>direct Win consistently; full_acc react~0 direct~0.16 (paradigm-correct),PASS,final_eval_all.csv
+full_acc_win_from_correct_columns,full from percentage_times_full_score; win from win_rate,PASS,nestful_official_score.py score_items
+react_baseline_win,0.544,PASS(reference),baseline_react/metrics_official.json
+react_best_checkpoint_win,partial_s1_e4=0.543 (<= baseline),FAIL(no improvement),final_eval_all.csv
+react_win_degrades_with_stage,0.543(s1)->0.533(s2)->0.479(s3)->0.450(s4),FAIL,final_eval_all.csv partial react rows
+react_f1_func_collapse,0.926(s1)->0.808(s2)->0.472(s3)->0.350(s4); minimal s4e2=0.153,FAIL,final_eval_all.csv / diagnostics.csv
+direct_win_stable_below_baseline,0.27-0.278 vs baseline 0.292,WARNING,final_eval_all.csv (LoRA barely changes Direct)
+final_answer_pass_equals_official_win,94.9% agreement,PASS,_audit_alignment.py (internal FAP ~ official Win)
+duplicate_rows_in_final_eval_all,none (each experiment/ckpt/paradigm unique),PASS,final_eval_all.csv inspection

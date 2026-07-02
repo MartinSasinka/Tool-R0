@@ -1,0 +1,4 @@
+comparison,n,both_win,a_win_b_fail,a_fail_b_win,both_fail,pct_both_win,pct_a_win_b_fail,pct_a_fail_b_win,pct_both_fail,note
+baseline_react vs partial_s1_e4_react,1861,860,151,149,701,46.21,8.11,8.01,37.67,
+baseline_react vs partial_s4_e1_react,1861,677,334,160,690,36.38,17.95,8.6,37.08,
+partial_s1_e4_react vs partial_s4_e1_react,1861,672,337,165,687,36.11,18.11,8.87,36.92,

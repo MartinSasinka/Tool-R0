@@ -1,0 +1,13 @@
+checkpoint,variant,n,react_win_rate,status
+baseline,current,400,,PENDING_GENERATION
+baseline,train_style,400,,PENDING_GENERATION
+baseline,hardened,400,,PENDING_GENERATION
+partial_s1_e4,current,400,,PENDING_GENERATION
+partial_s1_e4,train_style,400,,PENDING_GENERATION
+partial_s1_e4,hardened,400,,PENDING_GENERATION
+partial_s4_e1,current,400,,PENDING_GENERATION
+partial_s4_e1,train_style,400,,PENDING_GENERATION
+partial_s4_e1,hardened,400,,PENDING_GENERATION
+minimal_s4e2,current,400,,PENDING_GENERATION
+minimal_s4e2,train_style,400,,PENDING_GENERATION
+minimal_s4e2,hardened,400,,PENDING_GENERATION

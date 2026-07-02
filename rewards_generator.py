@@ -2,16 +2,19 @@ import json
 import re
 import os
 import math
+import time
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple, Set
 import unicodedata
 
 from openai import OpenAI
 
+from run_logging import append_jsonl, is_main_process, trace_sample_limit
+
 P_LOW = 0.25
 P_HIGH = 0.75
 P_TARGET = 0.5
-K_SOLVER_SAMPLES = 8
+K_SOLVER_SAMPLES = 4
 TEMP_SOLVER = 0.7
 MAX_TOKENS_SOLVER = 2048
 
@@ -36,6 +39,7 @@ ALPHA_GOLD_VALUES_VALID = 0.2
 ALPHA_DIFFICULTY_RAW = 0.5
 ALPHA_SEMANTIC_COHERENCE = 0.5
 ALPHA_REPETITION_PENALTY = 1.0
+_GENERATOR_TRACE_COUNTS: Dict[str, int] = {}
 
 TAG_PATTERNS = {
     "think": re.compile(r"<think>(.*?)</think>", re.DOTALL),
@@ -141,6 +145,27 @@ def normalize_tool_call(obj: Any) -> Optional[Dict[str, Any]]:
     return {"name": name, "arguments": flat}
 
 
+def normalize_tool_calls_list(obj: Any) -> List[Dict[str, Any]]:
+    """Normalize a raw tool-call payload into a list of `{name, arguments}` dicts.
+
+    If `obj` is a single dict it is wrapped in a list. Each element is
+    normalized via `normalize_tool_call`; elements that fail are dropped.
+    Returns an empty list when nothing can be parsed.
+    """
+    if obj is None:
+        return []
+    if isinstance(obj, dict):
+        obj = [obj]
+    if not isinstance(obj, list):
+        return []
+    out: List[Dict[str, Any]] = []
+    for item in obj:
+        nc = normalize_tool_call(item)
+        if nc is not None:
+            out.append(nc)
+    return out
+
+
 def parse_available_tools(tools_text: str) -> Optional[List[Dict[str, Any]]]:
     """Parse and validate the `<available_tools>` JSON payload.
 
@@ -173,9 +198,13 @@ def validate_args_against_schema(args: Dict[str, Any], schema: Optional[Dict[str
         return True
     if not isinstance(schema, dict):
         return True
+    if not isinstance(args, dict):
+        return False
     req = schema.get("required")
     if isinstance(req, list):
         for k in req:
+            if not isinstance(k, str):
+                continue
             if k not in args:
                 return False
     return True
@@ -200,6 +229,15 @@ def extract_solver_tool_call(response_text: str) -> Optional[Dict[str, Any]]:
     return normalize_tool_call(obj)
 
 
+def extract_solver_tool_calls_list(response_text: str) -> List[Dict[str, Any]]:
+    """Extract ALL normalized tool calls from a solver response."""
+    tca = _last_tag(response_text, "tool_call_answer")
+    if tca is None:
+        return []
+    obj = _json_loads_relaxed(tca)
+    return normalize_tool_calls_list(obj)
+
+
 @lru_cache(maxsize=8)
 def get_client(base_url: str) -> OpenAI:
     """Create or retrieve a cached OpenAI-compatible client for a base URL."""
@@ -214,22 +252,38 @@ def solver_sample_tool_calls(
     k: int = K_SOLVER_SAMPLES,
     temperature: float = TEMP_SOLVER,
     max_tokens: int = MAX_TOKENS_SOLVER,
-) -> List[Optional[Dict[str, Any]]]:
-    """Query the solver model multiple times and collect normalized tool calls."""
+    max_retries: int = 3,
+    retry_delay: float = 5.0,
+) -> List[List[Dict[str, Any]]]:
+    """Query the solver model multiple times and collect normalized tool call lists.
+
+    Returns empty lists per sample when the server is unavailable (connection
+    errors are caught and retried up to max_retries times; if all fail the
+    function returns k empty lists so training continues with 0 difficulty
+    reward rather than crashing).
+    """
     client = get_client(base_url)
-    outs: List[Optional[Dict[str, Any]]] = []
+    outs: List[List[Dict[str, Any]]] = []
     for _ in range(k):
-        resp = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": solver_system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        txt = resp.choices[0].message.content or ""
-        outs.append(extract_solver_tool_call(txt))
+        for attempt in range(max_retries):
+            try:
+                resp = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": solver_system_prompt},
+                        {"role": "user", "content": user_message},
+                    ],
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                txt = resp.choices[0].message.content or ""
+                outs.append(extract_solver_tool_calls_list(txt))
+                break
+            except Exception:
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay)
+                else:
+                    outs.append([])
     return outs
 
 
@@ -238,11 +292,11 @@ class SolverCache:
     Cache solver calls to avoid redundant inference when using
     separate reward_difficulty_raw and reward_consistency functions.
     """
-    _cache: Dict[str, List[Optional[Dict[str, Any]]]] = {}
+    _cache: Dict[str, List[List[Dict[str, Any]]]] = {}
     
     @classmethod
-    def get_key(cls, user_message: str, gold: Dict[str, Any]) -> str:
-        return f"{hash(user_message)}_{_canonical_json(gold)}"
+    def get_key(cls, user_message: str, gold_calls: List[Dict[str, Any]]) -> str:
+        return f"{hash(user_message)}_{_canonical_json(gold_calls)}"
     
     @classmethod
     def get_or_call(
@@ -251,12 +305,12 @@ class SolverCache:
         model: str,
         solver_system_prompt: str,
         user_message: str,
-        gold: Dict[str, Any],
+        gold_calls: List[Dict[str, Any]],
         k: int = K_SOLVER_SAMPLES,
         temperature: float = TEMP_SOLVER,
         max_tokens: int = MAX_TOKENS_SOLVER,
-    ) -> List[Optional[Dict[str, Any]]]:
-        key = cls.get_key(user_message, gold)
+    ) -> List[List[Dict[str, Any]]]:
+        key = cls.get_key(user_message, gold_calls)
         
         if key not in cls._cache:
             cls._cache[key] = solver_sample_tool_calls(
@@ -281,26 +335,26 @@ def solver_sample_tool_calls_cached(
     model: str,
     solver_system_prompt: str,
     user_message: str,
-    gold: Dict[str, Any],
+    gold_calls: List[Dict[str, Any]],
     k: int = K_SOLVER_SAMPLES,
     temperature: float = TEMP_SOLVER,
     max_tokens: int = MAX_TOKENS_SOLVER,
-) -> List[Optional[Dict[str, Any]]]:
+) -> List[List[Dict[str, Any]]]:
     """Cached version of solver_sample_tool_calls."""
     return SolverCache.get_or_call(
         base_url=base_url,
         model=model,
         solver_system_prompt=solver_system_prompt,
         user_message=user_message,
-        gold=gold,
+        gold_calls=gold_calls,
         k=k,
         temperature=temperature,
         max_tokens=max_tokens,
     )
 
 
-def consistency_score(calls: List[Optional[Dict[str, Any]]]) -> float:
-    canon = [_canonical_json(c) for c in calls if c is not None]
+def consistency_score(calls: List[List[Dict[str, Any]]]) -> float:
+    canon = [_canonical_json(c) for c in calls if c]
     if len(canon) == 0:
         return 0.0
     freq = {}
@@ -311,13 +365,13 @@ def consistency_score(calls: List[Optional[Dict[str, Any]]]) -> float:
 
 
 def success_prob_against_gold(
-    calls: List[Optional[Dict[str, Any]]],
-    gold: Dict[str, Any],
+    calls: List[List[Dict[str, Any]]],
+    gold_calls: List[Dict[str, Any]],
 ) -> float:
-    g = _canonical_json(gold)
+    g = _canonical_json(gold_calls)
     good = 0
     for c in calls:
-        if c is not None and _canonical_json(c) == g:
+        if c and _canonical_json(c) == g:
             good += 1
     return good / len(calls) if calls else 0.0
 
@@ -361,7 +415,7 @@ class CompletionCache:
         key = id(completion_text)
         
         if key not in cls._cache:
-            fields = extract_generator_fields(completion_text, think_flag=True)
+            fields = extract_generator_fields(completion_text, think_flag=False)
             
             if fields is None:
                 cls._cache[key] = {
@@ -369,17 +423,20 @@ class CompletionCache:
                     "fields": None,
                     "tools": None,
                     "gold": None,
+                    "gold_calls": [],
                 }
             else:
                 tools = parse_available_tools(fields["available_tools"])
                 gold_obj = _json_loads_relaxed(fields["tool_call_answer"])
-                gold = normalize_tool_call(gold_obj) if gold_obj is not None else None
+                gold_calls = normalize_tool_calls_list(gold_obj)
+                gold = gold_calls[0] if gold_calls else None
                 
                 cls._cache[key] = {
                     "valid": True,
                     "fields": fields,
                     "tools": tools,
                     "gold": gold,
+                    "gold_calls": gold_calls,
                 }
         
         return cls._cache[key]
@@ -546,7 +603,7 @@ def reward_gold_valid_json(prompts, completions, **kwargs) -> List[float]:
         
         if not parsed["valid"]:
             rewards.append(0.0)
-        elif parsed["gold"] is not None:
+        elif parsed.get("gold_calls"):
             rewards.append(1.0)
         else:
             rewards.append(0.0)
@@ -556,11 +613,9 @@ def reward_gold_valid_json(prompts, completions, **kwargs) -> List[float]:
 
 def reward_gold_tool_exists(prompts, completions, **kwargs) -> List[float]:
     """
-    Reward 4: Does the gold tool call reference a tool that exists in available_tools?
-    
-    Returns:
-        0.0 if prerequisites fail or tool name not found
-        1.0 if gold tool name exists in available_tools
+    Reward 4: Do ALL gold tool calls reference tools that exist in available_tools?
+
+    Returns fraction of gold calls whose name appears in the tool index.
     """
     rewards: List[float] = []
     
@@ -568,28 +623,23 @@ def reward_gold_tool_exists(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
         
-        if not parsed["valid"] or parsed["tools"] is None or parsed["gold"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or parsed["tools"] is None or not gold_calls:
             rewards.append(0.0)
             continue
         
         tindex = tool_index(parsed["tools"])
-        gold_name = parsed["gold"]["name"]
-        
-        if gold_name in tindex:
-            rewards.append(1.0)
-        else:
-            rewards.append(0.0)
+        ok = sum(1 for gc in gold_calls if gc["name"] in tindex)
+        rewards.append(ok / len(gold_calls))
     
     return rewards
 
 
 def reward_gold_args_valid(prompts, completions, **kwargs) -> List[float]:
     """
-    Reward 5: Do the gold arguments satisfy the tool's schema (required params)?
-    
-    Returns:
-        0.0 if prerequisites fail or required args missing
-        1.0 if all required arguments are present
+    Reward 5: Do ALL gold arguments satisfy each tool's schema (required params)?
+
+    Returns fraction of gold calls whose required arguments are present.
     """
     rewards: List[float] = []
     
@@ -597,25 +647,26 @@ def reward_gold_args_valid(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
         
-        if not parsed["valid"] or parsed["tools"] is None or parsed["gold"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or parsed["tools"] is None or not gold_calls:
             rewards.append(0.0)
             continue
         
         tindex = tool_index(parsed["tools"])
-        gold = parsed["gold"]
-        tool_spec = tindex.get(gold["name"])
-        
-        if tool_spec is None:
-            rewards.append(0.0)
-            continue
-        
-        schema = tool_spec.get("parameters")
-        if validate_args_against_schema(gold["arguments"], schema):
-            rewards.append(1.0)
-        else:
-            rewards.append(0.0)
+        ok = 0
+        for gc in gold_calls:
+            tool_spec = tindex.get(gc["name"])
+            if tool_spec is None:
+                continue
+            schema = tool_spec.get("parameters")
+            if validate_args_against_schema(gc["arguments"], schema):
+                ok += 1
+        rewards.append(ok / len(gold_calls))
     
     return rewards
+
+
+_VAR_REF_RE = re.compile(r"^\$var_\d+\.result\$?$")
 
 
 def reward_gold_values_valid(prompts, completions, **kwargs) -> List[float]:
@@ -625,40 +676,30 @@ def reward_gold_values_valid(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
 
-        if not parsed["valid"] or parsed["gold"] is None or parsed["fields"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or not gold_calls or parsed["fields"] is None:
             rewards.append(0.0)
             continue
 
         q_norm = _norm_text(parsed["fields"]["question"])
-        args = parsed["gold"].get("arguments", {})
 
-        if not args:
-            rewards.append(1.0)
-            continue
-
-        ok = True
-        for _, val in args.items():
-            if isinstance(val, bool) or val is None:
-                continue
-
-            variants = get_grounding_variants(val)
-            found = False
-
-        for v in variants:
-            if v.isdigit():
+        total = 0
+        matched = 0
+        for gc in gold_calls:
+            args = gc.get("arguments", {})
+            for _, val in args.items():
+                if isinstance(val, bool) or val is None:
+                    continue
+                if isinstance(val, str) and _VAR_REF_RE.match(val):
+                    continue
+                total += 1
+                variants = get_grounding_variants(val)
+                for v in variants:
                     if re.search(rf"\b{re.escape(v)}\b", q_norm):
-                        found = True
-                        break
-                else:
-                    if re.search(rf"\b{re.escape(v)}\b", q_norm):
-                        found = True
+                        matched += 1
                         break
 
-            if not found:
-                ok = False
-                break
-
-        rewards.append(1.0 if ok else 0.0)
+        rewards.append(1.0 if total == 0 else matched / total)
 
     return rewards
 
@@ -684,7 +725,8 @@ def reward_difficulty_raw(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
         
-        if not parsed["valid"] or parsed["tools"] is None or parsed["gold"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or parsed["tools"] is None or not gold_calls:
             rewards.append(0.0)
             continue
         
@@ -702,11 +744,11 @@ def reward_difficulty_raw(prompts, completions, **kwargs) -> List[float]:
             model=solver_model,
             solver_system_prompt=solver_system_prompt,
             user_message=user_msg,
-            gold=parsed["gold"],
+            gold_calls=gold_calls,
             k=K_SOLVER_SAMPLES,
         )
         
-        p_success = success_prob_against_gold(solver_calls, parsed["gold"])
+        p_success = success_prob_against_gold(solver_calls, gold_calls)
         
         if p_success < (1.0 / K_SOLVER_SAMPLES):
             rewards.append(0.0)
@@ -746,7 +788,8 @@ def reward_consistency(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
         
-        if not parsed["valid"] or parsed["tools"] is None or parsed["gold"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or parsed["tools"] is None or not gold_calls:
             rewards.append(0.0)
             continue
         
@@ -764,7 +807,7 @@ def reward_consistency(prompts, completions, **kwargs) -> List[float]:
             model=solver_model,
             solver_system_prompt=solver_system_prompt,
             user_message=user_msg,
-            gold=parsed["gold"],
+            gold_calls=gold_calls,
             k=K_SOLVER_SAMPLES,
         )
         
@@ -964,7 +1007,8 @@ def reward_semantic_coherence(prompts, completions, **kwargs) -> List[float]:
         comp = completion[0]["content"]
         parsed = CompletionCache.get_or_parse(comp)
         
-        if not parsed["valid"] or parsed["tools"] is None or parsed["gold"] is None:
+        gold_calls = parsed.get("gold_calls", [])
+        if not parsed["valid"] or parsed["tools"] is None or not gold_calls:
             rewards.append(0.0)
             continue
         
@@ -1125,6 +1169,51 @@ def clear_judge_cache():
     LLMJudgeCache.clear()
 
 
+def _log_generator_batch_trajectories(
+    completions,
+    curriculum_rewards: List[float],
+    kwargs: Dict[str, Any],
+) -> None:
+    if not is_main_process():
+        return
+
+    step_key = str(kwargs.get("step", "unknown"))
+    already_logged = _GENERATOR_TRACE_COUNTS.get(step_key, 0)
+    limit = trace_sample_limit()
+    if already_logged >= limit:
+        return
+
+    fmt_rewards = reward_format_accuracy([], completions, **kwargs)
+    val_rewards = reward_validity_accuracy([], completions, **kwargs)
+
+    for completion, fmt_r, val_r, cur_r in zip(completions, fmt_rewards, val_rewards, curriculum_rewards):
+        if already_logged >= limit:
+            break
+
+        comp = completion[0]["content"]
+        parsed = CompletionCache.get_or_parse(comp)
+        fields = parsed.get("fields") if parsed else None
+
+        append_jsonl(
+            "generator_trajectories.jsonl",
+            {
+                "trainer_step": kwargs.get("step"),
+                "format_reward": fmt_r,
+                "validity_reward": val_r,
+                "curriculum_reward": cur_r,
+                "question": None if not fields else fields.get("question"),
+                "available_tools": None if not fields else fields.get("available_tools"),
+                "tool_call_answer": None if not fields else fields.get("tool_call_answer"),
+                "raw_completion": comp,
+                "parsed_ok": bool(parsed and parsed.get("valid")),
+            },
+            step_name="step1_generator_train",
+        )
+        already_logged += 1
+
+    _GENERATOR_TRACE_COUNTS[step_key] = already_logged
+
+
 def reward_format_accuracy(prompts, completions, **kwargs) -> List[float]:
     """Aggregate format-related rewards into a single scalar score."""
     r1 = reward_tags_parsed(prompts, completions, **kwargs)
@@ -1165,4 +1254,6 @@ def reward_curriculum(prompts, completions, **kwargs) -> List[float]:
 
     out = [a1*x + a2*y for x, y in zip(r1, r2)]
     gate = _question_gate_mask(completions)
-    return [o*g for o, g in zip(out, gate)]
+    final_rewards = [o*g for o, g in zip(out, gate)]
+    _log_generator_batch_trajectories(completions, final_rewards, kwargs)
+    return final_rewards

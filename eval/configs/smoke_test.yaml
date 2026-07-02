@@ -1,0 +1,12 @@
+# Smoke test config — no GPU needed.
+# Uses dummy backend with canned responses.
+
+profile_name: smoke
+
+model:
+  backend: dummy
+  model_path: dummy
+  dummy_response: "<think>\nSmoke test.\n</think>\n<tool_call_answer>[{\"name\": \"dummy_tool\", \"arguments\": {\"key\": \"value\"}}]</tool_call_answer>"
+
+batch_size: 2
+dry_run: true

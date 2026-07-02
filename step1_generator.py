@@ -6,6 +6,12 @@ from dataclasses import dataclass, field
 from datasets import Dataset, load_dataset
 import torch
 
+from grpo_processing import (
+    load_grpo_tokenizer,
+    fix_checkpoint_for_vllm,
+    apply_grpo_peft_workarounds,
+)
+from run_logging import is_main_process, write_json
 from trl import (
     GRPOConfig,
     GRPOTrainer,
@@ -161,9 +167,11 @@ def sample_spec():
     if context_type == "multi_turn":
         num_calls = 1
     else:
-        num_calls = random.choices([1, 2], weights=[0.8, 0.2], k=1)[0]
+        num_calls = random.choices([1, 2, 3], weights=[0.5, 0.3, 0.2], k=1)[0]
 
+    nested = False
     if num_calls > 1:
+        nested = random.random() < 0.5
         tool_menu_size = random.choices([3, 4, 5], weights=[0.3, 0.4, 0.3], k=1)[0]
     else:
         bucket = random.choices(["SMALL5", "LARGE"], weights=[0.4, 0.6], k=1)[0]
@@ -176,6 +184,7 @@ def sample_spec():
         "num_calls": num_calls,
         "tool_menu_size": tool_menu_size,
         "context_type": context_type,
+        "nested": nested,
     }
 
 
@@ -193,27 +202,25 @@ def main():
 
     SYSTEM_PROMPT_GENERATOR_TEMPLATE = """You are an expert task generator for tool-calling agents.
 
-    FIRST, in your private scratch-pad, reason step-by-step to design a realistic, non-trivial task that cannot be solved without correctly calling one or sometimes multiple tools.
+    Think carefully about the task design, then output EXACTLY the three XML blocks shown below (and nothing else outside them).
 
     CONTROL SPEC (MUST FOLLOW EXACTLY):
     - Domain: {domain}
     - Context type: {context_type}  (single_turn or multi_turn)
     - Number of available tools: {tool_menu_size} (<available_tools>)
     - Number of gold tool calls: {num_calls} (<tool_call_answer>)
+    - Nested dependencies: {nested}  (true = later calls MUST reference earlier call results)
 
     RULES TO SATISFY THE SPEC:
     1) You MUST output exactly {tool_menu_size} tools in <available_tools>.
     2) You MUST output exactly {num_calls} tool calls (JSON list length) in <tool_call_answer>.
     3) Domain must be {domain}. Do not drift into other domains.
     4) If context_type=multi_turn, embed a short conversation in <question> like: "# Conversation\\nUser: ...\\nAgent: ...\\nUser: ...\\nAgent: ..."
-    5) Tool arguments must be flat primitives only (no lists, no nested objects).
+    5) Tool arguments must be flat primitives (no lists, no nested objects), EXCEPT when referencing results of earlier calls (see rule 7).
     6) The function values (<value1>, <value2>, ...) MUST be present inside user question (<question>...</question>), otherwise agent cannot solve the task.
+    7) If nested=true AND num_calls > 1, at least one later call MUST use $var_N.result$ as an argument value to reference the output of an earlier call (N is the 1-based call index). Example: first call gets data, second call uses $var_1.result$ as input. The <question> should describe a task that naturally chains these calls.
 
-    THEN, without revealing your reasoning, output the following four blocks in the exact format, NOTHING ELSE:
-
-    <think>
-    Your private reasoning here.
-    </think>
+    OUTPUT FORMAT (three blocks, nothing else):
 
     <question>
     Write a natural user question (no bullet points, no meta-instructions, no placeholders).
@@ -249,7 +256,7 @@ def main():
         "A conversation between user and tool-calling assistant. The user asks a question, and the assistant uses tools to solve it. The "
         "assistant first thinks about the reasoning process in the mind and then provides the user with the answer. "
         "The reasoning process and answer are enclosed within <think></think> and <tool_call_answer></tool_call_answer> tags, i.e., <think>\nThis is my "
-        "reasoning.\n</think>\n<tool_call_answer>[{\"name\": \"<tool_name>\", \"arguments\": {\"arg1\": \"value\", \"arg2\": \"value2\", ...}}, ...]</tool_call_answer>."
+        "reasoning.\n</think>\n<tool_call_answer>[{\"name\": \"<tool_name>\", \"arguments\": {\"arg1\": \"value\", \"arg2\": \"value2\", ...}}, ...]</tool_call_answer>. "
     )
 
     def make_conversation_generator(example):
@@ -268,17 +275,56 @@ def main():
     train_dataset = train_dataset.add_column("solver_prompt", [SYSTEM_PROMPT_SOLVER] * len(train_dataset))
     train_dataset = train_dataset.add_column("model_name_or_path", [model_args.model_name_or_path] * len(train_dataset))
 
+    if is_main_process():
+        domain_counts = {}
+        for spec in specs:
+            domain_counts[spec["domain"]] = domain_counts.get(spec["domain"], 0) + 1
+
+        write_json(
+            "trainer_setup.json",
+            {
+                "stage": "step1_generator",
+                "model_name_or_path": model_args.model_name_or_path,
+                "output_dir": training_args.output_dir,
+                "max_steps": training_args.max_steps,
+                "number_of_generated_data": N,
+                "dataset_size": len(train_dataset),
+                "spec_preview": specs[: min(5, len(specs))],
+                "domain_counts": domain_counts,
+                "solver_prompt_preview": SYSTEM_PROMPT_SOLVER,
+            },
+        )
+
 
     dtype = model_args.dtype if model_args.dtype in ["auto", None] else getattr(torch, model_args.dtype)
     training_args.model_init_kwargs = dict(
         revision=model_args.model_revision,
         attn_implementation=model_args.attn_implementation,
         dtype=dtype,
+        trust_remote_code=True,
     )
+
+    processing_class = load_grpo_tokenizer(
+        model_args.model_name_or_path,
+        revision=model_args.model_revision,
+    )
+
+    # PEFT/LoRA: trl.get_peft_config returns a LoraConfig only when
+    # --use_peft true is passed; otherwise None and the trainer does full FT.
+    peft_config = get_peft_config(model_args)
+    if peft_config is not None:
+        apply_grpo_peft_workarounds(training_args)
+        if is_main_process():
+            print(
+                f"[step1] LoRA enabled: r={peft_config.r} alpha={peft_config.lora_alpha} "
+                f"dropout={peft_config.lora_dropout} targets={peft_config.target_modules}"
+            )
 
     trainer = GRPOTrainer(
         model=model_args.model_name_or_path,
         args=training_args,
+        processing_class=processing_class,
+        peft_config=peft_config,
         reward_funcs=[
             reward_format_accuracy,
             reward_validity_accuracy,
@@ -288,6 +334,8 @@ def main():
     )
 
     trainer.train()
+    trainer.save_model()
+    fix_checkpoint_for_vllm(training_args.output_dir, model_args.model_name_or_path)
 
 
 if __name__ == "__main__":

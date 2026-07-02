@@ -12,6 +12,8 @@ Post-verification script:
 This does NOT modify gen.py.
 """
 
+import vllm_compat  # noqa: F401  (monkey-patch for vLLM 0.8.4 + transformers 5.x)
+
 import argparse
 import json
 import os
@@ -24,6 +26,8 @@ from collections import Counter
 
 from vllm import LLM, SamplingParams
 from transformers import AutoTokenizer
+
+from run_logging import append_jsonl, trace_sample_limit, write_json
 
 
 _PLACEHOLDER_PATTERNS = [
@@ -141,7 +145,7 @@ SYSTEM_PROMPT_SOLVER = (
     "A conversation between user and tool-calling assistant. The user asks a question, and the assistant uses tools to solve it. The "
     "assistant first thinks about the reasoning process in the mind and then provides the user with the answer. "
     "The reasoning process and answer are enclosed within <think></think> and <tool_call_answer></tool_call_answer> tags, i.e., <think>\nThis is my "
-    "reasoning.\n</think>\n<tool_call_answer>[{\"name\": \"<tool_name>\", \"arguments\": {\"arg1\": \"value\", \"arg2\": \"value2\", ...}}, ...]</tool_call_answer>."
+    "reasoning.\n</think>\n<tool_call_answer>[{\"name\": \"<tool_name>\", \"arguments\": {\"arg1\": \"value\", \"arg2\": \"value2\", ...}}, ...]</tool_call_answer>. "
 )
 
 SOLVER_USER_TMPL = """User request:
@@ -266,12 +270,29 @@ def main():
     ap.add_argument("--report_examples", type=int, default=5)
 
     args = ap.parse_args()
+    preview_limit = trace_sample_limit()
 
     print(f"[cfg] solver_model={args.solver_model}", file=sys.stderr)
     print(f"[cfg] in={args.in_intermediate_json}", file=sys.stderr)
     print(f"[cfg] out={args.out_intermediate_json}", file=sys.stderr)
     print(f"[cfg] report={args.report_txt}", file=sys.stderr)
     print(f"[cfg] k={args.k_verify} tau={args.tau_verify} temp={args.temp_verify}", file=sys.stderr)
+    write_json(
+        "verification_config.json",
+        {
+            "stage": "step2_genverify",
+            "solver_model": args.solver_model,
+            "in_intermediate_json": args.in_intermediate_json,
+            "out_intermediate_json": args.out_intermediate_json,
+            "report_txt": args.report_txt,
+            "k_verify": args.k_verify,
+            "tau_verify": args.tau_verify,
+            "temp_verify": args.temp_verify,
+            "max_tokens_verify": args.max_tokens_verify,
+            "verify_batch_size": args.verify_batch_size,
+            "tensor_parallel_size": args.tensor_parallel_size,
+        },
+    )
 
     llm_solver = LLM(
         model=args.solver_model,
@@ -279,6 +300,8 @@ def main():
         gpu_memory_utilization=args.gpu_memory_utilization,
         max_model_len=args.max_model_len,
         enforce_eager=True,
+        trust_remote_code=True,
+        hf_overrides={"language_model_only": True},
     )
     tokenizer = AutoTokenizer.from_pretrained(args.solver_model, trust_remote_code=True)
 
@@ -349,6 +372,30 @@ def main():
             drop_reasons[rsn] += 1
     drop_reasons.update(drop_early_reasons)
 
+    for idx, d in enumerate(kept[:preview_limit]):
+        append_jsonl(
+            "verified_kept_samples.jsonl",
+            {
+                "index": idx,
+                "question": d.get("question"),
+                "tools": d.get("tools"),
+                "calls": d.get("calls"),
+                "meta": d.get("meta"),
+            },
+        )
+
+    for idx, d in enumerate((dropped + dropped_early)[:preview_limit]):
+        append_jsonl(
+            "verified_dropped_samples.jsonl",
+            {
+                "index": idx,
+                "question": d.get("question"),
+                "tools": d.get("tools"),
+                "calls": d.get("calls"),
+                "meta": d.get("meta"),
+            },
+        )
+
     os.makedirs(os.path.dirname(args.out_intermediate_json) or ".", exist_ok=True)
     with open(args.out_intermediate_json, "w", encoding="utf-8") as f:
         json.dump(kept, f, ensure_ascii=False, indent=2)
@@ -411,6 +458,21 @@ def main():
                 rf.write(d.get("meta", {}).get("solver_raw_output", "N/A") + "\n")
 
     dt = time.time() - t0
+    write_json(
+        "verification_summary.json",
+        {
+            "stage": "step2_genverify",
+            "input_total": len(data),
+            "kept": len(kept),
+            "dropped": len(dropped),
+            "dropped_early": len(dropped_early),
+            "drop_reasons_top20": drop_reasons.most_common(20),
+            "agreement_rates_preview": rates[: min(20, len(rates))],
+            "output_path": args.out_intermediate_json,
+            "report_path": args.report_txt,
+            "elapsed_seconds": dt,
+        },
+    )
     print(f"[out] wrote kept={len(kept)} dropped={len(dropped)} to {args.out_intermediate_json}", file=sys.stderr)
     print(f"[out] report saved to {args.report_txt}", file=sys.stderr)
     print(f"[time] {dt:.1f}s", file=sys.stderr)

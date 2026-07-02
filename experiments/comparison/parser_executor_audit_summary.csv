@@ -1,0 +1,21 @@
+area,check,result,status,evidence
+parser,exactly-one-tag strict gate,valid_single ok; multiple_tags rejected; multiple_tool_calls rejected,PASS,parser.py parse_tool_call + _audit_parser_reward.py
+parser,invalid JSON rejected (strict),reason=invalid_json,PASS,_audit_parser_reward.py
+parser,missing name rejected,reason=missing_name_or_arguments,PASS,_audit_parser_reward.py
+parser,missing/!dict arguments rejected,reason=arguments_not_dict,PASS,_audit_parser_reward.py
+parser,no tag rejected,reason=no_tag,PASS,_audit_parser_reward.py
+parser,terminal [] recognized,is_terminal=True,PASS,_audit_parser_reward.py
+parser,round-trip parsed->serialized->parsed,ok for valid calls,PASS,_audit_parser_reward.py
+parser,lenient recovers mangled close tag,</tool_call_call> recovered,PASS,parser.py lenient + _audit
+parser,lenient recovers bare JSON array,recovered,PASS,_audit
+parser,train uses STRICT parser; eval uses LENIENT,strict in grpo_train.py:260; lenient in rollout.py:284,WARNING,train/eval parser asymmetry (deliberate; same lenient for baseline+ckpt in eval)
+executor,observation from PREDICTED call not gold,exec_res=executor.execute(call) call=parsed pred,PASS,rollout.py:300-303
+executor,no gold observations used in eval,history built only from exec_res.observation,PASS,rollout.py:315-320
+executor,final eval runs in full (real) mode,executor_mode=full; gold replay win=1.0,PASS,gold replay sanity n=150
+executor,executor error -> penalized/stop,fail_reason exec:* -> stop_reason executor_error,PASS,rollout.py:305-313
+executor,invalid reference handling,executor errors on bad ref in full mode (reward relies on this),WARNING,reward.py/partial_reward.py do not validate refs themselves
+executor,max_turns/clipped handling,eval=gold_n+1 (cap gold_n+4); train=gold_n; clipped->reward0+masked,PASS,rollout.py:218-222 grpo_train.py:436
+executor,gold trace replay -> high Win,Win=1.000 executable=1.000 (n=150),PASS,_audit_gold_replay.py
+executor,official scorer is the real NESTFUL scorer,imports data/NESTFUL-main/src/scorer.py calculate_win_score/calculate_ans,PASS,"nestful_official_score.py:188,259"
+ablation,no-tool ablation,NOT RUN (no expensive eval per instructions),NEEDS_MANUAL_REVIEW,recommended in audit_recommendations.md
+ablation,shuffled observations ablation,NOT RUN,NEEDS_MANUAL_REVIEW,recommended in audit_recommendations.md

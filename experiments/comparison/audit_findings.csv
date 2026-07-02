@@ -1,0 +1,25 @@
+id,pass,area,finding,status,confidence,evidence
+F01,2,data,Train data is synthetic Tool-R0 (2268 tasks 1-6 calls); eval is real NESTFUL (1861 tasks 2-53 calls); domains disjoint (0 question overlap),WARNING,high,config.yaml paths; _audit overlap=0
+F02,2,data,Gold-trace replay through official scorer yields Win=1.000 executable=1.000 full=1.000 (n=150),PASS,high,_audit_gold_replay.py
+F03,2,data,All gold tool names + arg keys valid vs schema; 0 empty gold; 0 malformed,PASS,high,_audit schema checks
+F04,5,executor,ReAct eval observations come from executed PREDICTED calls; no gold leakage,PASS,high,rollout.py:300-320
+F05,9,eval,Official scorer == real NESTFUL src/scorer.py; baseline+ckpt evaluated identically (same prompt/parser/executor/scorer/n=1861/0 parse errors),PASS,high,nestful_official_score.py; final_eval_all.csv
+F06,9,eval,Internal final_answer_pass agrees with official Win 94.9%,PASS,high,_audit_alignment.py
+F07,9,result,NO checkpoint beats baseline ReAct Win 0.544 (best=partial_s1_e4 0.543),FAIL,high,final_eval_all.csv
+F08,9,result,ReAct Win degrades monotonically across curriculum: 0.543->0.533->0.479->0.450 (s1->s4),FAIL,high,final_eval_all.csv
+F09,9,result,ReAct F1 Func collapses with stage: 0.926->0.808->0.472->0.350 (minimal s4e2=0.153),FAIL,high,diagnostics.csv
+F10,7,training,Partial TRAIN reward falls 0.86->0.26 across curriculum despite ~380 GRPO updates/epoch,FAIL,high,training_process_audit_summary.csv (train_log.jsonl)
+F11,7,training,Within stages 2-4 reward declines every epoch (e.g. s3: 0.62->0.34) = optimization moving the wrong way,FAIL,high,train_log.jsonl aggregation
+F12,7,training,group_mixed rises 0.30->0.95 and group_all_one collapses 0.75->0.00 = harder stages give dense but unhelpful signal,WARNING,high,train_log.jsonl
+F13,10,reward,Reward-vs-Win correlation: execution=0.876 > partial=0.636 > strict=0.387,PASS,high,execution_reward_correlation_summary.csv
+F14,10,reward,"Execution reward false-positive(win0,r>0.7)=0.7% false-negative(win1,r<0.3)=0%",PASS,high,_audit_alignment.py
+F15,6,reward,strict/partial reward measure gold-trace fidelity; the model+Win drift to alt execution paths the reward penalizes => REWARD MISMATCH,FAIL,high,reward.py/partial_reward.py + correct_answer_alt_path case + F08/F10
+F16,6,reward,partial reward does NOT zero on parse error (gives prefix credit 0.35); only zeros on clipped,WARNING,medium,_audit_parser_reward.py parse_error case
+F17,6,reward,extra calls beyond gold NOT penalized (length_penalty=0 default),WARNING,medium,_audit_parser_reward.py extra_calls case
+F18,6,reward,strict/partial do not validate arg VALUES/references; rely on executor to error,WARNING,medium,_audit_parser_reward.py invalid_reference case
+F19,8,checkpoint,Curriculum carry-forward selects best-by-strict_gold_trace_pass per stage NOT by Win; advance_threshold 0.50 never reached (max ~0.40) so always advances,WARNING,high,"run_curriculum.sh:762-773,803"
+F20,8,checkpoint,No trainer_state.json/config_used sidecars present on disk for checkpoints; stage1 paths /mnt/raid vs stages2-4 /workspace (multi-pod run),WARNING,medium,glob trainer_state.json=0; epoch_summary.jsonl paths
+F21,3,prompt,Train uses SYSTEM_PROMPT+strict parser+max_turns=gold_n; eval adds _EVAL_HARDENING+lenient parser+gold_n+1 turns (format-compatible but mismatched),WARNING,medium,prompt.py;grpo_train.py;rollout.py
+F22,4,parser,Strict + lenient parser behave correctly on all 10 test cases incl round-trip,PASS,high,_audit_parser_reward.py
+F23,7,training,LR 1e-6 + KL 0.02 + num_generations=4; KL/entropy/grad-norm NOT logged so policy-drift magnitude unquantified,WARNING,medium,grpo_train.py logging (no kl/entropy in train_log.jsonl)
+F24,5,executor,no-tool and shuffled-observation ablations not run (per instructions),NEEDS_MANUAL_REVIEW,low,audit_recommendations.md

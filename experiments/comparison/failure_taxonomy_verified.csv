@@ -1,0 +1,4 @@
+comparison,regressions_a_win_b_fail,gains_a_fail_b_win,n,note
+baseline_react vs partial_s1_e4_react,151,149,1861,verified counts; fine-grained type needs trajectories
+baseline_react vs partial_s4_e1_react,334,160,1861,verified counts; fine-grained type needs trajectories
+partial_s1_e4_react vs partial_s4_e1_react,337,165,1861,verified counts; fine-grained type needs trajectories

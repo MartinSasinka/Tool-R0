@@ -1,0 +1,23 @@
+reward:
+  name: execution_aware_v2_1_motif
+  weights:
+    tool_final_answer_pass: 0.30
+    executable_trajectory: 0.20
+    valid_references: 0.15
+    motif_trace_consistency: 0.15
+    tool_use_completeness: 0.10
+    gold_or_equivalent_trace_progress: 0.10
+
+  caps:
+    parse_error: 0.0
+    clipped: 0.0
+    no_tool_call: 0.0
+    terminal_before_first_successful_tool: 0.0
+    not_executable: 0.25
+    invalid_reference: 0.25
+    too_few_calls_without_final: 0.20
+    final_pass_but_severe_short_trace: 0.65
+    final_pass_but_low_motif_consistency: 0.75
+
+  floors:
+    executable_final_motif_consistent: 0.85

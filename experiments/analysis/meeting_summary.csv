@@ -1,0 +1,9 @@
+run_id,experiment,paradigm,label,full,win_rate,partial,macro_f1_func,micro_f1_func,set_match,seq_match,conclusion
+baseline_direct,baseline,direct,baseline (no LoRA),0.169,0.292,0.294,0.921,0.843,0.314,0.285,baseline
+baseline_react,baseline,react,baseline (no LoRA),0.0,0.544,0.13,0.894,,,,baseline
+minimal_s4e2_direct,minimal/strict,direct,minimal strict s4e2,0.152,0.243,0.272,0.917,,,,degradation
+minimal_s4e2_react,minimal/strict,react,minimal strict s4e2,0.001,0.325,0.05,0.153,,,,collapse
+partial_s1e4_direct,partial,direct,partial s1e4,0.163,0.274,0.292,0.919,0.842,0.31,0.28,degradation
+partial_s1e4_react,partial,react,partial s1e4,0.0,0.543,0.137,0.926,0.733,0.289,0.275,stable-near-baseline
+partial_s4e1_direct,partial,direct,partial s4e1,0.164,0.274,0.291,0.932,0.845,0.313,0.285,degradation
+partial_s4e1_react,partial,react,partial s4e1,0.001,0.45,0.084,0.35,0.628,0.148,0.134,degradation

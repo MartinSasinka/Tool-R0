@@ -1,0 +1,17 @@
+check,scope,value,status,evidence
+total_train_tasks_synthetic,train,2268 (400/400/400/400/400/268 for stages 1-6),PASS,data.py load_tasks + epoch_N_Ncall.jsonl
+train_num_calls_per_stage,train,exactly N per stage file (no contamination),PASS,_audit (Counter num_calls)
+total_eval_tasks_nestful,eval,1861,PASS,nestful_data.jsonl md5 b08c47ac
+eval_num_calls_distribution,eval,2-53 calls; 2-call=609 3-call=407 (55% are 2-3 calls); NO 1-call tasks,PASS(note),_audit Counter
+empty_gold_calls,both,0,PASS,_audit
+gold_answer_missing,eval,0,PASS,_audit
+gold_tool_name_in_schema,eval,0 violations / all calls,PASS,_audit schema check
+gold_arg_keys_in_schema,eval,0 non-argN violations,PASS,_audit schema check
+gold_trace_replay_official_win,eval,1.000 on n=150 sample,PASS,_audit_gold_replay.py via official scorer
+gold_trace_replay_executable,eval,1.000,PASS,_audit_gold_replay.py
+gold_trace_replay_full_match,eval,1.000,PASS,_audit_gold_replay.py
+gold_trace_replay_parse_valid,eval,1.000,PASS,_audit_gold_replay.py
+malformed_json_in_gold,both,0 (all rows json.loads cleanly),PASS,data.py normalize_task
+train_eval_question_overlap,both,0 / 1861 (no leakage),PASS,_audit set membership
+train_eval_distribution,both,DISJOINT domains: train=synthetic Tool-R0; eval=real NESTFUL,WARNING,config.yaml paths.* (train epoch_N vs nestful_data.jsonl)
+train_covers_eval_depth,both,train max gold=6 calls; eval has up to 53 calls (45% of eval >3 calls),WARNING,_audit num_calls dist

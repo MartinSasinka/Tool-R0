@@ -1,0 +1,2 @@
+# Shell scripts must use LF on checkout (bash on Linux/DGX breaks on CRLF).
+*.sh text eol=lf

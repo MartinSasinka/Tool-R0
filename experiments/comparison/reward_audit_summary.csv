@@ -1,0 +1,17 @@
+case,expected_strict,actual_strict,expected_partial,actual_partial,expected_execution,actual_execution,status,note
+perfect_gold_trace,1,1.00,~1,1.00,high,1.00,PASS,all three agree on a perfect episode
+correct_answer_alt_path,0,0.00,low,0.30,high,0.90,PASS,strict=0 (path wrong); partial only credits final (0.3); execution rewards the win -> exactly the RQ3 motivation
+no_tool_call,0,0.00,0,0.00,0,0.00,PASS,execution hard-cap 'no_tool_call'
+too_few_calls_wrong,low,0.00,low,0.35,capped<=0.5,0.42,PASS,execution soft-cap path; partial gives prefix credit
+executable_wrong_answer,0,0.00,medium,0.70,medium,0.55,PASS,partial trace credit 0.7; execution withholds final 0.45
+invalid_reference,0/penalized,1.00,penalized,1.00,penalized,0.90,WARNING,strict/partial do NOT validate arg VALUES/refs - they rely on the executor erroring; only execution_aware scores valid_references. In gold_replay/lenient exec a bad ref could pass.
+wrong_tool_name,0,0.00,penalized,0.65,penalized(but high if answer right),0.95,WARNING,execution_aware over-credits when final answer matches even with wrong tool (mock forces answer); real executor would not yield gold -> bounded in practice
+wrong_arg_keys,0,0.00,penalized,0.79,penalized,0.97,PASS,strict gates on keys; partial/execution give graded credit
+extra_calls,0,0.00,documented,1.00,documented,1.00,WARNING,length_penalty=0 default -> extra calls beyond gold are NOT penalized
+missing_calls,0,0.00,penalized,0.35,penalized,0.42,PASS,completeness/trace penalize missing calls
+parse_error,0,0.00,0,0.35,0,0.00,WARNING,partial does NOT zero on parse error (only on clipped); it keeps correct-prefix credit. strict+execution correctly 0.
+clipped_rollout,0,0.00,0,0.00,0,0.00,PASS,all three zero + masked from GRPO update
+executor_error,0,0.00,partial,0.59,bounded,0.36,PASS,graded credit for clean prefix; failed turn earns no exec credit
+correlation_vs_official_win,aggregate(n=7444),strict pearson=0.387,,partial pearson=0.636,,execution pearson=0.876,PASS,execution_reward_correlation_summary.csv
+false_positive_rate_win0_reward>0.7,aggregate,strict=0.002,,partial=0.013,,execution=0.007,PASS,_audit_alignment.py (low reward-hacking risk)
+false_negative_rate_win1_reward<0.3,aggregate,,,,,execution=0.000,PASS,_audit_alignment.py
