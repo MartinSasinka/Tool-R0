@@ -1,0 +1,126 @@
+name: curriculum_v3_1_prefix_motif_call_count
+description: >
+  Prefix/motif-aware call-count curriculum.
+  Each stage preserves exact number of tool calls while samples are derived
+  from NESTFUL failure motifs and full synthetic trajectories.
+
+stages:
+  stage1_1call_atomic:
+    exact_num_calls: 1
+    min_tasks: 800
+    target_tasks: 1000
+    purpose:
+      - learn atomic tool invocation
+      - learn correct tool selection
+      - learn argument formatting
+      - learn final answer from one observation
+      - learn first-step actions from longer NESTFUL-like motifs
+    allowed_motifs:
+      - atomic_from_linear
+      - atomic_from_long_chain
+      - atomic_from_fan_in
+      - atomic_from_object_list
+      - atomic_from_baseline_failure
+      - atomic_tool_selection_with_distractors
+
+  stage2_2call_dependency:
+    exact_num_calls: 2
+    min_tasks: 800
+    target_tasks: 1000
+    purpose:
+      - learn one dependency
+      - learn reference passing
+      - learn continuation after first observation
+      - reduce premature final answer
+      - learn 2-call prefixes from long-chain failure motifs
+    allowed_motifs:
+      - two_call_linear_prefix
+      - two_call_long_chain_prefix
+      - two_call_reference_passing
+      - two_call_reference_reuse_prefix
+      - two_call_object_field_prefix
+      - two_call_list_prefix
+      - two_call_baseline_failure_prefix
+
+  stage3_3call_composition:
+    exact_num_calls: 3
+    min_tasks: 800
+    target_tasks: 1000
+    purpose:
+      - learn multi-step continuation
+      - learn two references
+      - learn simple fan-in
+      - learn short composition
+      - reduce too_few_calls on 3-call tasks
+    allowed_motifs:
+      - three_call_linear_chain
+      - three_call_long_chain_prefix
+      - three_call_fan_in
+      - three_call_reference_reuse
+      - three_call_object_list
+      - three_call_argument_transformation
+
+  stage4_4to6call_persistence:
+    min_num_calls: 4
+    max_num_calls: 6
+    min_tasks: 800
+    target_tasks: 1000
+    purpose:
+      - learn longer persistence
+      - learn distractor avoidance
+      - learn nested object/list outputs
+      - learn shortened long-chain NESTFUL-like traces
+    allowed_motifs:
+      - four_to_six_call_long_chain
+      - fan_in_with_distractors
+      - object_list_nested
+      - baseline_failure_inspired
+      - distractor_tool_selection
+
+optional_stage5_full_long_chain:
+  enabled_by_default: false
+  min_num_calls: 7
+  max_num_calls: 9
+  purpose:
+    - full long-chain only after stage4 passes gates
+
+advance_gates:
+  stage2_requires:
+    stage1_dev_win_ge_baseline: true
+    no_tool_call_not_increased: true
+    too_few_calls_not_increased: true
+
+  stage3_requires:
+    stage2_dev_win_ge_baseline_plus: 0.005
+    dead_group_rate_max: 0.50
+    avg_call_count_drop_max: 0.20
+    too_few_calls_rate_not_increasing: true
+
+  stage4_requires:
+    stage3_dev_win_ge_baseline_plus: 0.005
+    long_chain_dev_delta_nonnegative: true
+    strict_trace_retention_min: 0.70
+    avg_call_count_drop_max: 0.20
+
+replay_policy:
+  stage1:
+    allowed_replay_stages: []
+    replay_ratio: 0.0
+  stage2:
+    allowed_replay_stages: [stage1_1call_atomic]
+    replay_ratio: 0.20
+  stage3:
+    allowed_replay_stages: [stage1_1call_atomic, stage2_2call_dependency]
+    replay_ratio: 0.25
+  stage4:
+    allowed_replay_stages:
+      - stage1_1call_atomic
+      - stage2_2call_dependency
+      - stage3_3call_composition
+    replay_ratio: 0.30
+
+generation:
+  random_seed: 31042
+  min_full_trajectories: 500
+  target_full_trajectories: 900
+  upsample_until_stage_mins: true

@@ -1,0 +1,6 @@
+checkpoint,trained_stage,synthetic_stage_success,real_dev_1_2call_win,real_dev_3call_win,real_dev_5_8call_win,too_few_calls_rate,avg_pred_calls,conclusion
+baseline_dev,baseline,n/a,n/a,n/a,n/a,n/a,n/a,baseline
+s1_e1,stage1,n/a,n/a,n/a,n/a,n/a,n/a,pending_v3_1_pilot
+s1_e2,stage1,n/a,n/a,n/a,n/a,n/a,n/a,best_pilot_checkpoint
+s2_e1,stage2,n/a,n/a,n/a,n/a,n/a,n/a,pending_v3_1_pilot
+s2_e2,stage2,n/a,n/a,n/a,n/a,n/a,n/a,pending_v3_1_pilot

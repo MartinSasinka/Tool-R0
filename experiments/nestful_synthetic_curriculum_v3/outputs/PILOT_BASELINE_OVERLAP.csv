@@ -1,0 +1,5 @@
+category,count,share
+baseline_fail_model_fail,69,0.345
+baseline_fail_model_win,20,0.1
+baseline_win_model_fail,16,0.08
+baseline_win_model_win,95,0.475

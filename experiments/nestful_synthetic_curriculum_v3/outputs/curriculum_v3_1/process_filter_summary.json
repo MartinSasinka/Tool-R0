@@ -1,0 +1,30 @@
+{
+  "total_input": 3200,
+  "total_passed": 3200,
+  "total_failed": 0,
+  "pass_rate": 1.0,
+  "duplicate_ids": 0,
+  "stage_stats": {
+    "stage1_1call_atomic": {
+      "input": 800,
+      "passed": 800,
+      "failed": 0
+    },
+    "stage2_2call_dependency": {
+      "input": 800,
+      "passed": 800,
+      "failed": 0
+    },
+    "stage3_3call_composition": {
+      "input": 800,
+      "passed": 800,
+      "failed": 0
+    },
+    "stage4_4to6call_persistence": {
+      "input": 800,
+      "passed": 800,
+      "failed": 0
+    }
+  },
+  "hard_fail": false
+}

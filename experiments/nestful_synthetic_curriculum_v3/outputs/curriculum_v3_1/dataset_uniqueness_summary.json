@@ -1,0 +1,914 @@
+{
+  "status": "WARN",
+  "source_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3_1\\filtered",
+  "exact_duplicate_count": 0,
+  "mean_unique_question_ratio": 1.0,
+  "mean_trace_duplicate_ratio": 0.0003,
+  "per_stage": {
+    "stage1_1call_atomic": {
+      "stage": "stage1_1call_atomic",
+      "status": "WARN",
+      "total_samples": 800,
+      "unique_questions": 800,
+      "unique_question_ratio": 1.0,
+      "exact_duplicate_count": 0,
+      "trace_duplicate_count": 0,
+      "trace_duplicate_ratio": 0.0,
+      "question_template_duplicate_count": 721,
+      "question_template_duplicate_ratio": 0.9012,
+      "unique_exact_signatures": 800,
+      "unique_trace_signatures": 800,
+      "unique_tool_sequences": 15,
+      "max_trajectory_id_count": 1,
+      "max_tool_sequence_share": 0.165,
+      "used_tool_names": [
+        "add",
+        "concat",
+        "divide_safe",
+        "filter_greater_than",
+        "greater_than",
+        "less_than",
+        "lookup_by_key",
+        "make_object",
+        "max_list",
+        "multiply",
+        "sort_list",
+        "string_length",
+        "subtract",
+        "sum_list",
+        "uppercase"
+      ],
+      "used_tool_count": 15,
+      "used_tool_families": [
+        "boolean",
+        "list",
+        "lookup",
+        "math",
+        "object",
+        "string"
+      ],
+      "used_tool_family_count": 6,
+      "output_type_distribution": {
+        "scalar": 304,
+        "boolean": 193,
+        "object": 69,
+        "string": 78,
+        "list": 156
+      },
+      "source_failure_cluster_distribution": {
+        "synthetic_gap_boolean_output__wrong_condition": 193,
+        "synthetic_gap_list_output__wrong_field": 156,
+        "synthetic_gap_long_chain__too_few_calls": 112,
+        "synthetic_gap_linear_dependency__too_few_calls": 108,
+        "synthetic_gap_string_output__wrong_answer": 82,
+        "synthetic_gap_object_list__wrong_extraction": 66,
+        "linear_dependency__too_few_calls": 47,
+        "long_chain__too_few_calls": 33,
+        "lookup_query__wrong_field": 3
+      },
+      "target_full_motif_distribution": {
+        "object_or_list_output": 222,
+        "independent_calls": 193,
+        "linear_dependency": 155,
+        "long_chain": 145,
+        "reference_reuse": 85
+      },
+      "top_exact_duplicates": [],
+      "top_trace_duplicates": [],
+      "top_template_duplicates": [
+        {
+          "template": "task: find <NUM> plus <NUM>. return the outcome.",
+          "count": 16
+        },
+        {
+          "template": "please compute the sum of <NUM> and <NUM> and report the answer.",
+          "count": 16
+        },
+        {
+          "template": "using the tools, add <NUM> and <NUM>. what is the result?",
+          "count": 16
+        },
+        {
+          "template": "complete this single-step task: use the addition tool to combine <NUM> and <NUM>",
+          "count": 16
+        },
+        {
+          "template": "your job is to calculate <NUM> + <NUM>. provide the answer.",
+          "count": 16
+        },
+        {
+          "template": "your job is to join the strings <STR> and <STR>. provide the answer.",
+          "count": 16
+        },
+        {
+          "template": "please check whether <NUM> is greater than <NUM> and report the answer.",
+          "count": 16
+        },
+        {
+          "template": "using the tools, filter the list <LIST> to values greater than <NUM>. what is th",
+          "count": 16
+        },
+        {
+          "template": "task: filter the list <LIST> to values greater than <NUM>. return the outcome.",
+          "count": 16
+        },
+        {
+          "template": "complete this single-step task: filter the list <LIST> to values greater than <N",
+          "count": 16
+        },
+        {
+          "template": "please filter the list <LIST> to values greater than <NUM> and report the answer",
+          "count": 16
+        },
+        {
+          "template": "using the tools, join the strings <STR> and <STR>. what is the result?",
+          "count": 16
+        },
+        {
+          "template": "complete this single-step task: join the strings <STR> and <STR>. return the res",
+          "count": 16
+        },
+        {
+          "template": "using the tools, create an object with field <STR> set to <STR>. what is the res",
+          "count": 16
+        },
+        {
+          "template": "your job is to filter the list <LIST> to values greater than <NUM>. provide the ",
+          "count": 16
+        },
+        {
+          "template": "task: sort the list <LIST>. return the outcome.",
+          "count": 16
+        },
+        {
+          "template": "using the tools, sort the list <LIST>. what is the result?",
+          "count": 16
+        },
+        {
+          "template": "complete this single-step task: sort the list <LIST>. return the result.",
+          "count": 15
+        },
+        {
+          "template": "task: divide <NUM> by <NUM>. return the outcome.",
+          "count": 15
+        },
+        {
+          "template": "please sort the list <LIST> and report the answer.",
+          "count": 15
+        }
+      ],
+      "top_tool_sequence_duplicates": [
+        {
+          "sequence": "greater_than",
+          "count": 132
+        },
+        {
+          "sequence": "add",
+          "count": 80
+        },
+        {
+          "sequence": "filter_greater_than",
+          "count": 80
+        },
+        {
+          "sequence": "sort_list",
+          "count": 76
+        },
+        {
+          "sequence": "concat",
+          "count": 74
+        },
+        {
+          "sequence": "make_object",
+          "count": 66
+        },
+        {
+          "sequence": "less_than",
+          "count": 61
+        },
+        {
+          "sequence": "subtract",
+          "count": 56
+        },
+        {
+          "sequence": "multiply",
+          "count": 52
+        },
+        {
+          "sequence": "divide_safe",
+          "count": 50
+        },
+        {
+          "sequence": "sum_list",
+          "count": 44
+        },
+        {
+          "sequence": "max_list",
+          "count": 18
+        },
+        {
+          "sequence": "string_length",
+          "count": 4
+        },
+        {
+          "sequence": "uppercase",
+          "count": 4
+        },
+        {
+          "sequence": "lookup_by_key",
+          "count": 3
+        }
+      ]
+    },
+    "stage2_2call_dependency": {
+      "stage": "stage2_2call_dependency",
+      "status": "WARN",
+      "total_samples": 800,
+      "unique_questions": 800,
+      "unique_question_ratio": 1.0,
+      "exact_duplicate_count": 0,
+      "trace_duplicate_count": 1,
+      "trace_duplicate_ratio": 0.0013,
+      "question_template_duplicate_count": 611,
+      "question_template_duplicate_ratio": 0.7638,
+      "unique_exact_signatures": 800,
+      "unique_trace_signatures": 799,
+      "unique_tool_sequences": 10,
+      "max_trajectory_id_count": 1,
+      "max_tool_sequence_share": 0.1737,
+      "used_tool_names": [
+        "add",
+        "concat",
+        "divide_safe",
+        "filter_greater_than",
+        "get_field",
+        "greater_than",
+        "less_than",
+        "lookup_by_key",
+        "lowercase",
+        "make_object",
+        "multiply",
+        "sort_list",
+        "subtract",
+        "uppercase"
+      ],
+      "used_tool_count": 14,
+      "used_tool_families": [
+        "boolean",
+        "list",
+        "lookup",
+        "math",
+        "object",
+        "string"
+      ],
+      "used_tool_family_count": 6,
+      "output_type_distribution": {
+        "boolean": 128,
+        "scalar": 359,
+        "string": 185,
+        "list": 128
+      },
+      "source_failure_cluster_distribution": {
+        "synthetic_gap_boolean_output__wrong_condition": 128,
+        "synthetic_gap_list_output__wrong_field": 128,
+        "long_chain__too_few_calls": 118,
+        "synthetic_gap_string_output__wrong_answer": 116,
+        "synthetic_gap_fan_in__wrong_argument": 81,
+        "synthetic_gap_object_list__wrong_extraction": 69,
+        "linear_dependency__too_few_calls": 56,
+        "synthetic_gap_reference_reuse__invalid_reference": 48,
+        "synthetic_gap_independent_calls__premature_final": 33,
+        "independent_calls__premature_final": 14,
+        "synthetic_gap_distractor_tools__wrong_tool": 6,
+        "lookup_query__wrong_field": 3
+      },
+      "target_full_motif_distribution": {
+        "object_or_list_output": 197,
+        "independent_calls": 175,
+        "reference_reuse": 167,
+        "long_chain": 118,
+        "fan_in": 81,
+        "linear_dependency": 56,
+        "distractor_tools": 6
+      },
+      "top_exact_duplicates": [],
+      "top_trace_duplicates": [
+        {
+          "hash": "c09e495d12aa9f2765f818d65cb953d714d9a6004fe7d70fefb3cf86cdecc031",
+          "count": 2
+        }
+      ],
+      "top_template_duplicates": [
+        {
+          "template": "complete two steps: (<NUM>) check whether <NUM> is greater than <NUM>; (<NUM>) c",
+          "count": 12
+        },
+        {
+          "template": "complete two steps: (<NUM>) compare <NUM> with <NUM> using greater-than; (<NUM>)",
+          "count": 12
+        },
+        {
+          "template": "first, join the strings <STR> and <STR>. then, convert the previous result to lo",
+          "count": 12
+        },
+        {
+          "template": "first, filter the list <LIST> to values greater than <NUM>. then, sort the list ",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: filter the list <LIST> to values grea",
+          "count": 12
+        },
+        {
+          "template": "start by doing this: check whether <NUM> is greater than <NUM>. next, check whet",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: compare <NUM> with <NUM> using greate",
+          "count": 12
+        },
+        {
+          "template": "first, filter the list <LIST> to values greater than <NUM>. then, take the list ",
+          "count": 12
+        },
+        {
+          "template": "start by doing this: join the strings <STR> and <STR>. next, convert the previou",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: filter the list <LIST> to values grea",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: check whether <NUM> is greater than <",
+          "count": 12
+        },
+        {
+          "template": "complete two steps: (<NUM>) join the strings <STR> and <STR>; (<NUM>) convert th",
+          "count": 12
+        },
+        {
+          "template": "first, check whether <NUM> is greater than <NUM>. then, check whether <NUM> is l",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: join the strings <STR> and <STR>. ste",
+          "count": 12
+        },
+        {
+          "template": "complete two steps: (<NUM>) filter the list <LIST> to values greater than <NUM>;",
+          "count": 12
+        },
+        {
+          "template": "complete two steps: (<NUM>) filter the list <LIST> to values greater than <NUM>;",
+          "count": 12
+        },
+        {
+          "template": "complete two steps: (<NUM>) return whether <NUM> exceeds <NUM>; (<NUM>) check wh",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: return whether <NUM> exceeds <NUM>. s",
+          "count": 12
+        },
+        {
+          "template": "perform two operations in order. step one: add <NUM> and <NUM>. step two: multip",
+          "count": 11
+        },
+        {
+          "template": "complete two steps: (<NUM>) create an object with field <STR> set to <STR>; (<NU",
+          "count": 11
+        }
+      ],
+      "top_tool_sequence_duplicates": [
+        {
+          "sequence": "add->multiply",
+          "count": 139
+        },
+        {
+          "sequence": "add->add",
+          "count": 134
+        },
+        {
+          "sequence": "greater_than->less_than",
+          "count": 128
+        },
+        {
+          "sequence": "filter_greater_than->sort_list",
+          "count": 128
+        },
+        {
+          "sequence": "make_object->get_field",
+          "count": 69
+        },
+        {
+          "sequence": "concat->uppercase",
+          "count": 68
+        },
+        {
+          "sequence": "concat->lowercase",
+          "count": 48
+        },
+        {
+          "sequence": "add->divide_safe",
+          "count": 47
+        },
+        {
+          "sequence": "add->subtract",
+          "count": 36
+        },
+        {
+          "sequence": "lookup_by_key->get_field",
+          "count": 3
+        }
+      ]
+    },
+    "stage3_3call_composition": {
+      "stage": "stage3_3call_composition",
+      "status": "WARN",
+      "total_samples": 800,
+      "unique_questions": 800,
+      "unique_question_ratio": 1.0,
+      "exact_duplicate_count": 0,
+      "trace_duplicate_count": 0,
+      "trace_duplicate_ratio": 0.0,
+      "question_template_duplicate_count": 603,
+      "question_template_duplicate_ratio": 0.7538,
+      "unique_exact_signatures": 800,
+      "unique_trace_signatures": 800,
+      "unique_tool_sequences": 22,
+      "max_trajectory_id_count": 1,
+      "max_tool_sequence_share": 0.1537,
+      "used_tool_names": [
+        "add",
+        "and_bool",
+        "concat",
+        "count_records",
+        "divide_safe",
+        "filter_greater_than",
+        "get_field",
+        "get_item",
+        "greater_than",
+        "less_than",
+        "lookup_by_key",
+        "lowercase",
+        "make_object",
+        "multiply",
+        "sort_list",
+        "string_length",
+        "subtract",
+        "uppercase"
+      ],
+      "used_tool_count": 18,
+      "used_tool_families": [
+        "boolean",
+        "list",
+        "lookup",
+        "math",
+        "object",
+        "string"
+      ],
+      "used_tool_family_count": 6,
+      "output_type_distribution": {
+        "scalar": 674,
+        "list": 78,
+        "boolean": 48
+      },
+      "source_failure_cluster_distribution": {
+        "long_chain__too_few_calls": 173,
+        "synthetic_gap_fan_in__wrong_argument": 112,
+        "synthetic_gap_string_output__wrong_answer": 96,
+        "synthetic_gap_object_list__wrong_extraction": 78,
+        "synthetic_gap_reference_reuse__invalid_reference": 67,
+        "linear_dependency__too_few_calls": 66,
+        "independent_calls__premature_final": 55,
+        "synthetic_gap_distractor_tools__wrong_tool": 51,
+        "synthetic_gap_list_output__wrong_field": 51,
+        "synthetic_gap_boolean_output__wrong_condition": 48,
+        "lookup_query__wrong_field": 3
+      },
+      "target_full_motif_distribution": {
+        "long_chain": 173,
+        "reference_reuse": 166,
+        "object_or_list_output": 129,
+        "fan_in": 112,
+        "independent_calls": 103,
+        "linear_dependency": 66,
+        "distractor_tools": 51
+      },
+      "top_exact_duplicates": [],
+      "top_trace_duplicates": [],
+      "top_template_duplicates": [
+        {
+          "template": "follow three steps: first check whether <NUM> is greater than <NUM>; then check ",
+          "count": 16
+        },
+        {
+          "template": "follow three steps: first create an object with field <STR> set to <STR>; then u",
+          "count": 16
+        },
+        {
+          "template": "follow three steps: first join the strings <STR> and <STR>; then take the output",
+          "count": 16
+        },
+        {
+          "template": "complete a three-step task: return whether <NUM> exceeds <NUM>; next check wheth",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: create an object with field <STR> set to <STR>. step <NUM>: read fie",
+          "count": 16
+        },
+        {
+          "template": "follow three steps: first filter the list <LIST> to values greater than <NUM>; t",
+          "count": 16
+        },
+        {
+          "template": "complete a three-step task: join the strings <STR> and <STR>; next convert the p",
+          "count": 16
+        },
+        {
+          "template": "complete a three-step task: filter the list <LIST> to values greater than <NUM>;",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: join the strings <STR> and <STR>. step <NUM>: convert the previous r",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: filter the list <LIST> to values greater than <NUM>. step <NUM>: sor",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: join the strings <STR> and <STR>. step <NUM>: convert the previous r",
+          "count": 16
+        },
+        {
+          "template": "complete a three-step task: join the strings <STR> and <STR>; next uppercase the",
+          "count": 16
+        },
+        {
+          "template": "follow three steps: first join the strings <STR> and <STR>; then convert the pre",
+          "count": 16
+        },
+        {
+          "template": "complete a three-step task: create an object with field <STR> set to <STR>; next",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: compare <NUM> with <NUM> using greater-than. step <NUM>: check wheth",
+          "count": 16
+        },
+        {
+          "template": "step <NUM>: use the addition tool to combine <NUM> and <NUM>. step <NUM>: multip",
+          "count": 12
+        },
+        {
+          "template": "follow three steps: first find <NUM> plus <NUM>; then multiply the previous resu",
+          "count": 12
+        },
+        {
+          "template": "follow three steps: first compute the sum of <NUM> and <NUM>; then combine the p",
+          "count": 12
+        },
+        {
+          "template": "complete a three-step task: use the addition tool to combine <NUM> and <NUM>; ne",
+          "count": 11
+        },
+        {
+          "template": "complete a three-step task: compute the sum of <NUM> and <NUM>; next multiply th",
+          "count": 10
+        }
+      ],
+      "top_tool_sequence_duplicates": [
+        {
+          "sequence": "add->multiply->multiply",
+          "count": 123
+        },
+        {
+          "sequence": "add->multiply->add",
+          "count": 123
+        },
+        {
+          "sequence": "add->add->multiply",
+          "count": 119
+        },
+        {
+          "sequence": "make_object->get_field->filter_greater_than",
+          "count": 78
+        },
+        {
+          "sequence": "filter_greater_than->sort_list->get_item",
+          "count": 51
+        },
+        {
+          "sequence": "greater_than->less_than->and_bool",
+          "count": 48
+        },
+        {
+          "sequence": "concat->uppercase->string_length",
+          "count": 48
+        },
+        {
+          "sequence": "concat->lowercase->string_length",
+          "count": 48
+        },
+        {
+          "sequence": "add->add->add",
+          "count": 18
+        },
+        {
+          "sequence": "add->add->subtract",
+          "count": 16
+        },
+        {
+          "sequence": "add->multiply->divide_safe",
+          "count": 15
+        },
+        {
+          "sequence": "add->add->divide_safe",
+          "count": 14
+        },
+        {
+          "sequence": "add->multiply->subtract",
+          "count": 14
+        },
+        {
+          "sequence": "add->subtract->divide_safe",
+          "count": 13
+        },
+        {
+          "sequence": "add->divide_safe->divide_safe",
+          "count": 11
+        },
+        {
+          "sequence": "add->subtract->multiply",
+          "count": 10
+        },
+        {
+          "sequence": "add->subtract->add",
+          "count": 10
+        },
+        {
+          "sequence": "add->divide_safe->multiply",
+          "count": 10
+        },
+        {
+          "sequence": "add->divide_safe->subtract",
+          "count": 10
+        },
+        {
+          "sequence": "add->divide_safe->add",
+          "count": 9
+        }
+      ]
+    },
+    "stage4_4to6call_persistence": {
+      "stage": "stage4_4to6call_persistence",
+      "status": "WARN",
+      "total_samples": 800,
+      "unique_questions": 800,
+      "unique_question_ratio": 1.0,
+      "exact_duplicate_count": 0,
+      "trace_duplicate_count": 0,
+      "trace_duplicate_ratio": 0.0,
+      "question_template_duplicate_count": 472,
+      "question_template_duplicate_ratio": 0.59,
+      "unique_exact_signatures": 800,
+      "unique_trace_signatures": 800,
+      "unique_tool_sequences": 174,
+      "max_trajectory_id_count": 3,
+      "max_tool_sequence_share": 0.1562,
+      "used_tool_names": [
+        "add",
+        "aggregate_field",
+        "and_bool",
+        "concat",
+        "count_records",
+        "divide_safe",
+        "filter_greater_than",
+        "get_field",
+        "get_item",
+        "greater_than",
+        "join_list",
+        "less_than",
+        "list_length",
+        "lookup_by_key",
+        "lowercase",
+        "make_object",
+        "multiply",
+        "or_bool",
+        "sort_list",
+        "string_length",
+        "subtract",
+        "update_field",
+        "uppercase"
+      ],
+      "used_tool_count": 23,
+      "used_tool_families": [
+        "boolean",
+        "list",
+        "lookup",
+        "math",
+        "object",
+        "string"
+      ],
+      "used_tool_family_count": 6,
+      "output_type_distribution": {
+        "scalar": 585,
+        "boolean": 4,
+        "list": 125,
+        "object": 81,
+        "string": 5
+      },
+      "source_failure_cluster_distribution": {
+        "synthetic_gap_object_list__wrong_extraction": 206,
+        "long_chain__too_few_calls": 189,
+        "synthetic_gap_fan_in__wrong_argument": 122,
+        "synthetic_gap_string_output__wrong_answer": 73,
+        "synthetic_gap_distractor_tools__wrong_tool": 71,
+        "synthetic_gap_reference_reuse__invalid_reference": 63,
+        "linear_dependency__too_few_calls": 36,
+        "independent_calls__premature_final": 15,
+        "synthetic_gap_list_output__wrong_field": 15,
+        "lookup_query__wrong_field": 6,
+        "synthetic_gap_boolean_output__wrong_condition": 4
+      },
+      "target_full_motif_distribution": {
+        "object_or_list_output": 221,
+        "long_chain": 189,
+        "reference_reuse": 142,
+        "fan_in": 122,
+        "distractor_tools": 71,
+        "linear_dependency": 36,
+        "independent_calls": 19
+      },
+      "top_exact_duplicates": [],
+      "top_trace_duplicates": [],
+      "top_template_duplicates": [
+        {
+          "template": "carry out the following <NUM> steps: step <NUM>: use the addition tool to combin",
+          "count": 16
+        },
+        {
+          "template": "perform these <NUM> operations in order: step <NUM>: compute the sum of <NUM> an",
+          "count": 16
+        },
+        {
+          "template": "work through all <NUM> steps sequentially: step <NUM>: find <NUM> plus <NUM>; st",
+          "count": 16
+        },
+        {
+          "template": "complete each of the <NUM> tool calls: step <NUM>: calculate <NUM> + <NUM>; step",
+          "count": 16
+        },
+        {
+          "template": "execute this <NUM>-step workflow: step <NUM>: add <NUM> and <NUM>; step <NUM>: m",
+          "count": 16
+        },
+        {
+          "template": "complete each of the <NUM> tool calls: step <NUM>: create an object with field <",
+          "count": 13
+        },
+        {
+          "template": "work through all <NUM> steps sequentially: step <NUM>: create an object with fie",
+          "count": 12
+        },
+        {
+          "template": "complete each of the <NUM> tool calls: step <NUM>: create an object with field <",
+          "count": 11
+        },
+        {
+          "template": "work through all <NUM> steps sequentially: step <NUM>: create an object with fie",
+          "count": 10
+        },
+        {
+          "template": "complete each of the <NUM> tool calls: step <NUM>: create an object with field <",
+          "count": 10
+        },
+        {
+          "template": "perform these <NUM> operations in order: step <NUM>: create an object with field",
+          "count": 10
+        },
+        {
+          "template": "execute this <NUM>-step workflow: step <NUM>: create an object with field <STR> ",
+          "count": 10
+        },
+        {
+          "template": "execute this <NUM>-step workflow: step <NUM>: add <NUM> and <NUM>; step <NUM>: m",
+          "count": 9
+        },
+        {
+          "template": "execute this <NUM>-step workflow: step <NUM>: create an object with field <STR> ",
+          "count": 9
+        },
+        {
+          "template": "execute this <NUM>-step workflow: step <NUM>: create an object with field <STR> ",
+          "count": 9
+        },
+        {
+          "template": "perform these <NUM> operations in order: step <NUM>: create an object with field",
+          "count": 9
+        },
+        {
+          "template": "perform these <NUM> operations in order: step <NUM>: compute the sum of <NUM> an",
+          "count": 8
+        },
+        {
+          "template": "complete each of the <NUM> tool calls: step <NUM>: create an object with field <",
+          "count": 8
+        },
+        {
+          "template": "work through all <NUM> steps sequentially: step <NUM>: find <NUM> plus <NUM>; st",
+          "count": 8
+        },
+        {
+          "template": "carry out the following <NUM> steps: step <NUM>: use the addition tool to combin",
+          "count": 8
+        }
+      ],
+      "top_tool_sequence_duplicates": [
+        {
+          "sequence": "make_object->get_field->filter_greater_than->sort_list",
+          "count": 125
+        },
+        {
+          "sequence": "make_object->get_field->filter_greater_than->sort_list->update_field",
+          "count": 81
+        },
+        {
+          "sequence": "add->multiply->multiply->multiply",
+          "count": 80
+        },
+        {
+          "sequence": "add->add->multiply->add",
+          "count": 74
+        },
+        {
+          "sequence": "add->multiply->add->multiply",
+          "count": 63
+        },
+        {
+          "sequence": "add->add->multiply->add->multiply",
+          "count": 50
+        },
+        {
+          "sequence": "concat->lowercase->string_length->add",
+          "count": 39
+        },
+        {
+          "sequence": "concat->uppercase->string_length->add",
+          "count": 34
+        },
+        {
+          "sequence": "add->multiply->multiply->multiply->multiply",
+          "count": 30
+        },
+        {
+          "sequence": "add->multiply->add->add",
+          "count": 15
+        },
+        {
+          "sequence": "filter_greater_than->sort_list->get_item->join_list",
+          "count": 5
+        },
+        {
+          "sequence": "filter_greater_than->sort_list->get_item->join_list->list_length",
+          "count": 5
+        },
+        {
+          "sequence": "add->divide_safe->add->multiply",
+          "count": 4
+        },
+        {
+          "sequence": "greater_than->less_than->and_bool->or_bool",
+          "count": 4
+        },
+        {
+          "sequence": "add->divide_safe->divide_safe->subtract",
+          "count": 3
+        },
+        {
+          "sequence": "add->multiply->divide_safe->add",
+          "count": 3
+        },
+        {
+          "sequence": "add->add->subtract->multiply",
+          "count": 3
+        },
+        {
+          "sequence": "lookup_by_key->get_field->count_records->aggregate_field",
+          "count": 3
+        },
+        {
+          "sequence": "lookup_by_key->get_field->count_records->aggregate_field->add",
+          "count": 3
+        },
+        {
+          "sequence": "filter_greater_than->sort_list->get_item->multiply",
+          "count": 3
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "total_trajectories": 888,
+  "by_source_failure_cluster": {
+    "linear_dependency__too_few_calls": 56,
+    "long_chain__too_few_calls": 63,
+    "synthetic_gap_boolean_output__wrong_condition": 99,
+    "synthetic_gap_reference_reuse__invalid_reference": 85,
+    "synthetic_gap_distractor_tools__wrong_tool": 43,
+    "lookup_query__wrong_field": 96,
+    "synthetic_gap_object_list__wrong_extraction": 125,
+    "independent_calls__premature_final": 25,
+    "synthetic_gap_string_output__wrong_answer": 117,
+    "synthetic_gap_list_output__wrong_field": 102,
+    "synthetic_gap_fan_in__wrong_argument": 77
+  },
+  "by_target_full_motif": {
+    "linear_dependency": 56,
+    "long_chain": 63,
+    "independent_calls": 124,
+    "reference_reuse": 298,
+    "distractor_tools": 43,
+    "object_or_list_output": 227,
+    "fan_in": 77
+  },
+  "call_count_histogram": {
+    "4": 487,
+    "3": 29,
+    "6": 21,
+    "8": 15,
+    "7": 13,
+    "9": 14,
+    "5": 309
+  },
+  "validation_failures": 0
+}

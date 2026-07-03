@@ -1,7 +1,7 @@
 {
   "stages": {
     "stage1_linear_simple": {
-      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage1_linear_simple.jsonl",
+      "file": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3/stage1_linear_simple.jsonl",
       "count": 417,
       "motif_coverage": {
         "linear_dependency": 241,
@@ -9,7 +9,7 @@
       }
     },
     "stage2_reference_reuse": {
-      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage2_reference_reuse.jsonl",
+      "file": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3/stage2_reference_reuse.jsonl",
       "count": 223,
       "motif_coverage": {
         "argument_transformation": 40,
@@ -20,7 +20,7 @@
       }
     },
     "stage3_structural_motifs": {
-      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage3_structural_motifs.jsonl",
+      "file": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3/stage3_structural_motifs.jsonl",
       "count": 119,
       "motif_coverage": {
         "argument_transformation": 16,
@@ -29,7 +29,7 @@
       }
     },
     "stage4_nestful_like_mixed": {
-      "file": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\curriculum_v3\\stage4_nestful_like_mixed.jsonl",
+      "file": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3/stage4_nestful_like_mixed.jsonl",
       "count": 271,
       "motif_coverage": {
         "distractor_tools": 27,

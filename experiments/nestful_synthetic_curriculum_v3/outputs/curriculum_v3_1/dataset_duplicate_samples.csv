@@ -1,0 +1,2 @@
+sample_id,stage,exact_count,trace_count,question,tool_sequence,trajectory_id
+prefix_v3_1_traj_v3_1_independent_calls_premature_final_031249_stage2_2call_dependency_p2_00963,stage2_2call_dependency,1,2,Perform two operations in order. Step one: find 4 plus 10. Step two: multiply the previous result by,add->multiply,traj_v3_1_independent_calls_premature_final_031249

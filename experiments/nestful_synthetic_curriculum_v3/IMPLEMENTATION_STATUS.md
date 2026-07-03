@@ -1,60 +1,70 @@
-# Implementation Status — NESTFUL Synthetic Curriculum v3
+# Implementation Status — NESTFUL Synthetic Curriculum v3 / v3.1
 
-Date: 2026-07-02  
+Date: 2026-07-03  
 **Training started: NO**
 
-## Readiness
+## v3.1 readiness
 
 | level | status |
 |-------|--------|
-| prototype / pilot (stage1–2) | **YES** — preflight PASS_PROTOTYPE_ONLY |
-| final experiment | **NO** — partial_tool_realism, low bigram overlap |
+| v3.1 build + preflight | **PASS_PILOT_READY** |
+| final dataset audit | **WARN** (stage3 non-scalar share soft) |
+| v3.1 pod dry-run | **ready** |
+| v3.1 stage1–2 pilot | **ready** (requires `ALLOW_PROTOTYPE_TRAINING=1`) |
+| final experiment | **NO** — NESTFUL bigram overlap still low |
 
-## Dataset (pilot prep)
+## v3.1 dataset
 
 | metric | value |
 |--------|-------|
-| Total tasks | **1030** |
-| stage1 | 417 |
-| stage2 | **223** (was 10) |
-| stage3 | 119 |
-| stage4 | 271 |
-| Motif coverage | **80%** |
+| Full trajectories | **888** |
+| stage1_1call_atomic | **800** (exact 1 call) |
+| stage2_2call_dependency | **800** (exact 2 calls) |
+| stage3_3call_composition | **800** (exact 3 calls) |
+| stage4_4to6call_persistence | **800** (4–6 calls) |
+| Unique questions | **3200 (ratio 1.0)** |
+| Exact duplicates | **0** |
+| Trace dup ratio (mean) | **0.0003** |
 | Gold replay | **100%** |
-| Validation failures | **0** |
-| Tool realism | **partial_tool_realism** (25 tools, 16.8% non-scalar) |
+| Process filter pass | **100%** |
+| Question-trace alignment | **PASS** |
+| Exact num_calls integrity | **PASS** |
+| Tool realism | **pilot_ready** (37 offered, 25 used) |
+| Preflight | **PASS_PILOT_READY** |
+| Tests | **41/41** passed |
 
-## Key fixes this phase
+## v3 legacy (prototype pilot)
 
-1. Stage2 balancing via `stage_minimums` + dedicated generators
-2. Mixed tool registry (string/list/object/boolean + math)
-3. Reward wiring fix in `run.py` (motif policy not overwritten by partial)
-4. `CONFIG=partial/config.yaml` in `run_curriculum_v3.sh`
-5. Four-layer coverage definition
+| metric | value |
+|--------|-------|
+| Total tasks | 1030 |
+| Best checkpoint | s1_e2 (+0.020 dev Win) |
+| Preflight | PASS_PROTOTYPE_ONLY |
 
-## Reports
+## New v3.1 scripts
 
-- `outputs/NESTFUL_COVERAGE_DEFINITION.md`
-- `outputs/STAGE2_BALANCING_REPORT.md`
-- `outputs/TOOL_REALISM_IMPROVEMENT_REPORT.md`
-- `outputs/TRAINING_WIRING_CHECK.md`
-- `outputs/POD_DRY_RUN_INSTRUCTIONS.md`
-- `outputs/STAGE1_2_PILOT_PLAN.md`
-- `outputs/POST_PILOT_EVAL_PLAN.md`
+- `scripts/tool_registry_v3_1.py`
+- `scripts/traj_utils_v3_1.py`
+- `scripts/generate_full_motif_trajectories_v3_1.py`
+- `scripts/build_prefix_curriculum_from_trajectories.py`
+- `scripts/process_filter_prefix_samples.py`
+- `scripts/validate_curriculum_integrity_v3_1.py`
+- `scripts/replay_synthetic_gold_traces_v3_1.py`
+- `scripts/run_tool_family_realism_v3_1.py`
+- `scripts/build_curriculum_v3_1_pipeline.py`
+- `scripts/analyze_stage_transfer_v3_1.py`
+- `lib/reward_v3_1.py`
+- `configs/curriculum_v3_1.yaml`, `configs/reward_v3_1_stepwise.yaml`
 
 ## Next command
 
-**Local:**
 ```bash
-python experiments/nestful_synthetic_curriculum_v3/scripts/run_preflight_gates.py --prototype-only
+python experiments/nestful_synthetic_curriculum_v3/scripts/build_curriculum_v3_1_pipeline.py
 ```
 
-**Pod DRY RUN:**
+Then pod dry-run:
+
 ```bash
-DRY_RUN=1 ALLOW_PROTOTYPE_TRAINING=1 STAGES="1 2" \
+DRY_RUN=1 ALLOW_PROTOTYPE_TRAINING=1 CURRICULUM_VERSION=v3_1 STAGES="1 2" \
   bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh
 ```
-
-## Tests
-
-12/12 passed (local)

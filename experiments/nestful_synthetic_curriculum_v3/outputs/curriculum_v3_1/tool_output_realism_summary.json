@@ -1,0 +1,31 @@
+{
+  "status": "pilot_ready",
+  "tool_name_diversity": 37,
+  "tool_family_count": 6,
+  "tool_family_overlap": 0.2543,
+  "bigram_overlap": 0.0112,
+  "trigram_overlap": 0.0106,
+  "scalar_output_share": 0.6006,
+  "non_scalar_output_share_stage2_plus": 0.3258,
+  "mean_distractor_tool_count": 5.88,
+  "output_type_distribution": {
+    "scalar": 1922,
+    "boolean": 373,
+    "object": 150,
+    "string": 268,
+    "list": 487
+  },
+  "answer_type_distribution": {
+    "scalar": 1922,
+    "boolean": 373,
+    "object": 150,
+    "string": 268,
+    "list": 487
+  },
+  "targets": {
+    "tool_family_count_ge": 5,
+    "tool_name_diversity_ge": 30,
+    "non_scalar_output_share_stage2_plus_ge": 0.3,
+    "scalar_output_share_lt": 0.7
+  }
+}

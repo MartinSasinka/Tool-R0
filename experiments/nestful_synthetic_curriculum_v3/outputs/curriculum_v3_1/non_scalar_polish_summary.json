@@ -1,0 +1,13 @@
+{
+  "modified": true,
+  "dry_run": false,
+  "stages": {
+    "stage3_3call_composition": {
+      "stage": "stage3_3call_composition",
+      "before_non_scalar_share": 0.1225,
+      "replacements": 28,
+      "after_non_scalar_share": 0.1575,
+      "status": "partial_warn"
+    }
+  }
+}

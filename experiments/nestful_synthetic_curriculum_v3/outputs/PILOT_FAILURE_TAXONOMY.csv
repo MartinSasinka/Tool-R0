@@ -1,0 +1,7 @@
+failure_type,baseline_count,model_count,delta,interpretation
+executor_error,16,16,0,
+motif_inconsistent_trace,10,12,2,
+no_tool_call,20,16,-4,
+too_few_calls,101,102,1,
+too_many_calls,7,9,2,
+wrong_final_answer,4,3,-1,

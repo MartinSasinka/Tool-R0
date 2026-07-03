@@ -1,0 +1,5 @@
+motif_type,n,share,avg_num_calls
+linear_dependency,106,0.53,2.47
+long_chain,63,0.315,7.41
+fan_in,27,0.135,3.63
+independent_calls,4,0.02,3.0
