@@ -602,7 +602,13 @@ def mode_rollout_eval(config: dict, checkpoint: str | None) -> int:
 
     rows = []
     agg = {"strict_gold_trace_pass": [], "final_answer_pass": [],
-           "zero_tool_calls": [], "clipped": []}
+           "zero_tool_calls": [], "clipped": [],
+           # Diagnostic for continuation-training experiments (e.g. teacher-forced
+           # Stage2b): did the model emit FEWER calls than the gold trace under
+           # ordinary (non-forced) generation? Cheap to compute; helps measure
+           # whether a training intervention actually fixed "stops too early"
+           # without needing a separate analysis pass.
+           "too_few_calls": [], "predicted_calls": []}
     for task in task_iter:
         traj = run_episode(
             model, tokenizer, task, config,
@@ -614,11 +620,16 @@ def mode_rollout_eval(config: dict, checkpoint: str | None) -> int:
         agg["final_answer_pass"].append(1.0 if rr.diagnostics["final_answer_pass"] else 0.0)
         agg["zero_tool_calls"].append(1.0 if traj.zero_tool_calls else 0.0)
         agg["clipped"].append(1.0 if traj.clipped_any else 0.0)
+        agg["too_few_calls"].append(
+            1.0 if traj.num_tool_calls < traj.gold_num_turns else 0.0)
+        agg["predicted_calls"].append(float(traj.num_tool_calls))
         rows.append({**traj.to_dict(), "reward_train_strict": rr.reward,
                      "diagnostics": rr.diagnostics})
 
     _write_jsonl(os.path.join(out_dir, "rollout_eval_trajectories.jsonl"), rows)
     metrics = {k: (sum(v) / len(v) if v else 0.0) for k, v in agg.items()}
+    metrics["too_few_calls_rate"] = metrics.pop("too_few_calls", 0.0)
+    metrics["avg_predicted_calls"] = metrics.pop("predicted_calls", 0.0)
     metrics["num_tasks"] = len(tasks)
     exec_mode = rows[0]["executor_mode"] if rows else "n/a"
     reportable = exec_mode == "full"

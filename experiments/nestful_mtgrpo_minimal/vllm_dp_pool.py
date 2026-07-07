@@ -208,7 +208,10 @@ def run_episode_collect(
     Mirrors the vLLM branch of grpo_train._rollout_episode_for_train, but the
     reward is computed here (worker side) and observations stay local.
     """
-    from rollout import Trajectory, Turn, get_stage_token_budget
+    from rollout import (
+        Trajectory, Turn, get_stage_token_budget,
+        resolve_teacher_forced_prefix_n, build_teacher_forced_prefix,
+    )
     from prompt import build_messages, format_tool_response
     from parser import parse_tool_call
     from executor import ToolExecutor
@@ -231,11 +234,25 @@ def run_episode_collect(
     turn_token_ids: List[Tuple[List[int], List[int]]] = []
     history: List[Dict[str, str]] = []
 
+    # ── Teacher-forced continuation prefix (opt-in, off by default) ─────────
+    configured_prefix = int((config.get("train", {}) or {}).get(
+        "teacher_forced_prefix_calls", 0) or 0)
+    n_forced = resolve_teacher_forced_prefix_n(
+        task, configured_prefix, executor.mode, gold_obs)
+    if n_forced > 0:
+        forced_turns, forced_history = build_teacher_forced_prefix(
+            task, executor, n_forced)
+        traj.turns.extend(forced_turns)
+        history.extend(forced_history)
+        traj.final_observation = forced_turns[-1].observation
+
     # v2: train turn budget = gold_n + max_extra_turns_train (cap +4); default 0
     # reproduces the legacy gold_n-turn loop exactly.
     _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
     _train_max_turns = max(1, min(gold_n + _extra, gold_n + 4))
-    for _turn_idx in range(_train_max_turns):
+    _remaining_turns = max(1, _train_max_turns - n_forced)
+    for _step in range(_remaining_turns):
+        _turn_idx = n_forced + _step
         messages = build_messages(task, history)
         g = generate_fn(messages, max_new_tokens)
         if g.get("prompt_overflow"):
@@ -272,6 +289,8 @@ def run_episode_collect(
 
         call = pr.call
         turn.parsed_call = call
+        if os.environ.get("DEBUG_PRINT_CALLS") == "1":
+            print(f"[debug-call] task={task.get('task_id')} call={call}", flush=True)
         res = executor.execute(call)
         turn.observation = res.observation
         if res.error is not None:
@@ -291,17 +310,41 @@ def run_episode_collect(
     # strict first_error_turn for logging parity with the single-engine path.
     strict_diag = strict_gold_trace_reward(traj, task, gold_obs).diagnostics
 
+    # ── r_seq alignment (Bug: teacher-forced turns must NOT get a gradient) ──
+    # Every reward's `_turn_scores`-style helper emits exactly one score per
+    # `trajectory.turns` entry, in order. Forced turns are always the FIRST
+    # `n_forced` entries (built before any generated turn), so dropping them
+    # from the front keeps r_seq aligned 1:1 with turn_token_ids (generated
+    # turns only). Hard-fail rather than silently mis-aligning if a reward
+    # function ever violates the 1:1-with-turns contract under forcing.
+    r_seq_full = [float(x) for x in rinfo["r_seq"]]
+    if len(r_seq_full) != len(traj.turns):
+        raise RuntimeError(
+            f"[teacher_forced] reward r_seq length {len(r_seq_full)} != "
+            f"len(trajectory.turns) {len(traj.turns)} for task "
+            f"{task.get('task_id')} (n_forced={n_forced}); refusing to guess "
+            f"turn alignment.")
+    r_seq = r_seq_full[n_forced:]
+    if len(r_seq) != len(turn_token_ids):
+        raise RuntimeError(
+            f"[teacher_forced] post-slice r_seq length {len(r_seq)} != "
+            f"turn_token_ids length {len(turn_token_ids)} for task "
+            f"{task.get('task_id')} (n_forced={n_forced}).")
+
+    reward_diag = dict(rinfo.get("diagnostics") or {})
+    reward_diag["teacher_forced_prefix_calls"] = n_forced
+
     return RolloutResult(
         turn_token_ids=turn_token_ids,
         episode_reward=float(rinfo["episode_reward"]),
-        r_seq=[float(x) for x in rinfo["r_seq"]],
+        r_seq=r_seq,
         clipped_any=bool(traj.clipped_any),
         prompt_overflow=bool(traj.prompt_overflow),
         zero_tool_calls=bool(traj.zero_tool_calls),
         num_tool_calls=int(traj.num_tool_calls),
         stop_reason=traj.stop_reason,
         first_error_turn=strict_diag.get("first_error_turn"),
-        reward_diag=_sanitize_diag(rinfo.get("diagnostics") or {}),
+        reward_diag=_sanitize_diag(reward_diag),
     )
 
 

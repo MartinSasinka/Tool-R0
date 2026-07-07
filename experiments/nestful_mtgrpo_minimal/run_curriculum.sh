@@ -198,6 +198,14 @@ export ALLOW_STRICT_REWARD_FALLBACK
 # STAGE_GATES=1 — evaluate hard stage-advancement gates (check_stage_gates.py)
 # after each stage; a failing stage STOPS the run (exit 4).
 STAGE_GATES="${STAGE_GATES:-0}"
+# TEACHER_FORCED_PREFIX_CALLS=N (N>=1) — teacher-forced continuation training.
+# The first N gold calls of EVERY training episode this stage are REPLAYED
+# (not generated) and the policy only has to generate the continuation. Off
+# (0) by default; intended for a dedicated Stage2b-style sub-run (see
+# experiments/nestful_synthetic_curriculum_v3/scripts/pilot/run_stage2b_teacher_forced.sh)
+# rather than the main curriculum, since eval always uses full generation —
+# training under forcing changes what "the stage" is teaching.
+TEACHER_FORCED_PREFIX_CALLS="${TEACHER_FORCED_PREFIX_CALLS:-0}"
 
 if [ "$REGRESSION_GUARD" != "1" ]; then
     echo "════════════════════════════════════════════════════════════════" >&2
@@ -530,6 +538,7 @@ printf "  %-26s %s\n" "MIXED_REPLAY"           "$CURRICULUM_MIXED_REPLAY  (weigh
 printf "  %-26s %s\n" "EVAL_EVERY_EPOCH"       "$EVAL_EVERY_EPOCH  (metric=$EARLY_STOP_METRIC, patience=$EARLY_STOP_PATIENCE, min_delta=$EARLY_STOP_MIN_DELTA)"
 printf "  %-26s %s\n" "VAL_SUBSET_SIZE"        "${VAL_SUBSET_SIZE:-0 (full NESTFUL)}"
 printf "  %-26s %s\n" "STABILIZED_LR / KL"     "${STABILIZED_LR:-<config>} / ${STABILIZED_KL:-<config>}"
+printf "  %-26s %s\n" "TEACHER_FORCED_PREFIX"  "${TEACHER_FORCED_PREFIX_CALLS:-0}"
 printf "  %-26s %s\n" "START_EPOCH"            "$START_EPOCH"
 printf "  %-26s %s\n" "DRY_RUN"                "$DRY_RUN"
 printf "  %-26s %s\n" "RUN_FINAL_EVAL"         "$RUN_FINAL_EVAL"
@@ -897,6 +906,7 @@ for N in $STAGES; do
             --override "generation.num_generations=$NUM_GENERATIONS" \
             --override "experiment.output_dir=$EPOCH_OUT" \
             --override "model.output_adapter_dir=$STAGE_OUT/checkpoints" \
+            --override "train.teacher_forced_prefix_calls=$TEACHER_FORCED_PREFIX_CALLS" \
             "${MIXED_OVERRIDES[@]}" \
             "${STABILIZED_TRAIN_OVERRIDES[@]}" \
             "${EXTRA_TRAIN_OVERRIDES[@]}" \

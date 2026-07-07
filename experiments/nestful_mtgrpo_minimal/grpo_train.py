@@ -32,7 +32,10 @@ from reward import (
     compute_gold_observations,
     episode_turn_reward_seq,
 )
-from rollout import Trajectory, Turn, get_stage_token_budget
+from rollout import (
+    Trajectory, Turn, get_stage_token_budget,
+    resolve_teacher_forced_prefix_n, build_teacher_forced_prefix,
+)
 from group_stats import compute_group_stats
 
 _STRICT_POLICY_ALIASES = ("strict", "strict_gold_trace", "strict_gold_trace_legacy")
@@ -223,6 +226,12 @@ class Episode:
     trajectory: Trajectory
     turn_tokens: List[TurnTokens]
     reward: float = 0.0
+    # Number of leading gold calls teacher-forced (not generated) into this
+    # episode. r_seq returned by the reward fn is aligned 1:1 with
+    # trajectory.turns (forced + generated); callers MUST drop the first
+    # `n_forced_turns` entries before pairing per-turn returns with
+    # `turn_tokens` (generated turns only — see train()).
+    n_forced_turns: int = 0
 
 
 @dataclass
@@ -295,7 +304,8 @@ def _generate_with_ids(model, tokenizer, messages, max_new_tokens, temperature, 
 
 
 def _rollout_episode_for_train(
-    model, tokenizer, task, config, registry, max_turns, *, vllm_gen_fn=None
+    model, tokenizer, task, config, registry, max_turns, *, vllm_gen_fn=None,
+    gold_obs=None,
 ) -> Episode:
     """Run one episode for GRPO.
 
@@ -305,6 +315,10 @@ def _rollout_episode_for_train(
       subsequent _sequence_logprob() call which still uses the HF model.
 
     Without vLLM (default): _generate_with_ids() uses the HF model.
+
+    ``gold_obs`` (optional): precomputed gold observations, used ONLY to gate
+    teacher-forced continuation training (``train.teacher_forced_prefix_calls``
+    > 0) — see rollout.resolve_teacher_forced_prefix_n.
     """
     gen = config.get("generation", {})
     exec_cfg = config.get("executor", {})
@@ -325,7 +339,20 @@ def _rollout_episode_for_train(
     turn_tokens: List[TurnTokens] = []
     history: List[Dict[str, str]] = []
 
-    for turn_idx in range(max_turns):
+    configured_prefix = int((config.get("train", {}) or {}).get(
+        "teacher_forced_prefix_calls", 0) or 0)
+    n_forced = resolve_teacher_forced_prefix_n(
+        task, configured_prefix, executor.mode, gold_obs)
+    if n_forced > 0:
+        forced_turns, forced_history = build_teacher_forced_prefix(
+            task, executor, n_forced)
+        traj.turns.extend(forced_turns)
+        history.extend(forced_history)
+        traj.final_observation = forced_turns[-1].observation
+    max_turns = max(1, max_turns - n_forced)
+
+    for _step in range(max_turns):
+        turn_idx = n_forced + _step
         messages = build_messages(task, history)
         if vllm_gen_fn is not None:
             # vLLM generates text; re-tokenise to get token IDs for log-probs.
@@ -391,7 +418,7 @@ def _rollout_episode_for_train(
 
     if traj.stop_reason is None:
         traj.stop_reason = "max_turns"
-    return Episode(trajectory=traj, turn_tokens=turn_tokens)
+    return Episode(trajectory=traj, turn_tokens=turn_tokens, n_forced_turns=n_forced)
 
 
 def _retokenize_for_logprob(tokenizer, messages, completion_text: str):
@@ -580,12 +607,36 @@ def train(
                         model, tokenizer, task, config, registry,
                         max_turns=_train_max_turns,
                         vllm_gen_fn=vllm_gen_fn,
+                        gold_obs=gold_obs,
                     )
                     rinfo = episode_turn_reward_seq(ep.trajectory, task, gold_obs)
                     ep.reward = rinfo["episode_reward"]
+                    # r_seq is aligned 1:1 with ep.trajectory.turns (forced +
+                    # generated); drop the forced-prefix entries so it matches
+                    # ep.turn_tokens (generated turns only — no gradient on
+                    # teacher-forced text). See Episode.n_forced_turns.
+                    r_seq_full = [float(x) for x in rinfo["r_seq"]]
+                    if len(r_seq_full) != len(ep.trajectory.turns):
+                        raise RuntimeError(
+                            f"[teacher_forced] reward r_seq length "
+                            f"{len(r_seq_full)} != len(trajectory.turns) "
+                            f"{len(ep.trajectory.turns)} for task "
+                            f"{task.get('task_id')} "
+                            f"(n_forced={ep.n_forced_turns}); refusing to "
+                            f"guess turn alignment.")
+                    r_seq = r_seq_full[ep.n_forced_turns:]
+                    if len(r_seq) != len(ep.turn_tokens):
+                        raise RuntimeError(
+                            f"[teacher_forced] post-slice r_seq length "
+                            f"{len(r_seq)} != turn_tokens length "
+                            f"{len(ep.turn_tokens)} for task "
+                            f"{task.get('task_id')} "
+                            f"(n_forced={ep.n_forced_turns}).")
+                    diag = dict(rinfo.get("diagnostics") or {})
+                    diag["teacher_forced_prefix_calls"] = ep.n_forced_turns
                     episodes.append(ep)
-                    ep_r_seqs.append(rinfo["r_seq"])
-                    ep_diags.append(dict(rinfo.get("diagnostics") or {}))
+                    ep_r_seqs.append(r_seq)
+                    ep_diags.append(diag)
 
             rewards = [e.reward for e in episodes]
             mean_r = sum(rewards) / len(rewards)

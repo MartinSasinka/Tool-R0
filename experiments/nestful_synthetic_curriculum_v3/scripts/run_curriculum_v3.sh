@@ -140,6 +140,10 @@ export ALLOW_STRICT_REWARD_FALLBACK="${ALLOW_STRICT_REWARD_FALLBACK:-0}"
 # v3/v3.1 runs; a failing stage stops the run instead of advancing.
 export STAGE_GATES="${STAGE_GATES:-1}"
 export NUM_GENERATIONS="${NUM_GENERATIONS:-4}"
+# Teacher-forced continuation training (off by default). Intended for a
+# dedicated Stage2b-style sub-run, NOT the main curriculum — see
+# scripts/pilot/run_stage2b_teacher_forced.sh.
+export TEACHER_FORCED_PREFIX_CALLS="${TEACHER_FORCED_PREFIX_CALLS:-0}"
 export CURRICULUM_VERSION
 export CURRICULUM_REPLAY_WEIGHTS_S2="$REPLAY_S2"
 export CURRICULUM_REPLAY_WEIGHTS_S3="$REPLAY_S3"
