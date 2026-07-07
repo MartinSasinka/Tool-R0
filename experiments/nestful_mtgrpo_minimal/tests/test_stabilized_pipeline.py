@@ -210,8 +210,15 @@ def test_train_and_eval_prompt_share_tags_and_refs():
 
 # ── validation subset determinism + best-checkpoint selection logic ─────────────
 def test_validation_subset_is_deterministic_and_reused(tmp_path):
+    # Load THIS experiment's run.py by path: several sibling experiments also
+    # ship a run.py, and depending on suite order a wrong one may already own
+    # the bare "run" name in sys.modules / sys.path.
+    import importlib.util
     try:
-        import run
+        spec = importlib.util.spec_from_file_location(
+            "nestful_minimal_run", os.path.join(_EXP, "run.py"))
+        run = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(run)
     except Exception as exc:  # noqa: BLE001 - heavy deps may be missing
         pytest.skip(f"run.py not importable here: {exc}")
     # synthesize a small "full" validation file

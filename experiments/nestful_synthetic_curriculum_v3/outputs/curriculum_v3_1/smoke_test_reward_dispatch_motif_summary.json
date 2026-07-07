@@ -1,0 +1,37 @@
+{
+  "reward_policy_configured": "execution_aware_v2_1_motif",
+  "reward_policy_resolved": "execution_aware_v2_1_motif",
+  "resolved_reward_fn": "lib.reward_motif.episode_turn_reward_seq",
+  "fallback_used": false,
+  "unknown_policy_raises": true,
+  "n_scored": 54,
+  "reward_values_unique": [
+    0.0,
+    0.2,
+    0.7,
+    0.9,
+    0.95,
+    1.0
+  ],
+  "n_unique_reward_values": 6,
+  "fractional_rewards_present": true,
+  "all_rewards_only_0_or_1": false,
+  "per_variant_mean": {
+    "stage1:correct": 1.0,
+    "stage1:no_tool_call": 0.0,
+    "stage1:parse_error": 0.0,
+    "stage1:wrong_args": 0.7,
+    "stage1:wrong_final": 0.7,
+    "stage1:wrong_tool": 0.9,
+    "stage2:correct": 1.0,
+    "stage2:no_tool_call": 0.0,
+    "stage2:parse_error": 0.0,
+    "stage2:premature_final": 1.0,
+    "stage2:too_few": 0.2,
+    "stage2:wrong_args": 0.7,
+    "stage2:wrong_final": 0.7,
+    "stage2:wrong_tool": 0.95
+  },
+  "failures": [],
+  "status": "PASS"
+}

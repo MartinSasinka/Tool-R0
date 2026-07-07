@@ -1,5 +1,5 @@
 motif_type,n,baseline_win,model_win,delta,baseline_fail_model_win,baseline_win_model_fail,net_gain,conclusion
-fan_in,27,0.5926,0.6667,0.0741,3,5,-2,model_better
-independent_calls,4,0.25,0.25,0.0,0,0,0,neutral
-linear_dependency,106,0.5849,0.5755,-0.0094,8,7,1,neutral
-long_chain,63,0.5079,0.5556,0.0476,5,8,-3,neutral
+fan_in,27,0.5185,0.5556,0.037,2,3,-1,neutral
+independent_calls,4,0.0,0.25,0.25,0,1,-1,model_better
+linear_dependency,106,0.5943,0.5943,0.0,6,6,0,neutral
+long_chain,63,0.5556,0.5397,-0.0159,7,6,1,neutral

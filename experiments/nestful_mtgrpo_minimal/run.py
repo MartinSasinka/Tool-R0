@@ -1115,18 +1115,25 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
                 "Pass --override data.mixed_stage_files=f1.jsonl,f2.jsonl,..."
             )
         weights = _parse_float_list(data_cfg.get("replay_weights"))
+        replay_ratio = data_cfg.get("replay_ratio")
+        if replay_ratio is not None:
+            replay_ratio = float(replay_ratio)
         mix = load_tasks_mixed(
             stage_files,
-            weights=weights or None,
+            weights=(weights or None) if replay_ratio is None else None,
+            replay_ratio=replay_ratio,
             max_tasks=data_cfg.get("max_train_tasks"),
             seed=seed,
         )
         tasks = mix["tasks"]
         print(f"[train] MIXED REPLAY enabled (stage {stage}): {len(tasks)} tasks "
-              f"from {len(stage_files)} stage files", flush=True)
-        for ps in mix["per_stage"]:
+              f"from {len(stage_files)} stage files"
+              + (f" (replay_ratio={replay_ratio})" if replay_ratio is not None else ""),
+              flush=True)
+        for ps, eff in zip(mix["per_stage"], mix.get("effective_mix", [])):
             print(f"[train]   stage {ps['stage_index']}: sampled {ps['sampled']} / "
-                  f"available {ps['available']} (weight={ps['weight']}) :: {ps['file']}",
+                  f"available {ps['available']} (intended={ps['weight']} "
+                  f"effective={eff:.4f}) :: {ps['file']}",
                   flush=True)
         print(f"[train]   normalized sampling weights: {mix['weights']}", flush=True)
         _bs = int(config.get("training", {}).get("per_device_train_batch_size", 1))

@@ -9,21 +9,32 @@ from typing import Any, List, Optional
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 LIB = Path(__file__).resolve().parents[1] / "lib"
 sys.path.insert(0, str(SCRIPTS))
-sys.path.insert(0, str(LIB.parent))
+# APPEND the experiment root (for `lib.*`): inserting it at the front would
+# shadow the minimal experiment's run.py/data.py for other test modules.
+if str(LIB.parent) not in sys.path:
+    sys.path.append(str(LIB.parent))
 
 from lib.reward_v3_1 import detect_stage, execution_aware_v3_1_stepwise  # noqa: E402
 
 
 @dataclass
 class Turn:
+    """Minimal stand-in mirroring nestful_core.rollout.Turn attributes."""
     parsed_call: Any = None
     final_answer: Optional[str] = None
+    fail_reason: Optional[str] = None
+    observation: Any = None
+    is_terminal: bool = False
+    clipped_completion: bool = False
 
 
 @dataclass
 class Trajectory:
+    """Minimal stand-in mirroring nestful_core.rollout.Trajectory attributes."""
     turns: List[Turn] = field(default_factory=list)
     clipped_any: bool = False
+    final_observation: Any = None
+    stop_reason: Optional[str] = None
 
 
 def _task(stage: str, n_calls: int, terminal: bool = True) -> dict:
@@ -44,8 +55,10 @@ def test_too_few_calls_capped():
     traj = Trajectory(turns=[Turn(parsed_call={"name": "add"})])
     task = _task("stage2_2call_dependency", 2)
     res = execution_aware_v3_1_stepwise(traj, task, train_stage=2)
-    assert res.reward <= 0.1
-    assert res.diagnostics.get("cap_applied") in ("too_few_calls", "severe_short_trace", None) or res.reward <= 0.25
+    # Post-audit band spec: too_few_calls is hard-capped at 0.30.
+    assert res.reward <= 0.30 + 1e-9
+    assert res.diagnostics.get("cap_applied") == "too_few_calls"
+    assert res.diagnostics.get("too_few_calls") is True
 
 
 def test_premature_final_nonterminal_zero():

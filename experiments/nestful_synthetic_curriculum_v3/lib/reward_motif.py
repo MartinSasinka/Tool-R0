@@ -105,9 +105,17 @@ def execution_aware_v2_1_motif(
         term_before = R.terminal_before_first_successful_tool(trajectory)
         invalid_ref = R.has_invalid_reference(trajectory)
         few = R.too_few_calls(trajectory, task)
-    except Exception:
-        final_pass = executable = refs = completeness = gold_prog = 0.0
-        parse_err = clipped = no_tool = term_before = invalid_ref = few = False
+    except Exception as exc:  # noqa: BLE001 — fail the reward WITH a diagnostic
+        msg = f"{type(exc).__name__}: {exc}"
+        print(f"[reward_motif] PREDICATES_ERROR task={task.get('task_id')}: {msg}",
+              flush=True)
+        return RewardResult(0.0, {
+            "reward_type": "execution_aware_v2_1_motif",
+            "reward": 0.0,
+            "predicates_error": msg,
+            "reward_cap_reason": "predicates_error",
+            "cap_applied": "predicates_error",
+        })
 
     motif_cons = motif_trace_consistency(trajectory, task)
     R_val = (
@@ -146,8 +154,41 @@ def execution_aware_v2_1_motif(
     diag = {
         "reward_type": "execution_aware_v2_1_motif",
         "reward": R_val,
+        "reward_total": R_val,
         "motif_trace_consistency": motif_cons,
         "tool_final_answer_pass": 1.0 if final_pass else 0.0,
+        "reward_executable": float(executable),
+        "reward_valid_refs": float(refs) if refs is not None else None,
+        "reward_completeness": float(completeness),
+        "reward_gold_progress": float(gold_prog),
+        "parse_error": bool(parse_err),
+        "no_tool_call": bool(no_tool),
+        "invalid_reference": bool(invalid_ref),
+        "too_few_calls": bool(few),
         "cap_applied": cap_applied,
+        "reward_cap_reason": cap_applied,
+        "predicates_error": None,
     }
     return RewardResult(R_val, diag)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Trainer adapter — SAME reward for episode_reward AND r_seq
+# ─────────────────────────────────────────────────────────────────────────────
+
+def episode_turn_reward_seq(trajectory, task, gold_observations=None) -> Dict[str, Any]:
+    """grpo_train-compatible adapter: {'r_seq', 'episode_reward', 'diagnostics'}.
+
+    The motif reward is episode-level, so r_seq is all-zero: with gamma=1 /
+    lambda_episode=1 every turn's return G_t equals the episode reward, which
+    makes group advantage purely between-completion (no position structure).
+    """
+    res = execution_aware_v2_1_motif(trajectory, task, gold_observations)
+    return {
+        "r_seq": [0.0] * len(trajectory.turns),
+        "episode_reward": float(res.reward),
+        "diagnostics": res.diagnostics,
+    }
+
+
+episode_turn_reward_seq.reward_policy = "execution_aware_v2_1_motif"  # type: ignore[attr-defined]

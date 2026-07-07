@@ -1,0 +1,97 @@
+{
+  "curriculum_version": "v3_1",
+  "dataset_gates": {
+    "stage1_count_ge_800": {
+      "pass": true,
+      "detail": "800 samples"
+    },
+    "stage1_call_counts_1_1": {
+      "pass": true,
+      "detail": "0 out-of-range rows"
+    },
+    "stage2_count_ge_800": {
+      "pass": true,
+      "detail": "800 samples"
+    },
+    "stage2_call_counts_2_2": {
+      "pass": true,
+      "detail": "0 out-of-range rows"
+    },
+    "stage3_count_ge_800": {
+      "pass": true,
+      "detail": "800 samples"
+    },
+    "stage3_call_counts_3_3": {
+      "pass": true,
+      "detail": "0 out-of-range rows"
+    },
+    "stage4_count_ge_800": {
+      "pass": true,
+      "detail": "800 samples"
+    },
+    "stage4_call_counts_4_6": {
+      "pass": true,
+      "detail": "0 out-of-range rows"
+    },
+    "gold_answer_null_eq_0": {
+      "pass": true,
+      "detail": "0 nulls"
+    },
+    "duplicate_sample_ids_eq_0": {
+      "pass": true,
+      "detail": "0 duplicates"
+    },
+    "exact_duplicates_eq_0": {
+      "pass": true,
+      "detail": "0 duplicates"
+    },
+    "audit_invalid_reference_count": {
+      "pass": true,
+      "detail": "invalid_reference_count=0"
+    },
+    "audit_question_trace_alignment_failures": {
+      "pass": true,
+      "detail": "question_trace_alignment_failures=0"
+    },
+    "audit_gold_replay_success_rate": {
+      "pass": true,
+      "detail": "gold_replay_success_rate=1.0"
+    },
+    "audit_metadata_leakage_count": {
+      "pass": true,
+      "detail": "metadata_leakage_count=0"
+    },
+    "audit_unresolved_placeholder_count": {
+      "pass": true,
+      "detail": "unresolved_placeholder_count=0"
+    }
+  },
+  "dataset_hard_gates_pass": true,
+  "reward_dispatch_ok": true,
+  "reward_policy_configured": "execution_aware_v3_1_stepwise",
+  "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+  "resolved_reward_fn": "lib.reward_v3_1.episode_turn_reward_seq",
+  "fractional_rewards_present": true,
+  "smoke_test": {
+    "returncode": 0,
+    "n_unique_reward_values": 9,
+    "failures": []
+  },
+  "dead_group_proxy_rate_stage1": 0.0,
+  "dead_group_proxy_n_tasks": 50,
+  "reward_component_logging_ok": true,
+  "reward_component_missing_keys": [],
+  "replay_ratio_ok": true,
+  "replay_effective_mix": [
+    0.2,
+    0.8
+  ],
+  "replay_scalar_weight_rejected": true,
+  "train_stage_metadata_visible": true,
+  "regression_guard_enabled": true,
+  "stage_advancement_gates_enabled": true,
+  "strict_fallback_disallowed": true,
+  "checkpoint_guard_enabled": true,
+  "hard_failures": [],
+  "status": "PASS"
+}

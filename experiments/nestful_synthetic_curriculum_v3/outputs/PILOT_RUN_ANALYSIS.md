@@ -1,12 +1,12 @@
 # Pilot Run Analysis
 
-Generated: 2026-07-03 07:35 UTC
+Generated: 2026-07-07 06:30 UTC
 
 ## Run metadata
 
 | field | value |
 |---|---|
-| run_dir | C:\Users\Šunka\Documents\GitHub\Tool-R0\experiments\nestful_synthetic_curriculum_v3\outputs\runs\20260702_112150 |
+| run_dir | C:\Users\Šunka\Documents\GitHub\Tool-R0\experiments\nestful_synthetic_curriculum_v3\outputs\runs\0260703_145219_v3_1 |
 | timestamp | 20260702_112150 |
 | stages | 1, 2 (2 epochs each) |
 | dry_run | False |
@@ -25,15 +25,15 @@ Generated: 2026-07-03 07:35 UTC
 
 | checkpoint/epoch | dev_win | baseline | delta | full_acc | partial_acc | f1_func | strict_trace | dead_group_rate | conclusion |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| baseline_dev | 0.555 | 0.555 | 0.0 | 0.02 | 0.192 | 0.87 | None | None | baseline |
-| s1_e1 | 0.54 | 0.555 | -0.015000000000000013 | 0.015 | 0.195 | 0.877 | 0.4876847290640394 | 0.3884892086330935 | below_baseline |
-| s1_e2 | 0.575 | 0.555 | 0.019999999999999907 | 0.02 | 0.187 | 0.88 | 0.4860426929392447 | 0.3932853717026379 | beats_baseline |
-| s2_e1 | 0.545 | 0.555 | -0.010000000000000009 | 0.015 | 0.181 | 0.869 | 0.1891891891891892 | 0.6859375 | below_baseline |
-| s2_e2 | 0.53 | 0.555 | -0.025000000000000022 | 0.01 | 0.188 | 0.861 | 0.16953316953316952 | 0.6796875 | below_baseline |
+| baseline_dev | 0.56 | 0.56 | 0.0 | 0.02 | 0.187 | 0.864 | None | None | baseline |
+| s1_e1 | 0.565 | 0.56 | 0.004999999999999893 | 0.03 | 0.196 | 0.872 | 0.4745484400656814 | 1 | near_baseline |
+| s1_e2 | 0.565 | 0.56 | 0.004999999999999893 | 0.03 | 0.196 | 0.872 | 0.4745484400656814 | 1 | near_baseline |
+| s2_e1 | 0.53 | 0.56 | -0.030000000000000027 | 0.025 | 0.195 | 0.864 | 0.17444717444717445 | 0.778125 | below_baseline |
+| s2_e2 | 0.51 | 0.56 | -0.050000000000000044 | 0.02 | 0.194 | 0.883 | 0.16707616707616707 | 0.778125 | below_baseline |
 
 ## Answers (aggregate)
 
-1. **Beat baseline?** Yes — s1_e2 dev Win=0.575 vs baseline 0.555 (Δ=+0.020)
+1. **Beat baseline?** No — best checkpoint still below or equal baseline.
 2. **Near-baseline?** Stage 1 epoch 1 (0.540) and stage 2 epoch 1 (0.545) are within ~1–2.5pp of baseline 0.555.
 3. **Trend:** Stage 1 improves epoch 1→2 (+3.5pp dev Win). Stage 2 regresses vs stage 1 best and vs baseline.
 4. **Trace drift:** NESTFUL 3-call eval strict_pass drops to ~0.17–0.19 (eval-stage3) vs ~0.49 on 2-call (eval-stage2) — depth sensitivity increased after stage 2.

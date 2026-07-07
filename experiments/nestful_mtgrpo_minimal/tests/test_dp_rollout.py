@@ -124,11 +124,18 @@ def test_run_episode_collect_parse_fail():
 
 # ── reward-policy resolution ────────────────────────────────────────────────────
 
-def test_resolve_reward_fn_strict():
+def test_resolve_reward_fn_strict(monkeypatch):
     from reward import episode_turn_reward_seq as strict_seq
     assert _resolve_reward_fn({"reward": {"train_policy": "strict_gold_trace"}}) is strict_seq
-    # Unknown / missing policy must default to strict (never crash).
+    # Missing policy defaults to strict (explicit default, not a fallback).
     assert _resolve_reward_fn({}) is strict_seq
+    # Unknown policy must HARD-FAIL (audit Bug 1: the old silent fallback to
+    # the strict binary reward invalidated the v3/v3.1 pilots) ...
+    monkeypatch.delenv("ALLOW_STRICT_REWARD_FALLBACK", raising=False)
+    with pytest.raises(ValueError):
+        _resolve_reward_fn({"reward": {"train_policy": "nonsense"}})
+    # ... unless the fallback is explicitly allowed via the env escape hatch.
+    monkeypatch.setenv("ALLOW_STRICT_REWARD_FALLBACK", "1")
     assert _resolve_reward_fn({"reward": {"train_policy": "nonsense"}}) is strict_seq
 
 

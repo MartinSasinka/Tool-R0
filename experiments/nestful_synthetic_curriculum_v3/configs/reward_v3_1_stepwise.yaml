@@ -1,48 +1,48 @@
+# execution_aware_v3_1_stepwise — FIXED post-audit schema.
+# Component names must match lib/reward_v3_1.py DEFAULT_CONFIG.
+#   tool_*_match     = exact gold tool-name match (NOT call count)
+#   argument_value_match = normalized gold argument-VALUE match (NOT just executable)
+#   executable_*     = separate from correctness
 reward:
   name: execution_aware_v3_1_stepwise
 
   stage1:
     weights:
-      next_action_validity: 0.30
-      executable_step: 0.25
-      argument_validity: 0.20
-      tool_selection: 0.15
-      final_answer_from_observation: 0.10
+      format_valid: 0.20
+      tool_name_match: 0.20
+      argument_value_match: 0.25
+      executable_step: 0.15
+      final_answer_match: 0.20
 
-  stage2:
+  # Shared by stage2 / stage3 / stage4 (multi-call prefix / full trajectories).
+  stage_multi:
     weights:
-      next_action_validity: 0.25
-      executable_step: 0.20
-      valid_reference: 0.25
-      continuation_correctness: 0.20
-      final_answer_if_terminal: 0.10
+      format_valid: 0.10
+      tool_sequence_match: 0.20
+      argument_value_match: 0.15
+      valid_references: 0.15
+      dependency_use: 0.10
+      executable_trajectory: 0.10
+      expected_num_calls: 0.10
+      final_answer_match: 0.10
 
-  stage3:
-    weights:
-      executable_trajectory: 0.20
-      valid_references: 0.25
-      motif_trace_consistency: 0.20
-      tool_use_completeness: 0.20
-      final_answer_if_terminal: 0.15
-
-  stage4:
-    weights:
-      executable_trajectory: 0.20
-      valid_references: 0.20
-      motif_trace_consistency: 0.20
-      tool_use_completeness: 0.25
-      final_answer: 0.15
-
+  # Band enforcement (see audit Bug 8):
+  #   parse_error / no_tool_call / premature_final -> 0.0
+  #   wrong_tool                 <= 0.35
+  #   correct_tool_wrong_args    <= 0.60
+  #   executable_wrong_final     <= 0.75
+  #   fully correct              >= 0.90 (floor)
   caps:
     parse_error: 0.0
     clipped: 0.0
     no_tool_call: 0.0
-    invalid_reference: 0.1
     premature_final_nonterminal: 0.0
-    too_few_calls: 0.1
-    severe_short_trace: 0.1
-    not_executable: 0.2
+    invalid_reference: 0.10
+    wrong_tool: 0.35
+    correct_tool_wrong_args: 0.60
+    executable_wrong_final: 0.75
+    too_few_calls: 0.30
+    too_many_calls: 0.70
 
   floors:
-    executable_complete_prefix: 0.75
-    executable_complete_prefix_with_valid_refs: 0.85
+    correct_tool_args_final: 0.90

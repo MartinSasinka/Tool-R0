@@ -2,10 +2,10 @@
 
 | epoch | synthetic_reward | synthetic_motif_consistency | synthetic_final_pass | real_dev_win | real_dev_strict_trace | conclusion |
 |---|---:|---:|---:|---:|---:|---|
-| s1_e1 | 0.5779376498800959 | 0.5779376498800959 | 0 | 0.54 | 0.4876847290640394 | below_baseline |
-| s1_e2 | 0.5779376498800959 | 0.5779376498800959 | 0 | 0.575 | 0.4860426929392447 | beats_baseline |
-| s2_e1 | 0.26875 | 0.2671875 | 0 | 0.545 | 0.1891891891891892 | below_baseline |
-| s2_e2 | 0.26875 | 0.26875 | 0 | 0.53 | 0.16953316953316952 | below_baseline |
+| s1_e1 | 0.235 | 0.235 | 0 | 0.565 | 0.4745484400656814 | near_baseline |
+| s1_e2 | 0.235 | 0.235 | 0 | 0.565 | 0.4745484400656814 | near_baseline |
+| s2_e1 | 0.30953125 | 0.30875 | 0 | 0.53 | 0.17444717444717445 | below_baseline |
+| s2_e2 | 0.30953125 | 0.308125 | 0 | 0.51 | 0.16707616707616707 | below_baseline |
 
 ## Answers
 

@@ -4,9 +4,8 @@
 
 ## Evidence
 
-- Best checkpoint: **s1_e2** dev Win **0.575** vs baseline **0.555** (Δ **+0.020**).
-- Per-sample overlap (n=200): **net_gain +4** (20 new wins − 16 regressions); win preservation **85.6%**.
-- Stage 2 dead_group_rate ~**69%** — training signal collapsed in mixed stage; **do not deploy s2 checkpoints**.
+- Best checkpoint: **s1_e1** dev Win **0.565** vs baseline **0.56** (Δ **+0.005**).
+- Stage 2 dead_group_rate ~**78%** — training signal collapsed in mixed stage.
 - Prototype-only tool registry; no final NESTFUL transfer claim.
 - Stage 1 improved real dev Win — pipeline **can work** with better data/reward.
 

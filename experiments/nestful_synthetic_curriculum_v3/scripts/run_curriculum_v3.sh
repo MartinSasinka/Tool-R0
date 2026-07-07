@@ -4,6 +4,10 @@
 # Usage (v3.1 pod dry-run):
 #   DRY_RUN=1 ALLOW_PROTOTYPE_TRAINING=1 CURRICULUM_VERSION=v3_1 STAGES="1 2" \
 #     bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh
+# Re-exec without CRLF when checked out on Windows (RunPod bash rejects pipefail\r).
+if grep -q $'\r' "$0" 2>/dev/null; then
+  exec /bin/bash <(sed 's/\r$//' "$0") "$@"
+fi
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -21,11 +25,16 @@ if [ "$CURRICULUM_VERSION" = "v3_1" ] || [ "$CURRICULUM_VERSION" = "v31" ]; then
   CURR_RAW="$V3/outputs/curriculum_v3_1"
   MANIFEST="$CURR_RAW/curriculum_v3_1_manifest.json"
   PREFLIGHT_VERSION="v3_1"
-  REWARD_POLICY="execution_aware_v3_1_stepwise"
+  # REWARD_POLICY is overridable so the SAME pipeline can run the v2.1 motif
+  # ablation on the v3.1 dataset: REWARD_POLICY=execution_aware_v2_1_motif.
+  REWARD_POLICY="${REWARD_POLICY:-execution_aware_v3_1_stepwise}"
   STAGE1_FILE="stage1_1call_atomic.jsonl"
   STAGE2_FILE="stage2_2call_dependency.jsonl"
   STAGE3_FILE="stage3_3call_composition.jsonl"
   STAGE4_FILE="stage4_4to6call_persistence.jsonl"
+  # Scalar per-stage values are REPLAY RATIOS (audit Bug 6): 0.20 => previous
+  # stages total 20%, current stage 80%. run_curriculum.sh forwards a scalar
+  # as data.replay_ratio (a CSV list keeps explicit per-stage weights).
   REPLAY_S2="${CURRICULUM_REPLAY_WEIGHTS_S2:-0.20}"
   REPLAY_S3="${CURRICULUM_REPLAY_WEIGHTS_S3:-0.25}"
   REPLAY_S4="${CURRICULUM_REPLAY_WEIGHTS_S4:-0.30}"
@@ -34,7 +43,7 @@ else
   CURR_RAW="$CURR"
   MANIFEST="$CURR/curriculum_manifest.json"
   PREFLIGHT_VERSION="v3"
-  REWARD_POLICY="execution_aware_v2_1_motif"
+  REWARD_POLICY="${REWARD_POLICY:-execution_aware_v2_1_motif}"
   STAGE1_FILE="stage1_linear_simple.jsonl"
   STAGE2_FILE="stage2_reference_reuse.jsonl"
   STAGE3_FILE="stage3_structural_motifs.jsonl"
@@ -43,6 +52,7 @@ else
   REPLAY_S3="${CURRICULUM_REPLAY_WEIGHTS_S3:-0.50}"
   REPLAY_S4="${CURRICULUM_REPLAY_WEIGHTS_S4:-0.65}"
 fi
+export REWARD_POLICY
 
 echo "[curriculum] version=$CURRICULUM_VERSION preflight=$PREFLIGHT_VERSION reward=$REWARD_POLICY"
 
@@ -104,10 +114,14 @@ else
   fi
 fi
 
+# Ensure parent exists before path normalization — otherwise a missing
+# outputs/runs/ dir resolves to /${TS}_v3_1 at filesystem root.
+mkdir -p "$(dirname "$OUTPUT_ROOT")"
+
 if [ -d "$OUTPUT_ROOT" ]; then
   OUTPUT_ROOT="$(cd "$OUTPUT_ROOT" && pwd)"
 else
-  OUTPUT_ROOT="$(cd "$(dirname "$OUTPUT_ROOT")" 2>/dev/null && pwd)/$(basename "$OUTPUT_ROOT")"
+  OUTPUT_ROOT="$(cd "$(dirname "$OUTPUT_ROOT")" && pwd)/$(basename "$OUTPUT_ROOT")"
 fi
 export OUTPUT_ROOT
 export RUN_PY="$V3/run.py"
@@ -120,21 +134,46 @@ export STABILIZED_LR="${STABILIZED_LR:-5e-7}"
 export STABILIZED_KL="${STABILIZED_KL:-0.15}"
 export REGRESSION_GUARD="${REGRESSION_GUARD:-1}"
 export REGRESSION_EARLY_ABORT="${REGRESSION_EARLY_ABORT:-1}"
+export ALLOW_NO_REGRESSION_GUARD="${ALLOW_NO_REGRESSION_GUARD:-0}"
+export ALLOW_STRICT_REWARD_FALLBACK="${ALLOW_STRICT_REWARD_FALLBACK:-0}"
+# Hard per-stage advancement gates (check_stage_gates.py) — default ON for
+# v3/v3.1 runs; a failing stage stops the run instead of advancing.
+export STAGE_GATES="${STAGE_GATES:-1}"
 export NUM_GENERATIONS="${NUM_GENERATIONS:-4}"
 export CURRICULUM_VERSION
 export CURRICULUM_REPLAY_WEIGHTS_S2="$REPLAY_S2"
 export CURRICULUM_REPLAY_WEIGHTS_S3="$REPLAY_S3"
 export CURRICULUM_REPLAY_WEIGHTS_S4="$REPLAY_S4"
+# Optional deterministic eval decoding (pilot: EVAL_TEMPERATURE=0.0).
+if [ -n "${EVAL_TEMPERATURE:-}" ]; then export EVAL_TEMPERATURE; fi
 
+# Always inject the reward policy; append optional trainer knobs. A wrapper
+# may pre-set EXTRA_TRAIN_OVERRIDES_STR — the reward override is appended so
+# it can never be silently dropped.
 EXTRA_REWARD="--override reward.train_policy=$REWARD_POLICY"
-export EXTRA_TRAIN_OVERRIDES_STR="${EXTRA_TRAIN_OVERRIDES_STR:-$EXTRA_REWARD --override training.kl_beta=0.15 --override training.max_epochs_per_stage=2}"
+if [ -z "${EXTRA_TRAIN_OVERRIDES_STR:-}" ]; then
+  EXTRA_TRAIN_OVERRIDES_STR="$EXTRA_REWARD --override training.kl_beta=${TRAIN_KL_BETA:-0.15}"
+elif ! echo "$EXTRA_TRAIN_OVERRIDES_STR" | grep -q "reward.train_policy="; then
+  EXTRA_TRAIN_OVERRIDES_STR="$EXTRA_TRAIN_OVERRIDES_STR $EXTRA_REWARD"
+fi
+if [ -n "${TRAIN_TEMPERATURE:-}" ] && \
+   ! echo "$EXTRA_TRAIN_OVERRIDES_STR" | grep -q "generation.temperature="; then
+  EXTRA_TRAIN_OVERRIDES_STR="$EXTRA_TRAIN_OVERRIDES_STR --override generation.temperature=$TRAIN_TEMPERATURE"
+fi
+export EXTRA_TRAIN_OVERRIDES_STR
 
 if [ -n "${CHECKPOINT_IN:-}" ]; then
   export INIT_FROM="${INIT_FROM:-checkpoint}"
 fi
 
-if echo "$STAGES" | grep -qE '(^| )3( |$)|(^| )4( |$)'; then
-  echo "[curriculum] ERROR: stage 3/4 require advance_gates on pod" >&2
+# Stage 4 is NEVER allowed from this launcher; stage 3 requires the hard
+# stage gates (STAGE_GATES=1) so it only runs when stage 2 passed.
+if echo "$STAGES" | grep -qE '(^| )4( |$)'; then
+  echo "[curriculum] ERROR: stage 4 is not allowed in this pilot launcher" >&2
+  exit 1
+fi
+if echo "$STAGES" | grep -qE '(^| )3( |$)' && [ "$STAGE_GATES" != "1" ]; then
+  echo "[curriculum] ERROR: stage 3 requires STAGE_GATES=1 (hard advancement gates)" >&2
   exit 1
 fi
 

@@ -17,6 +17,7 @@ This file imports nothing from curricullum/ or nestful_evaluation/.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -32,6 +33,105 @@ from reward import (
     episode_turn_reward_seq,
 )
 from rollout import Trajectory, Turn, get_stage_token_budget
+from group_stats import compute_group_stats
+
+_STRICT_POLICY_ALIASES = ("strict", "strict_gold_trace", "strict_gold_trace_legacy")
+
+
+def _policy_is_graded(policy: Optional[str]) -> bool:
+    return (policy or "strict").lower() not in _STRICT_POLICY_ALIASES
+
+
+def _verify_reward_dispatch(config: Dict[str, Any], rollout_pool) -> Dict[str, Any]:
+    """Assert (in the PARENT, before any rollout) that the configured reward
+    policy is actually the one that will be used (audit Bug 1).
+
+    Pool path:     use the pool's already-resolved reward info (same resolver
+                   the workers run; resolve_reward_info raises on unknown).
+    Non-pool path: inspect the (possibly monkeypatched) module-global
+                   episode_turn_reward_seq that the loop will call.
+    """
+    configured = str((config.get("reward", {}) or {}).get("train_policy", "strict"))
+    if rollout_pool is not None and getattr(rollout_pool, "reward_info", None):
+        info = dict(rollout_pool.reward_info)
+    elif rollout_pool is not None:
+        from vllm_dp_pool import resolve_reward_info
+        _fn, info = resolve_reward_info(config)
+    else:
+        fn = episode_turn_reward_seq  # module global — monkeypatch target
+        mod = getattr(fn, "__module__", "?")
+        resolved_policy = getattr(fn, "reward_policy", None) or (
+            "strict" if mod == "reward" else configured)
+        info = {
+            "configured_policy": configured,
+            "resolved_policy": resolved_policy,
+            "reward_fn_module": mod,
+            "reward_fn_name": getattr(fn, "__name__", "?"),
+            "fallback_used": False,
+        }
+
+    allow_fb = os.environ.get("ALLOW_STRICT_REWARD_FALLBACK", "0") == "1"
+    is_strict = info.get("reward_fn_module") == "reward"
+    strict_requested = configured.lower() in _STRICT_POLICY_ALIASES
+    print(f"[train] reward dispatch: configured={info['configured_policy']} "
+          f"resolved={info['resolved_policy']} "
+          f"fn={info['reward_fn_module']}.{info['reward_fn_name']} "
+          f"fallback_used={str(info.get('fallback_used', False)).lower()}",
+          flush=True)
+    if info.get("fallback_used") and not allow_fb:
+        raise RuntimeError(
+            f"[train] ABORT: reward fallback engaged for policy '{configured}' "
+            f"without ALLOW_STRICT_REWARD_FALLBACK=1.")
+    if is_strict and not strict_requested and not info.get("fallback_used") and not allow_fb:
+        raise RuntimeError(
+            f"[train] ABORT: configured reward policy '{configured}' resolved to the "
+            f"STRICT gold-trace reward. The graded reward was NOT dispatched — this is "
+            f"exactly the failure mode that invalidated the previous pilots. "
+            f"Fix reward wiring (vllm_dp_pool.resolve_reward_info / run.py monkeypatch) "
+            f"before training.")
+    return info
+
+
+def _completion_hash(ep: "Episode") -> str:
+    h = hashlib.sha1()
+    for tt in ep.turn_tokens:
+        try:
+            ids = tt.completion_ids.tolist()
+        except AttributeError:
+            ids = list(tt.completion_ids)
+        h.update(str(ids).encode("utf-8"))
+        h.update(b"|")
+    return h.hexdigest()[:12]
+
+
+def _diag_failure_counts(ep_diags: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Failure-mode counts from per-episode reward diagnostics (best-effort:
+    supports both graded-reward diags and strict-reward diags)."""
+    def _flag(d: Dict[str, Any], key: str, strict_key: Optional[str] = None,
+              strict_invert: bool = False) -> bool:
+        if key in d:
+            return bool(d.get(key))
+        if strict_key is not None and strict_key in d:
+            v = bool(d.get(strict_key))
+            return (not v) if strict_invert else v
+        return False
+
+    return {
+        "parse_error_count": sum(
+            1 for d in ep_diags if _flag(d, "parse_error", "parse_ok", True)),
+        "no_tool_call_count": sum(
+            1 for d in ep_diags if _flag(d, "no_tool_call", "zero_tool_calls")),
+        "wrong_tool_count": sum(1 for d in ep_diags if _flag(d, "wrong_tool")),
+        "wrong_arg_count": sum(1 for d in ep_diags if _flag(d, "wrong_args")),
+        "invalid_ref_count": sum(
+            1 for d in ep_diags if _flag(d, "invalid_reference")),
+        "premature_final_count": sum(
+            1 for d in ep_diags if _flag(d, "premature_final")),
+        "too_few_calls_count": sum(
+            1 for d in ep_diags if _flag(d, "too_few_calls")),
+        "predicates_error_count": sum(
+            1 for d in ep_diags if d.get("predicates_error")),
+    }
 
 
 def _write_checkpoint_sidecars(
@@ -47,6 +147,7 @@ def _write_checkpoint_sidecars(
     global_step: int,
     wandb_run=None,
     log=None,
+    train_stats: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Write reproducibility sidecars next to a saved adapter.
 
@@ -86,6 +187,8 @@ def _write_checkpoint_sidecars(
         "mixed_replay": bool(config.get("data", {}).get("mixed_replay")),
         "saved_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
+    if train_stats:
+        trainer_state.update(train_stats)
     try:
         with open(os.path.join(adapter_dir, "trainer_state.json"), "w", encoding="utf-8") as fh:
             json.dump(trainer_state, fh, indent=2, ensure_ascii=False)
@@ -129,6 +232,8 @@ class _PoolTraj:
     where the full Trajectory (with raw tool observations) stays in the worker."""
     clipped_any: bool = False
     zero_tool_calls: bool = False
+    num_tool_calls: int = 0
+    stop_reason: Optional[str] = None
 
 
 def _episode_from_pool_result(res) -> Episode:
@@ -146,7 +251,9 @@ def _episode_from_pool_result(res) -> Episode:
         for (p_ids, c_ids) in res.turn_token_ids
     ]
     traj = _PoolTraj(clipped_any=bool(res.clipped_any),
-                     zero_tool_calls=bool(res.zero_tool_calls))
+                     zero_tool_calls=bool(res.zero_tool_calls),
+                     num_tool_calls=int(getattr(res, "num_tool_calls", 0)),
+                     stop_reason=getattr(res, "stop_reason", None))
     return Episode(trajectory=traj, turn_tokens=tts, reward=float(res.episode_reward))
 
 
@@ -381,6 +488,27 @@ def train(
     allow_fallback = bool(mt.get("fallback_episode_level_if_needed", True))
     reward_policy = str(config.get("reward", {}).get("train_policy", "strict"))
 
+    # ── Reward-dispatch verification (audit Bug 1) — aborts BEFORE any rollout
+    # when the configured graded reward would not actually run.
+    dispatch_info = _verify_reward_dispatch(config, rollout_pool)
+    graded_reward = _policy_is_graded(reward_policy) and not dispatch_info.get("fallback_used")
+
+    # ── Early-abort bookkeeping (audit Bug 10) ───────────────────────────────
+    early_abort_enabled = bool(tr.get("early_abort_checks", True))
+    early_dead_thresh_50 = float(tr.get("early_abort_dead_rate_first_50", 0.90))
+    groups_seen = 0
+    first50_dead = 0
+    first50_reward_values: set = set()
+    all_reward_values: set = set()
+    total_contributing = 0
+    total_dead_groups = 0
+    total_groups = 0
+    position_artifact_groups = 0
+    agg_no_tool = 0
+    agg_too_few = 0
+    agg_episodes = 0
+    agg_pred_calls = 0
+
     trainable = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(trainable, lr=lr)
     has_ref = hasattr(model, "disable_adapter") and kl_beta > 0.0
@@ -400,12 +528,18 @@ def train(
         "epochs": epochs, "num_tasks": len(tasks), "steps": 0,
         "experimental": True,
         "reward_train_policy": reward_policy,
+        "reward_policy_configured": dispatch_info["configured_policy"],
+        "reward_policy_resolved": dispatch_info["resolved_policy"],
+        "reward_fn_module": dispatch_info["reward_fn_module"],
+        "reward_fn_name": dispatch_info["reward_fn_name"],
+        "reward_fallback_used": bool(dispatch_info.get("fallback_used", False)),
         "mt_grpo_mode": "turn_level_minimal" if use_turn_level else "episode_level",
         "gamma": gamma, "lambda_episode": lambda_episode,
         "fallback_used": False,
         "vllm_rollout": (vllm_gen is not None) or (rollout_pool is not None),
         "data_parallel_rollout": rollout_pool is not None,
     }
+    _log({"reward_dispatch": dispatch_info})
 
     for epoch in range(epochs):
         model.train()
@@ -420,6 +554,7 @@ def train(
             ep_r_seqs: List[List[float]] = []
             pool_first_errors: List[int] = []  # only populated on the pool path
 
+            ep_diags: List[Dict[str, Any]] = []
             if rollout_pool is not None:
                 # Data-parallel: workers run the full episode AND apply the correct
                 # reward policy, returning token-id lists + reward + r_seq. Raw tool
@@ -431,6 +566,7 @@ def train(
                               "task_id": task["task_id"], "rollout_error": res.error})
                     episodes.append(_episode_from_pool_result(res))
                     ep_r_seqs.append(list(res.r_seq))
+                    ep_diags.append(dict(getattr(res, "reward_diag", None) or {}))
                     if res.first_error_turn is not None:
                         pool_first_errors.append(int(res.first_error_turn))
             else:
@@ -449,6 +585,7 @@ def train(
                     ep.reward = rinfo["episode_reward"]
                     episodes.append(ep)
                     ep_r_seqs.append(rinfo["r_seq"])
+                    ep_diags.append(dict(rinfo.get("diagnostics") or {}))
 
             rewards = [e.reward for e in episodes]
             mean_r = sum(rewards) / len(rewards)
@@ -459,32 +596,65 @@ def train(
             for ep, r_seq in zip(episodes, ep_r_seqs):
                 ep_returns.append(_turn_returns(r_seq, ep.reward, gamma, lambda_episode))
 
-            # Group-relative advantage over all (episode, turn) returns in the group.
-            flat = [g for ep, gs in zip(episodes, ep_returns)
-                    for g in gs
-                    if not (mask_clipped and ep.trajectory.clipped_any)]
-            if flat:
-                gmean = sum(flat) / len(flat)
-                gvar = sum((g - gmean) ** 2 for g in flat) / len(flat)
-                gstd = gvar ** 0.5
-            else:
-                gmean, gstd = 0.0, 0.0
+            # ── Corrected group statistics (audit Bug 3) ──────────────────────
+            # Advantages are computed PER TURN POSITION across completions;
+            # a group is dead iff NO position has between-completion variance.
+            # The old flattened std is kept only for logging / artifact detection.
+            included = [not (mask_clipped and ep.trajectory.clipped_any)
+                        for ep in episodes]
+            gstats = compute_group_stats(ep_returns, rewards, included)
+            dead = gstats.dead_corrected
+            gstd = gstats.flat_std  # legacy field, logged as flattened std
 
             group_all_zero = all(r == 0.0 for r in rewards)
             group_all_one = all(r == 1.0 for r in rewards)
-            dead = gstd == 0.0  # no turn-level signal to learn from
+            if gstats.position_artifact_detected:
+                _log({"epoch": epoch, "task_idx": ti, "task_id": task["task_id"],
+                      "position_artifact_detected": True,
+                      "flat_std": gstats.flat_std,
+                      "between_completion_std_max": gstats.between_completion_std_max,
+                      "note": "alive under OLD flattened logic, dead under corrected "
+                              "between-completion logic — old logic would have trained "
+                              "on a pure turn-position artifact"})
+
+            comp_hashes = [_completion_hash(e) for e in episodes]
+            pred_calls = [int(getattr(e.trajectory, "num_tool_calls", 0) or 0)
+                          for e in episodes]
+            turn_reward_values = sorted({float(x) for seq in ep_r_seqs for x in seq})
+            episode_reward_values = sorted({float(r) for r in rewards})
+            fail_counts = _diag_failure_counts(ep_diags)
 
             rec = {
                 "epoch": epoch, "task_idx": ti, "task_id": task["task_id"],
                 "reward_train_policy": reward_policy,
+                "reward_policy_configured": dispatch_info["configured_policy"],
+                "reward_policy_resolved": dispatch_info["resolved_policy"],
+                "reward_fn_module": dispatch_info["reward_fn_module"],
+                "reward_fn_name": dispatch_info["reward_fn_name"],
                 "mt_grpo_mode": summary["mt_grpo_mode"],
                 "mean_reward": mean_r,
                 "episode_rewards": rewards,
+                "raw_episode_rewards": rewards,
                 "turn_rewards": ep_r_seqs,
+                "unique_episode_rewards": episode_reward_values,
+                "unique_turn_rewards": turn_reward_values,
+                "n_unique_episode_rewards": len(episode_reward_values),
+                "n_unique_turn_rewards": len(turn_reward_values),
+                "reward_std_episode": gstats.episode_reward_std,
+                "reward_std_turn_flattened": gstats.flat_std,
+                "reward_std_between_completion": gstats.between_completion_std_max,
                 "return_std": gstd,
                 "group_all_zero": group_all_zero, "group_all_one": group_all_one,
                 "group_mixed": (not group_all_zero) and (not group_all_one),
                 "dead_group": dead,
+                "dead_group_old_flattened": gstats.dead_flattened,
+                "dead_group_corrected": gstats.dead_corrected,
+                "position_artifact_detected": gstats.position_artifact_detected,
+                "completion_hashes": comp_hashes,
+                "n_unique_completion_hashes": len(set(comp_hashes)),
+                "predicted_num_calls": pred_calls,
+                "gold_num_calls": gold_n,
+                **fail_counts,
                 "strict_gold_trace_pass": mean_r,
                 "zero_tool_calls": sum(
                     1 for e in episodes if e.trajectory.zero_tool_calls
@@ -507,8 +677,52 @@ def train(
             if dead:
                 epoch_dead_groups += 1
 
+            # ── Signal-collapse bookkeeping + early aborts (audit Bug 10) ─────
+            groups_seen += 1
+            total_groups += 1
             if dead:
-                _log({**rec, "update": "skipped_dead_group"})
+                total_dead_groups += 1
+            if gstats.position_artifact_detected:
+                position_artifact_groups += 1
+            for v in rewards:
+                all_reward_values.add(round(float(v), 6))
+            for seq in ep_r_seqs:
+                for v in seq:
+                    all_reward_values.add(round(float(v), 6))
+            agg_episodes += len(episodes)
+            agg_no_tool += fail_counts["no_tool_call_count"]
+            agg_too_few += fail_counts["too_few_calls_count"]
+            agg_pred_calls += sum(pred_calls)
+            if groups_seen <= 50:
+                if dead:
+                    first50_dead += 1
+                first50_reward_values.update(round(float(r), 6) for r in rewards)
+            if early_abort_enabled and groups_seen == 50:
+                d50 = first50_dead / 50.0
+                summary["dead_group_rate_first_50"] = d50
+                _log({"epoch": epoch, "first_50_dead_group_rate": d50,
+                      "first_50_unique_episode_rewards": sorted(first50_reward_values)})
+                if d50 > early_dead_thresh_50:
+                    raise RuntimeError(
+                        f"[train] EARLY ABORT: dead_group_rate over first 50 groups = "
+                        f"{d50:.2f} > {early_dead_thresh_50}. No usable learning signal "
+                        f"— inspect reward variance before burning more compute.")
+                if graded_reward and first50_reward_values <= {0.0, 1.0}:
+                    raise RuntimeError(
+                        f"[train] EARLY ABORT: graded reward "
+                        f"'{dispatch_info['resolved_policy']}' produced ONLY binary "
+                        f"{{0,1}} episode rewards over the first 50 groups — this "
+                        f"matches the strict-fallback failure mode. Fix reward "
+                        f"dispatch / grading before training.")
+            if early_abort_enabled and groups_seen == 100 and global_step == 0 \
+                    and total_contributing == 0:
+                raise RuntimeError(
+                    "[train] EARLY ABORT: 0 optimizer steps and 0 contributing turns "
+                    "after 100 groups — training is not learning anything.")
+
+            if dead:
+                _log({**rec, "update": "skipped_dead_group",
+                      "optimizer_step_executed": False, "contributing_turns": 0})
                 _wandb_log_task(wandb_run, rec, stage, global_step)
                 continue
 
@@ -518,14 +732,22 @@ def train(
             logp_sum = 0.0
             logp_count = 0
             contributing = 0
-            for ep, gs in zip(episodes, ep_returns):
+            for ei, (ep, gs) in enumerate(zip(episodes, ep_returns)):
                 if mask_clipped and ep.trajectory.clipped_any:
                     continue
+                adv_row = gstats.advantages[ei]
                 for j, tt in enumerate(ep.turn_tokens):
                     if j >= len(gs) or tt.completion_ids.numel() == 0:
                         continue
                     if use_turn_level:
-                        adv = (gs[j] - gmean) / (gstd + 1e-8) if normalize_advantage else gs[j]
+                        # Per-position between-completion advantage (audit Bug 3):
+                        # centered/normalized ACROSS completions at the same turn
+                        # position, so mechanical position offsets cancel out.
+                        if normalize_advantage:
+                            adv = adv_row[j] if j < len(adv_row) else 0.0
+                        else:
+                            _pm = gstats.position_means[j] if j < len(gstats.position_means) else 0.0
+                            adv = gs[j] - _pm
                     else:
                         # episode_level: single advantage from R_episode group.
                         adv = (ep.reward - mean_r)
@@ -555,11 +777,13 @@ def train(
             if contributing == 0 and allow_fallback:
                 summary["fallback_used"] = True
 
+            total_contributing += contributing
             accum += 1
             rec["loss"] = step_loss
             rec["contributing_turns"] = contributing
             rec["kl"] = (kl_sum / kl_count) if kl_count else 0.0
             rec["mean_logprob"] = (logp_sum / logp_count) if logp_count else 0.0
+            rec["optimizer_step_executed"] = (accum % grad_accum == 0)
             _log({**rec, "update": "accumulated"})
             _wandb_log_task(wandb_run, rec, stage, global_step)
 
@@ -602,6 +826,30 @@ def train(
                     stage=stage, epoch=epoch + 1, lr=lr, kl_beta=kl_beta,
                     num_gen=num_gen, grad_accum=grad_accum, global_step=global_step,
                     wandb_run=wandb_run, log=_log,
+                    train_stats={
+                        "steps": global_step,
+                        "contributing_turns": total_contributing,
+                        "dead_group_rate": (total_dead_groups / total_groups)
+                        if total_groups else None,
+                        "position_artifact_group_rate": (
+                            position_artifact_groups / total_groups)
+                        if total_groups else None,
+                        "fractional_rewards_present": any(
+                            0.0 < v < 1.0 for v in all_reward_values),
+                        "reward_policy_configured": dispatch_info["configured_policy"],
+                        "reward_policy_resolved": dispatch_info["resolved_policy"],
+                        "reward_fn_module": dispatch_info["reward_fn_module"],
+                        "reward_fn_name": dispatch_info["reward_fn_name"],
+                        "reward_fallback_used": bool(
+                            dispatch_info.get("fallback_used", False)),
+                        # A checkpoint with 0 optimizer steps is NOT a trained
+                        # model — it must never be crowned best (audit Bug 4).
+                        "trained": global_step > 0,
+                        "eligible_for_best": (
+                            global_step > 0 and total_contributing > 0
+                            and (total_groups == 0
+                                 or total_dead_groups / total_groups < 0.95)),
+                    },
                 )
             except Exception as exc:  # pragma: no cover
                 _log({"epoch": epoch, "save_error": str(exc)})
@@ -622,6 +870,29 @@ def train(
                         _log({"epoch": epoch, "vllm_adapter_synced": adapter_dir})
 
     summary["steps"] = global_step
+    summary["contributing_turns_total"] = total_contributing
+    summary["trained"] = global_step > 0
+    summary["dead_group_rate"] = (total_dead_groups / total_groups) if total_groups else None
+    if "dead_group_rate_first_50" not in summary and total_groups:
+        summary["dead_group_rate_first_50"] = (
+            first50_dead / min(50, total_groups))
+    summary["position_artifact_group_rate"] = (
+        position_artifact_groups / total_groups) if total_groups else None
+    summary["fractional_rewards_present"] = any(
+        0.0 < v < 1.0 for v in all_reward_values)
+    summary["n_unique_reward_values"] = len(all_reward_values)
+    summary["unique_reward_values_sample"] = sorted(all_reward_values)[:50]
+    summary["no_tool_call_rate"] = (agg_no_tool / agg_episodes) if agg_episodes else None
+    summary["too_few_calls_rate"] = (agg_too_few / agg_episodes) if agg_episodes else None
+    summary["avg_predicted_calls"] = (agg_pred_calls / agg_episodes) if agg_episodes else None
+    summary["eligible_for_best"] = bool(
+        global_step > 0 and total_contributing > 0
+        and (total_groups == 0 or total_dead_groups / total_groups < 0.95))
+    if not summary["eligible_for_best"]:
+        summary["ineligible_reason"] = (
+            "steps==0" if global_step == 0 else
+            "contributing_turns==0" if total_contributing == 0 else
+            "dead_group_rate>=0.95")
     log_f.close()
     return summary
 

@@ -32,47 +32,36 @@ def _default_reward_policy() -> str:
 
 
 def _patch_motif_reward():
+    # Use the module-level adapter so r_seq AND episode_reward come from the
+    # SAME reward (the old inline _seq mixed execution_aware_v2 r_seq with the
+    # motif episode reward). The adapter carries a .reward_policy attribute so
+    # grpo_train._verify_reward_dispatch can assert identity.
     import grpo_train
-    from lib.reward_motif import execution_aware_v2_1_motif
+    from lib import reward_motif
 
-    def _seq(traj, task, gold_obs=None):
-        from nestful_core.rewards import execution_aware_v2_seq  # type: ignore
-        res = execution_aware_v2_1_motif(traj, task, gold_obs)
-        base = execution_aware_v2_seq(traj, task, gold_obs)
-        base["episode_reward"] = res.reward
-        base["reward"] = res.reward
-        base.update(res.diagnostics)
-        return base
-
-    grpo_train.episode_turn_reward_seq = _seq
-    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = execution_aware_v2_1_motif", flush=True)
+    grpo_train.episode_turn_reward_seq = reward_motif.episode_turn_reward_seq
+    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = "
+          "lib.reward_motif.episode_turn_reward_seq (execution_aware_v2_1_motif)",
+          flush=True)
 
 
 def _patch_v3_1_reward():
     import grpo_train
-    from lib.reward_v3_1 import execution_aware_v3_1_stepwise
+    from lib import reward_v3_1
 
-    train_stage = int(os.environ.get("TRAIN_STAGE", "0") or "0") or None
-
-    def _seq(traj, task, gold_obs=None):
-        from nestful_core.rewards import execution_aware_v2_seq  # type: ignore
-        stage_hint = train_stage or task.get("train_stage")
-        res = execution_aware_v3_1_stepwise(traj, task, gold_obs, train_stage=stage_hint)
-        base = execution_aware_v2_seq(traj, task, gold_obs)
-        base["episode_reward"] = res.reward
-        base["reward"] = res.reward
-        base.update(res.diagnostics)
-        return base
-
-    grpo_train.episode_turn_reward_seq = _seq
-    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = execution_aware_v3_1_stepwise", flush=True)
+    # TRAIN_STAGE env is read inside the adapter at call time.
+    grpo_train.episode_turn_reward_seq = reward_v3_1.episode_turn_reward_seq
+    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = "
+          "lib.reward_v3_1.episode_turn_reward_seq (execution_aware_v3_1_stepwise)",
+          flush=True)
 
 
 def _hook_select_train_reward():
     orig = _partial._select_train_reward
 
     def _wrapped(config: dict) -> None:
-        explicit = str(os.environ.get("REWARD_NAME", "")).lower()
+        explicit = str(os.environ.get("REWARD_NAME", "")
+                       or os.environ.get("REWARD_POLICY", "")).lower()
         default_policy = _default_reward_policy()
         policy = str((config.get("reward", {}) or {}).get("train_policy", default_policy)).lower()
 

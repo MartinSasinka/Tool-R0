@@ -68,37 +68,106 @@ class RolloutResult:
     stop_reason: Optional[str] = None
     first_error_turn: Optional[int] = None
     error: Optional[str] = None  # set if the episode crashed in the worker
+    # Scalar-only reward diagnostics (sanitized in the worker) for group logging.
+    reward_diag: Dict[str, Any] = field(default_factory=dict)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Reward-policy resolution (runs in the worker, no monkeypatch dependency)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _resolve_reward_fn(config: Dict[str, Any]) -> Callable:
-    """Return the episode_turn_reward_seq matching config['reward']['train_policy']."""
-    policy = str((config.get("reward", {}) or {}).get("train_policy", "strict")).lower()
+_STRICT_POLICY_ALIASES = ("strict", "strict_gold_trace", "strict_gold_trace_legacy")
+
+
+def _ensure_v3_experiment_on_path() -> None:
+    """Make experiments/nestful_synthetic_curriculum_v3 importable (lib.*)."""
+    v3_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "nestful_synthetic_curriculum_v3",
+    )
+    # APPEND, don't insert(0): the v3 dir also ships its own run.py etc. and
+    # must not shadow same-named modules of the minimal experiment.
+    if os.path.isdir(v3_dir) and v3_dir not in sys.path:
+        sys.path.append(v3_dir)
+
+
+def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any]]:
+    """Resolve config['reward']['train_policy'] to a reward function.
+
+    Returns (fn, info) where info records exactly what was resolved:
+        configured_policy / resolved_policy / reward_fn_module /
+        reward_fn_name / fallback_used
+
+    HARD-FAILS (ValueError) on an unknown policy unless the environment
+    explicitly allows the strict fallback via ALLOW_STRICT_REWARD_FALLBACK=1.
+    This replaces the previous SILENT fallback that invalidated the v3/v3.1
+    pilots (audit Bug 1).
+    """
+    configured = str((config.get("reward", {}) or {}).get("train_policy", "strict"))
+    policy = configured.lower()
+    fallback_used = False
+
     if policy in ("partial_gold_trace", "partial"):
         import partial_reward
         partial_reward.set_weights_from_config(config)
-        return partial_reward.episode_turn_reward_seq
-    if policy in ("execution_aware_v2", "execution_v2"):
-        # v2 primary reward; shim lives in the partial folder (forwarded onto
-        # the worker's sys.path) and delegates to nestful_core.rewards.
+        fn = partial_reward.episode_turn_reward_seq
+    elif policy in ("execution_aware_v2", "execution_v2"):
         import execution_reward_v2
         execution_reward_v2.set_weights_from_config(config)
-        return execution_reward_v2.episode_turn_reward_seq
-    if policy in ("partial_gold_trace_v2", "partial_v2"):
+        fn = execution_reward_v2.episode_turn_reward_seq
+    elif policy in ("partial_gold_trace_v2", "partial_v2"):
         import partial_reward_v2
         partial_reward_v2.set_weights_from_config(config)
-        return partial_reward_v2.episode_turn_reward_seq
-    if policy in ("execution_aware", "execution"):
-        # NEW execution-aware reward; lives in the partial experiment folder,
-        # which the parent forwards onto sys.path (see _RolloutWorker).
+        fn = partial_reward_v2.episode_turn_reward_seq
+    elif policy in ("execution_aware", "execution"):
         import execution_reward
         execution_reward.set_weights_from_config(config)
-        return execution_reward.episode_turn_reward_seq
-    from reward import episode_turn_reward_seq as strict_seq
-    return strict_seq
+        fn = execution_reward.episode_turn_reward_seq
+    elif policy in ("execution_aware_v2_1_motif", "v2_1_motif", "motif"):
+        _ensure_v3_experiment_on_path()
+        from lib import reward_motif
+        fn = reward_motif.episode_turn_reward_seq
+    elif policy in ("execution_aware_v3_1_stepwise", "v3_1_stepwise", "stepwise"):
+        _ensure_v3_experiment_on_path()
+        from lib import reward_v3_1
+        fn = reward_v3_1.episode_turn_reward_seq
+    elif policy in _STRICT_POLICY_ALIASES:
+        from reward import episode_turn_reward_seq as strict_seq
+        fn = strict_seq
+    else:
+        if os.environ.get("ALLOW_STRICT_REWARD_FALLBACK", "0") == "1":
+            print(f"[reward_dispatch] WARNING: unknown reward policy '{configured}' — "
+                  f"falling back to STRICT gold-trace reward because "
+                  f"ALLOW_STRICT_REWARD_FALLBACK=1", flush=True)
+            from reward import episode_turn_reward_seq as strict_seq
+            fn = strict_seq
+            fallback_used = True
+        else:
+            raise ValueError(
+                f"[reward_dispatch] Unknown reward policy '{configured}'. "
+                f"Known: partial_gold_trace, execution_aware_v2, partial_gold_trace_v2, "
+                f"execution_aware, execution_aware_v2_1_motif, "
+                f"execution_aware_v3_1_stepwise, strict. "
+                f"Refusing to silently fall back to the strict binary reward "
+                f"(set ALLOW_STRICT_REWARD_FALLBACK=1 to override — NOT recommended)."
+            )
+
+    resolved_policy = getattr(fn, "reward_policy", None) or (
+        "strict" if fallback_used or policy in _STRICT_POLICY_ALIASES else configured)
+    info = {
+        "configured_policy": configured,
+        "resolved_policy": resolved_policy,
+        "reward_fn_module": getattr(fn, "__module__", "?"),
+        "reward_fn_name": getattr(fn, "__name__", "?"),
+        "fallback_used": fallback_used,
+    }
+    return fn, info
+
+
+def _resolve_reward_fn(config: Dict[str, Any]) -> Callable:
+    """Return the episode_turn_reward_seq matching config['reward']['train_policy']."""
+    fn, _ = resolve_reward_info(config)
+    return fn
 
 
 def _encode_for_logprob(tokenizer, messages, completion_text: str) -> Tuple[List[int], List[int]]:
@@ -232,7 +301,20 @@ def run_episode_collect(
         num_tool_calls=int(traj.num_tool_calls),
         stop_reason=traj.stop_reason,
         first_error_turn=strict_diag.get("first_error_turn"),
+        reward_diag=_sanitize_diag(rinfo.get("diagnostics") or {}),
     )
+
+
+def _sanitize_diag(diag: Dict[str, Any]) -> Dict[str, Any]:
+    """Keep only cheap picklable scalars (and short float lists) for transport."""
+    out: Dict[str, Any] = {}
+    for k, v in diag.items():
+        if isinstance(v, (bool, int, float, str)) or v is None:
+            out[k] = v
+        elif isinstance(v, list) and len(v) <= 16 and all(
+                isinstance(x, (bool, int, float)) for x in v):
+            out[k] = v
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -257,6 +339,18 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
             sys.path.insert(0, p)
 
     try:
+        # Resolve the reward FIRST so a dispatch failure aborts before any
+        # engine is built and before any rollout happens (audit Bug 1).
+        reward_fn, reward_info = resolve_reward_info(config)
+        print(
+            f"[dp_worker {worker_id}] reward.train_policy={reward_info['configured_policy']} "
+            f"resolved_reward_fn={reward_info['reward_fn_module']}."
+            f"{reward_info['reward_fn_name']} "
+            f"resolved_policy={reward_info['resolved_policy']} "
+            f"fallback_used={str(reward_info['fallback_used']).lower()}",
+            flush=True,
+        )
+
         from transformers import AutoTokenizer
         from vllm_generate import build_vllm_generator
 
@@ -268,7 +362,6 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
         # No HF model shares this GPU -> the engine may use a high memory fraction.
         vgen = build_vllm_generator(config, tokenizer,
                                     adapter_path=adapter_path, mode="rollout_worker")
-        reward_fn = _resolve_reward_fn(config)
         out_q.put((("__ack__", worker_id), "ready"))
     except Exception as exc:  # noqa: BLE001 — report init failure, do not hang parent
         import traceback
@@ -354,6 +447,31 @@ class DataParallelRolloutPool:
         self.gpus = list(gpus)
         if not self.gpus:
             raise ValueError("DataParallelRolloutPool requires a non-empty GPU list")
+
+        # Parent-side reward-dispatch assertion: resolve with the EXACT same
+        # resolver the workers use, and abort BEFORE any rollout when the
+        # configured policy cannot be honoured (audit Bug 1). resolve_reward_info
+        # raises on unknown policies unless ALLOW_STRICT_REWARD_FALLBACK=1.
+        _fn, self.reward_info = resolve_reward_info(config)
+        configured = self.reward_info["configured_policy"]
+        resolved = self.reward_info["resolved_policy"]
+        print(f"[dp_pool] parent reward check: configured={configured} "
+              f"resolved={resolved} "
+              f"fn={self.reward_info['reward_fn_module']}."
+              f"{self.reward_info['reward_fn_name']} "
+              f"fallback_used={str(self.reward_info['fallback_used']).lower()}",
+              flush=True)
+        if self.reward_info["fallback_used"] and \
+                os.environ.get("ALLOW_STRICT_REWARD_FALLBACK", "0") != "1":
+            raise RuntimeError(
+                f"[dp_pool] reward fallback engaged for policy '{configured}' but "
+                f"ALLOW_STRICT_REWARD_FALLBACK != 1 — aborting before any rollout.")
+        _is_strict = (self.reward_info["reward_fn_module"] == "reward")
+        _strict_requested = configured.lower() in _STRICT_POLICY_ALIASES
+        if _is_strict and not _strict_requested and not self.reward_info["fallback_used"]:
+            raise RuntimeError(
+                f"[dp_pool] configured reward '{configured}' resolved to the STRICT "
+                f"gold-trace reward without an explicit request — aborting.")
         self._ctx = mp.get_context("spawn")
         self._in_qs = []
         self._out_q = self._ctx.Queue()

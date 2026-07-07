@@ -1,16 +1,16 @@
 # Pilot Baseline Overlap Report
 
-Best checkpoint: **s1_e2** (dev Win=0.575)
+Best checkpoint: **s1_e1** (dev Win=0.565)
 Paired samples: **200**
 
 | category | count | share |
 |---|---:|---:|
-| baseline_fail_model_fail | 69 | 34.5% |
-| baseline_fail_model_win | 20 | 10.0% |
-| baseline_win_model_fail | 16 | 8.0% |
-| baseline_win_model_win | 95 | 47.5% |
+| baseline_fail_model_fail | 72 | 36.0% |
+| baseline_fail_model_win | 16 | 8.0% |
+| baseline_win_model_fail | 15 | 7.5% |
+| baseline_win_model_win | 97 | 48.5% |
 
-- net_gain: **4**
-- regression_rate_on_baseline_wins: **14.4%**
-- improvement_rate_on_baseline_fails: **22.5%**
-- win_preservation_rate: **85.6%**
+- net_gain: **1**
+- regression_rate_on_baseline_wins: **13.4%**
+- improvement_rate_on_baseline_fails: **18.2%**
+- win_preservation_rate: **86.6%**

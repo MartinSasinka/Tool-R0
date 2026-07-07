@@ -29,6 +29,19 @@ _ANSWER_FIELDS = ("gold_answer", "answer", "final_answer")
 _ID_FIELDS = ("sample_id", "task_id", "id")
 _NCALLS_FIELDS = ("n_calls", "num_tool_calls", "num_calls", "stage")
 
+# Curriculum / provenance metadata preserved through normalization (audit Bug 7:
+# stage-aware rewards need these; the old normalize_task silently dropped them).
+_METADATA_FIELDS = (
+    "stage",
+    "terminal_stage",
+    "motif_type",
+    "prefix_of_motif",
+    "target_full_motif",
+    "source_failure_cluster",
+    "trajectory_id",
+    "tool_families",
+)
+
 _EXPECTED_FORMAT = (
     "Each JSONL row must provide:\n"
     "  - an input field   (one of: input / prompt / query / question)\n"
@@ -163,7 +176,7 @@ def normalize_task(row: Dict[str, Any], idx: int = 0) -> Dict[str, Any]:
     tools = _normalize_tool_schema(tools_raw)
     task_id = _first(row, _ID_FIELDS) or f"task_{idx}"
 
-    return {
+    task = {
         "task_id": str(task_id),
         "question": str(question),
         "tools": tools,
@@ -171,6 +184,11 @@ def normalize_task(row: Dict[str, Any], idx: int = 0) -> Dict[str, Any]:
         "gold_answer": _coerce_gold_answer(answer_raw),
         "num_calls": len(gold_calls),
     }
+    # Preserve stage/motif metadata for stage-aware rewards (audit Bug 7).
+    for key in _METADATA_FIELDS:
+        if key in row and row[key] is not None:
+            task[key] = row[key]
+    return task
 
 
 def load_tasks(
@@ -229,19 +247,28 @@ def load_tasks_mixed(
     weights: Optional[List[float]] = None,
     max_tasks: Optional[int] = None,
     seed: int = 42,
+    replay_ratio: Optional[float] = None,
 ) -> Dict[str, Any]:
     """Mixed curriculum-replay loader.
 
-    Builds a single training pool from several per-stage JSONL files, sampling
-    each stage in proportion to `weights` (uniform if not given). The files are
-    expected to already be per-stage (one call-depth each), so NO num_calls
-    filtering is applied — every row in each file is used as that stage's pool.
+    Builds a single training pool from several per-stage JSONL files. Two ways
+    to specify the mix (mutually exclusive):
+
+      * ``replay_ratio=r`` (RECOMMENDED for curriculum replay): the CURRENT
+        stage (last file) gets weight ``1 - r``; the previous stages SHARE ``r``
+        equally. E.g. ``replay_ratio=0.20`` with [stage1, stage2] gives
+        stage1=0.20 / stage2=0.80 — NOT the 50/50 mix the old scalar-padding
+        bug produced (audit Bug 6).
+      * ``weights=[w1..wN]``: explicit per-stage weights, normalized. A SCALAR
+        weight list for a multi-file mix is ambiguous and now REJECTED.
 
     Returns a dict:
         {
           "tasks":  List[task],              # shuffled, weight-proportional mix
           "per_stage": [{"file","stage_index","available","sampled","weight"}, ...],
           "weights": List[float],            # normalized weights actually used
+          "intended_mix": List[float],
+          "effective_mix": List[float],      # from actual sampled counts
           "seed": int,
         }
 
@@ -249,6 +276,9 @@ def load_tasks_mixed(
     where N_total = sum of available rows (so the mixed pool size ~ matches the
     union). Stages are sampled WITHOUT replacement when the target <= available,
     otherwise WITH replacement (oversampling a small stage).
+
+    Hard-fails when the effective (sampled) mix deviates from the intended mix
+    by more than 1 percentage point on any stage.
     """
     if not stage_files:
         raise ValueError("load_tasks_mixed requires at least one stage file")
@@ -262,17 +292,37 @@ def load_tasks_mixed(
         available.append(len(pool))
 
     n_stages = len(stage_files)
-    if weights is None or len(weights) == 0:
-        weights = [1.0] * n_stages
-    if len(weights) != n_stages:
-        # Truncate / pad with the last weight so a short list is tolerated.
-        if len(weights) < n_stages:
-            weights = list(weights) + [weights[-1]] * (n_stages - len(weights))
+    if replay_ratio is not None:
+        if weights:
+            raise ValueError(
+                "load_tasks_mixed: pass EITHER weights OR replay_ratio, not both")
+        r = float(replay_ratio)
+        if not (0.0 <= r < 1.0):
+            raise ValueError(f"replay_ratio must be in [0, 1); got {r}")
+        if n_stages == 1:
+            norm_w = [1.0]
         else:
-            weights = list(weights[:n_stages])
-    weights = [max(0.0, float(w)) for w in weights]
-    w_sum = sum(weights) or 1.0
-    norm_w = [w / w_sum for w in weights]
+            prev_share = r / (n_stages - 1)
+            norm_w = [prev_share] * (n_stages - 1) + [1.0 - r]
+    else:
+        if weights is None or len(weights) == 0:
+            weights = [1.0] * n_stages
+        if len(weights) == 1 and n_stages > 1:
+            # The old code padded a scalar to [w, w] and normalized to a 50/50
+            # mix — silently misinterpreting "replay 20%" as "replay 50%".
+            raise ValueError(
+                f"load_tasks_mixed: got a SINGLE weight {weights[0]} for "
+                f"{n_stages} stage files — ambiguous. Use replay_ratio="
+                f"{weights[0]} for 'previous stages total={weights[0]:.0%}, "
+                f"current stage={1 - float(weights[0]):.0%}', or pass one "
+                f"weight per stage file.")
+        if len(weights) != n_stages:
+            raise ValueError(
+                f"load_tasks_mixed: {len(weights)} weights for {n_stages} stage "
+                f"files — pass exactly one weight per file (or replay_ratio).")
+        weights = [max(0.0, float(w)) for w in weights]
+        w_sum = sum(weights) or 1.0
+        norm_w = [w / w_sum for w in weights]
 
     total_available = sum(available) or 0
     mixed: List[Dict[str, Any]] = []
@@ -296,6 +346,21 @@ def load_tasks_mixed(
             "weight": round(w, 4),
         })
 
+    # ── Verify effective mix ≈ intended mix (audit Bug 6 hard gate) ──────────
+    total_sampled = sum(ps["sampled"] for ps in per_stage) or 1
+    effective_mix = [ps["sampled"] / total_sampled for ps in per_stage]
+    print("[data] effective_stage_mix:", flush=True)
+    for ps, eff in zip(per_stage, effective_mix):
+        print(f"[data]   stage{ps['stage_index']}: intended={ps['weight']:.4f} "
+              f"effective={eff:.4f} ({ps['sampled']}/{total_sampled}) :: {ps['file']}",
+              flush=True)
+    for ps, eff, w in zip(per_stage, effective_mix, norm_w):
+        if abs(eff - w) > 0.01 and ps["available"] > 0:
+            raise ValueError(
+                f"load_tasks_mixed: effective mix for stage{ps['stage_index']} "
+                f"({eff:.4f}) deviates from intended ({w:.4f}) by more than 1% "
+                f"— refusing to train on an unintended data mix.")
+
     rng.shuffle(mixed)
     if max_tasks is not None:
         mixed = mixed[: int(max_tasks)]
@@ -309,5 +374,7 @@ def load_tasks_mixed(
         "tasks": mixed,
         "per_stage": per_stage,
         "weights": norm_w,
+        "intended_mix": list(norm_w),
+        "effective_mix": effective_mix,
         "seed": seed,
     }

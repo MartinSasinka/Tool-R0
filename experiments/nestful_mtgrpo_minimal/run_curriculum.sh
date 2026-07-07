@@ -190,6 +190,29 @@ REGRESSION_GUARD="${REGRESSION_GUARD:-1}"
 REGRESSION_BASELINE_WIN="${REGRESSION_BASELINE_WIN:-}"
 REGRESSION_MARGIN="${REGRESSION_MARGIN:-0.0}"
 REGRESSION_EARLY_ABORT="${REGRESSION_EARLY_ABORT:-0}"
+# Disabling the regression guard requires an explicit double opt-in (audit Bug 5).
+ALLOW_NO_REGRESSION_GUARD="${ALLOW_NO_REGRESSION_GUARD:-0}"
+# Reward dispatch: NEVER silently fall back to the strict reward (audit Bug 1).
+ALLOW_STRICT_REWARD_FALLBACK="${ALLOW_STRICT_REWARD_FALLBACK:-0}"
+export ALLOW_STRICT_REWARD_FALLBACK
+# STAGE_GATES=1 — evaluate hard stage-advancement gates (check_stage_gates.py)
+# after each stage; a failing stage STOPS the run (exit 4).
+STAGE_GATES="${STAGE_GATES:-0}"
+
+if [ "$REGRESSION_GUARD" != "1" ]; then
+    echo "════════════════════════════════════════════════════════════════" >&2
+    echo "  ⚠⚠⚠  REGRESSION_GUARD IS DISABLED  ⚠⚠⚠" >&2
+    echo "  Checkpoints WORSE than the baseline model can be crowned best." >&2
+    echo "  This is how the previous pilot overwrote its best adapter with" >&2
+    echo "  a regressed stage-2 checkpoint." >&2
+    echo "════════════════════════════════════════════════════════════════" >&2
+    if [ "$ALLOW_NO_REGRESSION_GUARD" != "1" ]; then
+        echo "[run_curriculum] ABORT: set ALLOW_NO_REGRESSION_GUARD=1 to run without" >&2
+        echo "  the regression guard (NOT recommended), or set REGRESSION_GUARD=1." >&2
+        exit 1
+    fi
+    echo "[run_curriculum] continuing WITHOUT regression guard (ALLOW_NO_REGRESSION_GUARD=1)" >&2
+fi
 
 # Gate behaviour:
 #   GATE_MODE=warn  — log failures, ALWAYS continue (safe for overnight runs)
@@ -576,7 +599,26 @@ if [ -n "${EXTRA_TRAIN_OVERRIDES_STR:-}" ]; then
     EXTRA_TRAIN_OVERRIDES=(${EXTRA_TRAIN_OVERRIDES_STR})
 fi
 # Track the best validation ReAct Win across the WHOLE run (all stages/epochs).
+# PERSISTED across shell invocations (audit Bug 5: a resumed stage reset this to
+# -1.0, letting a worse checkpoint overwrite best_react_win_adapter).
+GLOBAL_BEST_FILE="$OUTPUT_ROOT/global_best_react_win.json"
 GLOBAL_BEST_REACT_WIN="-1.0"
+if [ -f "$GLOBAL_BEST_FILE" ]; then
+    _PERSISTED_BEST=$(_json_get "$GLOBAL_BEST_FILE" "react_win_rate" "")
+    if [ -n "$_PERSISTED_BEST" ]; then
+        GLOBAL_BEST_REACT_WIN="$_PERSISTED_BEST"
+        echo "[global-best] loaded persisted global best ReAct Win = $GLOBAL_BEST_REACT_WIN"
+        echo "  (from $GLOBAL_BEST_FILE — carried across stages/invocations)"
+    fi
+    # Reuse the persisted baseline when none is set (keeps the guard floor stable).
+    if [ -z "$REGRESSION_BASELINE_WIN" ]; then
+        _PERSISTED_BASE=$(_json_get "$GLOBAL_BEST_FILE" "baseline_win" "")
+        if [ -n "$_PERSISTED_BASE" ] && [ "$_PERSISTED_BASE" != "None" ]; then
+            REGRESSION_BASELINE_WIN="$_PERSISTED_BASE"
+            echo "[global-best] loaded persisted baseline dev Win = $REGRESSION_BASELINE_WIN"
+        fi
+    fi
+fi
 
 # Regression-guard bookkeeping.
 REGRESSION_ABORT_PATIENCE="${REGRESSION_ABORT_PATIENCE:-3}"
@@ -632,14 +674,30 @@ if [ "$REGRESSION_GUARD" = "1" ] && [ -z "$REGRESSION_BASELINE_WIN" ] \
         echo "[regression-guard] baseline dev ReAct Win = $REGRESSION_BASELINE_WIN "\
 "(checkpoints must reach >= baseline + $REGRESSION_MARGIN to be crowned best)"
     else
-        echo "[regression-guard] WARNING: could not measure baseline dev Win — guard DISABLED."
-        REGRESSION_GUARD=0
+        echo "[regression-guard] ERROR: could not measure baseline dev Win." >&2
+        if [ "$ALLOW_NO_REGRESSION_GUARD" = "1" ]; then
+            echo "[regression-guard] WARNING: continuing WITHOUT the guard "\
+"(ALLOW_NO_REGRESSION_GUARD=1)." >&2
+            REGRESSION_GUARD=0
+        else
+            echo "[regression-guard] ABORT: refusing to train without a baseline floor." >&2
+            echo "  Fix the baseline val_eval (see $_GUARD_OUT/val_eval.log), set" >&2
+            echo "  REGRESSION_BASELINE_WIN=<win> explicitly, or set ALLOW_NO_REGRESSION_GUARD=1." >&2
+            exit 1
+        fi
     fi
 fi
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  Per-stage loop
 # ══════════════════════════════════════════════════════════════════════════════
+# Best dev Win of the PREVIOUS stage (used by the hard stage gates).
+PREV_STAGE_DEV_WIN="${PREV_STAGE_DEV_WIN:-}"
+# Optional deterministic eval temperature (e.g. EVAL_TEMPERATURE=0.0).
+EVAL_TEMP_OVERRIDE=()
+if [ -n "${EVAL_TEMPERATURE:-}" ]; then
+    EVAL_TEMP_OVERRIDE=(--override "generation.temperature=$EVAL_TEMPERATURE")
+fi
 for N in $STAGES; do
     EVAL_STAGE=$((N + 1))
     STAGE_OUT="$OUTPUT_ROOT/stage_${N}"
@@ -713,8 +771,17 @@ for N in $STAGES; do
                 esac
             fi
         fi
+        # A SCALAR weight for a multi-file mix means REPLAY RATIO (audit Bug 6):
+        # e.g. 0.20 => previous stages total 20%, current stage 80%. The old code
+        # padded it to [0.2, 0.2] => an unintended 50/50 mix. Lists with one
+        # weight per file keep explicit-weights semantics.
         if [ -n "$_STAGE_WEIGHTS" ]; then
-            MIXED_OVERRIDES+=(--override "data.replay_weights=$_STAGE_WEIGHTS")
+            if [ "$N" -gt 1 ] && ! echo "$_STAGE_WEIGHTS" | grep -q ','; then
+                MIXED_OVERRIDES+=(--override "data.replay_ratio=$_STAGE_WEIGHTS")
+                echo "[stage $N] replay_ratio=$_STAGE_WEIGHTS → previous stages ${_STAGE_WEIGHTS} total, current stage gets the rest"
+            else
+                MIXED_OVERRIDES+=(--override "data.replay_weights=$_STAGE_WEIGHTS")
+            fi
         fi
         echo "[stage $N] mixed replay ON — stages 1..$N: $_MIX_FILES (weights=${_STAGE_WEIGHTS:-uniform})"
     fi
@@ -815,6 +882,9 @@ for N in $STAGES; do
         _build_vllm_overrides train
         TRAIN_DATA_OVERRIDE="$(_data_overrides_train)"
         export WANDB_RUN_NAME="train-stage${N}-e${EPOCH}"
+        # Stage id visible to stage-aware rewards in the trainer AND in the DP
+        # rollout workers (audit Bug 7).
+        export TRAIN_STAGE="$N"
         # shellcheck disable=SC2086
         _run_logged "$EPOCH_OUT/train.log" \
             "$PYTHON" "$RUN_PY" \
@@ -880,6 +950,7 @@ for N in $STAGES; do
                 $EVAL_DATA_OVERRIDE \
                 --override "experiment.output_dir=$EPOCH_OUT/eval" \
                 "${VLLM_OVERRIDES[@]}" \
+                "${EVAL_TEMP_OVERRIDE[@]}" \
                 $EVAL_CKPT_ARG
 
             EVAL_METRICS="$EPOCH_OUT/eval/metrics.json"
@@ -944,6 +1015,7 @@ for N in $STAGES; do
                 --override "validation.require_win_rate=true" \
                 "${VAL_PATH_OVERRIDE[@]}" \
                 "${VLLM_OVERRIDES[@]}" \
+                "${EVAL_TEMP_OVERRIDE[@]}" \
                 --checkpoint "$CKPT_DIR"; then
                 echo "[stage $N / epoch $EPOCH] FATAL: val_eval failed (react_win_rate null or "\
 "official scorer error). Aborting run — checkpoint selection must not proceed on "\
@@ -981,26 +1053,71 @@ for N in $STAGES; do
                 fi
 
                 # Global best adapter (selection target = validation ReAct Win).
+                # Crowning is additionally gated by checkpoint ELIGIBILITY
+                # (audit Bug 4): a 0-step / all-dead-groups / reward-fallback
+                # checkpoint must NEVER become best_react_win_adapter.
                 if [ "$_GUARD_OK" = "1" ] && _improved "$EPOCH_REACT_WIN" "$GLOBAL_BEST_REACT_WIN" "0" 2>/dev/null; then
-                    GLOBAL_BEST_REACT_WIN="$EPOCH_REACT_WIN"
-                    rm -rf "$BEST_REACT_WIN_ADAPTER"
-                    mkdir -p "$BEST_REACT_WIN_ADAPTER"
-                    cp -r "$CKPT_DIR/." "$BEST_REACT_WIN_ADAPTER/"
-                    _BW_STAGE="$N" _BW_EPOCH="$EPOCH" _BW_WIN="$EPOCH_REACT_WIN" \
-                    _BW_SRC="$CKPT_DIR" _BW_OUT="$BEST_REACT_WIN_ADAPTER/best_meta.json" \
-                    "$PYTHON" - <<'PYEOF'
+                    _ELIG_OUT="$EPOCH_OUT/checkpoint_eligibility.json"
+                    _ELIG_OK=0
+                    if "$PYTHON" "$ROOT/checkpoint_eligibility.py" \
+                        --train-summary "$TRAIN_SUMMARY" \
+                        --react-win "$EPOCH_REACT_WIN" \
+                        --global-best "$GLOBAL_BEST_REACT_WIN" \
+                        --baseline-win "${REGRESSION_BASELINE_WIN:-}" \
+                        --regression-guard "$REGRESSION_GUARD" \
+                        --regression-margin "$REGRESSION_MARGIN" \
+                        --out "$_ELIG_OUT"; then
+                        _ELIG_OK=1
+                    fi
+                    if [ "$_ELIG_OK" = "1" ]; then
+                        GLOBAL_BEST_REACT_WIN="$EPOCH_REACT_WIN"
+                        rm -rf "$BEST_REACT_WIN_ADAPTER"
+                        mkdir -p "$BEST_REACT_WIN_ADAPTER"
+                        cp -r "$CKPT_DIR/." "$BEST_REACT_WIN_ADAPTER/"
+                        _BW_STAGE="$N" _BW_EPOCH="$EPOCH" _BW_WIN="$EPOCH_REACT_WIN" \
+                        _BW_SRC="$CKPT_DIR" _BW_OUT="$BEST_REACT_WIN_ADAPTER/best_meta.json" \
+                        _BW_ELIG="$_ELIG_OUT" _BW_BASE="${REGRESSION_BASELINE_WIN:-}" \
+                        _BW_GLOBAL_FILE="$GLOBAL_BEST_FILE" \
+                        "$PYTHON" - <<'PYEOF'
 import json, os
 e = os.environ
+elig = {}
+try:
+    with open(e["_BW_ELIG"]) as f:
+        elig = json.load(f)
+except Exception:
+    pass
+meta = {
+    "stage": int(e["_BW_STAGE"]),
+    "epoch": int(e["_BW_EPOCH"]),
+    "react_win_rate": float(e["_BW_WIN"]),
+    "source_checkpoint": e["_BW_SRC"],
+    "selection_metric": "react_win_rate",
+    "baseline_win": float(e["_BW_BASE"]) if e.get("_BW_BASE") else None,
+    # Eligibility evidence (audit Bug 4): steps / contributing_turns /
+    # dead_group_rate / reward policy / resolved fn / eligible_for_best.
+    **{k: elig.get(k) for k in (
+        "steps", "contributing_turns", "dead_group_rate", "reward_policy",
+        "resolved_reward_fn", "reward_fallback_used", "trained",
+        "eligible_for_best", "reason", "regression_guard")},
+}
 with open(e["_BW_OUT"], "w") as f:
+    json.dump(meta, f, indent=2)
+# Persist the global best across stages AND shell invocations (audit Bug 5).
+with open(e["_BW_GLOBAL_FILE"], "w") as f:
     json.dump({
+        "react_win_rate": float(e["_BW_WIN"]),
         "stage": int(e["_BW_STAGE"]),
         "epoch": int(e["_BW_EPOCH"]),
-        "react_win_rate": float(e["_BW_WIN"]),
         "source_checkpoint": e["_BW_SRC"],
-        "selection_metric": "react_win_rate",
+        "baseline_win": float(e["_BW_BASE"]) if e.get("_BW_BASE") else None,
     }, f, indent=2)
 PYEOF
-                    echo "[stage $N / epoch $EPOCH] NEW BEST react_win_rate=$GLOBAL_BEST_REACT_WIN -> $BEST_REACT_WIN_ADAPTER"
+                        echo "[stage $N / epoch $EPOCH] NEW BEST react_win_rate=$GLOBAL_BEST_REACT_WIN -> $BEST_REACT_WIN_ADAPTER"
+                        echo "  (persisted to $GLOBAL_BEST_FILE)"
+                    else
+                        echo "[stage $N / epoch $EPOCH] checkpoint NOT crowned: $(cat "$_ELIG_OUT" 2>/dev/null | "$PYTHON" -c 'import json,sys;print(json.load(sys.stdin).get("reason","ineligible"))' 2>/dev/null || echo ineligible)"
+                    fi
                 fi
 
                 # Early stopping: reset patience only on >= min_delta improvement.
@@ -1126,6 +1243,37 @@ PYEOF
         fi
     else
         echo "[stage $N] gate_pass=true | $GATE_REASON"
+    fi
+
+    # ── Hard stage-advancement gates (STAGE_GATES=1; post-audit pilot) ──────
+    # Evaluates steps / dead-group rate / reward dispatch / fractional rewards /
+    # dev Win vs baseline / position-artifact rate for THIS stage. A failing
+    # stage STOPS the pilot (exit 4) — no advancing on a broken learning signal.
+    if [ "$STAGE_GATES" = "1" ] && [ "$DRY_RUN" != "1" ]; then
+        echo "[stage $N] evaluating hard stage-advancement gates ..."
+        _SG_DEV_WIN="$STAGE_BEST_REACT_WIN"
+        if [ "$_SG_DEV_WIN" = "-1.0" ]; then _SG_DEV_WIN=""; fi
+        set +e
+        "$PYTHON" "$ROOT/check_stage_gates.py" \
+            --stage "$N" \
+            --stage-out "$STAGE_OUT" \
+            --dev-win "${_SG_DEV_WIN:-}" \
+            --baseline-win "${REGRESSION_BASELINE_WIN:-}" \
+            --prev-stage-win "${PREV_STAGE_DEV_WIN:-}" \
+            --out "$STAGE_OUT/stage_gate_report.json"
+        _SG_RC=$?
+        set -e
+        if [ "$_SG_RC" -ne 0 ]; then
+            echo "[stage $N] ✗ STAGE GATES FAILED — stopping the pilot (no advancement)." >&2
+            echo "  Report: $STAGE_OUT/stage_gate_report.json" >&2
+            echo "  Do NOT run the next stage until the failure is understood." >&2
+            exit 4
+        fi
+        echo "[stage $N] ✓ stage gates passed — advancement to the next stage allowed."
+    fi
+    # Track this stage's best dev Win for the next stage's gate comparison.
+    if [ "$STAGE_BEST_REACT_WIN" != "-1.0" ]; then
+        PREV_STAGE_DEV_WIN="$STAGE_BEST_REACT_WIN"
     fi
 
     # ── Stage manifest ─────────────────────────────────────────────────────
