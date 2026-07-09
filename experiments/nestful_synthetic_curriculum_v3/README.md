@@ -1,85 +1,68 @@
-# NESTFUL Synthetic Curriculum v3 / v3.1
+# NESTFUL Synthetic Curriculum v3.1
 
-**Training started: NO**
+MT-GRPO (and SFT) experiments on a synthetic nested tool-use curriculum, evaluated on the
+NESTFUL benchmark. This README is the entry point; the docs answer the recurring questions,
+the audit records the full July-2026 state analysis, and the remediation plan defines what
+gets fixed in which order.
 
-## Versions
+**Status (2026-07-09):** pilots ran on stages 1–3; no checkpoint has beaten a same-batch
+baseline on official NESTFUL win yet (see `audits/MASTER_AUDIT_REPORT.md`). P0 evaluation
+infrastructure is in place; next step is the same-batch Stage-3 re-evaluation
+(`REMEDIATION_EXECUTION_REPORT.md` §Next commands).
 
-| version | description | status |
-|---------|-------------|--------|
-| **v3** | motif-aligned prototype (max_calls staging) | prototype-only pilot completed |
-| **v3.1** | prefix/motif-aware **exact call-count** curriculum | **PASS_PILOT_READY** — build complete |
+## The three rules
 
-v3.1 decomposes full NESTFUL failure trajectories into prefix samples per stage (1/2/3/4–6 calls). Long-chain failures are **not** placed whole into stage1/2.
+1. **Canonical training data** is `outputs/curriculum_v3_1/filtered/stage{1..4}_*.jsonl`
+   (800 rows each). `experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/` is
+   **legacy dataset B** — never use it; new tooling refuses it. Details: `docs/DATASETS.md`.
+2. **The only headline metric** is `official_nestful_win_rate` at temperature 0, from a batch
+   that contains a baseline cell. The internal win rate inflates it by ~6–7 pp and is
+   diagnostic-only. Details: `docs/EVALUATION.md`.
+3. **Every eval goes through the batch runner**
+   (`scripts/eval/run_eval_batch.py`) — it enforces rule 2, records provenance
+   (git commit, dataset SHA, seed, decoding), and emits `BATCH_REPORT.md` with paired
+   gained/regressed counts.
 
-## v3.1 build status
-
-| gate | value |
-|------|-------|
-| Full trajectories | **888** |
-| stage1 (exact 1 call) | **800** |
-| stage2 (exact 2 calls) | **800** |
-| stage3 (exact 3 calls) | **800** |
-| stage4 (4–6 calls) | **800** |
-| Final dataset audit | **WARN** (soft only) |
-| Unique questions | **3200/3200 (100%)** |
-| Exact duplicates | **0** |
-| Gold replay | **100%** |
-| Question-trace alignment | **PASS** |
-| Preflight | **PASS_PILOT_READY** |
-| Training started | **NO** |
-
-Next step: pod dry-run, then stage1 pilot.
-
-## Local build v3.1
+## Quick start
 
 ```bash
-python experiments/nestful_synthetic_curriculum_v3/scripts/build_curriculum_v3_1_pipeline.py
+# sanity-check environment, datasets, official-scorer prerequisites
+bash experiments/nestful_synthetic_curriculum_v3/scripts/setup/check_env.sh
+
+# run an eval batch (baseline REQUIRED; temp0; official scorer verified per cell)
+CELLS="baseline,s3_e1=experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260708_212347_v3_1/stage_3/checkpoints/adapter_epoch_1" \
+DATASET=nestful_test \
+bash experiments/nestful_synthetic_curriculum_v3/scripts/eval/eval_batch_temp0.sh
+
+# re-run the audit extractors
+bash experiments/nestful_synthetic_curriculum_v3/scripts/audit/run_all_audits.sh
 ```
 
-## Local preflight v3.1
+Training and SFT how-tos: `docs/TRAINING.md`. Full operational procedures (smoke tests,
+archive policy, what not to commit): `docs/RUNBOOK.md`.
 
-```bash
-python experiments/nestful_synthetic_curriculum_v3/scripts/run_preflight_gates.py \
-  --curriculum-version v3_1 --prototype-only
-```
+## Map of this folder
 
-## Pod dry-run (v3.1)
+| Path | What it is |
+|---|---|
+| `docs/` | EVALUATION, DATASETS, TRAINING, REWARD, RUNBOOK |
+| `audits/` | frozen July-2026 audit (13 reports) + `tools/` extractors |
+| `REMEDIATION_PLAN.md` | root causes, P0–P3 priority table |
+| `TARGET_ARCHITECTURE.md` | target layout and component contracts |
+| `IMPLEMENTATION_ROADMAP_FROM_AUDIT.md` | phased implementation with risks/tests/rollback |
+| `RESEARCH_FIX_PLAN.md` | reward/probe/SFT+GRPO/data experiments (hypotheses, not claims) |
+| `REMEDIATION_EXECUTION_REPORT.md` | what P0 implemented, what to run next |
+| `scripts/setup/`, `scripts/audit/`, `scripts/eval/`, `scripts/lib/` | P0 tooling (this change) |
+| `scripts/sft/`, `scripts/pilot/` | Stage-2 SFT view/training/eval (existing) |
+| `scripts/run_curriculum_v3.sh` | GRPO curriculum launcher (existing, pod) |
+| `lib/` | reward modules (`reward_v3_1.py` frozen baseline) |
+| `outputs/curriculum_v3_1/` | canonical dataset + manifest |
+| `outputs/runs/`, `outputs/sft/` | training outputs (heavy artifacts gitignored) |
+| `outputs/evals/` | eval batches produced by the batch runner |
 
-```bash
-cd /workspace/Tool-R0
+## Historical build docs
 
-DRY_RUN=1 ALLOW_PROTOTYPE_TRAINING=1 CURRICULUM_VERSION=v3_1 STAGES="1 2" \
-  bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh
-```
-
-## Pod pilot (v3.1 stage1–2)
-
-```bash
-cd /workspace/Tool-R0
-
-ALLOW_PROTOTYPE_TRAINING=1 USE_VLLM=1 ROLLOUT_DP_GPUS="1,2,3" DP_LEARNER_GPU=0 \
-  CURRICULUM_VERSION=v3_1 STAGES="1 2" MAX_EPOCHS_PER_STAGE=2 \
-  bash experiments/nestful_synthetic_curriculum_v3/scripts/run_curriculum_v3.sh
-```
-
-Reward default for v3.1: `execution_aware_v3_1_stepwise`. Stage3/4 gated.
-
-## Post-pilot analysis
-
-```bash
-python experiments/nestful_synthetic_curriculum_v3/scripts/analyze_stage_transfer_v3_1.py
-python experiments/nestful_synthetic_curriculum_v3/scripts/motif_level_eval.py
-```
-
-## v3 legacy run order (unchanged)
-
-```bash
-python experiments/nestful_synthetic_curriculum_v3/scripts/generate_motif_synthetic_tasks.py
-python experiments/nestful_synthetic_curriculum_v3/scripts/build_curriculum_v3.py
-python experiments/nestful_synthetic_curriculum_v3/scripts/validate_synthetic_tasks.py
-python experiments/nestful_synthetic_curriculum_v3/scripts/replay_synthetic_gold_traces.py
-python experiments/nestful_synthetic_curriculum_v3/scripts/run_preflight_gates.py --prototype-only
-pytest experiments/nestful_synthetic_curriculum_v3/tests -q
-```
-
-See also: `outputs/CURRICULUM_V3_1_DESIGN_DECISION.md`, `outputs/curriculum_v3_1/CURRICULUM_V3_1_IMPLEMENTATION_REPORT.md`.
+The v3.1 corpus build (888 source trajectories → 4×800 prefix-decomposed stages, 100 % gold
+replay) is documented in `outputs/CURRICULUM_V3_1_DESIGN_DECISION.md` and
+`outputs/curriculum_v3_1/CURRICULUM_V3_1_IMPLEMENTATION_REPORT.md`. The v3 (non-.1) corpus
+and its scripts are legacy.

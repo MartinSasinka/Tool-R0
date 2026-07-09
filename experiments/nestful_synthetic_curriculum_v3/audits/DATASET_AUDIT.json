@@ -1,0 +1,2243 @@
+{
+  "datasets": {
+    "A/stage1_1call_atomic.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage1_1call_atomic.jsonl",
+      "sha256": "94b83ca8ad764a8b55a6f436adb43fa740db23e6581479bc8ec73c53e478572e",
+      "rows": 800,
+      "schema_fields": {
+        "answer_type": 800,
+        "dependency_graph": 800,
+        "generation_seed": 800,
+        "gold_answer": 800,
+        "gold_calls": 800,
+        "motif_type": 800,
+        "num_calls": 800,
+        "observations": 800,
+        "output_type_sequence": 800,
+        "prefix_length": 800,
+        "prefix_of_motif": 800,
+        "process_labels": 800,
+        "question": 800,
+        "sample_id": 800,
+        "source_failure_cluster": 800,
+        "source_prefix_length": 800,
+        "stage": 800,
+        "target_full_motif": 800,
+        "terminal_stage": 800,
+        "tools": 800,
+        "trajectory_id": 800
+      },
+      "call_count_distribution": {
+        "1": 800
+      },
+      "unique_questions": 800,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 800,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 800,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 15,
+      "tools_used_top": [
+        [
+          "greater_than",
+          132
+        ],
+        [
+          "add",
+          80
+        ],
+        [
+          "filter_greater_than",
+          80
+        ],
+        [
+          "sort_list",
+          76
+        ],
+        [
+          "concat",
+          74
+        ],
+        [
+          "make_object",
+          66
+        ],
+        [
+          "less_than",
+          61
+        ],
+        [
+          "subtract",
+          56
+        ],
+        [
+          "multiply",
+          52
+        ],
+        [
+          "divide_safe",
+          50
+        ],
+        [
+          "sum_list",
+          44
+        ],
+        [
+          "max_list",
+          18
+        ],
+        [
+          "string_length",
+          4
+        ],
+        [
+          "uppercase",
+          4
+        ],
+        [
+          "lookup_by_key",
+          3
+        ]
+      ],
+      "tools_offered_distinct": 37,
+      "avg_tools_offered_per_task": 6.96,
+      "motif_distribution": {
+        "object_or_list_output": 222,
+        "independent_calls": 193,
+        "linear_dependency": 155,
+        "long_chain": 145,
+        "reference_reuse": 85
+      },
+      "failure_cluster_distribution": {
+        "synthetic_gap_boolean_output__wrong_condition": 193,
+        "synthetic_gap_list_output__wrong_field": 156,
+        "synthetic_gap_long_chain__too_few_calls": 112,
+        "synthetic_gap_linear_dependency__too_few_calls": 108,
+        "synthetic_gap_string_output__wrong_answer": 82,
+        "synthetic_gap_object_list__wrong_extraction": 66,
+        "linear_dependency__too_few_calls": 47,
+        "long_chain__too_few_calls": 33,
+        "lookup_query__wrong_field": 3
+      },
+      "answer_type_distribution": {
+        "scalar": 304,
+        "boolean": 193,
+        "list": 156,
+        "string": 78,
+        "object": 69
+      },
+      "stage_field_distribution": {
+        "stage1_1call_atomic": 800
+      },
+      "prompt_metadata_leaks": {}
+    },
+    "A/stage2_2call_dependency.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage2_2call_dependency.jsonl",
+      "sha256": "0e7c01aaa78fb8bd7ff8d4562076d5fa2e7fbb6efd011c1683dcb9c2814cb611",
+      "rows": 800,
+      "schema_fields": {
+        "answer_type": 800,
+        "dependency_graph": 800,
+        "generation_seed": 800,
+        "gold_answer": 800,
+        "gold_calls": 800,
+        "motif_type": 800,
+        "num_calls": 800,
+        "observations": 800,
+        "output_type_sequence": 800,
+        "prefix_length": 800,
+        "prefix_of_motif": 800,
+        "process_labels": 800,
+        "question": 800,
+        "sample_id": 800,
+        "source_failure_cluster": 800,
+        "source_prefix_length": 800,
+        "stage": 800,
+        "target_full_motif": 800,
+        "terminal_stage": 800,
+        "tools": 800,
+        "trajectory_id": 800
+      },
+      "call_count_distribution": {
+        "2": 800
+      },
+      "unique_questions": 800,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 799,
+      "duplicate_gold_trace_rows": 1,
+      "unique_sample_ids": 800,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 14,
+      "tools_used_top": [
+        [
+          "add",
+          490
+        ],
+        [
+          "multiply",
+          139
+        ],
+        [
+          "greater_than",
+          128
+        ],
+        [
+          "less_than",
+          128
+        ],
+        [
+          "filter_greater_than",
+          128
+        ],
+        [
+          "sort_list",
+          128
+        ],
+        [
+          "concat",
+          116
+        ],
+        [
+          "get_field",
+          72
+        ],
+        [
+          "make_object",
+          69
+        ],
+        [
+          "uppercase",
+          68
+        ],
+        [
+          "lowercase",
+          48
+        ],
+        [
+          "divide_safe",
+          47
+        ],
+        [
+          "subtract",
+          36
+        ],
+        [
+          "lookup_by_key",
+          3
+        ]
+      ],
+      "tools_offered_distinct": 37,
+      "avg_tools_offered_per_task": 7.12,
+      "motif_distribution": {
+        "object_or_list_output": 197,
+        "independent_calls": 175,
+        "reference_reuse": 167,
+        "long_chain": 118,
+        "fan_in": 81,
+        "linear_dependency": 56,
+        "distractor_tools": 6
+      },
+      "failure_cluster_distribution": {
+        "synthetic_gap_boolean_output__wrong_condition": 128,
+        "synthetic_gap_list_output__wrong_field": 128,
+        "long_chain__too_few_calls": 118,
+        "synthetic_gap_string_output__wrong_answer": 116,
+        "synthetic_gap_fan_in__wrong_argument": 81,
+        "synthetic_gap_object_list__wrong_extraction": 69,
+        "linear_dependency__too_few_calls": 56,
+        "synthetic_gap_reference_reuse__invalid_reference": 48,
+        "synthetic_gap_independent_calls__premature_final": 33,
+        "independent_calls__premature_final": 14,
+        "synthetic_gap_distractor_tools__wrong_tool": 6,
+        "lookup_query__wrong_field": 3
+      },
+      "answer_type_distribution": {
+        "scalar": 359,
+        "string": 185,
+        "boolean": 128,
+        "list": 128
+      },
+      "stage_field_distribution": {
+        "stage2_2call_dependency": 800
+      },
+      "prompt_metadata_leaks": {}
+    },
+    "A/stage3_3call_composition.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage3_3call_composition.jsonl",
+      "sha256": "b96c18232144ca5e60397b959abd3f3ff878761e5ca847aeaca64667fac228f7",
+      "rows": 800,
+      "schema_fields": {
+        "answer_type": 800,
+        "dependency_graph": 800,
+        "generation_seed": 800,
+        "gold_answer": 800,
+        "gold_calls": 800,
+        "motif_type": 800,
+        "num_calls": 800,
+        "observations": 800,
+        "output_type_sequence": 800,
+        "prefix_length": 800,
+        "prefix_of_motif": 800,
+        "process_labels": 800,
+        "question": 800,
+        "sample_id": 800,
+        "source_failure_cluster": 800,
+        "source_prefix_length": 800,
+        "stage": 800,
+        "target_full_motif": 800,
+        "terminal_stage": 800,
+        "tools": 800,
+        "trajectory_id": 800
+      },
+      "call_count_distribution": {
+        "3": 800
+      },
+      "unique_questions": 800,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 800,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 800,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 18,
+      "tools_used_top": [
+        [
+          "add",
+          851
+        ],
+        [
+          "multiply",
+          537
+        ],
+        [
+          "filter_greater_than",
+          129
+        ],
+        [
+          "concat",
+          96
+        ],
+        [
+          "string_length",
+          96
+        ],
+        [
+          "divide_safe",
+          93
+        ],
+        [
+          "subtract",
+          91
+        ],
+        [
+          "get_field",
+          81
+        ],
+        [
+          "make_object",
+          78
+        ],
+        [
+          "sort_list",
+          51
+        ],
+        [
+          "get_item",
+          51
+        ],
+        [
+          "greater_than",
+          48
+        ],
+        [
+          "less_than",
+          48
+        ],
+        [
+          "and_bool",
+          48
+        ],
+        [
+          "uppercase",
+          48
+        ]
+      ],
+      "tools_offered_distinct": 37,
+      "avg_tools_offered_per_task": 8.09,
+      "motif_distribution": {
+        "long_chain": 173,
+        "reference_reuse": 166,
+        "object_or_list_output": 129,
+        "fan_in": 112,
+        "independent_calls": 103,
+        "linear_dependency": 66,
+        "distractor_tools": 51
+      },
+      "failure_cluster_distribution": {
+        "long_chain__too_few_calls": 173,
+        "synthetic_gap_fan_in__wrong_argument": 112,
+        "synthetic_gap_string_output__wrong_answer": 96,
+        "synthetic_gap_object_list__wrong_extraction": 78,
+        "synthetic_gap_reference_reuse__invalid_reference": 67,
+        "linear_dependency__too_few_calls": 66,
+        "independent_calls__premature_final": 55,
+        "synthetic_gap_distractor_tools__wrong_tool": 51,
+        "synthetic_gap_list_output__wrong_field": 51,
+        "synthetic_gap_boolean_output__wrong_condition": 48,
+        "lookup_query__wrong_field": 3
+      },
+      "answer_type_distribution": {
+        "scalar": 674,
+        "list": 78,
+        "boolean": 48
+      },
+      "stage_field_distribution": {
+        "stage3_3call_composition": 800
+      },
+      "prompt_metadata_leaks": {}
+    },
+    "A/stage4_4to6call_persistence.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage4_4to6call_persistence.jsonl",
+      "sha256": "c91f71973ccd622b17c010431e4091886b128c2f706b659f000e4fcb2841f310",
+      "rows": 800,
+      "schema_fields": {
+        "answer_type": 800,
+        "dependency_graph": 800,
+        "generation_seed": 800,
+        "gold_answer": 800,
+        "gold_calls": 800,
+        "motif_type": 800,
+        "num_calls": 800,
+        "observations": 800,
+        "output_type_sequence": 800,
+        "prefix_length": 800,
+        "prefix_of_motif": 800,
+        "process_labels": 800,
+        "question": 800,
+        "sample_id": 800,
+        "source_failure_cluster": 800,
+        "source_prefix_length": 800,
+        "stage": 800,
+        "target_full_motif": 800,
+        "terminal_stage": 800,
+        "tools": 800,
+        "trajectory_id": 800
+      },
+      "call_count_distribution": {
+        "4": 504,
+        "5": 233,
+        "6": 63
+      },
+      "unique_questions": 800,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 800,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 800,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 23,
+      "tools_used_top": [
+        [
+          "add",
+          1104
+        ],
+        [
+          "multiply",
+          858
+        ],
+        [
+          "filter_greater_than",
+          221
+        ],
+        [
+          "sort_list",
+          221
+        ],
+        [
+          "get_field",
+          212
+        ],
+        [
+          "make_object",
+          206
+        ],
+        [
+          "divide_safe",
+          188
+        ],
+        [
+          "subtract",
+          183
+        ],
+        [
+          "update_field",
+          81
+        ],
+        [
+          "concat",
+          73
+        ],
+        [
+          "string_length",
+          73
+        ],
+        [
+          "lowercase",
+          39
+        ],
+        [
+          "uppercase",
+          34
+        ],
+        [
+          "get_item",
+          15
+        ],
+        [
+          "join_list",
+          10
+        ]
+      ],
+      "tools_offered_distinct": 37,
+      "avg_tools_offered_per_task": 9.73,
+      "motif_distribution": {
+        "object_or_list_output": 221,
+        "long_chain": 189,
+        "reference_reuse": 142,
+        "fan_in": 122,
+        "distractor_tools": 71,
+        "linear_dependency": 36,
+        "independent_calls": 19
+      },
+      "failure_cluster_distribution": {
+        "synthetic_gap_object_list__wrong_extraction": 206,
+        "long_chain__too_few_calls": 189,
+        "synthetic_gap_fan_in__wrong_argument": 122,
+        "synthetic_gap_string_output__wrong_answer": 73,
+        "synthetic_gap_distractor_tools__wrong_tool": 71,
+        "synthetic_gap_reference_reuse__invalid_reference": 63,
+        "linear_dependency__too_few_calls": 36,
+        "independent_calls__premature_final": 15,
+        "synthetic_gap_list_output__wrong_field": 15,
+        "lookup_query__wrong_field": 6,
+        "synthetic_gap_boolean_output__wrong_condition": 4
+      },
+      "answer_type_distribution": {
+        "scalar": 585,
+        "list": 125,
+        "object": 81,
+        "string": 5,
+        "boolean": 4
+      },
+      "stage_field_distribution": {
+        "stage4_4to6call_persistence": 800
+      },
+      "prompt_metadata_leaks": {}
+    },
+    "B/curriculum_toolr0_all.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl",
+      "sha256": "ec09c41c9feb746d4d409e281022f648583eb105fc89410b9218259bc60c0be2",
+      "rows": 268,
+      "schema_fields": {
+        "gold_answer": 268,
+        "input": 268,
+        "output": 268,
+        "sample_id": 268,
+        "tools": 268
+      },
+      "call_count_distribution": {
+        "6": 268
+      },
+      "unique_questions": 268,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 268,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 268,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 30,
+      "tools_field_is_string_not_list": 268,
+      "tools_used_distinct": 611,
+      "tools_used_top": [
+        [
+          "check_input_and_sum",
+          16
+        ],
+        [
+          "extend_num",
+          15
+        ],
+        [
+          "subtract",
+          15
+        ],
+        [
+          "absolute_sum",
+          15
+        ],
+        [
+          "calculate_average_speed",
+          12
+        ],
+        [
+          "bitwise_and",
+          11
+        ],
+        [
+          "round_to_multiple",
+          11
+        ],
+        [
+          "replace_with_target",
+          10
+        ],
+        [
+          "floor_divide_without_div",
+          10
+        ],
+        [
+          "multiply_without_operator",
+          10
+        ],
+        [
+          "floor_division",
+          9
+        ],
+        [
+          "byte_order",
+          9
+        ],
+        [
+          "volume_cylinder",
+          9
+        ],
+        [
+          "def_func",
+          9
+        ],
+        [
+          "evaluate_instruction",
+          9
+        ]
+      ],
+      "tools_offered_distinct": 908,
+      "avg_tools_offered_per_task": 4.12,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 2,
+        "stage1": 1,
+        "stage2": 1,
+        "stage3": 1,
+        "stage4": 1
+      }
+    },
+    "B/epoch_1_1call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_1_1call.jsonl",
+      "sha256": "30de9df68ea35727e975e8c941c504d5fdde6d11bf0fb1da97afe38297ce6b90",
+      "rows": 400,
+      "schema_fields": {
+        "gold_answer": 400,
+        "input": 400,
+        "output": 400,
+        "sample_id": 400,
+        "tools": 400
+      },
+      "call_count_distribution": {
+        "1": 400
+      },
+      "unique_questions": 400,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 400,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 400,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 362,
+      "tools_used_top": [
+        [
+          "convert_to_cm_with_precision",
+          3
+        ],
+        [
+          "cumulative_list",
+          3
+        ],
+        [
+          "calculate_profit_percentage",
+          3
+        ],
+        [
+          "probability_of_decay",
+          3
+        ],
+        [
+          "format_datetime_object",
+          2
+        ],
+        [
+          "timestamp_difference",
+          2
+        ],
+        [
+          "sum_of_all_continuous_sequences",
+          2
+        ],
+        [
+          "ssd",
+          2
+        ],
+        [
+          "get_string_numbers",
+          2
+        ],
+        [
+          "calculate_kp",
+          2
+        ],
+        [
+          "circle_area",
+          2
+        ],
+        [
+          "convert_to_int_or_default",
+          2
+        ],
+        [
+          "divide_int",
+          2
+        ],
+        [
+          "diff_ticks",
+          2
+        ],
+        [
+          "convert_to_HHMMSS",
+          2
+        ]
+      ],
+      "tools_offered_distinct": 1311,
+      "avg_tools_offered_per_task": 4.0,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 2
+      }
+    },
+    "B/epoch_2_2call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_2_2call.jsonl",
+      "sha256": "581cd810d545192a64a4a7a5ea9e63985d396880b38f66b9a556b183f3234afc",
+      "rows": 400,
+      "schema_fields": {
+        "gold_answer": 400,
+        "input": 400,
+        "output": 400,
+        "sample_id": 400,
+        "tools": 400
+      },
+      "call_count_distribution": {
+        "2": 400
+      },
+      "unique_questions": 400,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 400,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 400,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 19,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 673,
+      "tools_used_top": [
+        [
+          "get_sum",
+          3
+        ],
+        [
+          "calculate_summation",
+          3
+        ],
+        [
+          "matrix_scale_multiply",
+          3
+        ],
+        [
+          "sum_next",
+          3
+        ],
+        [
+          "sum_func",
+          3
+        ],
+        [
+          "find_first_index",
+          3
+        ],
+        [
+          "filter_product_labels",
+          3
+        ],
+        [
+          "find_object_index",
+          3
+        ],
+        [
+          "babylonian_sqrt",
+          3
+        ],
+        [
+          "find_target_string_in_list",
+          2
+        ],
+        [
+          "multiply_string",
+          2
+        ],
+        [
+          "find_smallest",
+          2
+        ],
+        [
+          "sum_matrix",
+          2
+        ],
+        [
+          "add_tab",
+          2
+        ],
+        [
+          "range_check",
+          2
+        ]
+      ],
+      "tools_offered_distinct": 1308,
+      "avg_tools_offered_per_task": 4.0,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {}
+    },
+    "B/epoch_3_3call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_3_3call.jsonl",
+      "sha256": "bcd396c449a710e507d9d4ac9ee7fc486550b684f8ae2d5669c7ba1872de020c",
+      "rows": 400,
+      "schema_fields": {
+        "gold_answer": 400,
+        "input": 400,
+        "output": 400,
+        "sample_id": 400,
+        "tools": 400
+      },
+      "call_count_distribution": {
+        "3": 400
+      },
+      "unique_questions": 400,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 400,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 400,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 19,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 840,
+      "tools_used_top": [
+        [
+          "round_to_multiple",
+          7
+        ],
+        [
+          "multiply_by_two_or_three",
+          7
+        ],
+        [
+          "find_max_3",
+          5
+        ],
+        [
+          "format_with_leading_zeros",
+          5
+        ],
+        [
+          "add_or_divide",
+          5
+        ],
+        [
+          "string_with_length",
+          5
+        ],
+        [
+          "add",
+          5
+        ],
+        [
+          "change_extension_regex",
+          5
+        ],
+        [
+          "build_key",
+          4
+        ],
+        [
+          "sum_of_first_n_integers",
+          4
+        ],
+        [
+          "find_max_of_two_numbers",
+          4
+        ],
+        [
+          "remove_trailing_slash",
+          4
+        ],
+        [
+          "handle_zero_division",
+          4
+        ],
+        [
+          "escape_string",
+          4
+        ],
+        [
+          "duplicate_string",
+          4
+        ]
+      ],
+      "tools_offered_distinct": 1267,
+      "avg_tools_offered_per_task": 4.0,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {}
+    },
+    "B/epoch_4_4call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_4_4call.jsonl",
+      "sha256": "115b744df779842b4ad4d341a7bc0ae00067550c0f9889df73cdef34560f2a3f",
+      "rows": 400,
+      "schema_fields": {
+        "gold_answer": 400,
+        "input": 400,
+        "output": 400,
+        "sample_id": 400,
+        "tools": 400
+      },
+      "call_count_distribution": {
+        "4": 400
+      },
+      "unique_questions": 400,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 400,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 400,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 1,
+      "gold_answer_contains_unresolved_var_ref": 13,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 893,
+      "tools_used_top": [
+        [
+          "extend_num",
+          10
+        ],
+        [
+          "sqrt_rounded_up",
+          9
+        ],
+        [
+          "compute_square_roots",
+          9
+        ],
+        [
+          "add_or_divide",
+          8
+        ],
+        [
+          "concat_ignore_trailing_zeros",
+          8
+        ],
+        [
+          "product_except_index",
+          8
+        ],
+        [
+          "evaluate_instruction",
+          8
+        ],
+        [
+          "remove_less_or_equal_to_3",
+          7
+        ],
+        [
+          "expand_and_replace",
+          7
+        ],
+        [
+          "power_modulo",
+          7
+        ],
+        [
+          "safe_div",
+          7
+        ],
+        [
+          "scale_and_shift_numpy_array",
+          6
+        ],
+        [
+          "count_ngrams",
+          6
+        ],
+        [
+          "polynomial_expression",
+          6
+        ],
+        [
+          "smallest_x",
+          6
+        ]
+      ],
+      "tools_offered_distinct": 1248,
+      "avg_tools_offered_per_task": 4.0,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 1
+      }
+    },
+    "B/epoch_5_5call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_5_5call.jsonl",
+      "sha256": "4795c2cc027673611436bd32f03109c079ba17b5a5cc29f9eccd1de989f6f3b6",
+      "rows": 400,
+      "schema_fields": {
+        "gold_answer": 400,
+        "input": 400,
+        "output": 400,
+        "sample_id": 400,
+        "tools": 400
+      },
+      "call_count_distribution": {
+        "5": 400
+      },
+      "unique_questions": 400,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 400,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 400,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 25,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 787,
+      "tools_used_top": [
+        [
+          "f_of_x",
+          17
+        ],
+        [
+          "add_or_divide",
+          16
+        ],
+        [
+          "add_and_shift",
+          12
+        ],
+        [
+          "def_func",
+          12
+        ],
+        [
+          "multiply_integers",
+          12
+        ],
+        [
+          "rhombus_area",
+          11
+        ],
+        [
+          "divide_by_zero",
+          11
+        ],
+        [
+          "euclid_gcd",
+          11
+        ],
+        [
+          "matrix_multiply_scalar",
+          10
+        ],
+        [
+          "multiply",
+          10
+        ],
+        [
+          "compose_file_path",
+          10
+        ],
+        [
+          "new_foo",
+          10
+        ],
+        [
+          "calculate_capacitor_energy",
+          10
+        ],
+        [
+          "power",
+          9
+        ],
+        [
+          "fib",
+          9
+        ]
+      ],
+      "tools_offered_distinct": 1267,
+      "avg_tools_offered_per_task": 4.12,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "stage1": 1,
+        "stage2": 1,
+        "stage3": 1,
+        "stage4": 1,
+        "cluster": 2
+      }
+    },
+    "B/epoch_6_6call.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/epoch_6_6call.jsonl",
+      "sha256": "6d7cb4ec02c8e4196c553296c50db54f06d3230156f1b5cdb36e00013fcdbacf",
+      "rows": 268,
+      "schema_fields": {
+        "gold_answer": 268,
+        "input": 268,
+        "output": 268,
+        "sample_id": 268,
+        "tools": 268
+      },
+      "call_count_distribution": {
+        "6": 268
+      },
+      "unique_questions": 268,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 268,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 268,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 30,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 611,
+      "tools_used_top": [
+        [
+          "check_input_and_sum",
+          16
+        ],
+        [
+          "extend_num",
+          15
+        ],
+        [
+          "subtract",
+          15
+        ],
+        [
+          "absolute_sum",
+          15
+        ],
+        [
+          "calculate_average_speed",
+          12
+        ],
+        [
+          "bitwise_and",
+          11
+        ],
+        [
+          "round_to_multiple",
+          11
+        ],
+        [
+          "replace_with_target",
+          10
+        ],
+        [
+          "floor_divide_without_div",
+          10
+        ],
+        [
+          "multiply_without_operator",
+          10
+        ],
+        [
+          "floor_division",
+          9
+        ],
+        [
+          "byte_order",
+          9
+        ],
+        [
+          "volume_cylinder",
+          9
+        ],
+        [
+          "def_func",
+          9
+        ],
+        [
+          "evaluate_instruction",
+          9
+        ]
+      ],
+      "tools_offered_distinct": 908,
+      "avg_tools_offered_per_task": 4.12,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 2,
+        "stage1": 1,
+        "stage2": 1,
+        "stage3": 1,
+        "stage4": 1
+      }
+    },
+    "NESTFUL/nestful_dev.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/splits/nestful_dev.jsonl",
+      "sha256": "35f120c86f08db6c945da908cff05b7cbfda865873c074b8ed20e5bc1eee7355",
+      "rows": 200,
+      "schema_fields": {
+        "gold_answer": 200,
+        "input": 200,
+        "output": 200,
+        "sample_id": 200,
+        "tools": 200
+      },
+      "call_count_distribution": {
+        "2": 66,
+        "3": 44,
+        "4": 27,
+        "5": 19,
+        "6": 14,
+        "7": 8,
+        "8": 6,
+        "9": 5,
+        "10": 2,
+        "11": 2,
+        "12": 2,
+        "13": 2,
+        "14": 1,
+        "15": 1,
+        "18": 1
+      },
+      "unique_questions": 200,
+      "duplicate_question_rows": 0,
+      "top_dup_questions": [],
+      "unique_gold_traces": 200,
+      "duplicate_gold_trace_rows": 0,
+      "unique_sample_ids": 200,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 112,
+      "tools_used_top": [
+        [
+          "divide",
+          236
+        ],
+        [
+          "multiply",
+          201
+        ],
+        [
+          "add",
+          142
+        ],
+        [
+          "subtract",
+          126
+        ],
+        [
+          "power",
+          11
+        ],
+        [
+          "factorial",
+          7
+        ],
+        [
+          "reminder",
+          4
+        ],
+        [
+          "inverse",
+          3
+        ],
+        [
+          "altered_string",
+          2
+        ],
+        [
+          "swap_left_right",
+          2
+        ],
+        [
+          "choose",
+          2
+        ],
+        [
+          "volume_cylinder",
+          2
+        ],
+        [
+          "speed",
+          2
+        ],
+        [
+          "generate_integer_string",
+          1
+        ],
+        [
+          "rand_string",
+          1
+        ]
+      ],
+      "tools_offered_distinct": 508,
+      "avg_tools_offered_per_task": 10.99,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {}
+    },
+    "NESTFUL/nestful_test.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl",
+      "sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+      "rows": 1661,
+      "schema_fields": {
+        "gold_answer": 1661,
+        "input": 1661,
+        "output": 1661,
+        "sample_id": 1661,
+        "tools": 1661
+      },
+      "call_count_distribution": {
+        "2": 543,
+        "3": 363,
+        "4": 223,
+        "5": 154,
+        "6": 120,
+        "7": 67,
+        "8": 54,
+        "9": 41,
+        "10": 18,
+        "11": 14,
+        "12": 14,
+        "13": 12,
+        "14": 5,
+        "15": 6,
+        "16": 2,
+        "17": 3,
+        "18": 6,
+        "19": 1,
+        "20": 3,
+        "21": 1,
+        "22": 1,
+        "23": 1,
+        "24": 1,
+        "25": 2,
+        "26": 2,
+        "27": 1,
+        "36": 1,
+        "43": 1,
+        "53": 1
+      },
+      "unique_questions": 1660,
+      "duplicate_question_rows": 1,
+      "top_dup_questions": [
+        [
+          "be5295dacc82d9e6",
+          2
+        ],
+        [
+          "8bcbb173c1a53566",
+          1
+        ],
+        [
+          "154d1e6f14efe931",
+          1
+        ]
+      ],
+      "unique_gold_traces": 1648,
+      "duplicate_gold_trace_rows": 13,
+      "unique_sample_ids": 1661,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 817,
+      "tools_used_top": [
+        [
+          "divide",
+          1956
+        ],
+        [
+          "multiply",
+          1793
+        ],
+        [
+          "add",
+          1248
+        ],
+        [
+          "subtract",
+          1090
+        ],
+        [
+          "power",
+          94
+        ],
+        [
+          "inverse",
+          61
+        ],
+        [
+          "sqrt",
+          25
+        ],
+        [
+          "negate",
+          24
+        ],
+        [
+          "lcm",
+          23
+        ],
+        [
+          "factorial",
+          20
+        ],
+        [
+          "floor",
+          17
+        ],
+        [
+          "choose",
+          13
+        ],
+        [
+          "reminder",
+          13
+        ],
+        [
+          "speed",
+          9
+        ],
+        [
+          "gcd",
+          9
+        ]
+      ],
+      "tools_offered_distinct": 3850,
+      "avg_tools_offered_per_task": 11.22,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 1
+      }
+    },
+    "NESTFUL/nestful_data.jsonl": {
+      "path": "experiments/nestful_mtgrpo_minimal/data/NESTFUL-main/data_v2/nestful_data.jsonl",
+      "sha256": "e7c9999e2eaaa2bea87776bc55e2b0913a0cf089f4b6817c7644554547df22c1",
+      "rows": 1861,
+      "schema_fields": {
+        "gold_answer": 1861,
+        "input": 1861,
+        "output": 1861,
+        "sample_id": 1861,
+        "tools": 1861
+      },
+      "call_count_distribution": {
+        "2": 609,
+        "3": 407,
+        "4": 250,
+        "5": 173,
+        "6": 134,
+        "7": 75,
+        "8": 60,
+        "9": 46,
+        "10": 20,
+        "11": 16,
+        "12": 16,
+        "13": 14,
+        "14": 6,
+        "15": 7,
+        "16": 2,
+        "17": 3,
+        "18": 7,
+        "19": 1,
+        "20": 3,
+        "21": 1,
+        "22": 1,
+        "23": 1,
+        "24": 1,
+        "25": 2,
+        "26": 2,
+        "27": 1,
+        "36": 1,
+        "43": 1,
+        "53": 1
+      },
+      "unique_questions": 1860,
+      "duplicate_question_rows": 1,
+      "top_dup_questions": [
+        [
+          "be5295dacc82d9e6",
+          2
+        ],
+        [
+          "13c8ca1b28bc6049",
+          1
+        ],
+        [
+          "2fe117d0d06af731",
+          1
+        ]
+      ],
+      "unique_gold_traces": 1847,
+      "duplicate_gold_trace_rows": 14,
+      "unique_sample_ids": 1861,
+      "duplicate_sample_ids": 0,
+      "null_gold_answers": 0,
+      "gold_answer_contains_unresolved_var_ref": 0,
+      "tools_field_is_string_not_list": 0,
+      "tools_used_distinct": 904,
+      "tools_used_top": [
+        [
+          "divide",
+          2192
+        ],
+        [
+          "multiply",
+          1994
+        ],
+        [
+          "add",
+          1390
+        ],
+        [
+          "subtract",
+          1216
+        ],
+        [
+          "power",
+          105
+        ],
+        [
+          "inverse",
+          64
+        ],
+        [
+          "factorial",
+          27
+        ],
+        [
+          "sqrt",
+          25
+        ],
+        [
+          "negate",
+          24
+        ],
+        [
+          "lcm",
+          23
+        ],
+        [
+          "floor",
+          18
+        ],
+        [
+          "reminder",
+          17
+        ],
+        [
+          "choose",
+          15
+        ],
+        [
+          "speed",
+          11
+        ],
+        [
+          "gcd",
+          9
+        ]
+      ],
+      "tools_offered_distinct": 4202,
+      "avg_tools_offered_per_task": 11.2,
+      "motif_distribution": {},
+      "failure_cluster_distribution": {},
+      "answer_type_distribution": {},
+      "stage_field_distribution": {},
+      "prompt_metadata_leaks": {
+        "cluster": 1
+      }
+    }
+  },
+  "overlaps": {
+    "A/stage1_1call_atomic.jsonl <-> B/curriculum_toolr0_all.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_1_1call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage1_1call_atomic.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/curriculum_toolr0_all.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_1_1call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage2_2call_dependency.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage3_3call_composition.jsonl <-> B/curriculum_toolr0_all.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_1_1call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage3_3call_composition.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/curriculum_toolr0_all.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_1_1call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 400
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 268
+    },
+    "A/stage1_1call_atomic.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 200
+    },
+    "A/stage1_1call_atomic.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1660
+    },
+    "A/stage1_1call_atomic.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1860
+    },
+    "A/stage2_2call_dependency.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 200
+    },
+    "A/stage2_2call_dependency.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1660
+    },
+    "A/stage2_2call_dependency.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1860
+    },
+    "A/stage3_3call_composition.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 200
+    },
+    "A/stage3_3call_composition.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1660
+    },
+    "A/stage3_3call_composition.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1860
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 200
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1660
+    },
+    "A/stage4_4to6call_persistence.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 1860
+    },
+    "B/curriculum_toolr0_all.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 200
+    },
+    "B/curriculum_toolr0_all.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 1660
+    },
+    "B/curriculum_toolr0_all.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_1_1call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 200
+    },
+    "B/epoch_1_1call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_1_1call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_2_2call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 200
+    },
+    "B/epoch_2_2call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_2_2call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_3_3call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 200
+    },
+    "B/epoch_3_3call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_3_3call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_4_4call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 200
+    },
+    "B/epoch_4_4call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_4_4call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_5_5call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 200
+    },
+    "B/epoch_5_5call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_5_5call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 1860
+    },
+    "B/epoch_6_6call.jsonl <-> NESTFUL/nestful_dev.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 200
+    },
+    "B/epoch_6_6call.jsonl <-> NESTFUL/nestful_test.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 1660
+    },
+    "B/epoch_6_6call.jsonl <-> NESTFUL/nestful_data.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 1860
+    },
+    "A/stage1_1call_atomic.jsonl <-> A/stage2_2call_dependency.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "A/stage1_1call_atomic.jsonl <-> A/stage3_3call_composition.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "A/stage1_1call_atomic.jsonl <-> A/stage4_4to6call_persistence.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "A/stage2_2call_dependency.jsonl <-> A/stage3_3call_composition.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "A/stage2_2call_dependency.jsonl <-> A/stage4_4to6call_persistence.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "A/stage3_3call_composition.jsonl <-> A/stage4_4to6call_persistence.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 800,
+      "b_unique_questions": 800
+    },
+    "B/epoch_1_1call.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_1_1call.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_1_1call.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_1_1call.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_1_1call.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 268
+    },
+    "B/epoch_2_2call.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_2_2call.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_2_2call.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_2_2call.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 268
+    },
+    "B/epoch_3_3call.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_3_3call.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_3_3call.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 268
+    },
+    "B/epoch_4_4call.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 400
+    },
+    "B/epoch_4_4call.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 268
+    },
+    "B/epoch_5_5call.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 400,
+      "b_unique_questions": 268
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_1_1call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 400
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_2_2call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 400
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_3_3call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 400
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_4_4call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 400
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_5_5call.jsonl": {
+      "question_hash_overlap": 0,
+      "gold_trace_hash_overlap": 0,
+      "sample_id_overlap": 0,
+      "a_unique_questions": 268,
+      "b_unique_questions": 400
+    },
+    "B/curriculum_toolr0_all.jsonl <-> B/epoch_6_6call.jsonl": {
+      "question_hash_overlap": 268,
+      "gold_trace_hash_overlap": 268,
+      "sample_id_overlap": 268,
+      "a_unique_questions": 268,
+      "b_unique_questions": 268
+    }
+  },
+  "notes": []
+}

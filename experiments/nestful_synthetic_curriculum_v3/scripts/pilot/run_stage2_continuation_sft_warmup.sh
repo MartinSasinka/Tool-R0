@@ -20,9 +20,15 @@
 #   OUTPUT_DIR             (default: outputs/sft/stage2_continuation/run_<timestamp>)
 #   RESUME_CHECKPOINT      (optional existing LoRA adapter dir to continue from)
 #   BASE_MODEL             (default: Qwen/Qwen3-4B-Instruct-2507)
+#   CUDA_VISIBLE_DEVICES   (default: unset = all GPUs visible; e.g. "0" for one GPU)
+#   SFT_HF_DEVICE_MAP      (default: auto; use '{"": 0}' to pin whole model on GPU 0)
 #   DRY_RUN=1              (tokenize+mask sanity check only; no GPU/model needed)
 #
 # Requires (real training): torch+CUDA, transformers, peft, bitsandbytes.
+# Quick install on a fresh pod:
+#   pip install 'peft>=0.12' 'bitsandbytes>=0.43' 'accelerate>=0.33'
+# or full GRPO stack:
+#   bash experiments/nestful_mtgrpo_minimal/install_deps.sh
 # This script does NOT require vLLM, does NOT start rollout workers, and does
 # NOT read/write anything under outputs/runs/ (the GRPO run directories).
 
@@ -54,7 +60,32 @@ SFT_LORA_R="${SFT_LORA_R:-16}"
 SFT_LORA_ALPHA="${SFT_LORA_ALPHA:-32}"
 SFT_LORA_DROPOUT="${SFT_LORA_DROPOUT:-0.05}"
 SFT_LOAD_IN_4BIT="${SFT_LOAD_IN_4BIT:-1}"
+SFT_HF_DEVICE_MAP="${SFT_HF_DEVICE_MAP:-auto}"
 DRY_RUN="${DRY_RUN:-0}"
+
+if [ -n "${CUDA_VISIBLE_DEVICES:-}" ]; then
+  export CUDA_VISIBLE_DEVICES
+fi
+
+if [ "$DRY_RUN" != "1" ]; then
+  if ! "$PYTHON" -c "import torch; assert torch.cuda.is_available()" 2>/dev/null; then
+    echo "[stage2-sft] ERROR: CUDA not available. Need a GPU pod with torch+cuda." >&2
+    exit 1
+  fi
+  if [ "$SFT_LOAD_IN_4BIT" = "1" ]; then
+    if ! "$PYTHON" -c "import importlib.metadata as m; m.version('bitsandbytes')" 2>/dev/null; then
+      echo "[stage2-sft] ERROR: bitsandbytes missing (required for QLoRA 4-bit)." >&2
+      echo "  pip install 'peft>=0.12' 'bitsandbytes>=0.43' 'accelerate>=0.33'" >&2
+      echo "  or: bash experiments/nestful_mtgrpo_minimal/install_deps.sh" >&2
+      exit 1
+    fi
+  fi
+  if ! "$PYTHON" -c "import peft" 2>/dev/null; then
+    echo "[stage2-sft] ERROR: peft missing." >&2
+    echo "  pip install 'peft>=0.12' 'bitsandbytes>=0.43' 'accelerate>=0.33'" >&2
+    exit 1
+  fi
+fi
 
 if [ ! -f "$TRAIN_PATH" ] || [ ! -f "$VAL_PATH" ]; then
   echo "[stage2-sft] ERROR: train/val jsonl not found. Build them first:" >&2
@@ -77,6 +108,8 @@ echo "base_model   = $BASE_MODEL"
 echo "epochs=$SFT_EPOCHS lr=$SFT_LR batch_size=$SFT_BATCH_SIZE grad_accum=$SFT_GRAD_ACCUM"
 echo "max_seq_len=$SFT_MAX_SEQ_LEN seed=$SFT_SEED"
 echo "lora: r=$SFT_LORA_R alpha=$SFT_LORA_ALPHA dropout=$SFT_LORA_DROPOUT 4bit=$SFT_LOAD_IN_4BIT"
+echo "cuda_visible_devices = ${CUDA_VISIBLE_DEVICES:-<all>}"
+echo "hf_device_map        = $SFT_HF_DEVICE_MAP"
 echo "resume_checkpoint = ${RESUME_CHECKPOINT:-<none — fresh LoRA from base model>}"
 echo "dry_run = $DRY_RUN"
 echo "============================================================"
@@ -95,6 +128,7 @@ ARGS=(
   --lora-r "$SFT_LORA_R"
   --lora-alpha "$SFT_LORA_ALPHA"
   --lora-dropout "$SFT_LORA_DROPOUT"
+  --hf-device-map "$SFT_HF_DEVICE_MAP"
 )
 if [ "$SFT_LOAD_IN_4BIT" != "1" ]; then
   ARGS+=(--no-4bit)

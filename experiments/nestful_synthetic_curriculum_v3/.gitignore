@@ -1,0 +1,41 @@
+# Generated artifacts for nestful_synthetic_curriculum_v3 (P0 remediation).
+# Policy (docs/RUNBOOK.md): never commit model weights, tokenizer dumps, or
+# per-sample rollout/prediction files. Small JSON/MD summaries stay committable.
+# Note: the repo-root .gitignore already blocks **/outputs/runs/ and *.safetensors;
+# these rules make the policy local and explicit, and cover SFT/eval outputs too.
+
+# Model weights / adapters / tokenizer dumps anywhere under outputs
+outputs/**/checkpoints/
+outputs/**/*.safetensors
+outputs/**/*.bin
+outputs/**/*.pt
+outputs/**/tokenizer.json
+outputs/**/vocab.json
+outputs/**/merges.txt
+
+# Per-sample dumps (large JSONL): trajectories, predictions, eval subsets
+outputs/**/*trajectories*.jsonl
+outputs/**/*predictions*.jsonl
+outputs/**/validation_subset*.jsonl
+outputs/**/data_base/
+
+# Raw logs (summaries in train_summary.json / metrics*.json are enough)
+outputs/**/*.log
+outputs/**/train_log.jsonl
+
+# SFT run outputs (run_<timestamp> dirs contain adapters + logs)
+outputs/sft/**/run_*/
+
+# Eval batches: ignore heavy contents, keep reports/metrics/manifests
+outputs/evals/**
+!outputs/evals/**/
+!outputs/evals/**/BATCH_REPORT.md
+!outputs/evals/**/metrics.json
+!outputs/evals/**/metrics_official.json
+!outputs/evals/**/metrics_unified.json
+!outputs/evals/**/manifest.json
+
+# Local scratch
+__pycache__/
+*.pyc
+wandb/

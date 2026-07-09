@@ -1,0 +1,2129 @@
+{
+  "train_runs": [
+    {
+      "run_id": "20260702_112042",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112042",
+      "baseline_dev_internal_win": null,
+      "baseline_dev_official_win": null,
+      "baseline_dev_num_tasks": null,
+      "has_validation_subset": false,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_2_2call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_3_3call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_4_4call.jsonl": "curriculum_v3 (older v3 generator)"
+      },
+      "stages": []
+    },
+    {
+      "run_id": "20260702_112150",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 4,
+        "rollout_temperature": 0.7,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v2_1_motif",
+        "train_jsonl": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150/data_base/epoch_1_1call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.615,
+      "baseline_dev_official_win": 0.555,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": false,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_2_2call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_3_3call.jsonl": "curriculum_v3 (older v3 generator)",
+        "epoch_4_4call.jsonl": "curriculum_v3 (older v3 generator)"
+      },
+      "stages": [
+        {
+          "stage": "stage_1",
+          "epoch_summary": [
+            {
+              "stage": 1,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.4876847290640394,
+              "react_win_rate": 0.54,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.0049261083743842365,
+              "checkpoint": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150/stage_1/checkpoints/adapter_epoch_1"
+            },
+            {
+              "stage": 1,
+              "epoch": 2,
+              "strict_gold_trace_pass": 0.4860426929392447,
+              "react_win_rate": 0.575,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.0049261083743842365,
+              "checkpoint": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150/stage_1/checkpoints/adapter_epoch_2"
+            }
+          ],
+          "epochs": [
+            {
+              "stage": "stage_1",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 64,
+                "num_tasks": 417,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.6,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.195,
+                "solution_equivalent_pass": 0.54,
+                "alternative_valid_solution_pass": 0.53,
+                "strict_fail_but_solution_equivalent_pass": 0.53,
+                "correct_answer_but_unsupported_trace": 0.06,
+                "final_answer_pass": 0.6
+              },
+              "dev_official_win": 0.54,
+              "dev_official": {
+                "f1_func": 0.877,
+                "f1_param": 0.451,
+                "partial_sequence_accuracy": 0.195,
+                "full_sequence_accuracy": 0.015
+              },
+              "train_log_analysis": {
+                "groups": 417,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.3885,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0,
+                "all_zero_group_rate": 0.4221,
+                "all_one_group_rate": 0.5779,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.5779,
+                "reward_value_entropy_bits": 0.982,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    1.0,
+                    964
+                  ],
+                  [
+                    0.0,
+                    704
+                  ]
+                ],
+                "episodes_total": 1668,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.0028,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 417,
+                    "dead": 162,
+                    "mean_reward": 0.578,
+                    "dead_rate": 0.388
+                  }
+                }
+              }
+            },
+            {
+              "stage": "stage_1",
+              "epoch": "epoch_2",
+              "train_summary": {
+                "steps": 64,
+                "num_tasks": 417,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.64,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.205,
+                "solution_equivalent_pass": 0.59,
+                "alternative_valid_solution_pass": 0.575,
+                "strict_fail_but_solution_equivalent_pass": 0.575,
+                "correct_answer_but_unsupported_trace": 0.035,
+                "final_answer_pass": 0.625
+              },
+              "dev_official_win": 0.575,
+              "dev_official": {
+                "f1_func": 0.88,
+                "f1_param": 0.43,
+                "partial_sequence_accuracy": 0.187,
+                "full_sequence_accuracy": 0.02
+              },
+              "train_log_analysis": {
+                "groups": 417,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.3933,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0,
+                "all_zero_group_rate": 0.4221,
+                "all_one_group_rate": 0.5779,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.5779,
+                "reward_value_entropy_bits": 0.982,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    1.0,
+                    964
+                  ],
+                  [
+                    0.0,
+                    704
+                  ]
+                ],
+                "episodes_total": 1668,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.0183,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 417,
+                    "dead": 164,
+                    "mean_reward": 0.578,
+                    "dead_rate": 0.393
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "stage": "stage_2",
+          "epoch_summary": [
+            {
+              "stage": 2,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.1891891891891892,
+              "react_win_rate": 0.545,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.004914004914004914,
+              "checkpoint": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150/stage_2/checkpoints/adapter_epoch_1"
+            },
+            {
+              "stage": 2,
+              "epoch": 2,
+              "strict_gold_trace_pass": 0.16953316953316952,
+              "react_win_rate": 0.53,
+              "early_stop_count": 1,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.007371007371007371,
+              "checkpoint": "/workspace/Tool-R0/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260702_112150/stage_2/checkpoints/adapter_epoch_2"
+            }
+          ],
+          "epochs": [
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 51,
+                "num_tasks": 640,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.6,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.19,
+                "solution_equivalent_pass": 0.55,
+                "alternative_valid_solution_pass": 0.535,
+                "strict_fail_but_solution_equivalent_pass": 0.535,
+                "correct_answer_but_unsupported_trace": 0.04,
+                "final_answer_pass": 0.59
+              },
+              "dev_official_win": 0.545,
+              "dev_official": {
+                "f1_func": 0.869,
+                "f1_param": 0.428,
+                "partial_sequence_accuracy": 0.181,
+                "full_sequence_accuracy": 0.015
+              },
+              "train_log_analysis": {
+                "groups": 640,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.6859,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0031,
+                "all_zero_group_rate": 0.7297,
+                "all_one_group_rate": 0.2672,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.2687,
+                "reward_value_entropy_bits": 0.84,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    1872
+                  ],
+                  [
+                    1.0,
+                    688
+                  ]
+                ],
+                "episodes_total": 2560,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.0184,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 640,
+                    "dead": 439,
+                    "mean_reward": 0.269,
+                    "dead_rate": 0.686
+                  }
+                }
+              }
+            },
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_2",
+              "train_summary": {
+                "steps": 52,
+                "num_tasks": 640,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.565,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.2,
+                "solution_equivalent_pass": 0.515,
+                "alternative_valid_solution_pass": 0.505,
+                "strict_fail_but_solution_equivalent_pass": 0.505,
+                "correct_answer_but_unsupported_trace": 0.045,
+                "final_answer_pass": 0.56
+              },
+              "dev_official_win": 0.53,
+              "dev_official": {
+                "f1_func": 0.861,
+                "f1_param": 0.448,
+                "partial_sequence_accuracy": 0.188,
+                "full_sequence_accuracy": 0.01
+              },
+              "train_log_analysis": {
+                "groups": 640,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.6797,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0,
+                "all_zero_group_rate": 0.7312,
+                "all_one_group_rate": 0.2687,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.2687,
+                "reward_value_entropy_bits": 0.84,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    1872
+                  ],
+                  [
+                    1.0,
+                    688
+                  ]
+                ],
+                "episodes_total": 2560,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.022,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 640,
+                    "dead": 435,
+                    "mean_reward": 0.269,
+                    "dead_rate": 0.68
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "0260703_145219_v3_1",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/0260703_145219_v3_1",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 4,
+        "rollout_temperature": 0.7,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v3_1_stepwise",
+        "train_jsonl": "/20260703_145219_v3_1/data_base/epoch_1_1call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.615,
+      "baseline_dev_official_win": 0.56,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": false,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_2_2call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_3_3call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_4_4call.jsonl": "curriculum_v3_1 (dataset A)"
+      },
+      "stages": [
+        {
+          "stage": "stage_1",
+          "epoch_summary": [
+            {
+              "stage": 1,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.4745484400656814,
+              "react_win_rate": 0.565,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.0049261083743842365,
+              "checkpoint": "/20260703_145219_v3_1/stage_1/checkpoints/adapter_epoch_1"
+            },
+            {
+              "stage": 1,
+              "epoch": 2,
+              "strict_gold_trace_pass": 0.4745484400656814,
+              "react_win_rate": 0.565,
+              "early_stop_count": 1,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.0049261083743842365,
+              "checkpoint": "/20260703_145219_v3_1/stage_1/checkpoints/adapter_epoch_2"
+            }
+          ],
+          "epochs": [
+            {
+              "stage": "stage_1",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 0,
+                "num_tasks": 800,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.605,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.19,
+                "solution_equivalent_pass": 0.545,
+                "alternative_valid_solution_pass": 0.52,
+                "strict_fail_but_solution_equivalent_pass": 0.52,
+                "correct_answer_but_unsupported_trace": 0.05,
+                "final_answer_pass": 0.595
+              },
+              "dev_official_win": 0.565,
+              "dev_official": {
+                "f1_func": 0.872,
+                "f1_param": 0.463,
+                "partial_sequence_accuracy": 0.196,
+                "full_sequence_accuracy": 0.03
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 0,
+                "dead_group_rate": 1.0,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0,
+                "all_zero_group_rate": 0.765,
+                "all_one_group_rate": 0.235,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.235,
+                "reward_value_entropy_bits": 0.787,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    2448
+                  ],
+                  [
+                    1.0,
+                    752
+                  ]
+                ],
+                "episodes_total": 3200,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": null,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 572,
+                    "dead": 572,
+                    "mean_reward": 0.189,
+                    "dead_rate": 1.0
+                  },
+                  "boolean_output": {
+                    "groups": 78,
+                    "dead": 78,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "string_output": {
+                    "groups": 70,
+                    "dead": 70,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "linear_dependency": {
+                    "groups": 47,
+                    "dead": 47,
+                    "mean_reward": 1.0,
+                    "dead_rate": 1.0
+                  },
+                  "long_chain": {
+                    "groups": 33,
+                    "dead": 33,
+                    "mean_reward": 1.0,
+                    "dead_rate": 1.0
+                  }
+                }
+              }
+            },
+            {
+              "stage": "stage_1",
+              "epoch": "epoch_2",
+              "train_summary": {
+                "steps": 0,
+                "num_tasks": 800,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.605,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.19,
+                "solution_equivalent_pass": 0.545,
+                "alternative_valid_solution_pass": 0.52,
+                "strict_fail_but_solution_equivalent_pass": 0.52,
+                "correct_answer_but_unsupported_trace": 0.05,
+                "final_answer_pass": 0.595
+              },
+              "dev_official_win": 0.565,
+              "dev_official": {
+                "f1_func": 0.872,
+                "f1_param": 0.463,
+                "partial_sequence_accuracy": 0.196,
+                "full_sequence_accuracy": 0.03
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 0,
+                "dead_group_rate": 1.0,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0,
+                "all_zero_group_rate": 0.765,
+                "all_one_group_rate": 0.235,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.235,
+                "reward_value_entropy_bits": 0.787,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    2448
+                  ],
+                  [
+                    1.0,
+                    752
+                  ]
+                ],
+                "episodes_total": 3200,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": null,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 572,
+                    "dead": 572,
+                    "mean_reward": 0.189,
+                    "dead_rate": 1.0
+                  },
+                  "boolean_output": {
+                    "groups": 78,
+                    "dead": 78,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "string_output": {
+                    "groups": 70,
+                    "dead": 70,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "linear_dependency": {
+                    "groups": 47,
+                    "dead": 47,
+                    "mean_reward": 1.0,
+                    "dead_rate": 1.0
+                  },
+                  "long_chain": {
+                    "groups": 33,
+                    "dead": 33,
+                    "mean_reward": 1.0,
+                    "dead_rate": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "stage": "stage_2",
+          "epoch_summary": [
+            {
+              "stage": 2,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.17444717444717445,
+              "react_win_rate": 0.53,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.007371007371007371,
+              "checkpoint": "/20260703_145219_v3_1/stage_2/checkpoints/adapter_epoch_1"
+            },
+            {
+              "stage": 2,
+              "epoch": 2,
+              "strict_gold_trace_pass": 0.16707616707616707,
+              "react_win_rate": 0.51,
+              "early_stop_count": 1,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.009828009828009828,
+              "checkpoint": "/20260703_145219_v3_1/stage_2/checkpoints/adapter_epoch_2"
+            }
+          ],
+          "epochs": [
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 89,
+                "num_tasks": 1600,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.6,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.18,
+                "solution_equivalent_pass": 0.525,
+                "alternative_valid_solution_pass": 0.505,
+                "strict_fail_but_solution_equivalent_pass": 0.505,
+                "correct_answer_but_unsupported_trace": 0.07,
+                "final_answer_pass": 0.595
+              },
+              "dev_official_win": 0.53,
+              "dev_official": {
+                "f1_func": 0.864,
+                "f1_param": 0.439,
+                "partial_sequence_accuracy": 0.195,
+                "full_sequence_accuracy": 0.025
+              },
+              "train_log_analysis": {
+                "groups": 1600,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.7781,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0013,
+                "all_zero_group_rate": 0.69,
+                "all_one_group_rate": 0.3088,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.3095,
+                "reward_value_entropy_bits": 0.893,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    4419
+                  ],
+                  [
+                    1.0,
+                    1981
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.0015,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 897,
+                    "dead": 773,
+                    "mean_reward": 0.258,
+                    "dead_rate": 0.862
+                  },
+                  "boolean_output": {
+                    "groups": 206,
+                    "dead": 206,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "string_output": {
+                    "groups": 186,
+                    "dead": 186,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "long_chain": {
+                    "groups": 151,
+                    "dead": 33,
+                    "mean_reward": 0.689,
+                    "dead_rate": 0.219
+                  },
+                  "linear_dependency": {
+                    "groups": 103,
+                    "dead": 47,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.456
+                  },
+                  "reference_reuse": {
+                    "groups": 37,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  },
+                  "independent_calls": {
+                    "groups": 14,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  },
+                  "distractor_tools": {
+                    "groups": 6,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  }
+                }
+              }
+            },
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_2",
+              "train_summary": {
+                "steps": 89,
+                "num_tasks": 1600,
+                "reward_policy_resolved": null,
+                "reward_fn_module": null,
+                "reward_fn_name": null,
+                "reward_fallback_used": null,
+                "dead_group_rate": null,
+                "position_artifact_group_rate": null,
+                "n_unique_reward_values": null,
+                "no_tool_call_rate": null,
+                "too_few_calls_rate": null,
+                "avg_predicted_calls": null,
+                "contributing_turns_total": null,
+                "trained": null,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.565,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.195,
+                "solution_equivalent_pass": 0.52,
+                "alternative_valid_solution_pass": 0.5,
+                "strict_fail_but_solution_equivalent_pass": 0.5,
+                "correct_answer_but_unsupported_trace": 0.045,
+                "final_answer_pass": 0.565
+              },
+              "dev_official_win": 0.51,
+              "dev_official": {
+                "f1_func": 0.883,
+                "f1_param": 0.455,
+                "partial_sequence_accuracy": 0.194,
+                "full_sequence_accuracy": 0.02
+              },
+              "train_log_analysis": {
+                "groups": 1600,
+                "optimizer_steps": 0,
+                "dead_group_rate": 0.7781,
+                "dead_group_rate_old_flattened": 0.0,
+                "mixed_group_rate": 0.0019,
+                "all_zero_group_rate": 0.69,
+                "all_one_group_rate": 0.3081,
+                "position_artifact_rate": 0.0,
+                "avg_unique_episode_rewards_per_group": 0.0,
+                "avg_unique_completions_per_group": 0.0,
+                "avg_group_size": 4.0,
+                "mean_reward_overall": 0.3095,
+                "reward_value_entropy_bits": 0.893,
+                "distinct_reward_values": 2,
+                "reward_value_hist_top": [
+                  [
+                    0.0,
+                    4419
+                  ],
+                  [
+                    1.0,
+                    1981
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.0,
+                "no_tool_call_rate": 0.0,
+                "parse_error_rate": 0.0,
+                "wrong_tool_rate": 0.0,
+                "wrong_arg_rate": 0.0,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": null,
+                "mean_kl": 0.0078,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 897,
+                    "dead": 773,
+                    "mean_reward": 0.258,
+                    "dead_rate": 0.862
+                  },
+                  "boolean_output": {
+                    "groups": 206,
+                    "dead": 206,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "string_output": {
+                    "groups": 186,
+                    "dead": 186,
+                    "mean_reward": 0.0,
+                    "dead_rate": 1.0
+                  },
+                  "long_chain": {
+                    "groups": 151,
+                    "dead": 33,
+                    "mean_reward": 0.689,
+                    "dead_rate": 0.219
+                  },
+                  "linear_dependency": {
+                    "groups": 103,
+                    "dead": 47,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.456
+                  },
+                  "reference_reuse": {
+                    "groups": 37,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  },
+                  "independent_calls": {
+                    "groups": 14,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  },
+                  "distractor_tools": {
+                    "groups": 6,
+                    "dead": 0,
+                    "mean_reward": 1.0,
+                    "dead_rate": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "20260707_103035_v3_1",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_103035_v3_1",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 8,
+        "rollout_temperature": 1.0,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v3_1_stepwise",
+        "train_jsonl": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_103035_v3_1/data_base/epoch_2_2call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.625,
+      "baseline_dev_official_win": 0.57,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": true,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_2_2call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_3_3call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_4_4call.jsonl": "curriculum_v3_1 (dataset A)"
+      },
+      "stages": [
+        {
+          "stage": "stage_2",
+          "epoch_summary": [
+            {
+              "stage": 2,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.17936117936117937,
+              "react_win_rate": 0.535,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.009828009828009828,
+              "checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_103035_v3_1/stage_2/checkpoints/adapter_epoch_1"
+            }
+          ],
+          "stage_gate": {
+            "pass": false,
+            "hard_failures": [
+              "dead_group_rate_lt_max",
+              "dev_win_vs_baseline",
+              "position_artifact_rate_lt_max"
+            ]
+          },
+          "epochs": [
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 50,
+                "num_tasks": 1600,
+                "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+                "reward_fn_module": "lib.reward_v3_1",
+                "reward_fn_name": "episode_turn_reward_seq",
+                "reward_fallback_used": false,
+                "dead_group_rate": 0.87625,
+                "position_artifact_group_rate": 0.27625,
+                "n_unique_reward_values": 18,
+                "no_tool_call_rate": 0.0015625,
+                "too_few_calls_rate": 0.437890625,
+                "avg_predicted_calls": 1.36078125,
+                "contributing_turns_total": 2712,
+                "trained": true,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.59,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.195,
+                "solution_equivalent_pass": 0.56,
+                "alternative_valid_solution_pass": 0.535,
+                "strict_fail_but_solution_equivalent_pass": 0.535,
+                "correct_answer_but_unsupported_trace": 0.025,
+                "final_answer_pass": 0.585
+              },
+              "dev_official_win": 0.535,
+              "dev_official": {
+                "f1_func": 0.888,
+                "f1_param": 0.447,
+                "partial_sequence_accuracy": 0.199,
+                "full_sequence_accuracy": 0.025
+              },
+              "train_log_analysis": {
+                "groups": 1600,
+                "optimizer_steps": 49,
+                "dead_group_rate": 0.8762,
+                "dead_group_rate_old_flattened": 0.6,
+                "mixed_group_rate": 0.9062,
+                "all_zero_group_rate": 0.0,
+                "all_one_group_rate": 0.0938,
+                "position_artifact_rate": 0.2762,
+                "avg_unique_episode_rewards_per_group": 1.0894,
+                "avg_unique_completions_per_group": 4.3606,
+                "avg_group_size": 8.0,
+                "mean_reward_overall": 0.5252,
+                "reward_value_entropy_bits": 2.16,
+                "distinct_reward_values": 11,
+                "reward_value_hist_top": [
+                  [
+                    0.3,
+                    5273
+                  ],
+                  [
+                    0.6,
+                    3359
+                  ],
+                  [
+                    0.65,
+                    1880
+                  ],
+                  [
+                    1.0,
+                    1551
+                  ],
+                  [
+                    0.2875,
+                    304
+                  ],
+                  [
+                    0.5813,
+                    249
+                  ],
+                  [
+                    0.95,
+                    84
+                  ],
+                  [
+                    0.525,
+                    64
+                  ]
+                ],
+                "episodes_total": 12800,
+                "too_few_calls_rate": 0.4379,
+                "no_tool_call_rate": 0.0016,
+                "parse_error_rate": 0.0022,
+                "wrong_tool_rate": 0.4364,
+                "wrong_arg_rate": 0.2869,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": 1.3608,
+                "mean_kl": 0.0007,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 737,
+                    "dead": 687,
+                    "mean_reward": 0.543,
+                    "dead_rate": 0.932
+                  },
+                  "long_chain": {
+                    "groups": 228,
+                    "dead": 177,
+                    "mean_reward": 0.665,
+                    "dead_rate": 0.776
+                  },
+                  "boolean_output": {
+                    "groups": 227,
+                    "dead": 173,
+                    "mean_reward": 0.334,
+                    "dead_rate": 0.762
+                  },
+                  "string_output": {
+                    "groups": 215,
+                    "dead": 215,
+                    "mean_reward": 0.342,
+                    "dead_rate": 1.0
+                  },
+                  "linear_dependency": {
+                    "groups": 120,
+                    "dead": 94,
+                    "mean_reward": 0.766,
+                    "dead_rate": 0.783
+                  },
+                  "reference_reuse": {
+                    "groups": 46,
+                    "dead": 45,
+                    "mean_reward": 0.601,
+                    "dead_rate": 0.978
+                  },
+                  "independent_calls": {
+                    "groups": 17,
+                    "dead": 5,
+                    "mean_reward": 0.726,
+                    "dead_rate": 0.294
+                  },
+                  "distractor_tools": {
+                    "groups": 10,
+                    "dead": 6,
+                    "mean_reward": 0.67,
+                    "dead_rate": 0.6
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "20260707_152750_v3_1",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_152750_v3_1",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 8,
+        "rollout_temperature": 1.0,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v3_1_stepwise",
+        "train_jsonl": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_152750_v3_1/data_base/epoch_2_2call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.625,
+      "baseline_dev_official_win": 0.57,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": true,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_2_2call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_3_3call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_4_4call.jsonl": "curriculum_v3_1 (dataset A)"
+      },
+      "stages": [
+        {
+          "stage": "stage_2",
+          "epoch_summary": [
+            {
+              "stage": 2,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.18427518427518427,
+              "react_win_rate": 0.545,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.007371007371007371,
+              "checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_152750_v3_1/stage_2/checkpoints/adapter_epoch_1"
+            }
+          ],
+          "stage_gate": {
+            "pass": false,
+            "hard_failures": [
+              "dead_group_rate_lt_max",
+              "position_artifact_rate_lt_max"
+            ]
+          },
+          "epochs": [
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 29,
+                "num_tasks": 800,
+                "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+                "reward_fn_module": "lib.reward_v3_1",
+                "reward_fn_name": "episode_turn_reward_seq",
+                "reward_fallback_used": false,
+                "dead_group_rate": 0.855,
+                "position_artifact_group_rate": 0.34375,
+                "n_unique_reward_values": 16,
+                "no_tool_call_rate": 0.00328125,
+                "too_few_calls_rate": 0.5584375,
+                "avg_predicted_calls": 1.43828125,
+                "contributing_turns_total": 1560,
+                "trained": true,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.6,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.185,
+                "solution_equivalent_pass": 0.555,
+                "alternative_valid_solution_pass": 0.535,
+                "strict_fail_but_solution_equivalent_pass": 0.535,
+                "correct_answer_but_unsupported_trace": 0.04,
+                "final_answer_pass": 0.595
+              },
+              "dev_official_win": 0.545,
+              "dev_official": {
+                "f1_func": 0.857,
+                "f1_param": 0.443,
+                "partial_sequence_accuracy": 0.183,
+                "full_sequence_accuracy": 0.02
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 29,
+                "dead_group_rate": 0.855,
+                "dead_group_rate_old_flattened": 0.5112,
+                "mixed_group_rate": 0.9387,
+                "all_zero_group_rate": 0.0,
+                "all_one_group_rate": 0.0612,
+                "position_artifact_rate": 0.3438,
+                "avg_unique_episode_rewards_per_group": 1.1013,
+                "avg_unique_completions_per_group": 4.5713,
+                "avg_group_size": 8.0,
+                "mean_reward_overall": 0.4692,
+                "reward_value_entropy_bits": 1.673,
+                "distinct_reward_values": 8,
+                "reward_value_hist_top": [
+                  [
+                    0.3,
+                    3366
+                  ],
+                  [
+                    0.6,
+                    2078
+                  ],
+                  [
+                    1.0,
+                    573
+                  ],
+                  [
+                    0.2875,
+                    184
+                  ],
+                  [
+                    0.5813,
+                    123
+                  ],
+                  [
+                    0.95,
+                    47
+                  ],
+                  [
+                    0.0,
+                    24
+                  ],
+                  [
+                    0.85,
+                    5
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.5584,
+                "no_tool_call_rate": 0.0033,
+                "parse_error_rate": 0.0037,
+                "wrong_tool_rate": 0.5552,
+                "wrong_arg_rate": 0.3439,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": 1.4383,
+                "mean_kl": 0.0002,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 325,
+                    "dead": 292,
+                    "mean_reward": 0.462,
+                    "dead_rate": 0.898
+                  },
+                  "boolean_output": {
+                    "groups": 128,
+                    "dead": 93,
+                    "mean_reward": 0.295,
+                    "dead_rate": 0.727
+                  },
+                  "long_chain": {
+                    "groups": 118,
+                    "dead": 93,
+                    "mean_reward": 0.636,
+                    "dead_rate": 0.788
+                  },
+                  "string_output": {
+                    "groups": 116,
+                    "dead": 116,
+                    "mean_reward": 0.3,
+                    "dead_rate": 1.0
+                  },
+                  "linear_dependency": {
+                    "groups": 56,
+                    "dead": 42,
+                    "mean_reward": 0.752,
+                    "dead_rate": 0.75
+                  },
+                  "reference_reuse": {
+                    "groups": 37,
+                    "dead": 37,
+                    "mean_reward": 0.6,
+                    "dead_rate": 1.0
+                  },
+                  "independent_calls": {
+                    "groups": 14,
+                    "dead": 8,
+                    "mean_reward": 0.664,
+                    "dead_rate": 0.571
+                  },
+                  "distractor_tools": {
+                    "groups": 6,
+                    "dead": 3,
+                    "mean_reward": 0.65,
+                    "dead_rate": 0.5
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "20260707_183801_v3_1",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_183801_v3_1",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 8,
+        "rollout_temperature": 1.0,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v3_1_stepwise",
+        "train_jsonl": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_183801_v3_1/data_base/epoch_2_2call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.605,
+      "baseline_dev_official_win": 0.535,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": false,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_2_2call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_3_3call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_4_4call.jsonl": "curriculum_v3_1 (dataset A)"
+      },
+      "stages": [
+        {
+          "stage": "stage_2",
+          "epoch_summary": [
+            {
+              "stage": 2,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.17936117936117937,
+              "react_win_rate": 0.515,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.004914004914004914,
+              "checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260707_183801_v3_1/stage_2/checkpoints/adapter_epoch_1"
+            }
+          ],
+          "stage_gate": {
+            "pass": false,
+            "hard_failures": [
+              "dead_group_rate_lt_max"
+            ]
+          },
+          "epochs": [
+            {
+              "stage": "stage_2",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 32,
+                "num_tasks": 800,
+                "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+                "reward_fn_module": "lib.reward_v3_1",
+                "reward_fn_name": "episode_turn_reward_seq",
+                "reward_fallback_used": false,
+                "dead_group_rate": 0.84375,
+                "position_artifact_group_rate": 0.0475,
+                "n_unique_reward_values": 17,
+                "no_tool_call_rate": 0.0009375,
+                "too_few_calls_rate": 0.5553125,
+                "avg_predicted_calls": 1.44375,
+                "contributing_turns_total": 1072,
+                "trained": true,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.575,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.195,
+                "solution_equivalent_pass": 0.55,
+                "alternative_valid_solution_pass": 0.535,
+                "strict_fail_but_solution_equivalent_pass": 0.535,
+                "correct_answer_but_unsupported_trace": 0.015,
+                "final_answer_pass": 0.565
+              },
+              "dev_official_win": 0.515,
+              "dev_official": {
+                "f1_func": 0.86,
+                "f1_param": 0.446,
+                "partial_sequence_accuracy": 0.185,
+                "full_sequence_accuracy": 0.015
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 31,
+                "dead_group_rate": 0.8438,
+                "dead_group_rate_old_flattened": 0.7963,
+                "mixed_group_rate": 0.7788,
+                "all_zero_group_rate": 0.0,
+                "all_one_group_rate": 0.2213,
+                "position_artifact_rate": 0.0475,
+                "avg_unique_episode_rewards_per_group": 1.11,
+                "avg_unique_completions_per_group": 3.4975,
+                "avg_group_size": 8.0,
+                "mean_reward_overall": 0.5409,
+                "reward_value_entropy_bits": 1.753,
+                "distinct_reward_values": 10,
+                "reward_value_hist_top": [
+                  [
+                    0.3,
+                    3362
+                  ],
+                  [
+                    1.0,
+                    1717
+                  ],
+                  [
+                    0.6,
+                    943
+                  ],
+                  [
+                    0.2875,
+                    184
+                  ],
+                  [
+                    0.5813,
+                    126
+                  ],
+                  [
+                    0.95,
+                    33
+                  ],
+                  [
+                    0.35,
+                    16
+                  ],
+                  [
+                    0.5938,
+                    9
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.5553,
+                "no_tool_call_rate": 0.0009,
+                "parse_error_rate": 0.0013,
+                "wrong_tool_rate": 0.5569,
+                "wrong_arg_rate": 0.1684,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0,
+                "avg_predicted_calls": 1.4438,
+                "mean_kl": 0.001,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 325,
+                    "dead": 301,
+                    "mean_reward": 0.537,
+                    "dead_rate": 0.926
+                  },
+                  "boolean_output": {
+                    "groups": 128,
+                    "dead": 91,
+                    "mean_reward": 0.298,
+                    "dead_rate": 0.711
+                  },
+                  "long_chain": {
+                    "groups": 118,
+                    "dead": 86,
+                    "mean_reward": 0.805,
+                    "dead_rate": 0.729
+                  },
+                  "string_output": {
+                    "groups": 116,
+                    "dead": 116,
+                    "mean_reward": 0.3,
+                    "dead_rate": 1.0
+                  },
+                  "linear_dependency": {
+                    "groups": 56,
+                    "dead": 35,
+                    "mean_reward": 0.887,
+                    "dead_rate": 0.625
+                  },
+                  "reference_reuse": {
+                    "groups": 37,
+                    "dead": 32,
+                    "mean_reward": 0.649,
+                    "dead_rate": 0.865
+                  },
+                  "independent_calls": {
+                    "groups": 14,
+                    "dead": 9,
+                    "mean_reward": 0.825,
+                    "dead_rate": 0.643
+                  },
+                  "distractor_tools": {
+                    "groups": 6,
+                    "dead": 5,
+                    "mean_reward": 0.825,
+                    "dead_rate": 0.833
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": "20260708_212347_v3_1",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260708_212347_v3_1",
+      "config": {
+        "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+        "seed": 42,
+        "lora": {
+          "method": "qlora",
+          "lora_r": 16,
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "bnb_4bit_quant_type": "nf4"
+        },
+        "lr": 5e-07,
+        "kl_beta": 0.15,
+        "num_generations": 8,
+        "rollout_temperature": 1.0,
+        "rollout_top_p": 0.95,
+        "reward_train_policy": "execution_aware_v3_1_stepwise",
+        "train_jsonl": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260708_212347_v3_1/data_base/epoch_3_3call.jsonl",
+        "use_vllm": true,
+        "grad_accum": 4
+      },
+      "baseline_dev_internal_win": 0.635,
+      "baseline_dev_official_win": 0.565,
+      "baseline_dev_num_tasks": 200,
+      "has_validation_subset": true,
+      "data_base_provenance": {
+        "epoch_1_1call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_2_2call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_3_3call.jsonl": "curriculum_v3_1 (dataset A)",
+        "epoch_4_4call.jsonl": "curriculum_v3_1 (dataset A)"
+      },
+      "stages": [
+        {
+          "stage": "stage_3",
+          "epoch_summary": [
+            {
+              "stage": 3,
+              "epoch": 1,
+              "strict_gold_trace_pass": 0.052,
+              "react_win_rate": 0.545,
+              "early_stop_count": 0,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.004,
+              "checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260708_212347_v3_1/stage_3/checkpoints/adapter_epoch_1"
+            },
+            {
+              "stage": 3,
+              "epoch": 2,
+              "strict_gold_trace_pass": 0.04,
+              "react_win_rate": 0.535,
+              "early_stop_count": 1,
+              "fallback_used": false,
+              "clipped_completion_rate": 0.004,
+              "checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/20260708_212347_v3_1/stage_3/checkpoints/adapter_epoch_2"
+            }
+          ],
+          "stage_gate": {
+            "pass": false,
+            "hard_failures": [
+              "position_artifact_rate_lt_max"
+            ]
+          },
+          "epochs": [
+            {
+              "stage": "stage_3",
+              "epoch": "epoch_1",
+              "train_summary": {
+                "steps": 59,
+                "num_tasks": 800,
+                "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+                "reward_fn_module": "lib.reward_v3_1",
+                "reward_fn_name": "episode_turn_reward_seq",
+                "reward_fallback_used": false,
+                "dead_group_rate": 0.70875,
+                "position_artifact_group_rate": 0.4125,
+                "n_unique_reward_values": 17,
+                "no_tool_call_rate": 0.031875,
+                "too_few_calls_rate": 0.4178125,
+                "avg_predicted_calls": 2.18203125,
+                "contributing_turns_total": 3850,
+                "trained": true,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.605,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.19,
+                "solution_equivalent_pass": 0.55,
+                "alternative_valid_solution_pass": 0.535,
+                "strict_fail_but_solution_equivalent_pass": 0.535,
+                "correct_answer_but_unsupported_trace": 0.04,
+                "final_answer_pass": 0.59
+              },
+              "dev_official_win": 0.545,
+              "dev_official": {
+                "f1_func": 0.887,
+                "f1_param": 0.45,
+                "partial_sequence_accuracy": 0.187,
+                "full_sequence_accuracy": 0.015
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 58,
+                "dead_group_rate": 0.7087,
+                "dead_group_rate_old_flattened": 0.2963,
+                "mixed_group_rate": 0.9575,
+                "all_zero_group_rate": 0.0,
+                "all_one_group_rate": 0.0425,
+                "position_artifact_rate": 0.4125,
+                "avg_unique_episode_rewards_per_group": 1.2625,
+                "avg_unique_completions_per_group": 4.5187,
+                "avg_group_size": 8.0,
+                "mean_reward_overall": 0.4869,
+                "reward_value_entropy_bits": 2.011,
+                "distinct_reward_values": 11,
+                "reward_value_hist_top": [
+                  [
+                    0.6,
+                    2986
+                  ],
+                  [
+                    0.25,
+                    2013
+                  ],
+                  [
+                    1.0,
+                    606
+                  ],
+                  [
+                    0.3,
+                    340
+                  ],
+                  [
+                    0.0,
+                    214
+                  ],
+                  [
+                    0.225,
+                    80
+                  ],
+                  [
+                    0.5917,
+                    79
+                  ],
+                  [
+                    0.8667,
+                    29
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.4178,
+                "no_tool_call_rate": 0.0319,
+                "parse_error_rate": 0.0322,
+                "wrong_tool_rate": 0.3873,
+                "wrong_arg_rate": 0.4789,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0013,
+                "avg_predicted_calls": 2.182,
+                "mean_kl": 0.0044,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 244,
+                    "dead": 165,
+                    "mean_reward": 0.41,
+                    "dead_rate": 0.676
+                  },
+                  "long_chain": {
+                    "groups": 173,
+                    "dead": 112,
+                    "mean_reward": 0.563,
+                    "dead_rate": 0.647
+                  },
+                  "string_output": {
+                    "groups": 96,
+                    "dead": 78,
+                    "mean_reward": 0.237,
+                    "dead_rate": 0.812
+                  },
+                  "reference_reuse": {
+                    "groups": 67,
+                    "dead": 58,
+                    "mean_reward": 0.588,
+                    "dead_rate": 0.866
+                  },
+                  "linear_dependency": {
+                    "groups": 66,
+                    "dead": 45,
+                    "mean_reward": 0.736,
+                    "dead_rate": 0.682
+                  },
+                  "independent_calls": {
+                    "groups": 55,
+                    "dead": 28,
+                    "mean_reward": 0.627,
+                    "dead_rate": 0.509
+                  },
+                  "distractor_tools": {
+                    "groups": 51,
+                    "dead": 34,
+                    "mean_reward": 0.687,
+                    "dead_rate": 0.667
+                  },
+                  "boolean_output": {
+                    "groups": 48,
+                    "dead": 47,
+                    "mean_reward": 0.249,
+                    "dead_rate": 0.979
+                  }
+                }
+              }
+            },
+            {
+              "stage": "stage_3",
+              "epoch": "epoch_2",
+              "train_summary": {
+                "steps": 71,
+                "num_tasks": 800,
+                "reward_policy_resolved": "execution_aware_v3_1_stepwise",
+                "reward_fn_module": "lib.reward_v3_1",
+                "reward_fn_name": "episode_turn_reward_seq",
+                "reward_fallback_used": false,
+                "dead_group_rate": 0.64625,
+                "position_artifact_group_rate": 0.35125,
+                "n_unique_reward_values": 17,
+                "no_tool_call_rate": 0.0253125,
+                "too_few_calls_rate": 0.4140625,
+                "avg_predicted_calls": 2.19765625,
+                "contributing_turns_total": 5019,
+                "trained": true,
+                "vllm_rollout": true
+              },
+              "dev_internal_win": 0.595,
+              "dev_our_metrics": {
+                "strict_gold_trace_pass": 0.21,
+                "solution_equivalent_pass": 0.55,
+                "alternative_valid_solution_pass": 0.52,
+                "strict_fail_but_solution_equivalent_pass": 0.52,
+                "correct_answer_but_unsupported_trace": 0.035,
+                "final_answer_pass": 0.585
+              },
+              "dev_official_win": 0.535,
+              "dev_official": {
+                "f1_func": 0.906,
+                "f1_param": 0.457,
+                "partial_sequence_accuracy": 0.199,
+                "full_sequence_accuracy": 0.03
+              },
+              "train_log_analysis": {
+                "groups": 800,
+                "optimizer_steps": 70,
+                "dead_group_rate": 0.6462,
+                "dead_group_rate_old_flattened": 0.295,
+                "mixed_group_rate": 0.97,
+                "all_zero_group_rate": 0.0,
+                "all_one_group_rate": 0.03,
+                "position_artifact_rate": 0.3513,
+                "avg_unique_episode_rewards_per_group": 1.325,
+                "avg_unique_completions_per_group": 7.0637,
+                "avg_group_size": 8.0,
+                "mean_reward_overall": 0.4902,
+                "reward_value_entropy_bits": 1.991,
+                "distinct_reward_values": 11,
+                "reward_value_hist_top": [
+                  [
+                    0.6,
+                    3008
+                  ],
+                  [
+                    0.25,
+                    2022
+                  ],
+                  [
+                    1.0,
+                    607
+                  ],
+                  [
+                    0.3,
+                    350
+                  ],
+                  [
+                    0.0,
+                    173
+                  ],
+                  [
+                    0.5917,
+                    79
+                  ],
+                  [
+                    0.225,
+                    79
+                  ],
+                  [
+                    0.1333,
+                    26
+                  ]
+                ],
+                "episodes_total": 6400,
+                "too_few_calls_rate": 0.4141,
+                "no_tool_call_rate": 0.0253,
+                "parse_error_rate": 0.0259,
+                "wrong_tool_rate": 0.3898,
+                "wrong_arg_rate": 0.4823,
+                "invalid_ref_rate": 0.0,
+                "premature_final_rate": 0.0011,
+                "avg_predicted_calls": 2.1977,
+                "mean_kl": 0.084,
+                "motif_stats": {
+                  "unknown": {
+                    "groups": 244,
+                    "dead": 157,
+                    "mean_reward": 0.41,
+                    "dead_rate": 0.643
+                  },
+                  "long_chain": {
+                    "groups": 173,
+                    "dead": 97,
+                    "mean_reward": 0.571,
+                    "dead_rate": 0.561
+                  },
+                  "string_output": {
+                    "groups": 96,
+                    "dead": 72,
+                    "mean_reward": 0.237,
+                    "dead_rate": 0.75
+                  },
+                  "reference_reuse": {
+                    "groups": 67,
+                    "dead": 57,
+                    "mean_reward": 0.587,
+                    "dead_rate": 0.851
+                  },
+                  "linear_dependency": {
+                    "groups": 66,
+                    "dead": 36,
+                    "mean_reward": 0.736,
+                    "dead_rate": 0.545
+                  },
+                  "independent_calls": {
+                    "groups": 55,
+                    "dead": 21,
+                    "mean_reward": 0.631,
+                    "dead_rate": 0.382
+                  },
+                  "distractor_tools": {
+                    "groups": 51,
+                    "dead": 29,
+                    "mean_reward": 0.708,
+                    "dead_rate": 0.569
+                  },
+                  "boolean_output": {
+                    "groups": 48,
+                    "dead": 48,
+                    "mean_reward": 0.25,
+                    "dead_rate": 1.0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "final_eval_batches": {
+    "final_eval_all_runs_20260707_215620": {
+      "103035_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.6098871574422353,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.20526598602901666,
+          "solution_equivalent_pass": 0.5437936593229447,
+          "alternative_valid_solution_pass": 0.5271359484148307,
+          "strict_fail_but_solution_equivalent_pass": 0.5271359484148307,
+          "correct_answer_but_unsupported_trace": 0.052659860290166574,
+          "final_answer_pass": 0.5964535196131112
+        },
+        "official_win": null,
+        "official": null
+      },
+      "152750_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.6093498119290703,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.21278882321332618,
+          "solution_equivalent_pass": 0.5368081676518001,
+          "alternative_valid_solution_pass": 0.5142396560988716,
+          "strict_fail_but_solution_equivalent_pass": 0.5142396560988716,
+          "correct_answer_but_unsupported_trace": 0.060720042987641054,
+          "final_answer_pass": 0.5975282106394412
+        },
+        "official_win": null,
+        "official": null
+      },
+      "183801_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.61579795808705,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.21493820526598603,
+          "solution_equivalent_pass": 0.5486297689414293,
+          "alternative_valid_solution_pass": 0.5298226759806556,
+          "strict_fail_but_solution_equivalent_pass": 0.5298226759806556,
+          "correct_answer_but_unsupported_trace": 0.05373455131649651,
+          "final_answer_pass": 0.6023643202579259
+        },
+        "official_win": null,
+        "official": null
+      },
+      "baseline": {
+        "num_tasks": 1861,
+        "internal_win": 0.6104245029554003,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.2058033315421816,
+          "solution_equivalent_pass": 0.53895754970446,
+          "alternative_valid_solution_pass": 0.5217624932831811,
+          "strict_fail_but_solution_equivalent_pass": 0.5217624932831811,
+          "correct_answer_but_unsupported_trace": 0.05427189682966147,
+          "final_answer_pass": 0.5932294465341215
+        },
+        "official_win": null,
+        "official": null
+      }
+    },
+    "final_eval_all_runs_20260708_164607_temp0": {
+      "103035_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.5937667920472864,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.2063406770553466,
+          "solution_equivalent_pass": 0.5260612573885008,
+          "alternative_valid_solution_pass": 0.5045674368619022,
+          "strict_fail_but_solution_equivalent_pass": 0.5045674368619022,
+          "correct_answer_but_unsupported_trace": 0.04997313272434175,
+          "final_answer_pass": 0.5760343901128425
+        },
+        "official_win": null,
+        "official": null
+      },
+      "152750_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.6023643202579259,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.2106394411606663,
+          "solution_equivalent_pass": 0.53895754970446,
+          "alternative_valid_solution_pass": 0.5163890381515315,
+          "strict_fail_but_solution_equivalent_pass": 0.5163890381515315,
+          "correct_answer_but_unsupported_trace": 0.04782375067168189,
+          "final_answer_pass": 0.5867813003761418
+        },
+        "official_win": null,
+        "official": null
+      },
+      "183801_s2_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.6023643202579259,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.21010209564750135,
+          "solution_equivalent_pass": 0.5319720580333154,
+          "alternative_valid_solution_pass": 0.5110155830198818,
+          "strict_fail_but_solution_equivalent_pass": 0.5110155830198818,
+          "correct_answer_but_unsupported_trace": 0.05212251477700161,
+          "final_answer_pass": 0.5840945728103171
+        },
+        "official_win": null,
+        "official": null
+      },
+      "baseline": {
+        "num_tasks": 1861,
+        "internal_win": 0.5986029016657711,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.21117678667383127,
+          "solution_equivalent_pass": 0.5282106394411606,
+          "alternative_valid_solution_pass": 0.5061794734013971,
+          "strict_fail_but_solution_equivalent_pass": 0.5061794734013971,
+          "correct_answer_but_unsupported_trace": 0.053197205803331545,
+          "final_answer_pass": 0.5814078452444922
+        },
+        "official_win": null,
+        "official": null
+      }
+    },
+    "final_eval_stage3_e1e2_20260709_093453_temp0": {
+      "s3_e1": {
+        "num_tasks": 1861,
+        "internal_win": 0.6131112305212252,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.21440085975282105,
+          "solution_equivalent_pass": 0.5459430413756046,
+          "alternative_valid_solution_pass": 0.5244492208490059,
+          "strict_fail_but_solution_equivalent_pass": 0.5244492208490059,
+          "correct_answer_but_unsupported_trace": 0.05212251477700161,
+          "final_answer_pass": 0.5980655561526061
+        },
+        "official_win": 0.5437936593229447,
+        "official": {
+          "f1_func": 0.908,
+          "f1_param": 0.454,
+          "partial_sequence_accuracy": 0.189,
+          "full_sequence_accuracy": 0.024,
+          "num_examples": 1861,
+          "num_pred_parsing_errors": 0,
+          "win_rate": 0.5437936593229447,
+          "paradigm": "react"
+        }
+      },
+      "s3_e2": {
+        "num_tasks": 1861,
+        "internal_win": 0.6077377753895755,
+        "our_metrics": {
+          "strict_gold_trace_pass": 0.2106394411606663,
+          "solution_equivalent_pass": 0.5319720580333154,
+          "alternative_valid_solution_pass": 0.507791509940892,
+          "strict_fail_but_solution_equivalent_pass": 0.507791509940892,
+          "correct_answer_but_unsupported_trace": 0.05964535196131112,
+          "final_answer_pass": 0.5916174099946265
+        },
+        "official_win": 0.5368081676518001,
+        "official": {
+          "f1_func": 0.904,
+          "f1_param": 0.456,
+          "partial_sequence_accuracy": 0.191,
+          "full_sequence_accuracy": 0.027,
+          "num_examples": 1861,
+          "num_pred_parsing_errors": 0,
+          "win_rate": 0.5368081676518001,
+          "paradigm": "react"
+        }
+      }
+    }
+  }
+}

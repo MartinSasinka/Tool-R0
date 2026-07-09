@@ -89,6 +89,14 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--dry-run", action="store_true",
                     help="Build + mask + token-budget-check the dataset only; no model load, no training.")
     ap.add_argument("--max-train-examples", type=int, default=None, help="Debug: cap train set size.")
+    ap.add_argument(
+        "--hf-device-map",
+        default=os.environ.get("SFT_HF_DEVICE_MAP", "auto"),
+        help="Passed to load_model_and_tokenizer as hardware.hf_device_map. "
+             "Use '{\"\": 0}' (or SFT_HF_DEVICE_MAP='{\"\": 0}') to pin the "
+             "whole 4B QLoRA model on a single GPU; 'auto' shards across all "
+             "visible GPUs (model parallelism, not DDP).",
+    )
     return ap.parse_args()
 
 
@@ -152,6 +160,30 @@ def build_tokenized_dataset(
 # ---------------------------------------------------------------------------
 #  Collation
 # ---------------------------------------------------------------------------
+
+def _input_device(model) -> "torch.device":
+    """Device for batch tensors when the model uses device_map (multi-GPU shard)."""
+    import torch
+    if hasattr(model, "get_input_embeddings"):
+        return model.get_input_embeddings().weight.device
+    return next(p.device for p in model.parameters() if p.requires_grad)
+
+
+def _parse_hf_device_map(raw: str):
+    """Parse SFT_HF_DEVICE_MAP / --hf-device-map: auto | 0 | {\"\": 0}."""
+    s = (raw or "auto").strip()
+    if s == "auto":
+        return "auto"
+    if s.isdigit():
+        return {"": int(s)}
+    try:
+        parsed = json.loads(s)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+    return s
+
 
 def collate(batch: List[Dict[str, Any]], pad_token_id: int):
     import torch
@@ -222,13 +254,42 @@ def main() -> int:
     import torch
     from run import load_model_and_tokenizer  # nestful_mtgrpo_minimal/run.py
 
+    if not torch.cuda.is_available():
+        print("[sft-train] ERROR: CUDA is not available — this trainer requires a GPU.", file=sys.stderr)
+        return 1
+    if not args.no_4bit:
+        try:
+            import importlib.metadata as _imd
+            _imd.version("bitsandbytes")
+        except Exception:
+            print(
+                "[sft-train] ERROR: bitsandbytes is required for QLoRA (4-bit) but is not installed.\n"
+                "  pip install 'bitsandbytes>=0.43' 'peft>=0.12' 'accelerate>=0.33'\n"
+                "  or: bash experiments/nestful_mtgrpo_minimal/install_deps.sh",
+                file=sys.stderr,
+            )
+            return 1
+    try:
+        import peft  # noqa: F401
+    except ImportError:
+        print(
+            "[sft-train] ERROR: peft is not installed.\n"
+            "  pip install 'peft>=0.12' 'bitsandbytes>=0.43' 'accelerate>=0.33'",
+            file=sys.stderr,
+        )
+        return 1
+
+    hf_device_map = _parse_hf_device_map(args.hf_device_map)
+    n_gpus = torch.cuda.device_count()
+    print(f"[sft-train] cuda devices visible = {n_gpus}  hf_device_map = {hf_device_map!r}")
+
     config = {
         "model": {"base_model": args.base_model, "lora_adapter": None},
         "hardware": {
             "bf16": True,
             "load_in_4bit": not args.no_4bit,
             "gradient_checkpointing": True,
-            "hf_device_map": "auto",
+            "hf_device_map": hf_device_map,
             "use_flash_attention": False,
         },
         "finetuning": {
@@ -244,6 +305,8 @@ def main() -> int:
         },
     }
     model, tokenizer = load_model_and_tokenizer(config, checkpoint=args.resume_checkpoint, for_training=True)
+    input_device = _input_device(model)
+    print(f"[sft-train] input device (batch placement) = {input_device}")
 
     optimizer = torch.optim.AdamW(
         [p for p in model.parameters() if p.requires_grad], lr=args.lr,
@@ -265,7 +328,7 @@ def main() -> int:
             for i in range(0, len(idxs), max(1, args.batch_size)):
                 batch_idx = idxs[i:i + args.batch_size]
                 batch = collate([val_tok[j] for j in batch_idx], tokenizer.pad_token_id)
-                batch = {k: v.to(model.device) for k, v in batch.items()}
+                batch = {k: v.to(input_device) for k, v in batch.items()}
                 out = model(**batch)
                 losses.append(float(out.loss.item()))
         model.train()
@@ -291,7 +354,7 @@ def main() -> int:
         for i in range(0, len(order), max(1, args.batch_size)):
             batch_idx = order[i:i + args.batch_size]
             batch = collate([train_tok[j] for j in batch_idx], tokenizer.pad_token_id)
-            batch = {k: v.to(model.device) for k, v in batch.items()}
+            batch = {k: v.to(input_device) for k, v in batch.items()}
             out = model(**batch)
             loss = out.loss / args.grad_accum
             loss.backward()
