@@ -24,7 +24,8 @@ V3 = os.path.join(REPO, "experiments", "nestful_synthetic_curriculum_v3")
 MINIMAL = os.path.join(REPO, "experiments", "nestful_mtgrpo_minimal")
 
 A_DIR = os.path.join(V3, "outputs", "curriculum_v3_1", "filtered")
-B_DIR = os.path.join(MINIMAL, "data", "filtered_toolr0_synthetic")
+# Dataset B was archived by cleanup Phase K (originally nestful_mtgrpo_minimal/data/).
+B_DIR = os.path.join(V3, "archive", "legacy_dataset_B_filtered_toolr0_synthetic")
 SPLITS = os.path.join(MINIMAL, "data", "splits")
 NESTFUL_FULL = os.path.join(MINIMAL, "data", "NESTFUL-main", "data_v2", "nestful_data.jsonl")
 

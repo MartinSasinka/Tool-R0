@@ -56,6 +56,35 @@ EXIT_NO_BASELINE = 2
 EXIT_LEGACY_DATASET = 3
 EXIT_MISSING_OFFICIAL = 4
 EXIT_CELL_FAILED = 5
+EXIT_PREFLIGHT = 6
+
+IBM_FUNCS_DIR = os.path.join(MINIMAL_ROOT, "data", "NESTFUL-main", "data_v2",
+                             "executable_functions")
+
+
+def preflight_official_scorer() -> List[str]:
+    """Check official-scorer prerequisites BEFORE any GPU job is launched.
+
+    Returns a list of human-readable problems (empty = OK). Covers the failure
+    modes that historically produced batches without official scores:
+    missing python deps (jsonlines/sklearn) and a missing IBM
+    executable-functions dir.
+    """
+    problems: List[str] = []
+    import importlib.util
+    for mod in ("jsonlines", "sklearn"):
+        if importlib.util.find_spec(mod) is None:
+            problems.append(f"python package '{mod}' is not installed "
+                            "(required by the official NESTFUL scorer)")
+    ibm_dir = os.environ.get("NESTFUL_REPO_DIR") or IBM_FUNCS_DIR
+    if not (os.path.isfile(os.path.join(ibm_dir, "func_file_map.json"))
+            and os.path.isfile(os.path.join(ibm_dir, "basic_functions.py"))):
+        problems.append(f"IBM executable-functions dir not found/incomplete: {ibm_dir} "
+                        "(official win rate cannot be computed)")
+    if os.name == "nt":
+        problems.append("running on Windows: run.py skips the official Win computation "
+                        "on this platform — run eval batches on the Linux pod")
+    return problems
 
 
 # ---------------------------------------------------------------------------
@@ -127,6 +156,49 @@ def run_cell(cmd: List[str], log_path: str) -> int:
             sys.stdout.write(line)
             log.write(line)
         return proc.wait()
+
+
+def run_cells_parallel(commands, batch_dir: str, gpus: List[str],
+                       max_parallel: int) -> List[tuple]:
+    """Run cells concurrently, one cell per GPU (CUDA_VISIBLE_DEVICES pinning).
+
+    Returns a list of (cell_name, returncode, log_path) failures (empty = OK).
+    Cell stdout goes to per-cell logs only; progress lines go to the console.
+    """
+    import time
+    pending = list(commands)
+    running: Dict[int, tuple] = {}
+    failures: List[tuple] = []
+    gpu_free = list(gpus)
+
+    while pending or running:
+        while pending and gpu_free and len(running) < max_parallel:
+            c, cell_dir, cmd = pending.pop(0)
+            gpu = gpu_free.pop(0)
+            os.makedirs(cell_dir, exist_ok=True)
+            log_path = os.path.join(batch_dir, f"{c['name']}.log")
+            env = dict(os.environ)
+            env["CUDA_VISIBLE_DEVICES"] = gpu
+            log_f = open(log_path, "w", encoding="utf-8")
+            proc = subprocess.Popen(cmd, cwd=REPO_ROOT, stdout=log_f,
+                                    stderr=subprocess.STDOUT, env=env)
+            print(f"[eval-batch] launched cell '{c['name']}' on GPU {gpu} "
+                  f"(pid={proc.pid}, log={os.path.relpath(log_path, REPO_ROOT)})",
+                  flush=True)
+            running[proc.pid] = (proc, c, gpu, log_f, log_path)
+        time.sleep(5)
+        for pid in [p for p, (proc, *_r) in running.items() if proc.poll() is not None]:
+            proc, c, gpu, log_f, log_path = running.pop(pid)
+            log_f.close()
+            gpu_free.append(gpu)
+            if proc.returncode != 0:
+                failures.append((c["name"], proc.returncode, log_path))
+                print(f"[eval-batch] cell '{c['name']}' FAILED rc={proc.returncode} "
+                      f"(log: {log_path})", flush=True)
+            else:
+                print(f"[eval-batch] cell '{c['name']}' finished OK (GPU {gpu} freed)",
+                      flush=True)
+    return failures
 
 
 # ---------------------------------------------------------------------------
@@ -303,6 +375,12 @@ def main() -> int:
                     help="EXPLICIT escape hatch; the report is stamped as non-comparable")
     ap.add_argument("--allow-legacy-dataset", action="store_true",
                     help="EXPLICIT escape hatch for legacy dataset B paths")
+    ap.add_argument("--parallel", action="store_true",
+                    help="run cells concurrently, one per GPU (see --gpus)")
+    ap.add_argument("--gpus", default="0",
+                    help="comma list of GPU ids for --parallel, e.g. '0,1,2,3'")
+    ap.add_argument("--max-parallel", type=int, default=None,
+                    help="cap on concurrent cells (default: number of --gpus)")
     ap.add_argument("--dry-run", action="store_true", help="print resolved commands, run nothing")
     ap.add_argument("--report-only", metavar="BATCH_DIR",
                     help="skip execution; (re)build unified metrics + BATCH_REPORT.md from an "
@@ -385,13 +463,36 @@ def main() -> int:
             seed=args.seed, use_vllm=not args.no_vllm, max_tasks=args.max_tasks)
         commands.append((c, cell_dir, cmd))
 
+    gpus = [g.strip() for g in args.gpus.split(",") if g.strip()]
+    max_parallel = args.max_parallel or len(gpus)
+    if args.parallel:
+        print(f"[eval-batch] parallel       : one cell per GPU {gpus} "
+              f"(max {max_parallel} concurrent)")
+
     if args.dry_run:
-        print("[eval-batch] DRY RUN — commands that would execute (in order):")
-        for c, cell_dir, cmd in commands:
-            print(f"\n# cell: {c['name']}  ->  {cell_dir}")
+        print("[eval-batch] DRY RUN — commands that would execute "
+              + ("(parallel, one per GPU):" if args.parallel else "(in order):"))
+        for i, (c, cell_dir, cmd) in enumerate(commands):
+            gpu_note = f"  [CUDA_VISIBLE_DEVICES={gpus[i % len(gpus)]}]" if args.parallel else ""
+            print(f"\n# cell: {c['name']}  ->  {cell_dir}{gpu_note}")
             print("  " + " ".join(shlex.quote(x) for x in cmd))
+        pf = preflight_official_scorer()
+        if pf:
+            print("\n[eval-batch] NOTE: official-scorer preflight would FAIL here:")
+            for p in pf:
+                print(f"  - {p}")
         print("\n[eval-batch] dry run complete; nothing executed.")
         return 0
+
+    # Official-scorer preflight BEFORE any model/GPU work: a batch whose cells
+    # cannot be officially scored is invalid, so refuse to start it.
+    problems = preflight_official_scorer()
+    if problems:
+        print("[eval-batch] ERROR: official-scorer preflight failed — refusing to "
+              "launch model jobs that could not be scored:", file=sys.stderr)
+        for p in problems:
+            print(f"  - {p}", file=sys.stderr)
+        return EXIT_PREFLIGHT
 
     os.makedirs(batch_dir, exist_ok=True)
     manifest = build_manifest(
@@ -408,20 +509,35 @@ def main() -> int:
     write_manifest(manifest, os.path.join(batch_dir, "manifest.json"))
     print(f"[eval-batch] manifest       : {os.path.join(batch_dir, 'manifest.json')}")
 
-    for c, cell_dir, cmd in commands:
-        os.makedirs(cell_dir, exist_ok=True)
-        log_path = os.path.join(batch_dir, f"{c['name']}.log")
-        print(f"\n[eval-batch] === cell {c['name']} ===")
-        rc = run_cell(cmd, log_path)
-        if rc != 0:
-            print(f"[eval-batch] ERROR: cell '{c['name']}' exited with {rc} "
-                  f"(log: {log_path})", file=sys.stderr)
+    if args.parallel:
+        failures = run_cells_parallel(commands, batch_dir, gpus, max_parallel)
+        if failures:
+            print(f"[eval-batch] ERROR: {len(failures)} cell(s) failed: "
+                  f"{[(n, rc) for n, rc, _ in failures]}. The WHOLE batch is invalid — "
+                  "no report will be generated.", file=sys.stderr)
             return EXIT_CELL_FAILED
-        if not os.path.isfile(os.path.join(cell_dir, "metrics_official.json")):
-            print(f"[eval-batch] ERROR: cell '{c['name']}' finished but produced no "
-                  "metrics_official.json — official scorer did not run. Batch is invalid.",
-                  file=sys.stderr)
+        missing = [c["name"] for c, cell_dir, _ in commands
+                   if not os.path.isfile(os.path.join(cell_dir, "metrics_official.json"))]
+        if missing:
+            print(f"[eval-batch] ERROR: cells finished but produced no "
+                  f"metrics_official.json: {missing} — official scorer did not run. "
+                  "Batch is invalid.", file=sys.stderr)
             return EXIT_MISSING_OFFICIAL
+    else:
+        for c, cell_dir, cmd in commands:
+            os.makedirs(cell_dir, exist_ok=True)
+            log_path = os.path.join(batch_dir, f"{c['name']}.log")
+            print(f"\n[eval-batch] === cell {c['name']} ===")
+            rc = run_cell(cmd, log_path)
+            if rc != 0:
+                print(f"[eval-batch] ERROR: cell '{c['name']}' exited with {rc} "
+                      f"(log: {log_path})", file=sys.stderr)
+                return EXIT_CELL_FAILED
+            if not os.path.isfile(os.path.join(cell_dir, "metrics_official.json")):
+                print(f"[eval-batch] ERROR: cell '{c['name']}' finished but produced no "
+                      "metrics_official.json — official scorer did not run. Batch is invalid.",
+                      file=sys.stderr)
+                return EXIT_MISSING_OFFICIAL
 
     ds_info = dataset_info(dataset_path)
     return finalize_batch(batch_dir, cells, baseline_cell=args.baseline_cell,

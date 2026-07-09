@@ -49,7 +49,35 @@ See `docs/TRAINING.md`. Reminders: probe a stage before training it (once the P1
 lands); Stage 1 is saturated — skip it; always set `CURRICULUM_VERSION=v3_1`; never rely on
 `config.yaml` dataset defaults (legacy B).
 
-## 5. What must never be committed
+## 5. Agentic data generation (OpenRouter)
+
+Full guide: `docs/AGENTIC_DATA_GENERATION.md`. Quick reference:
+
+```bash
+export OPENROUTER_API_KEY="..."   # env only; never hardcode, never print
+
+# offline smoke (no API cost) / dry-run
+MOCK=1  bash experiments/nestful_synthetic_curriculum_v3/scripts/data/build_v4_agentic_openrouter_pilot.sh
+DRY_RUN=1 bash experiments/nestful_synthetic_curriculum_v3/scripts/data/build_v4_agentic_openrouter_pilot.sh
+
+# tiny pilot (10/stage, <=200 requests, <=$5) + automatic scoring
+MAX_ACCEPTED_PER_STAGE=10 OPENROUTER_MAX_REQUESTS=200 OPENROUTER_MAX_SPEND_USD=5 \
+  bash experiments/nestful_synthetic_curriculum_v3/scripts/data/build_v4_agentic_openrouter_pilot.sh
+
+# score any corpus dir
+bash experiments/nestful_synthetic_curriculum_v3/scripts/data/score_v4_agentic_dataset.sh
+
+# full generation (real cost; only after pilot + scoring + stage probe pass)
+CONFIRM_FULL_AGENTIC_GENERATION=1 \
+  bash experiments/nestful_synthetic_curriculum_v3/scripts/data/build_v4_agentic_openrouter_full.sh
+```
+
+Budgets (`OPENROUTER_MAX_REQUESTS` / `OPENROUTER_MAX_SPEND_USD` /
+`OPENROUTER_MAX_ACCEPTED_PER_STAGE`) stop generation early with partial
+outputs. After a pilot: read `reports/DATASET_QUALITY.md`, then run the stage
+probe (§4 / TRAINING.md) before considering any training.
+
+## 6. What must never be committed
 
 Enforced by `.gitignore` (this folder + repo root); the policy:
 
@@ -62,7 +90,7 @@ Committable: `metrics*.json`, `metrics_unified.json`, `manifest.json`, `BATCH_RE
 `config_used.yaml`, small summary JSON/MD, gate reports. If `git status` shows a safetensors
 or trajectories file, stop and fix the ignore rules instead of committing.
 
-## 6. Archiving old artifacts (P3 — not yet executed)
+## 7. Archiving old artifacts (P3 — not yet executed)
 
 Rules: **never delete** — `git mv` into `archive/` with an entry in `archive/README.md`
 (old path → new path → reason). Batch the moves in one reviewed commit. Before moving
@@ -70,7 +98,7 @@ anything, repo-wide grep for the path (pod launchers and reports may reference i
 re-dry-run every launcher afterwards. Planned moves are listed in `audits/CLEANUP_PLAN.md`
 §2 (dataset B, `curriculum_v3/`, July-2/3 runs, stale pilot reports, run-id typo rename).
 
-## 7. Claiming an improvement (checklist)
+## 8. Claiming an improvement (checklist)
 
 1. Same-batch baseline cell — in the SAME `BATCH_REPORT.md` table.
 2. `official_nestful_win_rate`, temp0, full dataset (no `--max-tasks`).

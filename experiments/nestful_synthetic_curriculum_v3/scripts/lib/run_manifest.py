@@ -58,6 +58,22 @@ def _version_of(module: str) -> Optional[str]:
         return None
 
 
+def _gpu_info() -> Dict[str, Any]:
+    """Best-effort GPU inventory via nvidia-smi (no torch import needed)."""
+    try:
+        out = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+            capture_output=True, text=True, timeout=15)
+        if out.returncode == 0:
+            gpus = [line.strip() for line in out.stdout.splitlines() if line.strip()]
+            return {"count": len(gpus), "gpus": gpus,
+                    "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES")}
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    return {"count": 0, "gpus": [],
+            "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES")}
+
+
 def config_hash(config_path: str) -> Optional[str]:
     if not config_path or not os.path.isfile(config_path):
         return None
@@ -99,6 +115,9 @@ def build_manifest(
             "vllm": _version_of("vllm"),
             "transformers": _version_of("transformers"),
             "peft": _version_of("peft"),
+            "gpu": _gpu_info(),
+            "wandb_run_id": os.environ.get("WANDB_RUN_ID") or None,
+            "wandb_mode": os.environ.get("WANDB_MODE") or None,
         },
     }
     if extra:
@@ -121,11 +140,15 @@ def main() -> int:
     ap.add_argument("--dataset", action="append", default=[])
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--decoding", default=None, help="JSON string, e.g. '{\"temperature\":0.0}'")
+    ap.add_argument("--extra", default=None,
+                    help="JSON string merged into manifest['extra'] "
+                         "(e.g. reward/topology/init adapter for training wrappers)")
     args = ap.parse_args()
 
     decoding = json.loads(args.decoding) if args.decoding else None
+    extra = json.loads(args.extra) if args.extra else None
     m = build_manifest(kind=args.kind, config_path=args.config, datasets=args.dataset,
-                       seed=args.seed, decoding=decoding)
+                       seed=args.seed, decoding=decoding, extra=extra)
     path = write_manifest(m, args.out)
     print(f"[run_manifest] wrote {path} (commit={m['git']['commit']}, dirty={m['git']['dirty']})")
     return 0

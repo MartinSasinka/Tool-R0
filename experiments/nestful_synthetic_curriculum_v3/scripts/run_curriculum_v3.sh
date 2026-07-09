@@ -16,7 +16,9 @@ MINIMAL="$REPO/experiments/nestful_mtgrpo_minimal"
 PARTIAL="$REPO/experiments/nestful_mtgrpo_partial"
 PYTHON="${PYTHON:-python}"
 
-CURRICULUM_VERSION="${CURRICULUM_VERSION:-v3}"
+# Default is the CANONICAL v3.1 corpus (cleanup Phase K). The pre-v3.1 corpus
+# was archived to archive/curriculum_v3/ and now requires an explicit opt-in.
+CURRICULUM_VERSION="${CURRICULUM_VERSION:-v3_1}"
 CURRICULUM_VERSION="${CURRICULUM_VERSION,,}"
 CURRICULUM_VERSION="${CURRICULUM_VERSION//-/_}"
 
@@ -39,7 +41,15 @@ if [ "$CURRICULUM_VERSION" = "v3_1" ] || [ "$CURRICULUM_VERSION" = "v31" ]; then
   REPLAY_S3="${CURRICULUM_REPLAY_WEIGHTS_S3:-0.25}"
   REPLAY_S4="${CURRICULUM_REPLAY_WEIGHTS_S4:-0.30}"
 else
-  CURR="$V3/outputs/curriculum_v3"
+  # LEGACY corpus (pre-v3.1), archived by cleanup Phase K. Kept runnable only
+  # for reproducing the July-2 pilot; requires an explicit opt-in.
+  if [ "${ALLOW_LEGACY_CURRICULUM_V3:-0}" != "1" ]; then
+    echo "[curriculum] ABORT: CURRICULUM_VERSION=v3 selects the ARCHIVED pre-v3.1 corpus" >&2
+    echo "  (archive/curriculum_v3). Use CURRICULUM_VERSION=v3_1 (canonical), or set" >&2
+    echo "  ALLOW_LEGACY_CURRICULUM_V3=1 to run the legacy corpus explicitly." >&2
+    exit 1
+  fi
+  CURR="$V3/archive/curriculum_v3"
   CURR_RAW="$CURR"
   MANIFEST="$CURR/curriculum_manifest.json"
   PREFLIGHT_VERSION="v3"
@@ -81,7 +91,8 @@ if [ "$CURRICULUM_VERSION" = "v3_1" ] || [ "$CURRICULUM_VERSION" = "v31" ]; then
     PREFLIGHT_ARGS+=(--prototype-only)
   fi
   "$PYTHON" "$V3/scripts/run_preflight_gates.py" "${PREFLIGHT_ARGS[@]}"
-  PREFLIGHT_STATUS="$( "$PYTHON" -c "import json; print(json.load(open('$CURR_RAW/preflight_gates_summary.json'))['status'])" )"
+  # stdin redirect (not open(path)) so MSYS-style /c/... paths work on Windows
+  PREFLIGHT_STATUS="$( "$PYTHON" -c "import json,sys; print(json.load(sys.stdin)['status'])" < "$CURR_RAW/preflight_gates_summary.json" )"
 else
   "$PYTHON" "$V3/scripts/validate_synthetic_tasks.py" --input "$CURR"
   "$PYTHON" "$V3/scripts/run_distribution_audit.py" || true
@@ -190,6 +201,24 @@ _link_stage_file() {
   local stage_file="$1" link_name="$2"
   local target="$CURR/$stage_file"
   local link="$DATA_BASE/$link_name"
+  # Optional per-stage dataset override (absolute JSONL path), e.g. a probe-
+  # filtered signal-positive file: STAGE2_FILE_OVERRIDE=/path/to/filtered.jsonl.
+  local stage_n="${link_name#epoch_}"; stage_n="${stage_n%%_*}"
+  local override_var="STAGE${stage_n}_FILE_OVERRIDE"
+  local override_val="${!override_var:-}"
+  if [ -n "$override_val" ]; then
+    if [ ! -f "$override_val" ]; then
+      echo "[curriculum] ERROR: $override_var=$override_val does not exist" >&2
+      exit 1
+    fi
+    case "$override_val" in
+      *filtered_toolr0_synthetic*)
+        echo "[curriculum] ERROR: $override_var points into LEGACY dataset B" >&2
+        exit 1;;
+    esac
+    echo "[curriculum] stage $stage_n dataset OVERRIDE: $override_val"
+    target="$override_val"
+  fi
   if [ ! -f "$target" ]; then
     target="$CURR_RAW/$stage_file"
   fi
@@ -197,9 +226,11 @@ _link_stage_file() {
     echo "[curriculum] ERROR: missing $stage_file in $CURR or $CURR_RAW" >&2
     exit 1
   fi
-  ln -sf "$target" "$link"
+  # Symlink on the pod; plain copy where symlinks are unavailable (Windows
+  # Git Bash dry-runs) so DRY_RUN=1 works on any platform.
+  ln -sf "$target" "$link" 2>/dev/null || cp "$target" "$link"
   if [ ! -f "$link" ]; then
-    echo "[curriculum] ERROR: symlink failed $link -> $target" >&2
+    echo "[curriculum] ERROR: could not stage $link -> $target" >&2
     exit 1
   fi
 }

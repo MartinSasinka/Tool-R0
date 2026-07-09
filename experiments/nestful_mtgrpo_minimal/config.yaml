@@ -8,10 +8,20 @@ experiment:
   output_dir: outputs
 
 paths:
-  train_jsonl: data/filtered_toolr0_synthetic/epoch_3_3call.jsonl
-  eval_jsonl: data/filtered_toolr0_synthetic/epoch_4_4call.jsonl
-  all_stages_jsonl: data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl
-  # Stage files: data/filtered_toolr0_synthetic/epoch_N_Ncall.jsonl  (N=1..6)
+  # ============================ WARNING ====================================
+  # The historical defaults here pointed at LEGACY dataset B
+  # (data/filtered_toolr0_synthetic — see nestful_synthetic_curriculum_v3/
+  # audits/DATASET_AUDIT.md: ~4% unresolved $var$ gold answers, misleading
+  # file names). Dataset B was ARCHIVED by cleanup Phase K to:
+  #   nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic/
+  # `run.py --mode train` REFUSES any filtered_toolr0_synthetic path unless
+  # ALLOW_LEGACY_DATASET_B=1 is set. Defaults now point at the CANONICAL
+  # curriculum v3.1 (launchers normally override these explicitly).
+  # =========================================================================
+  train_jsonl: ../nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage3_3call_composition.jsonl
+  eval_jsonl: ../nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage4_4to6call_persistence.jsonl
+  all_stages_jsonl: null
+  # Canonical stage files: ../nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage{1..4}_*.jsonl
   full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
   ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
 

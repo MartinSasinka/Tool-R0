@@ -56,6 +56,16 @@ def _patch_v3_1_reward():
           flush=True)
 
 
+def _patch_v3_2_reward():
+    import grpo_train
+    from lib import reward_v3_2_dense
+
+    grpo_train.episode_turn_reward_seq = reward_v3_2_dense.episode_turn_reward_seq
+    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = "
+          "lib.reward_v3_2_dense.episode_turn_reward_seq (execution_aware_v3_2_dense)",
+          flush=True)
+
+
 def _hook_select_train_reward():
     orig = _partial._select_train_reward
 
@@ -71,6 +81,16 @@ def _hook_select_train_reward():
             _patch_motif_reward()
             config.setdefault("reward", {})["train_policy"] = "execution_aware_v2_1_motif"
             print("[v3/run.py] training reward = execution_aware_v2_1_motif", flush=True)
+            return
+
+        # v3.2 dense must be matched BEFORE the v3.1 branch: the v3.1 branch
+        # also catches on CURRICULUM_VERSION alone and would shadow it.
+        if explicit == "execution_aware_v3_2_dense" or policy in (
+            "execution_aware_v3_2_dense", "v3_2_dense", "dense",
+        ):
+            _patch_v3_2_reward()
+            config.setdefault("reward", {})["train_policy"] = "execution_aware_v3_2_dense"
+            print("[v3/run.py] training reward = execution_aware_v3_2_dense", flush=True)
             return
 
         if explicit == "execution_aware_v3_1_stepwise" or policy in (

@@ -48,7 +48,9 @@ from typing import Any, Dict, List, Optional, Tuple
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.abspath(os.path.join(_HERE, "..", ".."))
 _MIN = os.path.join(_REPO, "experiments", "nestful_mtgrpo_minimal")
-_DEFAULT_IN = os.path.join(_MIN, "data", "filtered_toolr0_synthetic")
+# Legacy dataset B was archived by cleanup Phase K (nestful_synthetic_curriculum_v3).
+_DEFAULT_IN = os.path.join(_REPO, "experiments", "nestful_synthetic_curriculum_v3",
+                           "archive", "legacy_dataset_B_filtered_toolr0_synthetic")
 _DEFAULT_OUT = os.path.join(_MIN, "data", "clean_curriculum")
 
 for _p in (_MIN, _REPO):

@@ -43,7 +43,9 @@ def main() -> int:
     syn_base = args.synthetic_dir
     if syn_base is None:
         clean = repo_root() / "experiments/nestful_mtgrpo_minimal/data/clean_curriculum"
-        filt = repo_root() / "experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic"
+        # legacy dataset B fallback, archived by cleanup Phase K
+        filt = (repo_root() / "experiments/nestful_synthetic_curriculum_v3/archive"
+                / "legacy_dataset_B_filtered_toolr0_synthetic")
         syn_base = clean if clean.is_dir() else filt
 
     nestful_path = args.nestful or default_nestful_path()

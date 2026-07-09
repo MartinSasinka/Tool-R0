@@ -24,7 +24,7 @@ echo "--- python deps (training/eval stack) ---"
 python - <<'PY'
 import importlib.util
 for mod in ("torch", "transformers", "peft", "bitsandbytes", "vllm", "yaml",
-            "datasets", "sklearn", "wandb"):
+            "datasets", "sklearn", "wandb", "jsonlines"):
     spec = importlib.util.find_spec(mod)
     ver = "?"
     if spec:
@@ -60,7 +60,8 @@ echo
 
 echo "--- legacy dataset-B footgun (audits/DATASET_AUDIT.md) ---"
 for cfg in "$MIN/config.yaml" "experiments/nestful_mtgrpo_partial/config.yaml"; do
-  if [ -f "$cfg" ] && grep -q "filtered_toolr0_synthetic" "$cfg"; then
+  # only NON-comment lines count (warning comments about legacy B are fine)
+  if [ -f "$cfg" ] && grep -q "^[^#]*filtered_toolr0_synthetic" "$cfg"; then
     echo "  WARNING: $cfg still defaults to LEGACY dataset B (filtered_toolr0_synthetic)."
     echo "           Do not rely on its defaults; pass explicit --override paths."
   else

@@ -131,6 +131,10 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
         _ensure_v3_experiment_on_path()
         from lib import reward_v3_1
         fn = reward_v3_1.episode_turn_reward_seq
+    elif policy in ("execution_aware_v3_2_dense", "v3_2_dense", "dense"):
+        _ensure_v3_experiment_on_path()
+        from lib import reward_v3_2_dense
+        fn = reward_v3_2_dense.episode_turn_reward_seq
     elif policy in _STRICT_POLICY_ALIASES:
         from reward import episode_turn_reward_seq as strict_seq
         fn = strict_seq
@@ -147,7 +151,7 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
                 f"[reward_dispatch] Unknown reward policy '{configured}'. "
                 f"Known: partial_gold_trace, execution_aware_v2, partial_gold_trace_v2, "
                 f"execution_aware, execution_aware_v2_1_motif, "
-                f"execution_aware_v3_1_stepwise, strict. "
+                f"execution_aware_v3_1_stepwise, execution_aware_v3_2_dense, strict. "
                 f"Refusing to silently fall back to the strict binary reward "
                 f"(set ALLOW_STRICT_REWARD_FALLBACK=1 to override — NOT recommended)."
             )

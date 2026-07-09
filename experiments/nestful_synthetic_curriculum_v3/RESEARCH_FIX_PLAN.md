@@ -117,6 +117,35 @@ before it is trusted to gate anything else.
   is capability (model scale / reasoning), not data — a scaling or teacher-distillation
   question, and the curriculum line of work should be reported as negative.
 
+## E5b — Agentic (Autodata-style) NESTFUL-like curriculum via OpenRouter
+
+- **Hypothesis:** LLM-composed tasks filtered by weak-fail/strong-pass are harder
+  and more discriminative than template-generated v4, concentrating training
+  signal exactly where the (weak-solver-like) policy fails — per Autodata /
+  Agentic Self-Instruct (arXiv:2606.25996), where the agentic loop lowered
+  weak-solver scores by 22 pts while raising strong-solver scores.
+- **Mechanism:** challenger LLM proposes tasks over the same executable tool
+  registry as deterministic v4; a deterministic executor computes gold answers
+  (LLM answers never trusted); acceptance requires weak solver ≤ 0.50,
+  strong solver ≥ 0.80, gap ≥ 0.25; the challenger recipe is revised from
+  batch-level rejection analysis.
+- **Dataset:** `data/curriculum_v4_nestful_like_agentic_openrouter/` (mirrors
+  deterministic v4 per-stage counts). Contamination: challenger never sees
+  NESTFUL items; `aggregate_style_only` tool policy; zero-overlap gate per
+  candidate + final corpus. Pipeline: `docs/AGENTIC_DATA_GENERATION.md`.
+- **Reward:** best policy from E1. **Initialization:** best pipeline from E3.
+- **Metrics:** `score_dataset_quality.py` (validity / contamination /
+  distribution distance / solver gap), stage probe vs v3.1 stage2 (dead-group
+  rate, unique rewards/group), then standard same-batch eval after training.
+- **Success criteria:** probe signal better than v3.1 AND (after training)
+  paired official win over both base and the v3.1-trained model in one batch;
+  weak-fail/strong-pass examples must dominate the accepted set.
+- **Failure interpretation:** if solver-gap filtering accepts too few examples
+  (acceptance rate < 2 %), the challenger/model pairing is miscalibrated —
+  revise recipe or models before spending more budget. If the probe is good
+  but transfer still fails, same interpretation as E5 (capability gap, not
+  data), and the LLM-generation cost is not justified.
+
 ## Decision flow
 
 ```

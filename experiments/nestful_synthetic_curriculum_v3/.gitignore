@@ -35,6 +35,15 @@ outputs/evals/**
 !outputs/evals/**/metrics_unified.json
 !outputs/evals/**/manifest.json
 
+# Archived pre-v3.1 run dirs (moved from outputs/runs by cleanup Phase K):
+# same policy as outputs/runs — heavy per-run artifacts never enter git.
+archive/runs_pre_v3_1/
+
+# Agentic OpenRouter dataset: raw LLM responses + prompt cache are heavy and
+# reproducible from the cache/manifest; mock smoke outputs are never data.
+data/curriculum_v4_nestful_like_agentic_openrouter/raw/
+data/curriculum_v4_nestful_like_agentic_openrouter_mock/
+
 # Local scratch
 __pycache__/
 *.pyc

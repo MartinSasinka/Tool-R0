@@ -1,0 +1,143 @@
+{
+  "manifest_version": 1,
+  "kind": "curriculum_v4_nestful_like",
+  "created_utc": "2026-07-09T17:19:42.444024+00:00",
+  "git": {
+    "commit": "9e426429e76fb6eb65bcb1087bee5441c8e9d46f",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v4_nestful_like.py",
+    "--examples-per-stage",
+    "800"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [
+    {
+      "name": "v4_stage1_2call.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage1_2call.jsonl",
+      "sha256": "b69420ec23bdb32c6f137365c17bdeb6322f4eaa01d54eff296a856559498972",
+      "n_rows": 800
+    },
+    {
+      "name": "v4_stage2_3call.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage2_3call.jsonl",
+      "sha256": "4db02c0ed79b662c1ab180f2c8e1cedc07ab4ba98aa03a84ef27c996c32c8495",
+      "n_rows": 800
+    },
+    {
+      "name": "v4_stage3_4call.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage3_4call.jsonl",
+      "sha256": "e67ba248e52ad893ecef3ae1018f12117a909e242bfa8737aff973aea9a0ae9c",
+      "n_rows": 800
+    },
+    {
+      "name": "v4_stage4_5to6call.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage4_5to6call.jsonl",
+      "sha256": "50d02bd521e6294bf2fd4c536cac1f6cbb13318551017db32f0de7ec8d9bd61d",
+      "n_rows": 800
+    }
+  ],
+  "seed": 42,
+  "decoding": {},
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.5.1",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null,
+    "gpu": {
+      "count": 1,
+      "gpus": [
+        "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "generator_version": "v4.0",
+    "provenance": {
+      "generator": "nestful_like_generator.py",
+      "generator_version": "v4.0",
+      "nestful_sources_used": [
+        "AGGREGATE ONLY: call-count distribution, offered-tools-per-task range, tool/parameter naming style, $varN.output_key$ reference convention (observed on experiments/nestful_mtgrpo_minimal/data/splits/*.jsonl)."
+      ],
+      "nestful_content_copied": "NONE (no questions, no gold traces, no tool schemas)"
+    },
+    "examples_per_stage": 800,
+    "pilot": false,
+    "stages": {
+      "v4_stage1_2call": {
+        "name": "v4_stage1_2call.jsonl",
+        "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage1_2call.jsonl",
+        "sha256": "b69420ec23bdb32c6f137365c17bdeb6322f4eaa01d54eff296a856559498972",
+        "n_rows": 800
+      },
+      "v4_stage2_3call": {
+        "name": "v4_stage2_3call.jsonl",
+        "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage2_3call.jsonl",
+        "sha256": "4db02c0ed79b662c1ab180f2c8e1cedc07ab4ba98aa03a84ef27c996c32c8495",
+        "n_rows": 800
+      },
+      "v4_stage3_4call": {
+        "name": "v4_stage3_4call.jsonl",
+        "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage3_4call.jsonl",
+        "sha256": "e67ba248e52ad893ecef3ae1018f12117a909e242bfa8737aff973aea9a0ae9c",
+        "n_rows": 800
+      },
+      "v4_stage4_5to6call": {
+        "name": "v4_stage4_5to6call.jsonl",
+        "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage4_5to6call.jsonl",
+        "sha256": "50d02bd521e6294bf2fd4c536cac1f6cbb13318551017db32f0de7ec8d9bd61d",
+        "n_rows": 800
+      }
+    },
+    "validation": {
+      "problems": 0,
+      "gold_replay_pass_rate": 1.0,
+      "nestful_overlap": 0
+    },
+    "distribution_score": {
+      "dimensions": {
+        "call_count_dist": {
+          "v4_to_nestful": 0.232,
+          "v3_1_to_nestful": 0.3045,
+          "v4_closer": true
+        },
+        "offered_tools_dist": {
+          "v4_to_nestful": 0.6387,
+          "v3_1_to_nestful": 0.8918,
+          "v4_closer": true
+        },
+        "tool_arity_dist": {
+          "v4_to_nestful": 0.2244,
+          "v3_1_to_nestful": 0.1137,
+          "v4_closer": false
+        },
+        "arg_type_dist": {
+          "v4_to_nestful": 0.0331,
+          "v3_1_to_nestful": 0.1455,
+          "v4_closer": true
+        },
+        "answer_type_dist": {
+          "v4_to_nestful": 0.1236,
+          "v3_1_to_nestful": 0.2313,
+          "v4_closer": true
+        }
+      },
+      "v4_closer_on": "4/5",
+      "v4_mean_distance": 0.2504,
+      "v3_1_mean_distance": 0.3374,
+      "technically_acceptable": true
+    }
+  }
+}

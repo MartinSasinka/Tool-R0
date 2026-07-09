@@ -15,10 +15,17 @@ experiment:
   output_dir: outputs
 
 paths:
-  train_jsonl: data/filtered_toolr0_synthetic/epoch_3_3call.jsonl
-  eval_jsonl: data/filtered_toolr0_synthetic/epoch_4_4call.jsonl
-  all_stages_jsonl: data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl
-  # Stage files: data/filtered_toolr0_synthetic/epoch_N_Ncall.jsonl  (N=1..6)
+  # DEFAULT DATASETS REPOINTED TO CANONICAL v3.1 (remediation Phase 1b).
+  # Previously these silently defaulted to the LEGACY dataset B
+  # (data/filtered_toolr0_synthetic — see nestful_synthetic_curriculum_v3/
+  # audits/DATASET_AUDIT.md). Launchers always override these per-stage;
+  # the defaults only matter for direct `run.py --mode train` invocations.
+  # Input paths resolve against the SIBLING minimal folder, hence the ../ .
+  train_jsonl: ../nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage2_2call_dependency.jsonl
+  eval_jsonl: data/splits/nestful_dev.jsonl
+  # UNUSED legacy key (no code reads it); kept for old-run readability only.
+  # It pointed at dataset B: data/filtered_toolr0_synthetic/curriculum_toolr0_all.jsonl
+  all_stages_jsonl: null
   full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
   ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
 

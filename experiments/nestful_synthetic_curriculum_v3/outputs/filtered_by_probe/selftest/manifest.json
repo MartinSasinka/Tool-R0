@@ -1,0 +1,75 @@
+{
+  "manifest_version": 1,
+  "kind": "probe_filtered_dataset",
+  "created_utc": "2026-07-09T16:44:43.848512+00:00",
+  "git": {
+    "commit": "9e426429e76fb6eb65bcb1087bee5441c8e9d46f",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/probe/filter_stage_by_probe.py",
+    "--probe-dir",
+    "experiments/nestful_synthetic_curriculum_v3/outputs/probes/selftest_stub_s2_v32",
+    "--output-dir",
+    "experiments/nestful_synthetic_curriculum_v3/outputs/filtered_by_probe/selftest"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [
+    {
+      "name": "stage2_2call_dependency.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage2_2call_dependency.jsonl",
+      "sha256": "0e7c01aaa78fb8bd7ff8d4562076d5fa2e7fbb6efd011c1683dcb9c2814cb611",
+      "n_rows": 800
+    }
+  ],
+  "seed": null,
+  "decoding": {},
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.5.1",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null
+  },
+  "extra": {
+    "probe_dir": "experiments/nestful_synthetic_curriculum_v3/outputs/probes/selftest_stub_s2_v32",
+    "probe_backend": "stub",
+    "probe_reward": {
+      "configured_policy": "execution_aware_v3_2_dense",
+      "resolved_policy": "execution_aware_v3_2_dense",
+      "reward_fn_module": "lib.reward_v3_2_dense",
+      "reward_fn_name": "episode_turn_reward_seq",
+      "fallback_used": false
+    },
+    "probe_decoding": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "seed": 42
+    },
+    "min_unique_rewards": 2,
+    "source_sha256": "0e7c01aaa78fb8bd7ff8d4562076d5fa2e7fbb6efd011c1683dcb9c2814cb611",
+    "n_probed": 8,
+    "kept_signal_positive": 8,
+    "dropped_dead": 0,
+    "not_probed_dropped": 792,
+    "kept_motif_distribution": {
+      "two_call_long_chain_prefix": 1,
+      "two_call_baseline_failure_prefix": 5,
+      "two_call_reference_passing": 2
+    },
+    "dead_low_for_sft": "experiments/nestful_synthetic_curriculum_v3/outputs/filtered_by_probe/selftest/stage2_2call_dependency.dead_low_for_sft.jsonl",
+    "output": {
+      "name": "stage2_2call_dependency.signal_positive.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/filtered_by_probe/selftest/stage2_2call_dependency.signal_positive.jsonl",
+      "sha256": "c3a6f5816cbd0e805570271c8d93ecc0fc533b7167bedd2e85e89935b5392904",
+      "n_rows": 8
+    }
+  }
+}

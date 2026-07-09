@@ -55,6 +55,12 @@ def _wandb_init(mode: str, config: dict, stage: int | None = None,
     project = os.environ.get("WANDB_PROJECT", "")
     if not project:
         return None
+    # WANDB_MODE=disabled turns W&B off even when a project is set (Phase 1g:
+    # W&B must never be a hard dependency). offline/online are handled natively
+    # by wandb.init from the same env var.
+    if os.environ.get("WANDB_MODE", "").lower() == "disabled":
+        print("[wandb] WANDB_MODE=disabled — skipping W&B init.", flush=True)
+        return None
     try:
         import wandb
     except ImportError:
@@ -78,11 +84,17 @@ def _wandb_init(mode: str, config: dict, stage: int | None = None,
             "use_vllm": config.get("hardware", {}).get("use_vllm", False),
             "checkpoint": checkpoint,
         }
+        tags = [t.strip() for t in os.environ.get("WANDB_TAGS", "").split(",")
+                if t.strip()] or None
         run = wandb.init(
             project=project,
             name=run_name,
-            group=os.environ.get("WANDB_RUN_GROUP") or None,
+            # WANDB_GROUP is the documented alias; WANDB_RUN_GROUP kept for
+            # backwards compatibility with existing launchers.
+            group=os.environ.get("WANDB_GROUP")
+                  or os.environ.get("WANDB_RUN_GROUP") or None,
             entity=os.environ.get("WANDB_ENTITY") or None,
+            tags=tags,
             config=wcfg,
             reinit=True,
         )
@@ -1113,6 +1125,22 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
     data_cfg = config.get("data", {})
     stage = data_cfg.get("train_stage")
     seed = config.get("experiment", {}).get("seed", 42)
+
+    # ── Legacy dataset-B guard (remediation Phase 1b) ────────────────────────
+    # filtered_toolr0_synthetic is the LEGACY corpus (quality issues; see
+    # nestful_synthetic_curriculum_v3/audits/DATASET_AUDIT.md). Historical runs
+    # trained on it via the old config defaults — refuse to repeat that
+    # silently. ALLOW_LEGACY_DATASET_B=1 is the explicit escape hatch.
+    _train_data_paths = [str(paths.get("train_jsonl") or "")]
+    _train_data_paths += _parse_str_list(data_cfg.get("mixed_stage_files"))
+    _legacy_hits = [p for p in _train_data_paths if "filtered_toolr0_synthetic" in p.replace("\\", "/")]
+    if _legacy_hits and os.environ.get("ALLOW_LEGACY_DATASET_B", "0") != "1":
+        raise SystemExit(
+            "[train] ABORT: training data resolves to the LEGACY dataset B "
+            f"(filtered_toolr0_synthetic): {_legacy_hits}. Use the canonical "
+            "curriculum_v3_1 files instead, or set ALLOW_LEGACY_DATASET_B=1 "
+            "to override explicitly (NOT recommended)."
+        )
 
     # ── Mixed curriculum replay ──────────────────────────────────────────────
     # When data.mixed_replay is on, stage N trains on a weighted mix of the

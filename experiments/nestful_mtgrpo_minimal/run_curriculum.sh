@@ -125,7 +125,24 @@ if [ "$ONLY_FINAL_EVAL" = "1" ]; then
     STAGES=""
     RUN_FINAL_EVAL=1
 fi
-DATA_BASE="${DATA_BASE:-$ROOT/data/filtered_toolr0_synthetic}"
+# LEGACY-B GUARD (remediation Phase 1b): the historical default pointed at the
+# legacy dataset B (filtered_toolr0_synthetic — see nestful_synthetic_curriculum_v3/
+# audits/DATASET_AUDIT.md). Refuse to use it silently; curriculum launchers always
+# provide DATA_BASE explicitly (canonical v3.1 symlinks). Dataset B was archived
+# (cleanup Phase K) to nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic.
+DATA_BASE="${DATA_BASE:-$ROOT/../nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic}"
+case "$DATA_BASE" in
+  *filtered_toolr0_synthetic*)
+    if [ "${ALLOW_LEGACY_DATASET_B:-0}" != "1" ]; then
+        echo "[data] ABORT: DATA_BASE resolves to the LEGACY dataset B:" >&2
+        echo "       $DATA_BASE" >&2
+        echo "       Set DATA_BASE to the canonical curriculum (v3.1) files, or set" >&2
+        echo "       ALLOW_LEGACY_DATASET_B=1 to override explicitly (NOT recommended)." >&2
+        exit 1
+    fi
+    echo "[data] WARNING: using LEGACY dataset B (ALLOW_LEGACY_DATASET_B=1): $DATA_BASE" >&2
+    ;;
+esac
 
 # Normalize run paths to absolute (resume / symlink safety).
 if [ -d "$OUTPUT_ROOT" ]; then
@@ -138,7 +155,8 @@ if [ -d "$DATA_BASE" ]; then
 fi
 
 # Auto-repair v3 mixed-replay symlinks when resuming via run_curriculum.sh directly.
-_v3_curr="$ROOT/../nestful_synthetic_curriculum_v3/outputs/curriculum_v3"
+# (pre-v3.1 corpus was archived by cleanup Phase K)
+_v3_curr="$ROOT/../nestful_synthetic_curriculum_v3/archive/curriculum_v3"
 if [ -d "$_v3_curr" ] && [ -n "$DATA_BASE" ]; then
     _need_repair=0
     for _n in 1 2 3 4; do

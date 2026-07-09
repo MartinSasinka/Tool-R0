@@ -13,8 +13,9 @@ infrastructure is in place; next step is the same-batch Stage-3 re-evaluation
 ## The three rules
 
 1. **Canonical training data** is `outputs/curriculum_v3_1/filtered/stage{1..4}_*.jsonl`
-   (800 rows each). `experiments/nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic/` is
-   **legacy dataset B** — never use it; new tooling refuses it. Details: `docs/DATASETS.md`.
+   (800 rows each). **Legacy dataset B** (now archived at
+   `archive/legacy_dataset_B_filtered_toolr0_synthetic/`) must never be used; new
+   tooling refuses it. Details: `docs/DATASETS.md`, `archive/README.md`.
 2. **The only headline metric** is `official_nestful_win_rate` at temperature 0, from a batch
    that contains a baseline cell. The internal win rate inflates it by ~6–7 pp and is
    diagnostic-only. Details: `docs/EVALUATION.md`.

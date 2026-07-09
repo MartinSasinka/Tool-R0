@@ -35,7 +35,9 @@ NESTFUL_FULL = os.path.join(MINIMAL_ROOT, "data", "NESTFUL-main", "data_v2", "ne
 NESTFUL_DATASETS = {"nestful_dev": NESTFUL_DEV, "nestful_test": NESTFUL_TEST, "nestful_full": NESTFUL_FULL}
 
 # --- legacy (B) — guarded ----------------------------------------------------
-LEGACY_DATASET_B_DIR = os.path.join(MINIMAL_ROOT, "data", "filtered_toolr0_synthetic")
+# Archived by cleanup Phase K (was nestful_mtgrpo_minimal/data/filtered_toolr0_synthetic).
+LEGACY_DATASET_B_DIR = os.path.join(
+    V3_ROOT, "archive", "legacy_dataset_B_filtered_toolr0_synthetic")
 _LEGACY_MARKERS = ("filtered_toolr0_synthetic",)
 
 # Default output root for eval batches (TARGET_ARCHITECTURE.md §1/§4).

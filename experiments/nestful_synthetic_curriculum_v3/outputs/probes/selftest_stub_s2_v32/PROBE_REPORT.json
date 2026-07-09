@@ -1,0 +1,299 @@
+{
+  "probe_version": 1,
+  "backend": "stub",
+  "stub_warning": true,
+  "dataset": {
+    "name": "stage2_2call_dependency.jsonl",
+    "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage2_2call_dependency.jsonl",
+    "sha256": "0e7c01aaa78fb8bd7ff8d4562076d5fa2e7fbb6efd011c1683dcb9c2814cb611",
+    "n_rows": 800
+  },
+  "reward": {
+    "configured_policy": "execution_aware_v3_2_dense",
+    "resolved_policy": "execution_aware_v3_2_dense",
+    "reward_fn_module": "lib.reward_v3_2_dense",
+    "reward_fn_name": "episode_turn_reward_seq",
+    "fallback_used": false
+  },
+  "checkpoint": null,
+  "decoding": {
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "seed": 42
+  },
+  "num_tasks": 8,
+  "num_generations": 6,
+  "dead_group_rate": 0.0,
+  "mixed_group_rate": 1.0,
+  "dead_low_rate": 0.0,
+  "dead_high_rate": 0.0,
+  "position_artifact_rate": 0.0,
+  "mean_unique_rewards_per_group": 3.125,
+  "reward_entropy_bits": 2.4629,
+  "reward_histogram": {
+    "[0.0,0.1)": 6,
+    "[0.1,0.2)": 4,
+    "[0.2,0.3)": 34,
+    "[0.3,0.4)": 0,
+    "[0.4,0.5)": 1,
+    "[0.5,0.6)": 3,
+    "[0.6,0.7)": 0,
+    "[0.7,0.8)": 0,
+    "[0.8,0.9)": 0,
+    "[0.9,1.0]": 0
+  },
+  "unique_reward_values": 8,
+  "too_few_calls_rate": 0.8333,
+  "avg_predicted_calls": 1.0417,
+  "wrong_tool_rate": 0.7083,
+  "wrong_arg_rate": 0.0833,
+  "parse_error_rate": 0.125,
+  "no_tool_call_rate": 0.125,
+  "invalid_reference_rate": 0.0833,
+  "proceed_recommendation": true,
+  "proceed_gate": "dead_group_rate < 0.5 AND mean_unique_rewards_per_group >= 2",
+  "groups": [
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_fan_in_wrong_argument_031282_stage2_2call_dependency_p2_01115",
+      "motif_type": "two_call_baseline_failure_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "add",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.205,
+        0.275,
+        0.145,
+        0.50625,
+        0.205,
+        0.50625
+      ],
+      "unique_rewards": 4,
+      "dead": false,
+      "mean_reward": 0.307083,
+      "position_artifact": false,
+      "too_few_rate": 0.5,
+      "wrong_tool_rate": 0.5,
+      "wrong_args_rate": 0.3333,
+      "parse_error_rate": 0.0,
+      "no_tool_call_rate": 0.0,
+      "invalid_ref_rate": 0.1667,
+      "avg_pred_calls": 1.5,
+      "cap_reasons": [
+        "correct_tool_wrong_args",
+        "invalid_reference",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_fan_in_wrong_argument_031269_stage2_2call_dependency_p2_01055",
+      "motif_type": "two_call_baseline_failure_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "add",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.0,
+        0.145,
+        0.0,
+        0.275,
+        0.50625,
+        0.275
+      ],
+      "unique_rewards": 4,
+      "dead": false,
+      "mean_reward": 0.200208,
+      "position_artifact": false,
+      "too_few_rate": 0.6667,
+      "wrong_tool_rate": 0.3333,
+      "wrong_args_rate": 0.1667,
+      "parse_error_rate": 0.3333,
+      "no_tool_call_rate": 0.3333,
+      "invalid_ref_rate": 0.1667,
+      "avg_pred_calls": 1.0,
+      "cap_reasons": [
+        "correct_tool_wrong_args",
+        "invalid_reference",
+        "parse_error",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_string_output_wrong_answer_884344_stage2_2call_dependency_p2_04344",
+      "motif_type": "two_call_reference_passing",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "concat",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.205,
+        0.24,
+        0.24,
+        0.24,
+        0.24,
+        0.0
+      ],
+      "unique_rewards": 3,
+      "dead": false,
+      "mean_reward": 0.194167,
+      "position_artifact": false,
+      "too_few_rate": 1.0,
+      "wrong_tool_rate": 0.8333,
+      "wrong_args_rate": 0.0,
+      "parse_error_rate": 0.1667,
+      "no_tool_call_rate": 0.1667,
+      "invalid_ref_rate": 0.0,
+      "avg_pred_calls": 0.8333,
+      "cap_reasons": [
+        "parse_error",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_string_output_wrong_answer_884114_stage2_2call_dependency_p2_04114",
+      "motif_type": "two_call_reference_passing",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "concat",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.275,
+        0.0,
+        0.275,
+        0.24,
+        0.0,
+        0.24
+      ],
+      "unique_rewards": 3,
+      "dead": false,
+      "mean_reward": 0.171667,
+      "position_artifact": false,
+      "too_few_rate": 1.0,
+      "wrong_tool_rate": 0.6667,
+      "wrong_args_rate": 0.0,
+      "parse_error_rate": 0.3333,
+      "no_tool_call_rate": 0.3333,
+      "invalid_ref_rate": 0.0,
+      "avg_pred_calls": 0.6667,
+      "cap_reasons": [
+        "parse_error",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_boolean_output_wrong_condition_031798_stage2_2call_dependency_p2_03315",
+      "motif_type": "two_call_baseline_failure_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "greater_than",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.275,
+        0.24,
+        0.24,
+        0.24,
+        0.275,
+        0.24
+      ],
+      "unique_rewards": 2,
+      "dead": false,
+      "mean_reward": 0.251667,
+      "position_artifact": false,
+      "too_few_rate": 1.0,
+      "wrong_tool_rate": 1.0,
+      "wrong_args_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_call_rate": 0.0,
+      "invalid_ref_rate": 0.0,
+      "avg_pred_calls": 1.0,
+      "cap_reasons": [
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_boolean_output_wrong_condition_031782_stage2_2call_dependency_p2_03251",
+      "motif_type": "two_call_baseline_failure_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "greater_than",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.275,
+        0.275,
+        0.275,
+        0.275,
+        0.0,
+        0.24
+      ],
+      "unique_rewards": 3,
+      "dead": false,
+      "mean_reward": 0.223333,
+      "position_artifact": false,
+      "too_few_rate": 1.0,
+      "wrong_tool_rate": 0.8333,
+      "wrong_args_rate": 0.0,
+      "parse_error_rate": 0.1667,
+      "no_tool_call_rate": 0.1667,
+      "invalid_ref_rate": 0.0,
+      "avg_pred_calls": 0.8333,
+      "cap_reasons": [
+        "parse_error",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_long_chain_too_few_calls_031246_stage2_2call_dependency_p2_00947",
+      "motif_type": "two_call_long_chain_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "add",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.13,
+        0.13,
+        0.275,
+        0.205,
+        0.275,
+        0.49375
+      ],
+      "unique_rewards": 4,
+      "dead": false,
+      "mean_reward": 0.251458,
+      "position_artifact": false,
+      "too_few_rate": 0.5,
+      "wrong_tool_rate": 0.5,
+      "wrong_args_rate": 0.1667,
+      "parse_error_rate": 0.0,
+      "no_tool_call_rate": 0.0,
+      "invalid_ref_rate": 0.3333,
+      "avg_pred_calls": 1.5,
+      "cap_reasons": [
+        "correct_tool_wrong_args",
+        "invalid_reference",
+        "too_few_calls"
+      ]
+    },
+    {
+      "task_id": "prefix_v3_1_traj_v3_1_boolean_output_wrong_condition_031833_stage2_2call_dependency_p2_03455",
+      "motif_type": "two_call_baseline_failure_prefix",
+      "stage": "stage2_2call_dependency",
+      "gold_tool_0": "greater_than",
+      "num_gold_calls": 2,
+      "rewards": [
+        0.24,
+        0.275,
+        0.275,
+        0.24,
+        0.275,
+        0.275
+      ],
+      "unique_rewards": 2,
+      "dead": false,
+      "mean_reward": 0.263333,
+      "position_artifact": false,
+      "too_few_rate": 1.0,
+      "wrong_tool_rate": 1.0,
+      "wrong_args_rate": 0.0,
+      "parse_error_rate": 0.0,
+      "no_tool_call_rate": 0.0,
+      "invalid_ref_rate": 0.0,
+      "avg_pred_calls": 1.0,
+      "cap_reasons": [
+        "too_few_calls"
+      ]
+    }
+  ]
+}

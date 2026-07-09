@@ -1,0 +1,74 @@
+{
+  "manifest_version": 1,
+  "kind": "stage_probe",
+  "created_utc": "2026-07-09T16:43:14.930868+00:00",
+  "git": {
+    "commit": "9e426429e76fb6eb65bcb1087bee5441c8e9d46f",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/probe/probe_stage.py",
+    "--stage",
+    "2",
+    "--num-tasks",
+    "8",
+    "--num-generations",
+    "6",
+    "--backend",
+    "stub",
+    "--reward-policy",
+    "execution_aware_v3_2_dense",
+    "--output-dir",
+    "experiments/nestful_synthetic_curriculum_v3/outputs/probes/selftest_stub_s2_v32"
+  ],
+  "config": {
+    "path": "experiments/nestful_mtgrpo_partial/config.yaml",
+    "sha256": "e4812dce72d65438b25b93516ef29e1fd27205736ebd2e4cd8781065455c8530",
+    "overrides": [
+      "reward.train_policy=execution_aware_v3_2_dense",
+      "generation.temperature=1.0",
+      "generation.top_p=0.95",
+      "experiment.seed=42",
+      "experiment.output_dir=C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\probes\\selftest_stub_s2_v32",
+      "hardware.use_vllm=false"
+    ]
+  },
+  "datasets": [
+    {
+      "name": "stage2_2call_dependency.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/outputs/curriculum_v3_1/filtered/stage2_2call_dependency.jsonl",
+      "sha256": "0e7c01aaa78fb8bd7ff8d4562076d5fa2e7fbb6efd011c1683dcb9c2814cb611",
+      "n_rows": 800
+    }
+  ],
+  "seed": 42,
+  "decoding": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.5.1",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null
+  },
+  "extra": {
+    "reward": {
+      "configured_policy": "execution_aware_v3_2_dense",
+      "resolved_policy": "execution_aware_v3_2_dense",
+      "reward_fn_module": "lib.reward_v3_2_dense",
+      "reward_fn_name": "episode_turn_reward_seq",
+      "fallback_used": false
+    },
+    "checkpoint": null,
+    "backend": "stub",
+    "num_tasks": 8,
+    "num_generations": 6,
+    "dead_group_rate": 0.0,
+    "proceed_recommendation": true
+  }
+}
