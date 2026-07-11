@@ -1,0 +1,4 @@
+motif_type,n_groups,dead_rate,mean_reward,mean_unique_rewards,too_few_rate,wrong_tool_rate
+two_call_baseline_failure_prefix,5,0.0,0.2491,3.0,0.8333,0.7333
+two_call_long_chain_prefix,1,0.0,0.2515,4.0,0.5,0.5
+two_call_reference_passing,2,0.0,0.1829,3.0,1.0,0.75

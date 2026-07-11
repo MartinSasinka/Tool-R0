@@ -1,0 +1,114 @@
+{
+  "manifest_version": 1,
+  "kind": "curriculum_v4_agentic_openrouter",
+  "created_utc": "2026-07-09T23:12:41.757723+00:00",
+  "git": {
+    "commit": "d6e17d4428b48a49329dc3a7fee7522f100272c4",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v4_agentic_openrouter.py"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [],
+  "seed": 42,
+  "decoding": {},
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.5.1",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null,
+    "gpu": {
+      "count": 1,
+      "gpus": [
+        "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "backend": "openrouter",
+    "mock": false,
+    "models": {
+      "challenger": "deepseek/deepseek-chat",
+      "weak_solver": "deepseek/deepseek-chat",
+      "strong_solver": "deepseek/deepseek-chat",
+      "judge": "deepseek/deepseek-chat"
+    },
+    "targets": {
+      "stage2_2call_agentic_openrouter": 800,
+      "stage3_3call_agentic_openrouter": 800,
+      "stage4_4to6call_agentic_openrouter": 800
+    },
+    "accepted": {},
+    "rejected_total": 1749,
+    "rejection_reasons": {
+      "weak_solver_passed": 690,
+      "unresolved_var": 87,
+      "invalid_schema": 264,
+      "strong_solver_failed": 118,
+      "non_executable_gold_trace": 437,
+      "metadata_leakage": 10,
+      "too_hard_both_solvers_fail": 27,
+      "duplicate_trace": 99,
+      "not_nestful_like": 4,
+      "invalid_json": 7,
+      "duplicate_question": 4,
+      "ambiguous_question": 2
+    },
+    "tool_schema_source_policy": "aggregate_style_only",
+    "client_stats": {
+      "n_requests": 2840,
+      "n_cache_hits": 0,
+      "n_retries": 7,
+      "n_json_fallbacks": 0,
+      "prompt_tokens": 1999970,
+      "completion_tokens": 596107,
+      "spend_usd": 0.959062,
+      "by_role": {
+        "challenger": {
+          "requests": 400,
+          "cache_hits": 0,
+          "prompt_tokens": 483176,
+          "completion_tokens": 344220,
+          "spend_usd": 0.395548
+        },
+        "weak_solver": {
+          "requests": 1069,
+          "cache_hits": 0,
+          "prompt_tokens": 682909,
+          "completion_tokens": 117418,
+          "spend_usd": 0.257868
+        },
+        "strong_solver": {
+          "requests": 1137,
+          "cache_hits": 0,
+          "prompt_tokens": 784363,
+          "completion_tokens": 124603,
+          "spend_usd": 0.286279
+        },
+        "judge": {
+          "requests": 234,
+          "cache_hits": 0,
+          "prompt_tokens": 49522,
+          "completion_tokens": 9866,
+          "spend_usd": 0.019367
+        }
+      }
+    },
+    "stage_summaries": {},
+    "stage_files": {},
+    "status": "STOPPED EARLY: stage2_2call_agentic_openrouter: iteration budget 400 exhausted at 228/800 accepted",
+    "final_validation_problems": 0
+  }
+}

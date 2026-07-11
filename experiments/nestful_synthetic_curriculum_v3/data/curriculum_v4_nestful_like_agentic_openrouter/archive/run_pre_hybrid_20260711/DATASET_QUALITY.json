@@ -1,0 +1,331 @@
+{
+  "generated_at": "2026-07-10T21:18:12.865329+00:00",
+  "dataset_dir": "experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter",
+  "completeness": {
+    "manifest_found": true,
+    "stages": {
+      "stage2_2call_agentic_openrouter": {
+        "target": 800,
+        "rows": 280,
+        "status": "partial"
+      }
+    },
+    "overall_status": "partial"
+  },
+  "validity": {
+    "n_rows": 280,
+    "gold_replay_pass_rate": 1.0,
+    "schema_pass_rate": 1.0,
+    "null_answer_rate": 0.0,
+    "unresolved_var_rate": 0.0,
+    "duplicate_question_rate": 0.0,
+    "duplicate_trace_rate": 0.0,
+    "duplicate_sample_id_rate": 0.0,
+    "hard_gates_pass": true
+  },
+  "contamination": {
+    "question_hash_overlap": 0,
+    "trace_hash_overlap": 0,
+    "sample_id_overlap": 0,
+    "hard_gates_pass": true
+  },
+  "distribution": {
+    "distance": {
+      "reference": "nestful",
+      "dimensions": {
+        "call_count_dist": {
+          "candidate": 0.6728,
+          "v3_1": 0.3045
+        },
+        "offered_tools_dist": {
+          "candidate": 0.6577,
+          "v3_1": 0.8918
+        },
+        "tool_arity_dist": {
+          "candidate": 0.2266,
+          "v3_1": 0.1137
+        },
+        "arg_type_dist": {
+          "candidate": 0.1404,
+          "v3_1": 0.1455
+        },
+        "answer_type_dist": {
+          "candidate": 0.1385,
+          "v3_1": 0.2313
+        }
+      },
+      "mean_distance": {
+        "candidate": 0.3672,
+        "v3_1": 0.3374
+      }
+    },
+    "candidate_closer_than_v3_1_on": "3/5",
+    "closer_than_v3_1": true
+  },
+  "solver_gap": {
+    "available": true,
+    "n": 280,
+    "weak_fail_strong_pass_rate": 1.0,
+    "avg_weak_score": 0.4684,
+    "avg_strong_score": 1.0,
+    "avg_gap": 0.5316,
+    "positive": true,
+    "weak_score_histogram": {
+      "0.00": 2,
+      "0.10": 9,
+      "0.15": 1,
+      "0.20": 1,
+      "0.30": 5,
+      "0.40": 26,
+      "0.50": 236
+    },
+    "weak_score_entropy": 0.8984,
+    "weak_score_bucket_dominance": 0.8429,
+    "failure_type_histogram": {
+      "partial_prefix": 232,
+      "wrong_answer": 26,
+      "execution_error": 9,
+      "under_call": 9,
+      "parse_error": 2,
+      "invalid_reference": 1,
+      "wrong_args": 1
+    },
+    "failure_type_entropy": 0.971,
+    "failure_type_dominance": 0.8286,
+    "accepted_failure_type_diversity": {
+      "stage2_2call_agentic_openrouter": 7
+    },
+    "strong_exact_win_rate": 1.0,
+    "diversity_pass": false,
+    "diversity_gates": {
+      "max_weak_score_bucket_dominance": 0.4,
+      "max_failure_type_dominance": 0.4,
+      "min_failure_types_per_stage": 4,
+      "min_strong_exact_win_rate": 0.95
+    }
+  },
+  "grpo_signal": {
+    "available": false,
+    "note": "no stage-probe report found — run scripts/probe/probe_stage.sh on the pod (this scorer never launches it)"
+  },
+  "verdict": {
+    "technically_acceptable": true,
+    "training_candidate": false,
+    "actually_useful": null
+  },
+  "distribution_stats": {
+    "candidate": {
+      "n_rows": 280,
+      "call_count_dist": {
+        "2": 280
+      },
+      "offered_tools_dist": {
+        "10": 17,
+        "11": 18,
+        "12": 20,
+        "13": 25,
+        "14": 25,
+        "15": 20,
+        "16": 25,
+        "17": 30,
+        "18": 23,
+        "19": 29,
+        "20": 6,
+        "21": 8,
+        "22": 9,
+        "23": 8,
+        "24": 12,
+        "25": 5
+      },
+      "tool_arity_dist": {
+        "1": 1275,
+        "2": 3102,
+        "3": 164
+      },
+      "arg_type_dist": {
+        "array": 3,
+        "number": 721,
+        "reference": 282,
+        "string": 14
+      },
+      "answer_type_dist": {
+        "boolean": 27,
+        "scalar": 248,
+        "string": 5
+      },
+      "motif_dist": {
+        "long_chain": 77,
+        "distractor_heavy": 69,
+        "argument_binding": 69,
+        "reference_reuse": 65
+      },
+      "used_tools_top": {
+        "increase_by_percent": 34,
+        "scale_dimension": 30,
+        "add_sales_tax": 30,
+        "percentage_of": 29,
+        "calculate_tip_amount": 29,
+        "split_bill_evenly": 28,
+        "is_above_threshold": 27,
+        "apply_discount": 27,
+        "kilograms_to_pounds": 25,
+        "rectangle_perimeter": 24,
+        "units_per_box": 23,
+        "convert_currency": 22,
+        "circle_area": 20,
+        "celsius_to_fahrenheit": 18,
+        "hours_to_minutes": 18
+      },
+      "mean_question_words": 22.6
+    },
+    "v3_1": {
+      "n_rows": 3200,
+      "call_count_dist": {
+        "1": 800,
+        "2": 800,
+        "3": 800,
+        "4": 504,
+        "5": 233,
+        "6": 63
+      },
+      "offered_tools_dist": {
+        "4": 3,
+        "5": 135,
+        "6": 373,
+        "7": 639,
+        "8": 1676,
+        "9": 9,
+        "12": 284,
+        "15": 78,
+        "17": 3
+      },
+      "tool_arity_dist": {
+        "1": 10046,
+        "2": 15039,
+        "3": 431
+      },
+      "arg_type_dist": {
+        "array": 711,
+        "number": 7594,
+        "object": 15,
+        "reference": 5422,
+        "string": 2041
+      },
+      "answer_type_dist": {
+        "boolean": 373,
+        "list": 487,
+        "object": 150,
+        "scalar": 1922,
+        "string": 268
+      },
+      "motif_dist": {
+        "baseline_failure_inspired": 611,
+        "atomic_from_baseline_failure": 278,
+        "two_call_baseline_failure_prefix": 262,
+        "atomic_from_object_list": 222,
+        "two_call_object_field_prefix": 197,
+        "four_to_six_call_long_chain": 189,
+        "three_call_long_chain_prefix": 173,
+        "two_call_reference_passing": 167,
+        "three_call_reference_reuse": 166,
+        "atomic_from_linear": 155,
+        "three_call_argument_transformation": 154,
+        "atomic_from_long_chain": 145,
+        "three_call_object_list": 129,
+        "two_call_long_chain_prefix": 118,
+        "three_call_fan_in": 112,
+        "three_call_linear_chain": 66,
+        "two_call_linear_prefix": 56
+      },
+      "used_tools_top": {
+        "add": 2525,
+        "multiply": 1586,
+        "filter_greater_than": 558,
+        "sort_list": 476,
+        "make_object": 419,
+        "divide_safe": 378,
+        "subtract": 366,
+        "get_field": 365,
+        "concat": 359,
+        "greater_than": 312,
+        "less_than": 241,
+        "string_length": 173,
+        "uppercase": 154,
+        "lowercase": 135,
+        "update_field": 81
+      },
+      "mean_question_words": 32.1
+    },
+    "nestful": {
+      "n_rows": 1861,
+      "call_count_dist": {
+        "2": 609,
+        "3": 407,
+        "4": 250,
+        "5": 173,
+        "6": 134,
+        "7": 75,
+        "8": 213
+      },
+      "offered_tools_dist": {
+        "7": 14,
+        "8": 127,
+        "9": 520,
+        "10": 676,
+        "11": 71,
+        "12": 8,
+        "13": 52,
+        "14": 45,
+        "15": 46,
+        "16": 35,
+        "17": 64,
+        "18": 109,
+        "19": 80,
+        "20": 13,
+        "21": 1
+      },
+      "tool_arity_dist": {
+        "0": 79,
+        "1": 10462,
+        "2": 10047,
+        "3": 218,
+        "4": 28,
+        "5": 4
+      },
+      "arg_type_dist": {
+        "array": 180,
+        "boolean": 5,
+        "number": 8731,
+        "object": 14,
+        "reference": 6218,
+        "string": 265
+      },
+      "answer_type_dist": {
+        "boolean": 39,
+        "list": 101,
+        "object": 17,
+        "scalar": 1531,
+        "string": 173
+      },
+      "motif_dist": {},
+      "used_tools_top": {
+        "divide": 2192,
+        "multiply": 1994,
+        "add": 1390,
+        "subtract": 1216,
+        "power": 105,
+        "inverse": 64,
+        "factorial": 27,
+        "sqrt": 25,
+        "negate": 24,
+        "lcm": 23,
+        "floor": 18,
+        "reminder": 17,
+        "choose": 15,
+        "speed": 11,
+        "gcd": 9
+      },
+      "mean_question_words": 33.3
+    }
+  }
+}

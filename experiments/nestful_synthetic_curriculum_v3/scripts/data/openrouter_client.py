@@ -46,6 +46,57 @@ class OpenRouterError(RuntimeError):
     pass
 
 
+class OfflineCacheMiss(OpenRouterError):
+    """Raised in offline mode when a prompt is not in the cache (no API calls
+    are ever made in offline mode — used for zero-cost salvage/replay)."""
+
+
+def _api_error_message(resp: Any) -> Optional[str]:
+    """Human-readable error when the JSON body lacks a usable completion."""
+    if not isinstance(resp, dict):
+        return f"non-object response: {type(resp).__name__}"
+    err = resp.get("error")
+    if err is not None:
+        if isinstance(err, dict):
+            code = err.get("code")
+            msg = err.get("message") or str(err)
+            return f"API error {code}: {msg}" if code is not None else str(msg)
+        return str(err)
+    choices = resp.get("choices")
+    if not choices:
+        return "response missing choices"
+    return None
+
+
+def weak_solver_backend() -> str:
+    """openrouter (default) | local (HF weak solver on this machine)."""
+    b = os.environ.get("WEAK_SOLVER_BACKEND", "openrouter")
+    if b not in ("openrouter", "local"):
+        raise ValueError(f"WEAK_SOLVER_BACKEND={b!r} not in (openrouter, local)")
+    return b
+
+
+def _local_weak_generate(messages: List[Dict[str, str]], *,
+                         temperature: float, max_tokens: int,
+                         seed: Optional[int]) -> str:
+    import sys
+    v3_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    if v3_root not in sys.path:
+        sys.path.insert(0, v3_root)
+    from lib.agentic_data.local_llm import get_local_weak_solver
+    return get_local_weak_solver().generate(
+        messages, temperature=temperature, max_tokens=max_tokens, seed=seed)
+
+
+def _retry_delay(attempt: int, retry_after: Optional[str] = None) -> float:
+    if retry_after:
+        try:
+            return float(retry_after)
+        except (TypeError, ValueError):
+            pass
+    return min(60.0, (2 ** attempt)) + random.uniform(0, 0.5)
+
+
 def _sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -116,13 +167,16 @@ class ClientStats:
     by_role: Dict[str, Dict[str, float]] = field(default_factory=dict)
 
     def record(self, role: str, prompt_toks: int, completion_toks: int,
-               cost: float, cached: bool) -> None:
+               cost: float, cached: bool, *, local: bool = False) -> None:
         r = self.by_role.setdefault(role, {"requests": 0, "cache_hits": 0,
                                            "prompt_tokens": 0, "completion_tokens": 0,
-                                           "spend_usd": 0.0})
+                                           "spend_usd": 0.0, "local_requests": 0})
         if cached:
             self.n_cache_hits += 1
             r["cache_hits"] += 1
+            return
+        if local:
+            r["local_requests"] = r.get("local_requests", 0) + 1
             return
         self.n_requests += 1
         self.prompt_tokens += prompt_toks
@@ -162,6 +216,7 @@ class OpenRouterClient:
         use_cache: Optional[bool] = None,
         save_raw: Optional[bool] = None,
         dry_run: Optional[bool] = None,
+        offline: Optional[bool] = None,
         backend: str = "openrouter",           # "openrouter" | "mock"
         mock_handler: Optional[Callable[[str, List[Dict[str, str]]], str]] = None,
         timeout_s: float = 120.0,
@@ -182,6 +237,12 @@ class OpenRouterClient:
             if save_raw is None else save_raw
         self.dry_run = (env.get("OPENROUTER_DRY_RUN", "0") == "1") \
             if dry_run is None else dry_run
+        # offline: serve ONLY from cache, raise OfflineCacheMiss otherwise.
+        # Guarantees zero API spend (used by --salvage / replay).
+        self.offline = (env.get("OPENROUTER_OFFLINE", "0") == "1") \
+            if offline is None else offline
+        if self.offline:
+            self.use_cache = True
         self.backend = backend
         self.mock_handler = mock_handler
         self.timeout_s = timeout_s
@@ -189,7 +250,7 @@ class OpenRouterClient:
         self.stats = ClientStats()
         if backend == "mock" and mock_handler is None:
             raise ValueError("backend='mock' requires mock_handler")
-        if backend == "openrouter" and not self.dry_run \
+        if backend == "openrouter" and not self.dry_run and not self.offline \
                 and not env.get("OPENROUTER_API_KEY"):
             raise OpenRouterError(
                 "OPENROUTER_API_KEY is not set. Export it (never hardcode it) "
@@ -295,15 +356,31 @@ class OpenRouterClient:
                     "cached": True, "cost_usd": 0.0,
                     "raw_path": cached.get("raw_path")}
 
+        if self.offline:
+            raise OfflineCacheMiss(
+                f"offline mode: prompt {key[:12]} for role={role} not in cache "
+                f"({self.cache_dir}) — refusing to spend API money")
+
         if self.dry_run:
             print(f"[openrouter DRY RUN] role={role} model={model} "
                   f"prompt_hash={key[:12]} max_tokens={max_tokens} (not sent)")
             return {"text": "", "parsed": None, "cached": False,
                     "cost_usd": 0.0, "raw_path": None, "dry_run": True}
 
-        self._check_budget()
+        use_local_weak = (role == "weak_solver"
+                          and weak_solver_backend() == "local"
+                          and self.backend != "mock")
 
-        if self.backend == "mock":
+        if not use_local_weak:
+            self._check_budget()
+
+        if use_local_weak:
+            text = _local_weak_generate(
+                messages, temperature=temperature, max_tokens=max_tokens,
+                seed=seed)
+            usage = {"prompt_tokens": 0, "completion_tokens": 0}
+            cost = 0.0
+        elif self.backend == "mock":
             text = self.mock_handler(role, messages)
             usage = {"prompt_tokens": 0, "completion_tokens": 0}
             cost = 0.0
@@ -319,27 +396,68 @@ class OpenRouterClient:
                 payload["seed"] = seed
             if json_mode:
                 payload["response_format"] = {"type": "json_object"}
-            try:
-                resp = self._http_request(payload)
-            except OpenRouterError as exc:
-                if json_mode and "HTTP 400" in str(exc):
-                    # some models reject response_format — retry once without it
-                    self.stats.n_json_fallbacks += 1
-                    payload.pop("response_format", None)
+
+            text: Optional[str] = None
+            usage: Dict[str, Any] = {}
+            cost = 0.0
+            last_err: Optional[str] = None
+            json_fallback_used = False
+
+            for attempt in range(self.max_retries + 1):
+                try:
                     resp = self._http_request(payload)
-                else:
-                    raise
-            try:
-                text = resp["choices"][0]["message"]["content"]
-            except (KeyError, IndexError, TypeError) as exc:
-                raise OpenRouterError(f"malformed response: {exc}: {str(resp)[:300]}")
-            usage = resp.get("usage") or {}
-            cost = usage.get("cost")
-            if cost is None:
-                cost = (usage.get("prompt_tokens", 0) / 1e6 * DEFAULT_PRICE_PROMPT_PER_M
-                        + usage.get("completion_tokens", 0) / 1e6
-                        * DEFAULT_PRICE_COMPLETION_PER_M)
-            cost = float(cost)
+                except OpenRouterError as exc:
+                    last_err = str(exc)
+                    if (json_mode and not json_fallback_used
+                            and "HTTP 400" in last_err):
+                        self.stats.n_json_fallbacks += 1
+                        json_fallback_used = True
+                        payload.pop("response_format", None)
+                        continue
+                    if attempt >= self.max_retries:
+                        raise OpenRouterError(
+                            f"request failed after {self.max_retries + 1} "
+                            f"attempts: {last_err}") from exc
+                    self.stats.n_retries += 1
+                    time.sleep(_retry_delay(attempt))
+                    continue
+
+                api_err = _api_error_message(resp)
+                if api_err:
+                    last_err = api_err
+                    if attempt >= self.max_retries:
+                        raise OpenRouterError(
+                            f"request failed after {self.max_retries + 1} "
+                            f"attempts: {last_err}")
+                    self.stats.n_retries += 1
+                    time.sleep(_retry_delay(attempt))
+                    continue
+
+                try:
+                    text = resp["choices"][0]["message"]["content"] or ""
+                except (KeyError, IndexError, TypeError) as exc:
+                    last_err = (f"malformed response: {exc}: "
+                                f"{str(resp)[:300]}")
+                    if attempt >= self.max_retries:
+                        raise OpenRouterError(last_err) from exc
+                    self.stats.n_retries += 1
+                    time.sleep(_retry_delay(attempt))
+                    continue
+
+                usage = resp.get("usage") or {}
+                cost = usage.get("cost")
+                if cost is None:
+                    cost = (usage.get("prompt_tokens", 0) / 1e6
+                            * DEFAULT_PRICE_PROMPT_PER_M
+                            + usage.get("completion_tokens", 0) / 1e6
+                            * DEFAULT_PRICE_COMPLETION_PER_M)
+                cost = float(cost)
+                break
+            else:
+                raise OpenRouterError(
+                    f"request failed after {self.max_retries + 1} attempts: "
+                    f"{last_err or 'unknown'}")
+            assert text is not None
 
         parsed: Optional[Any] = None
         try:
@@ -353,10 +471,11 @@ class OpenRouterClient:
             "usage": {"prompt_tokens": usage.get("prompt_tokens", 0),
                       "completion_tokens": usage.get("completion_tokens", 0),
                       "cost_usd": round(cost, 6)},
-            "backend": self.backend,
+            "backend": "local_hf" if use_local_weak else self.backend,
         })
         self.stats.record(role, usage.get("prompt_tokens", 0),
-                          usage.get("completion_tokens", 0), cost, cached=False)
+                          usage.get("completion_tokens", 0), cost, cached=False,
+                          local=use_local_weak)
 
         if self.use_cache and cache_path:
             with open(cache_path, "w", encoding="utf-8") as fh:
@@ -367,12 +486,17 @@ class OpenRouterClient:
 
 
 def models_from_env() -> Dict[str, str]:
-    """Role → model mapping; every model is configurable (names drift)."""
+    """Role → model slug (OpenRouter) or local HF id for weak_solver."""
     env = os.environ
-    default = "deepseek/deepseek-chat"
+    ds = env.get("OPENROUTER_DEFAULT_MODEL", "deepseek/deepseek-v3.2")
+    qwen235 = env.get("OPENROUTER_STRONG_DEFAULT",
+                      "qwen/qwen3-235b-a22b-2507")
+    local_weak = env.get("LOCAL_WEAK_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
+    weak = (local_weak if weak_solver_backend() == "local"
+            else env.get("OPENROUTER_WEAK_MODEL", ds))
     return {
-        "challenger": env.get("OPENROUTER_CHALLENGER_MODEL", default),
-        "weak_solver": env.get("OPENROUTER_WEAK_MODEL", default),
-        "strong_solver": env.get("OPENROUTER_STRONG_MODEL", default),
-        "judge": env.get("OPENROUTER_JUDGE_MODEL", default),
+        "challenger": env.get("OPENROUTER_CHALLENGER_MODEL", ds),
+        "weak_solver": weak,
+        "strong_solver": env.get("OPENROUTER_STRONG_MODEL", qwen235),
+        "judge": env.get("OPENROUTER_JUDGE_MODEL", ds),
     }

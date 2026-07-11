@@ -1,0 +1,20 @@
+# Agentic OpenRouter curriculum generation (experiments/nestful_synthetic_curriculum_v3).
+#
+# OpenRouter client + orchestrator: stdlib only (urllib, json, os).
+# Local weak solver (WEAK_SOLVER_BACKEND=local): needs the HF stack below.
+# Install PyTorch with CUDA via setup_agentic_venv.ps1 / setup_agentic_venv.sh
+# (not listed here — platform/CUDA wheels differ).
+#
+# OpenRouter-only (WEAK_SOLVER_BACKEND=openrouter): pytest + python-dotenv suffice;
+# skip transformers/bitsandbytes if you will never use the local weak solver.
+
+# --- local weak solver (Qwen3-4B, 4-bit on 6 GB GPUs) ---
+transformers>=4.51,<5.1
+accelerate>=1.3
+bitsandbytes>=0.43.0
+safetensors>=0.4.0
+sentencepiece>=0.2.0
+
+# --- tests + .env loading ---
+pytest>=8.0
+python-dotenv>=1.0

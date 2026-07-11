@@ -92,8 +92,8 @@ check("leak check catches $var", question_leak_errors("use $var1.result$ now") !
 s = score_prediction(GOLD, None, GOLD, GOLD_OBS, 36.0)
 check("score: gold prediction wins", s["score"] == 1.0 and s["status"] == "win", s)
 s = score_prediction(GOLD[:1], None, GOLD, GOLD_OBS, 36.0)
-check("score: under-call in 0.5-0.8", 0.5 <= s["score"] <= 0.8
-      and s["status"] == "under_call", s)
+check("score: clean stop after correct prefix in 0.5-0.8",
+      0.5 <= s["score"] <= 0.8 and s["status"] == "correct_prefix_then_stop", s)
 s = score_prediction(None, None, GOLD, GOLD_OBS, 36.0)
 check("score: parse error = 0", s["score"] == 0.0 and s["status"] == "parse_error")
 s = score_prediction([], 36.0, GOLD, GOLD_OBS, 36.0)
@@ -120,6 +120,59 @@ check("gap: both fail rejected", not ok and why == "too_hard_both_solvers_fail")
 ok, why = solver_gap_verdict({"score": 0.5, "status": "under_call"},
                              {"score": 0.7, "status": "partial_prefix"})
 check("gap: strong below 0.8 rejected", not ok, why)
+
+# --------------------------------------------------------- new failure taxonomy
+s = score_prediction(
+    [{"name": "apply_discount",
+      "arguments": {"price": "$var9.result$", "discount_percent": 10},
+      "label": "$var1"}], None, GOLD, GOLD_OBS, 36.0)
+check("score: unresolved reference -> invalid_reference",
+      s["status"] == "invalid_reference" and s["score"] == 0.15, s)
+s = score_prediction([{"name": "circle_area", "arguments": {"r": 3},
+                       "label": "$var1"}], 36.0, GOLD, GOLD_OBS, 36.0)
+check("score: right answer, broken trace -> correct_answer_wrong_trace",
+      s["status"] == "correct_answer_wrong_trace" and s["score"] == 0.4, s)
+
+# --------------------------------------------------------- strong exact-win policy
+ok, why = solver_gap_verdict({"score": 0.5, "status": "under_call"},
+                             {"score": 0.85, "status": "partial_prefix"})
+check("gap: partial strong (0.85) rejected under exact_win policy",
+      not ok and why == "strong_solver_failed", why)
+
+# --------------------------------------------------------- diversity tracker
+from lib.agentic_data.quality import DiversityTracker  # noqa: E402
+dt = DiversityTracker(max_same_weak_score=0.4, max_same_failure_type=0.4,
+                      enforce_after=5)
+for _ in range(5):
+    dt.add(0.5, "correct_prefix_then_stop")
+check("diversity: cap blocks dominant weak-score bucket",
+      dt.verdict(0.5, "wrong_args") == "diversity_cap_weak_score")
+check("diversity: different bucket+type passes",
+      dt.verdict(0.2, "wrong_args") is None)
+dt2 = DiversityTracker(max_same_weak_score=0.9, max_same_failure_type=0.4,
+                       enforce_after=5)
+for _ in range(5):
+    dt2.add(0.5, "correct_prefix_then_stop")
+check("diversity: cap blocks dominant failure type",
+      dt2.verdict(0.3, "correct_prefix_then_stop")
+      == "diversity_cap_failure_type")
+check("diversity: not enforced during warmup",
+      DiversityTracker(enforce_after=50).verdict(0.5, "x") is None)
+
+# resume: caps on NEW rows only — legacy seed must not block 0.50 bucket
+dt_resume = DiversityTracker(resume_mode=True, max_same_weak_score=0.40,
+                             enforce_after=1)
+for _ in range(200):
+    dt_resume.seed_reference_from_rows([{
+        "solver_gap": {"weak_score": 0.5, "weak_status": "partial_prefix"}}])
+check("diversity resume: seed does not count toward enforcement n",
+      dt_resume.n == 0 and dt_resume.n_seed == 200)
+check("diversity resume: 0.50 bucket allowed in new set after homogeneous seed",
+      dt_resume.verdict(0.5, "wrong_args") is None)
+for _ in range(4):
+    dt_resume.add(0.5, "wrong_args")   # 4/4 = 100% of NEW -> at cap boundary
+check("diversity resume: cap still applies within NEW rows",
+      dt_resume.verdict(0.5, "wrong_tool") == "diversity_cap_weak_score")
 
 print()
 if FAILURES:

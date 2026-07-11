@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 from collections import Counter
@@ -54,14 +55,57 @@ def _load_jsonl(path: str) -> List[Dict[str, Any]]:
     return rows
 
 
-def load_corpus(dataset_dir: str) -> List[Dict[str, Any]]:
+def load_corpus(dataset_dir: str) -> Dict[str, Any]:
+    """Load all filtered rows. Salvaged files (*.partial_salvaged.jsonl) are
+    skipped when their base file also has rows, to avoid double counting."""
     filtered = os.path.join(dataset_dir, "filtered")
     root = filtered if os.path.isdir(filtered) else dataset_dir
     rows: List[Dict[str, Any]] = []
-    for f in sorted(os.listdir(root)):
-        if f.endswith(".jsonl"):
-            rows.extend(_load_jsonl(os.path.join(root, f)))
-    return rows
+    per_file: Dict[str, int] = {}
+    names = sorted(f for f in os.listdir(root) if f.endswith(".jsonl"))
+    for f in names:
+        if ".partial_salvaged" in f:
+            base = f.replace(".partial_salvaged", "")
+            base_path = os.path.join(root, base)
+            if os.path.isfile(base_path) and os.path.getsize(base_path) > 0:
+                print(f"[score] skipping {f} (base file {base} has rows — "
+                      "avoiding double count)")
+                continue
+        got = _load_jsonl(os.path.join(root, f))
+        per_file[f] = len(got)
+        rows.extend(got)
+    return {"rows": rows, "per_file": per_file}
+
+
+def completeness_section(dataset_dir: str,
+                         rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Compare actual rows per stage against manifest targets.
+
+    A dataset below target is PARTIAL — that is a status, not a scoring error."""
+    manifest_path = os.path.join(
+        dataset_dir, "manifests", "curriculum_v4_agentic_openrouter_manifest.json")
+    targets: Dict[str, int] = {}
+    if os.path.isfile(manifest_path):
+        with open(manifest_path, encoding="utf-8") as fh:
+            m = json.load(fh)
+        targets = (m.get("extra") or {}).get("targets") or {}
+    by_stage = Counter(row.get("stage") for row in rows)
+    stages: Dict[str, Any] = {}
+    for stage in sorted(set(list(targets) + list(by_stage))):
+        t = targets.get(stage)
+        n = by_stage.get(stage, 0)
+        stages[stage] = {
+            "target": t, "rows": n,
+            "status": "unknown" if t is None
+            else ("complete" if n >= t else "partial"),
+        }
+    overall = "unknown"
+    if targets:
+        overall = "complete" if all(
+            s["status"] == "complete" for s in stages.values()
+            if s["target"] is not None) else "partial"
+    return {"manifest_found": bool(targets), "stages": stages,
+            "overall_status": overall}
 
 
 # ---------------------------------------------------------------- sections
@@ -168,16 +212,59 @@ def distribution_section(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     return out
 
 
+def _entropy(counter: Counter) -> float:
+    """Shannon entropy (bits) of a count distribution."""
+    total = sum(counter.values())
+    if total <= 0:
+        return 0.0
+    ent = 0.0
+    for n in counter.values():
+        if n > 0:
+            p = n / total
+            ent -= p * math.log2(p)
+    return round(ent, 4)
+
+
+# Diversity gates for training_candidate (mirror of the generation-time caps)
+MAX_WEAK_BUCKET_DOMINANCE = float(
+    os.environ.get("DIVERSITY_MAX_SAME_WEAK_SCORE", "0.40"))
+MAX_FAILURE_TYPE_DOMINANCE = float(
+    os.environ.get("DIVERSITY_MAX_SAME_FAILURE_TYPE", "0.40"))
+MIN_FAILURE_TYPES_PER_STAGE = int(
+    os.environ.get("DIVERSITY_MIN_FAILURE_TYPES_PER_STAGE", "4"))
+MIN_STRONG_EXACT_WIN_RATE = 0.95
+
+
 def solver_gap_section(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
-    gaps = [row.get("solver_gap") for row in rows
+    gaps = [(row.get("stage"), row.get("solver_gap")) for row in rows
             if isinstance(row.get("solver_gap"), dict)]
     if not gaps:
         return {"available": False}
-    weak = [float(g.get("weak_score", 0)) for g in gaps]
-    strong = [float(g.get("strong_score", 0)) for g in gaps]
-    gap_vals = [float(g.get("gap", 0)) for g in gaps]
-    wfsp = sum(1 for g in gaps if float(g.get("weak_score", 1)) <= 0.5
+    weak = [float(g.get("weak_score", 0)) for _s, g in gaps]
+    strong = [float(g.get("strong_score", 0)) for _s, g in gaps]
+    gap_vals = [float(g.get("gap", 0)) for _s, g in gaps]
+    wfsp = sum(1 for _s, g in gaps if float(g.get("weak_score", 1)) <= 0.5
                and float(g.get("strong_score", 0)) >= 0.8)
+
+    # --- diversity metrics over ACCEPTED rows ------------------------------
+    ws_buckets = Counter(f"{w:.2f}" for w in weak)
+    failure_types = Counter(str(g.get("weak_status") or "unknown")
+                            for _s, g in gaps)
+    per_stage_types: Dict[str, set] = {}
+    for stage, g in gaps:
+        per_stage_types.setdefault(str(stage), set()).add(
+            str(g.get("weak_status") or "unknown"))
+    failure_types_per_stage = {s: len(t) for s, t in per_stage_types.items()}
+    weak_dominance = round(max(ws_buckets.values()) / len(gaps), 4)
+    failure_dominance = round(max(failure_types.values()) / len(gaps), 4)
+    strong_exact_win_rate = round(
+        sum(1 for s in strong if s >= 0.999) / len(strong), 4)
+    diversity_pass = bool(
+        weak_dominance <= MAX_WEAK_BUCKET_DOMINANCE
+        and failure_dominance <= MAX_FAILURE_TYPE_DOMINANCE
+        and all(n >= MIN_FAILURE_TYPES_PER_STAGE
+                for n in failure_types_per_stage.values()))
+
     return {
         "available": True,
         "n": len(gaps),
@@ -186,6 +273,22 @@ def solver_gap_section(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         "avg_strong_score": round(sum(strong) / len(strong), 4),
         "avg_gap": round(sum(gap_vals) / len(gap_vals), 4),
         "positive": (sum(gap_vals) / len(gap_vals)) >= 0.25,
+        # diversity metrics (accepted rows)
+        "weak_score_histogram": dict(sorted(ws_buckets.items())),
+        "weak_score_entropy": _entropy(ws_buckets),
+        "weak_score_bucket_dominance": weak_dominance,
+        "failure_type_histogram": dict(failure_types.most_common()),
+        "failure_type_entropy": _entropy(failure_types),
+        "failure_type_dominance": failure_dominance,
+        "accepted_failure_type_diversity": failure_types_per_stage,
+        "strong_exact_win_rate": strong_exact_win_rate,
+        "diversity_pass": diversity_pass,
+        "diversity_gates": {
+            "max_weak_score_bucket_dominance": MAX_WEAK_BUCKET_DOMINANCE,
+            "max_failure_type_dominance": MAX_FAILURE_TYPE_DOMINANCE,
+            "min_failure_types_per_stage": MIN_FAILURE_TYPES_PER_STAGE,
+            "min_strong_exact_win_rate": MIN_STRONG_EXACT_WIN_RATE,
+        },
     }
 
 
@@ -232,10 +335,37 @@ def main() -> int:
     args = ap.parse_args()
 
     dataset_dir = os.path.abspath(args.dataset_dir)
-    rows = load_corpus(dataset_dir)
+    corpus = load_corpus(dataset_dir)
+    rows = corpus["rows"]
     print(f"[score] dataset: {dataset_dir} ({len(rows)} rows)")
+    for f, n in corpus["per_file"].items():
+        print(f"[score]   {f}: {n} rows")
+    completeness = completeness_section(dataset_dir, rows)
+    if completeness["overall_status"] == "partial":
+        print("[score] dataset is PARTIAL (below target) — scoring anyway; "
+              "partial is a status, not an error")
     if not rows:
-        print("[score] ERROR: no rows found", file=sys.stderr)
+        # 0 rows is scoreable-empty, not a crash: write a minimal report so
+        # downstream tooling always finds one, then exit 1 with a clear message.
+        out_base = args.out or os.path.join(dataset_dir, "reports",
+                                            "DATASET_QUALITY")
+        os.makedirs(os.path.dirname(out_base), exist_ok=True)
+        empty = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "dataset_dir": os.path.relpath(dataset_dir, REPO_ROOT),
+            "completeness": completeness,
+            "verdict": {"status": "empty", "technically_acceptable": False,
+                        "training_candidate": False, "actually_useful": None},
+        }
+        with open(out_base + ".json", "w", encoding="utf-8") as fh:
+            json.dump(empty, fh, indent=2)
+        with open(out_base + ".md", "w", encoding="utf-8") as fh:
+            fh.write("# Dataset quality report\n\nStatus: **EMPTY** — no rows "
+                     "in filtered/*.jsonl. If a run printed nonzero accepted "
+                     "counts, persistence is broken (see "
+                     "AGENTIC_DEBUG_REPORT.md).\n")
+        print("[score] EMPTY dataset: 0 rows in filtered/*.jsonl "
+              "(report written; exit 1)", file=sys.stderr)
         return 1
 
     validity = validity_section(rows)
@@ -248,13 +378,19 @@ def main() -> int:
                                   and contamination["hard_gates_pass"])
     training_candidate = bool(
         technically_acceptable
+        and completeness["overall_status"] == "complete"
         and distribution.get("closer_than_v3_1") is True
         and solver_gap.get("positive") is True
+        and solver_gap.get("strong_exact_win_rate", 0) >= MIN_STRONG_EXACT_WIN_RATE
+        and solver_gap.get("weak_score_bucket_dominance", 1.0)
+        <= MAX_WEAK_BUCKET_DOMINANCE
+        and solver_gap.get("diversity_pass") is True
         and grpo.get("available") is True)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "dataset_dir": os.path.relpath(dataset_dir, REPO_ROOT),
+        "completeness": completeness,
         "validity": validity,
         "contamination": contamination,
         "distribution": {k: v for k, v in distribution.items() if k != "stats"},
@@ -276,12 +412,24 @@ def main() -> int:
     md = [
         "# Dataset quality report", "",
         f"Dataset: `{report['dataset_dir']}` | rows: {validity['n_rows']} | "
+        f"status: **{completeness['overall_status']}** | "
         f"generated {report['generated_at']}", "",
+        "## Completeness", "",
+        "| stage | rows | target | status |", "|---|---|---|---|",
+    ]
+    for stage, s in completeness["stages"].items():
+        md.append(f"| {stage} | {s['rows']} | {s['target']} | {s['status']} |")
+    md += [
+        "",
         "## Verdict", "",
+        f"- dataset status: **{completeness['overall_status']}** (partial = "
+        "below target; still valid and scoreable)",
         f"- technically_acceptable: **{technically_acceptable}**",
         f"- training_candidate: **{training_candidate}**"
         + ("" if training_candidate else
-           " (needs: distribution closer than v3.1, positive solver gap, "
+           " (needs: complete targets, distribution closer than v3.1, "
+           "positive solver gap, strong_exact_win_rate >= 0.95, "
+           "weak-score dominance <= 0.40, failure-type diversity, "
            "probe signal available and better)"),
         "- actually_useful: **undetermined** — only training + same-batch "
         "official NESTFUL eval can decide this. Do not claim the dataset is "
@@ -317,7 +465,8 @@ def main() -> int:
     with open(out_base + ".md", "w", encoding="utf-8") as fh:
         fh.write("\n".join(md) + "\n")
 
-    print(f"[score] verdict: technically_acceptable={technically_acceptable} "
+    print(f"[score] verdict: status={completeness['overall_status']} "
+          f"technically_acceptable={technically_acceptable} "
           f"training_candidate={training_candidate}")
     print(f"[score] reports: {out_base}.md / .json")
     return 0

@@ -8,12 +8,13 @@ override a failed execution check.
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from ..nestful_like_generator import TOOLS, execute_call
 from .schema import question_leak_errors
 
-JUDGE_MIN_QUALITY = 0.6
+JUDGE_MIN_QUALITY = float(os.environ.get("JUDGE_MIN_QUALITY", "0.6"))
 
 
 def execute_gold_trace(gold_calls: List[Dict[str, Any]]

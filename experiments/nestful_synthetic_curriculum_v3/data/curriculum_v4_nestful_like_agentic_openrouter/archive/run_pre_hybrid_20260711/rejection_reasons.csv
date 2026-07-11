@@ -1,0 +1,8 @@
+reason,count
+weak_solver_passed,6
+strong_solver_failed,5
+duplicate_trace,3
+invalid_schema,3
+diversity_cap_weak_score,2
+invalid_json,1
+non_executable_gold_trace,1

@@ -44,6 +44,12 @@ archive/runs_pre_v3_1/
 data/curriculum_v4_nestful_like_agentic_openrouter/raw/
 data/curriculum_v4_nestful_like_agentic_openrouter_mock/
 
+# Multi-GPU worker scratch dirs (launch_multi_gpu_workers.sh): per-worker
+# raw/filtered/rejected/manifests + tmux logs are intermediate — only the
+# MERGED canonical filtered/*.jsonl (written by merge_agentic_workers.py into
+# data/curriculum_v4_nestful_like_agentic_openrouter/) is committable data.
+data/agentic_workers/
+
 # Local scratch
 __pycache__/
 *.pyc

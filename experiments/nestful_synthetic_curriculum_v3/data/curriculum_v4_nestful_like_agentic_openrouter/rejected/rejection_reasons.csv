@@ -1,0 +1,6 @@
+reason,count
+weak_solver_passed,3
+unresolved_var,2
+invalid_schema,2
+not_nestful_like,1
+metadata_leakage,1

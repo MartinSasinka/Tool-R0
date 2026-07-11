@@ -1,0 +1,255 @@
+{
+  "manifest_version": 1,
+  "kind": "curriculum_v4_agentic_openrouter",
+  "created_utc": "2026-07-10T09:51:25.826195+00:00",
+  "git": {
+    "commit": "d6e17d4428b48a49329dc3a7fee7522f100272c4",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v4_agentic_openrouter.py",
+    "--resume",
+    "--stages",
+    "stage2_2call_agentic_openrouter",
+    "--seed",
+    "43"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [
+    {
+      "name": "stage2_2call_agentic_openrouter.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like_agentic_openrouter/filtered/stage2_2call_agentic_openrouter.jsonl",
+      "sha256": "5a2e05f314ba793501b5915f29f35b0299dcade574c5a680ce0963fef537918c",
+      "n_rows": 228
+    }
+  ],
+  "seed": 43,
+  "decoding": {},
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.5.1",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null,
+    "gpu": {
+      "count": 1,
+      "gpus": [
+        "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "backend": "openrouter",
+    "mock": false,
+    "salvage": false,
+    "resume": true,
+    "models": {
+      "challenger": "deepseek/deepseek-chat",
+      "weak_solver": "deepseek/deepseek-chat",
+      "strong_solver": "deepseek/deepseek-chat",
+      "judge": "deepseek/deepseek-chat"
+    },
+    "targets": {
+      "stage2_2call_agentic_openrouter": 800
+    },
+    "target_resolution": {
+      "default": "800/stage",
+      "det_v4_mirror_raw": {
+        "stage2_2call_agentic_openrouter": 800,
+        "stage3_3call_agentic_openrouter": 800,
+        "stage4_4to6call_agentic_openrouter": 1600
+      },
+      "stage4_decision": {
+        "mirrored_sum": 1600,
+        "used": 800,
+        "reason": "two det. stages map to agentic stage4; uniform 800/stage kept"
+      },
+      "source": "det_v4_mirror",
+      "final_targets": {
+        "stage2_2call_agentic_openrouter": 800
+      }
+    },
+    "accepted": {
+      "stage2_2call_agentic_openrouter": 228
+    },
+    "completion": {
+      "stage2_2call_agentic_openrouter": {
+        "target": 800,
+        "accepted": 228,
+        "status": "partial"
+      }
+    },
+    "rejected_total": 21,
+    "rejection_reasons": {
+      "invalid_json": 1,
+      "duplicate_trace": 3,
+      "weak_solver_passed": 6,
+      "strong_solver_failed": 5,
+      "invalid_schema": 3,
+      "non_executable_gold_trace": 1,
+      "diversity_cap_weak_score": 2
+    },
+    "tool_schema_source_policy": "aggregate_style_only",
+    "client_stats": {
+      "n_requests": 39,
+      "n_cache_hits": 0,
+      "n_retries": 0,
+      "n_json_fallbacks": 0,
+      "prompt_tokens": 27807,
+      "completion_tokens": 9283,
+      "spend_usd": 0.014888,
+      "by_role": {
+        "challenger": {
+          "requests": 5,
+          "cache_hits": 0,
+          "prompt_tokens": 5739,
+          "completion_tokens": 5904,
+          "spend_usd": 0.006212
+        },
+        "weak_solver": {
+          "requests": 13,
+          "cache_hits": 0,
+          "prompt_tokens": 7817,
+          "completion_tokens": 1253,
+          "spend_usd": 0.003084
+        },
+        "strong_solver": {
+          "requests": 21,
+          "cache_hits": 0,
+          "prompt_tokens": 14251,
+          "completion_tokens": 2126,
+          "spend_usd": 0.005591
+        }
+      }
+    },
+    "stage_summaries": {
+      "stage2_2call_agentic_openrouter": {
+        "target": 800,
+        "accepted": 228,
+        "resumed_from": 228,
+        "accepted_new": 0,
+        "status": "partial",
+        "iterations": 5,
+        "mean_rounds_per_accept": null,
+        "recipe": {
+          "version": "agentic_v1.4",
+          "iteration": 4,
+          "learnings": [
+            "The weak solver keeps succeeding. Increase implicitness: avoid phrasing that mirrors tool names, require the model to infer the correct order of dependent calls.",
+            "The strong solver failed — questions were ambiguous about argument binding. State units and quantities clearly; each argument must be either a stated literal or exactly one previous result.",
+            "Tool chains repeated earlier batches. Vary tool combinations and argument values.",
+            "Some gold traces did not execute. Use ONLY tools from the registry with EXACTLY the listed parameter names; reference a previous result as \"$varN.<output_key>$\" using that tool's output key.",
+            "Recent accepted tasks all have the SAME difficulty level for the weak solver. Vary difficulty: mix tasks where the solver would fail immediately (wrong tool/args) with tasks where it would fail only at the last step.",
+            "The strong solver failed — questions were ambiguous about argument binding. State units and quantities clearly; each argument must be either a stated literal or exactly one previous result."
+          ],
+          "history": [
+            {
+              "iteration": 1,
+              "rejections": {
+                "duplicate_trace": 2,
+                "weak_solver_passed": 2,
+                "strong_solver_failed": 1
+              },
+              "batch_stats": {
+                "iteration": 2,
+                "accepted_total": 228,
+                "weak_mean": 0.833,
+                "strong_mean": 0.5
+              }
+            },
+            {
+              "iteration": 2,
+              "rejections": {
+                "invalid_schema": 2,
+                "weak_solver_passed": 1,
+                "strong_solver_failed": 2
+              },
+              "batch_stats": {
+                "iteration": 3,
+                "accepted_total": 228,
+                "weak_mean": 0.667,
+                "strong_mean": 0.5
+              }
+            },
+            {
+              "iteration": 3,
+              "rejections": {
+                "non_executable_gold_trace": 1,
+                "diversity_cap_weak_score": 1,
+                "strong_solver_failed": 1,
+                "invalid_schema": 1,
+                "weak_solver_passed": 1
+              },
+              "batch_stats": {
+                "iteration": 4,
+                "accepted_total": 228,
+                "weak_mean": 0.667,
+                "strong_mean": 0.75
+              }
+            },
+            {
+              "iteration": 4,
+              "rejections": {
+                "strong_solver_failed": 1,
+                "duplicate_trace": 1,
+                "weak_solver_passed": 2,
+                "diversity_cap_weak_score": 1
+              },
+              "batch_stats": {
+                "iteration": 5,
+                "accepted_total": 228,
+                "weak_mean": 0.75,
+                "strong_mean": 0.75
+              }
+            }
+          ]
+        },
+        "stage_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+        "rows_written": 228,
+        "resume_source": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+        "diversity": {
+          "n": 228,
+          "weak_score_buckets": {
+            "0.50": 212,
+            "0.10": 5,
+            "0.40": 9,
+            "0.00": 2
+          },
+          "failure_types": {
+            "partial_prefix": 208,
+            "execution_error": 5,
+            "wrong_answer": 9,
+            "parse_error": 2,
+            "under_call": 4
+          },
+          "weak_score_dominance": 0.9298,
+          "failure_type_dominance": 0.9123,
+          "caps": {
+            "max_same_weak_score": 0.4,
+            "max_same_failure_type": 0.4,
+            "enforce_after": 25
+          }
+        }
+      }
+    },
+    "stage_files": {
+      "stage2_2call_agentic_openrouter": {
+        "path": "experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+        "sha256": "5a2e05f314ba793501b5915f29f35b0299dcade574c5a680ce0963fef537918c",
+        "rows": 228
+      }
+    },
+    "status": "STOPPED EARLY: stage2_2call_agentic_openrouter: acceptance rate 0.000 < 0.02 after 5 batches (0 new accepted / 21 rejected this run) — revise the recipe manually",
+    "final_validation_problems": 0
+  }
+}

@@ -15,6 +15,37 @@ _VAR_RE = re.compile(r"\$[A-Za-z_]\w*(\.\w+)?\$")
 DIMENSIONS = ("call_count_dist", "offered_tools_dist", "tool_arity_dist",
               "arg_type_dist", "answer_type_dist")
 
+# Reported (not L1-scored against NESTFUL — the tool/domain vocabulary is
+# ours, not NESTFUL's, so a distance comparison there would be meaningless)
+# per the 2026-07-11 diversity-gate audit: tool-family and question-template
+# distribution, in addition to the dimensions above.
+_FIRST_THEN_RE = re.compile(r"\bfirst\b.{0,80}\bthen\b", re.IGNORECASE)
+_ENUMERATED_RE = re.compile(r"(^|\s)(1\)|step\s*1\b)", re.IGNORECASE)
+_CONDITIONAL_RE = re.compile(r"\b(if|whenever|assuming|given that)\b", re.IGNORECASE)
+
+
+def question_template_bucket(question: str) -> str:
+    """Coarse heuristic classification of question phrasing style (spec:
+    guard against the pilot's 'First ... then ...' monoculture)."""
+    q = question or ""
+    if _ENUMERATED_RE.search(q):
+        return "enumerated"
+    if _FIRST_THEN_RE.search(q):
+        return "first_then"
+    if _CONDITIONAL_RE.search(q):
+        return "conditional"
+    if q.rstrip().endswith("?"):
+        return "interrogative"
+    return "narrative_other"
+
+
+def _tool_domain(name: str) -> str:
+    try:
+        from ..nestful_like_generator import TOOLS
+        return TOOLS.get(name, {}).get("domain", "unknown")
+    except ImportError:
+        return "unknown"
+
 
 def _coerce(v: Any) -> Any:
     if isinstance(v, str):
@@ -78,6 +109,8 @@ def corpus_stats(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     ans_types: Counter = Counter()
     motifs: Counter = Counter()
     used_tools: Counter = Counter()
+    tool_families: Counter = Counter()
+    templates: Counter = Counter()
     q_lens: List[int] = []
     for raw in rows:
         r = norm_row(raw)
@@ -88,13 +121,17 @@ def corpus_stats(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
                 arity[min(_tool_arity(t), 6)] += 1
         for c in r["gold_calls"]:
             if isinstance(c, dict):
-                used_tools[str(c.get("name"))] += 1
+                name = str(c.get("name"))
+                used_tools[name] += 1
+                tool_families[_tool_domain(name)] += 1
                 for v in (c.get("arguments") or {}).values():
                     arg_types[_arg_type(v)] += 1
         ans_types[_answer_type(r["gold_answer"])] += 1
         if r["motif_type"]:
             motifs[str(r["motif_type"])] += 1
+        templates[question_template_bucket(r["question"])] += 1
         q_lens.append(len(r["question"].split()))
+    n = len(rows) or 1
     return {
         "n_rows": len(rows),
         "call_count_dist": dict(sorted(call_counts.items())),
@@ -103,8 +140,17 @@ def corpus_stats(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
         "arg_type_dist": dict(sorted(arg_types.items())),
         "answer_type_dist": dict(sorted(ans_types.items())),
         "motif_dist": dict(motifs.most_common()),
+        "tool_family_dist": dict(tool_families.most_common()),
+        "question_template_dist": dict(templates.most_common()),
         "used_tools_top": dict(used_tools.most_common(15)),
         "mean_question_words": round(sum(q_lens) / len(q_lens), 1) if q_lens else None,
+        "dominance": {
+            "motif": round(max(motifs.values()) / n, 4) if motifs else None,
+            "answer_type": round(max(ans_types.values()) / n, 4) if ans_types else None,
+            "tool_family": round(max(tool_families.values()) / sum(tool_families.values()), 4)
+            if tool_families else None,
+            "question_template": round(max(templates.values()) / n, 4) if templates else None,
+        },
     }
 
 

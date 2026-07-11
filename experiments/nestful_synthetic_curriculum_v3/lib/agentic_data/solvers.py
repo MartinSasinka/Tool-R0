@@ -14,6 +14,7 @@ The LLM judge never changes these numbers.
 from __future__ import annotations
 
 import json
+import os
 from typing import Any, Dict, List, Optional, Tuple
 
 from ..nestful_like_generator import TOOLS, execute_call
@@ -23,9 +24,52 @@ STRONG_MAX_TOKENS = 1400
 STRONG_ATTEMPTS = 3
 _NUM_TOL = 0.011  # gold answers are rounded to 2 decimals
 
+# Solver-mode config (spec 7A). Defaults reproduce the historical behavior so
+# cached runs stay replayable:
+#   WEAK_SOLVER_MODE:   minimal (default)  = single attempt, 700 tokens, no
+#                                            planning scaffold (current);
+#                       handicapped        = 400 tokens, continuation-pressure
+#                                            hint removed (weaker weak solver);
+#   STRONG_SOLVER_MODE: scaffolded (default) = best-of-3 + planning scaffold;
+#                       plain                = single attempt, no scaffold.
+WEAK_SOLVER_MODES = ("minimal", "handicapped")
+STRONG_SOLVER_MODES = ("scaffolded", "plain")
+
+
+def weak_solver_mode() -> str:
+    mode = os.environ.get("WEAK_SOLVER_MODE", "minimal")
+    if mode not in WEAK_SOLVER_MODES:
+        raise ValueError(f"WEAK_SOLVER_MODE={mode!r} not in {WEAK_SOLVER_MODES}")
+    return mode
+
+
+def strong_solver_mode() -> str:
+    mode = os.environ.get("STRONG_SOLVER_MODE", "scaffolded")
+    if mode not in STRONG_SOLVER_MODES:
+        raise ValueError(f"STRONG_SOLVER_MODE={mode!r} not in {STRONG_SOLVER_MODES}")
+    return mode
+
+
+def solver_params(strong: bool) -> Dict[str, Any]:
+    """Attempts / token budget / temperature for the configured solver mode."""
+    if strong:
+        mode = strong_solver_mode()
+        return {"mode": mode,
+                "attempts": STRONG_ATTEMPTS if mode == "scaffolded" else 1,
+                "max_tokens": STRONG_MAX_TOKENS,
+                "temperature": 0.7}
+    mode = weak_solver_mode()
+    return {"mode": mode,
+            "attempts": 1,
+            "max_tokens": 400 if mode == "handicapped" else WEAK_MAX_TOKENS,
+            "temperature": 0.2}
+
 
 def solver_messages(question: str, tools: List[Dict[str, Any]],
-                    strong: bool) -> List[Dict[str, str]]:
+                    strong: bool, mode: Optional[str] = None
+                    ) -> List[Dict[str, str]]:
+    if mode is None:
+        mode = strong_solver_mode() if strong else weak_solver_mode()
     tool_lines = []
     for t in tools:
         props = (t.get("parameters") or {}).get("properties") or {}
@@ -33,21 +77,26 @@ def solver_messages(question: str, tools: List[Dict[str, Any]],
         out = ", ".join((t.get("output_parameters") or {}).keys()) or "output"
         tool_lines.append(f"- {t['name']}({params}) -> {out}: {t.get('description', '')}")
     scaffold = ""
-    if strong:
+    if strong and mode == "scaffolded":
         scaffold = (
             "\nBefore answering, PLAN silently: identify every required step, "
             "which tool computes it, and which argument takes a previous "
             "result. Verify the call count matches the number of steps in the "
             "question. Then output only the JSON."
         )
+    # the continuation-pressure hint is a (mild) planning aid — the
+    # handicapped weak mode drops it to widen the weak/strong gap (spec 7A)
+    pressure = (
+        " Perform ALL steps the question asks for — do not stop after the "
+        "first call, and do not answer directly without calls."
+        if not (not strong and mode == "handicapped") else ""
+    )
     system = (
         "You solve tasks by composing function calls. Output STRICT JSON only:\n"
         "{\"calls\": [{\"name\": \"tool\", \"arguments\": {...}, "
         "\"label\": \"$var1\"}], \"final_answer\": <value or null>}\n"
         "To use the result of an earlier call as an argument, write the string "
-        "\"$varN.<output_key>$\" (N = 1-based call index). Perform ALL steps "
-        "the question asks for — do not stop after the first call, and do not "
-        "answer directly without calls." + scaffold
+        "\"$varN.<output_key>$\" (N = 1-based call index)." + pressure + scaffold
     )
     user = f"TOOLS:\n" + "\n".join(tool_lines) + f"\n\nTASK:\n{question}"
     return [{"role": "system", "content": system},
@@ -96,11 +145,28 @@ def _execute_predicted(calls: List[Dict[str, Any]]) -> Tuple[List[Any], Optional
             return observations, "wrong_args"
         try:
             obs = execute_call(name, call["arguments"], scope)
+        except KeyError:
+            # unresolved $var reference — distinct failure mode (reference
+            # misuse), not a generic execution error
+            return observations, "invalid_reference"
         except Exception:  # noqa: BLE001
             return observations, "execution_error"
         scope[str(call.get("label", f"$var{i + 1}")).lstrip("$")] = obs
         observations.append(obs)
     return observations, None
+
+
+# Weak-failure taxonomy (diversity accounting). Every score_prediction status
+# is one of these when the attempt is not a win:
+#   no_tool_call, no_calls_right_answer, parse_error, wrong_tool, wrong_args,
+#   invalid_reference, execution_error, under_call, correct_prefix_then_stop,
+#   partial_prefix, correct_answer_wrong_trace, wrong_answer
+FAILURE_TYPES = (
+    "no_tool_call", "no_calls_right_answer", "parse_error", "wrong_tool",
+    "wrong_args", "invalid_reference", "execution_error", "under_call",
+    "correct_prefix_then_stop", "partial_prefix",
+    "correct_answer_wrong_trace", "wrong_answer",
+)
 
 
 def score_prediction(predicted: Optional[List[Dict[str, Any]]],
@@ -138,17 +204,28 @@ def score_prediction(predicted: Optional[List[Dict[str, Any]]],
         else:
             break
     if prefix > 0 and prefix < n_gold:
-        # 0.5 .. 0.8 by prefix depth
+        # 0.5 .. 0.8 by prefix depth; refined statuses for diversity accounting
         score = 0.5 + 0.3 * (prefix - 1) / max(1, n_gold - 1)
-        status = "under_call" if n_pred < n_gold and err is None else "partial_prefix"
+        if err is None and n_pred == prefix:
+            status = "correct_prefix_then_stop"   # clean stop after good prefix
+        elif err is None and n_pred < n_gold:
+            status = "under_call"                 # under-called, extra divergence
+        else:
+            status = "partial_prefix"             # diverged / broke mid-trace
         return {"score": round(min(score, 0.8), 3), "status": status,
                 "n_calls": n_pred, "prefix": prefix}
 
     # failures 0.0-0.4
+    if final_answer is not None and _num_eq(final_answer, gold_answer):
+        # right final answer but no usable trace — distinct category
+        return {"score": 0.4, "status": "correct_answer_wrong_trace",
+                "n_calls": n_pred}
     if err is not None and err.startswith("wrong_tool"):
         return {"score": 0.1, "status": "wrong_tool", "n_calls": n_pred}
     if err == "wrong_args":
         return {"score": 0.2, "status": "wrong_args", "n_calls": n_pred}
+    if err == "invalid_reference":
+        return {"score": 0.15, "status": "invalid_reference", "n_calls": n_pred}
     if err == "execution_error":
         return {"score": 0.1, "status": "execution_error", "n_calls": n_pred}
     if n_pred < n_gold:

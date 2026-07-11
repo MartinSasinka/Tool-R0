@@ -1,0 +1,90 @@
+{
+  "manifest_version": 1,
+  "kind": "stage_probe",
+  "created_utc": "2026-07-09T19:30:20.043918+00:00",
+  "git": {
+    "commit": "d6e17d4428b48a49329dc3a7fee7522f100272c4",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/scripts/probe/probe_stage.py",
+    "--reward-policy",
+    "execution_aware_v3_2_dense",
+    "--num-tasks",
+    "50",
+    "--num-generations",
+    "8",
+    "--temperature",
+    "1.0",
+    "--top-p",
+    "0.95",
+    "--seed",
+    "42",
+    "--backend",
+    "vllm",
+    "--dataset",
+    "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage1_2call.jsonl"
+  ],
+  "config": {
+    "path": "experiments/nestful_mtgrpo_partial/config.yaml",
+    "sha256": "e4812dce72d65438b25b93516ef29e1fd27205736ebd2e4cd8781065455c8530",
+    "overrides": [
+      "reward.train_policy=execution_aware_v3_2_dense",
+      "generation.temperature=1.0",
+      "generation.top_p=0.95",
+      "experiment.seed=42",
+      "experiment.output_dir=/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/probes/probe_ds_execution_aware_v3_2_dense_20260709_191519",
+      "hardware.use_vllm=true"
+    ]
+  },
+  "datasets": [
+    {
+      "name": "v4_stage1_2call.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like/filtered/v4_stage1_2call.jsonl",
+      "sha256": "ad979aa72016b924efd0da2ef7657d59a6b26b981d71307eaca7aedad50eeaf2",
+      "n_rows": 800
+    }
+  ],
+  "seed": 42,
+  "decoding": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "environment": {
+    "hostname": "a05c249fd5bd",
+    "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "torch": "2.9.0",
+    "vllm": "0.12.0",
+    "transformers": "4.57.6",
+    "peft": "0.18.1",
+    "gpu": {
+      "count": 4,
+      "gpus": [
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "reward": {
+      "configured_policy": "execution_aware_v3_2_dense",
+      "resolved_policy": "execution_aware_v3_2_dense",
+      "reward_fn_module": "lib.reward_v3_2_dense",
+      "reward_fn_name": "episode_turn_reward_seq",
+      "fallback_used": false
+    },
+    "checkpoint": null,
+    "backend": "vllm",
+    "num_tasks": 50,
+    "num_generations": 8,
+    "dead_group_rate": 0.86,
+    "proceed_recommendation": false
+  }
+}

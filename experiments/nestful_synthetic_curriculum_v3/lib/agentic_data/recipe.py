@@ -64,6 +64,16 @@ _FEEDBACK_RULES: Dict[str, str] = {
     "cot_leakage":
         "Do not include long reasoning in `rationale`; one short sentence "
         "maximum.",
+    "diversity_cap_weak_score":
+        "Recent accepted tasks all have the SAME difficulty level for the "
+        "weak solver. Vary difficulty: mix tasks where the solver would fail "
+        "immediately (wrong tool/args) with tasks where it would fail only at "
+        "the last step.",
+    "diversity_cap_failure_type":
+        "The weak solver keeps failing in the SAME way on accepted tasks. "
+        "Vary the failure mode you target: sometimes make argument binding "
+        "the hard part, sometimes tool choice among similar distractors, "
+        "sometimes reference reuse of an EARLY result, sometimes chain length.",
 }
 
 

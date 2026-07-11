@@ -1,0 +1,254 @@
+{
+  "manifest_version": 1,
+  "kind": "curriculum_v4_agentic_openrouter",
+  "created_utc": "2026-07-11T08:42:19.681927+00:00",
+  "git": {
+    "commit": "d6e17d4428b48a49329dc3a7fee7522f100272c4",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v4_agentic_openrouter.py",
+    "--pilot",
+    "--stages",
+    "stage2_2call_agentic_openrouter",
+    "--seed",
+    "44"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [
+    {
+      "name": "stage2_2call_agentic_openrouter.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/curriculum_v4_nestful_like_agentic_openrouter/filtered/stage2_2call_agentic_openrouter.jsonl",
+      "sha256": "99fc12c11f1a3f683b4797a80a999a92ff5670134d14c02a5f09951e5daf46d0",
+      "n_rows": 10
+    }
+  ],
+  "seed": 44,
+  "decoding": {},
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.6.0+cu124",
+    "vllm": null,
+    "transformers": "5.0.0",
+    "peft": null,
+    "gpu": {
+      "count": 1,
+      "gpus": [
+        "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "backend": "openrouter",
+    "mock": false,
+    "salvage": false,
+    "resume": false,
+    "models": {
+      "challenger": "deepseek/deepseek-v3.2",
+      "weak_solver": "Qwen/Qwen3-4B-Instruct-2507",
+      "strong_solver": "qwen/qwen3-235b-a22b-2507",
+      "judge": "deepseek/deepseek-v3.2"
+    },
+    "targets": {
+      "stage2_2call_agentic_openrouter": 10
+    },
+    "target_resolution": {
+      "default": "800/stage",
+      "det_v4_mirror_raw": {
+        "stage2_2call_agentic_openrouter": 800,
+        "stage3_3call_agentic_openrouter": 800,
+        "stage4_4to6call_agentic_openrouter": 1600
+      },
+      "stage4_decision": {
+        "mirrored_sum": 1600,
+        "used": 800,
+        "reason": "two det. stages map to agentic stage4; uniform 800/stage kept"
+      },
+      "source": "det_v4_mirror",
+      "pilot": 10,
+      "final_targets": {
+        "stage2_2call_agentic_openrouter": 10
+      }
+    },
+    "accepted": {
+      "stage2_2call_agentic_openrouter": 10
+    },
+    "completion": {
+      "stage2_2call_agentic_openrouter": {
+        "target": 10,
+        "accepted": 10,
+        "status": "complete"
+      }
+    },
+    "rejected_total": 9,
+    "rejection_reasons": {
+      "unresolved_var": 2,
+      "not_nestful_like": 1,
+      "metadata_leakage": 1,
+      "invalid_schema": 2,
+      "weak_solver_passed": 3
+    },
+    "tool_schema_source_policy": "aggregate_style_only",
+    "client_stats": {
+      "n_requests": 47,
+      "n_cache_hits": 1,
+      "n_retries": 0,
+      "n_json_fallbacks": 0,
+      "prompt_tokens": 27423,
+      "completion_tokens": 6411,
+      "spend_usd": 0.0063,
+      "by_role": {
+        "challenger": {
+          "requests": 3,
+          "cache_hits": 1,
+          "prompt_tokens": 3453,
+          "completion_tokens": 2972,
+          "spend_usd": 0.001581,
+          "local_requests": 0
+        },
+        "weak_solver": {
+          "requests": 0,
+          "cache_hits": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "spend_usd": 0.0,
+          "local_requests": 14
+        },
+        "strong_solver": {
+          "requests": 33,
+          "cache_hits": 0,
+          "prompt_tokens": 21471,
+          "completion_tokens": 2713,
+          "spend_usd": 0.003925,
+          "local_requests": 0
+        },
+        "judge": {
+          "requests": 11,
+          "cache_hits": 0,
+          "prompt_tokens": 2499,
+          "completion_tokens": 726,
+          "spend_usd": 0.000794,
+          "local_requests": 0
+        }
+      }
+    },
+    "stage_summaries": {
+      "stage2_2call_agentic_openrouter": {
+        "target": 10,
+        "accepted": 10,
+        "resumed_from": 0,
+        "accepted_new": 10,
+        "status": "complete",
+        "iterations": 4,
+        "mean_rounds_per_accept": 0.4,
+        "recipe": {
+          "version": "agentic_v1.4",
+          "iteration": 4,
+          "learnings": [
+            "The weak solver keeps succeeding. Increase implicitness: avoid phrasing that mirrors tool names, require the model to infer the correct order of dependent calls.",
+            "The weak solver keeps succeeding. Increase implicitness: avoid phrasing that mirrors tool names, require the model to infer the correct order of dependent calls.",
+            "Do not put $var...$ syntax into the question or final answer; references belong ONLY in gold_calls arguments.",
+            "Never mention stages, motifs, recipes or dataset names inside the question text.",
+            "Do not put $var...$ syntax into the question or final answer; references belong ONLY in gold_calls arguments.",
+            "Style drifted from NESTFUL: keep questions concise (25-60 words), concrete, single-paragraph, imperative or interrogative, with realistic everyday quantities."
+          ],
+          "history": [
+            {
+              "iteration": 1,
+              "rejections": {
+                "unresolved_var": 1,
+                "not_nestful_like": 1
+              },
+              "batch_stats": {
+                "iteration": 1,
+                "accepted_total": 3,
+                "weak_mean": 0.5,
+                "strong_mean": 1.0
+              }
+            },
+            {
+              "iteration": 2,
+              "rejections": {
+                "unresolved_var": 1,
+                "metadata_leakage": 1
+              },
+              "batch_stats": {
+                "iteration": 2,
+                "accepted_total": 6,
+                "weak_mean": 0.333,
+                "strong_mean": 1.0
+              }
+            },
+            {
+              "iteration": 3,
+              "rejections": {
+                "invalid_schema": 1,
+                "weak_solver_passed": 2
+              },
+              "batch_stats": {
+                "iteration": 3,
+                "accepted_total": 8,
+                "weak_mean": 0.75,
+                "strong_mean": 1.0
+              }
+            },
+            {
+              "iteration": 4,
+              "rejections": {
+                "weak_solver_passed": 1,
+                "invalid_schema": 1
+              },
+              "batch_stats": {
+                "iteration": 4,
+                "accepted_total": 10,
+                "weak_mean": 0.667,
+                "strong_mean": 1.0
+              }
+            }
+          ]
+        },
+        "stage_file": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+        "rows_written": 10,
+        "resume_source": null,
+        "diversity": {
+          "n_new": 10,
+          "weak_score_buckets_new": {
+            "0.50": 9,
+            "0.00": 1
+          },
+          "failure_types_new": {
+            "partial_prefix": 9,
+            "parse_error": 1
+          },
+          "weak_score_dominance_new": 0.9,
+          "failure_type_dominance_new": 0.9,
+          "caps": {
+            "max_same_weak_score": 0.4,
+            "max_same_failure_type": 0.4,
+            "enforce_after": 25,
+            "resume_mode": false
+          }
+        }
+      }
+    },
+    "stage_files": {
+      "stage2_2call_agentic_openrouter": {
+        "path": "experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+        "sha256": "99fc12c11f1a3f683b4797a80a999a92ff5670134d14c02a5f09951e5daf46d0",
+        "rows": 10
+      }
+    },
+    "status": "completed",
+    "final_validation_problems": 0
+  }
+}
