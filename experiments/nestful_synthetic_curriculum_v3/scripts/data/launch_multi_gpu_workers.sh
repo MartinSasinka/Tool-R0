@@ -69,6 +69,11 @@ if [[ "$PER_WORKER_TARGET" -gt 50 ]]; then
   echo "[launch] per-worker target ($PER_WORKER_TARGET) > 50 -> CONFIRM_FULL_AGENTIC_GENERATION=1 set for all workers"
 fi
 
+# Values captured here — tmux spawns a fresh shell that does NOT inherit the
+# parent env unless we embed them explicitly in each worker CMD.
+MAX_ITERS="${OPENROUTER_MAX_ITERATIONS_PER_STAGE:-2000}"
+CONFIRM_VAL="${CONFIRM_FULL_AGENTIC_GENERATION:-0}"
+
 mkdir -p "$OUT_BASE"
 
 for i in $(seq 0 $((NUM_GPUS - 1))); do
@@ -81,6 +86,8 @@ for i in $(seq 0 $((NUM_GPUS - 1))); do
   CMD=$(cat <<EOF
 cd "$REPO_ROOT" && \
 source "$V3_ROOT/.venv/bin/activate" && \
+export OPENROUTER_API_KEY="$OPENROUTER_API_KEY" && \
+export CONFIRM_FULL_AGENTIC_GENERATION="$CONFIRM_VAL" && \
 export CUDA_VISIBLE_DEVICES="$i" && \
 export WEAK_SOLVER_BACKEND="\${WEAK_SOLVER_BACKEND:-local}" && \
 export LOCAL_WEAK_DEVICE="cuda:0" && \
@@ -92,7 +99,7 @@ export OPENROUTER_JUDGE_MODEL="\${OPENROUTER_JUDGE_MODEL:-deepseek/deepseek-v3.2
 export AGENTIC_REWARD_POLICY="\${AGENTIC_REWARD_POLICY:-execution_aware_v3_2_dense}" && \
 export OPENROUTER_MAX_SPEND_USD="$PER_WORKER_SPEND" && \
 export OPENROUTER_MAX_REQUESTS="$PER_WORKER_REQUESTS" && \
-export OPENROUTER_MAX_ITERATIONS_PER_STAGE="\${OPENROUTER_MAX_ITERATIONS_PER_STAGE:-2000}" && \
+export OPENROUTER_MAX_ITERATIONS_PER_STAGE="$MAX_ITERS" && \
 export OPENROUTER_CACHE=1 OPENROUTER_SAVE_RAW=1 && \
 python experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v4_agentic_openrouter.py \
   --stages $STAGES \
