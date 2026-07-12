@@ -268,6 +268,31 @@ check("rollout signal: predicted_call_distribution recorded",
 check("rollout signal: failure_type_distribution recorded",
      summ["failure_type_distribution"].get("parse_error") == 7, summ)
 
+# spread without any full win — OK by default, rejected when achievable-win required
+SPREAD_NO_WIN = [_score(0.53, "correct_tool_wrong_args", 2),
+                 _score(0.53, "correct_tool_wrong_args", 2),
+                 _score(0.24, "too_few_calls", 1),
+                 _score(0.24, "too_few_calls", 1),
+                 _score(0.0, "parse_error", 0),
+                 _score(0.5, "partial_progress", 2),
+                 _score(0.5, "partial_progress", 2),
+                 _score(0.0, "parse_error", 0)]
+summ = summarize_rollouts(SPREAD_NO_WIN, n_gold_calls=2)
+check("rollout signal: spread-without-win IS grpo-positive by default",
+     summ["grpo_signal_positive"] is True, summ)
+os.environ["ROLLOUT_REQUIRE_ACHIEVABLE_WIN"] = "1"
+try:
+    summ = summarize_rollouts(SPREAD_NO_WIN, n_gold_calls=2)
+    check("rollout signal: spread-without-win rejected when achievable-win required",
+         summ["grpo_signal_positive"] is False and summ["achievable_win"] is False,
+         summ)
+    summ = summarize_rollouts(MIXED, n_gold_calls=2)
+    check("rollout signal: win+loss mix passes achievable-win gate",
+         summ["grpo_signal_positive"] is True and summ["achievable_win"] is True,
+         summ)
+finally:
+    os.environ.pop("ROLLOUT_REQUIRE_ACHIEVABLE_WIN", None)
+
 _old_backend_probe = os.environ.get("WEAK_SOLVER_BACKEND")
 os.environ.pop("WEAK_SOLVER_BACKEND", None)
 try:

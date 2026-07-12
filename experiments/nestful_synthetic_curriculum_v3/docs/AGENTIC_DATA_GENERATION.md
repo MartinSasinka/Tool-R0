@@ -220,7 +220,10 @@ prompt unless you explicitly set `AGENTIC_ROLLOUT_MODE=single_shot` (debug only)
 ```bash
 export WEAK_SOLVER_BACKEND=local
 export ROLLOUT_N=8
-export ROLLOUT_TEMPERATURE=0.8
+export ROLLOUT_TEMPERATURE=1.0
+# Require at least one full-win rollout (but not all) — model CAN solve it
+# sometimes; rejects spread-only partial-failure tasks.
+export ROLLOUT_REQUIRE_ACHIEVABLE_WIN=1
 # optional per-turn cap (0 = training config stage_defaults)
 export ROLLOUT_MAX_TOKENS=0
 ```

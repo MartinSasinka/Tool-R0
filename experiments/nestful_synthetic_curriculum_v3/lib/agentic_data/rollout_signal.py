@@ -52,6 +52,18 @@ ROLLOUT_MODE = os.environ.get("AGENTIC_ROLLOUT_MODE", "multiturn").strip().lower
 
 DEGENERATE_STATUSES = {"parse_error", "no_tool_call", "clipped"}
 
+
+def require_achievable_win() -> bool:
+    """When True, accept only tasks where the weak model sometimes fully wins
+    but not always — the sweet spot for GRPO (positive exemplars + variance).
+
+    Rejects spread-only tasks where every rollout is partial failure / parse
+    noise (still has unique_rewards >= 2 but the model never demonstrates a
+    complete solution in any sample).
+    """
+    return os.environ.get("ROLLOUT_REQUIRE_ACHIEVABLE_WIN", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
 
 _DEFAULT_CONFIG = PARTIAL / "config.yaml"
@@ -291,9 +303,13 @@ def summarize_rollouts(scored: List[Dict[str, Any]], n_gold_calls: int,
     all_degenerate = all(st in DEGENERATE_STATUSES for st in statuses)
     all_correct = full_success_rate >= 0.999
     all_identically_wrong = unique_rewards == 1 and full_success_rate == 0.0
+    # At least one rollout fully wins, but not all — model CAN solve it sometimes.
+    achievable_win = 0.0 < full_success_rate < 0.999
+    needs_achievable = require_achievable_win()
     grpo_signal_positive = (
         unique_rewards >= 2 and variance > 0.0 and not all_correct
-        and not all_identically_wrong and has_valid_trace and not all_degenerate)
+        and not all_identically_wrong and has_valid_trace and not all_degenerate
+        and (not needs_achievable or achievable_win))
     return {
         "n": n,
         "skipped": False,
@@ -310,6 +326,8 @@ def summarize_rollouts(scored: List[Dict[str, Any]], n_gold_calls: int,
         "failure_type_distribution": failure_dist,
         "has_valid_trace": has_valid_trace,
         "all_degenerate": all_degenerate,
+        "achievable_win": achievable_win,
+        "requires_achievable_win": needs_achievable,
         "grpo_signal_positive": grpo_signal_positive,
     }
 
