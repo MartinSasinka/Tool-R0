@@ -74,6 +74,31 @@ _FEEDBACK_RULES: Dict[str, str] = {
         "Vary the failure mode you target: sometimes make argument binding "
         "the hard part, sometimes tool choice among similar distractors, "
         "sometimes reference reuse of an EARLY result, sometimes chain length.",
+    "low_grpo_signal_prediction":
+        "Tasks lacked usable GRPO training signal for the weak model: rollouts "
+        "were all the same reward (too easy, all identical failures, or only "
+        "parse errors). Target the SWEET SPOT: the weak model should sometimes "
+        "succeed on a full trace but not always — vary WHICH step is hard "
+        "(tool choice among same-domain distractors, argument binding, or "
+        "reusing an earlier result). Avoid questions where every rollout fails "
+        "in exactly the same way.",
+    "weak_strong_gap_too_small":
+        "Weak and strong solvers scored too similarly — the task does not "
+        "separate them enough. Make the correct tool chain less obvious in the "
+        "question (no mirrored tool names), add plausible same-domain "
+        "distractors, and require inferring call order — while keeping every "
+        "literal value stated once and the gold trace executable.",
+    "invalid_trace_labels":
+        "Gold traces had invalid structure: labels must be unique sequential "
+        "$var1, $var2, ... (one per call); references must use the EXACT "
+        "output_key of the referenced call (e.g. \"$var1.output_0$\"); "
+        "tool_names length must match gold_calls; never reuse a label.",
+    "semantic_incompatible_reference":
+        "Arguments bound incompatible quantities (e.g. temperature into a money "
+        "slot, area into a rate-percent slot). Match semantic types: use "
+        "same-domain outputs for domain-specific slots; only generic slots "
+        "(part, whole, value, values, amount) may accept cross-domain "
+        "numerics. State units clearly in the question.",
 }
 
 

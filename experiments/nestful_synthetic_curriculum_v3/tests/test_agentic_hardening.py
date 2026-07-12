@@ -389,6 +389,33 @@ finally:
         os.environ["WEAK_SOLVER_BACKEND"] = _old_backend
 
 
+# ============================================================ recipe feedback (MT gates)
+from collections import Counter  # noqa: E402
+from lib.agentic_data.recipe import Recipe, _FEEDBACK_RULES  # noqa: E402
+
+_MT_GATE_REASONS = (
+    "low_grpo_signal_prediction",
+    "weak_strong_gap_too_small",
+    "invalid_trace_labels",
+    "semantic_incompatible_reference",
+)
+for reason in _MT_GATE_REASONS:
+    check(f"recipe feedback rule exists for {reason}",
+          reason in _FEEDBACK_RULES and len(_FEEDBACK_RULES[reason]) > 40,
+          _FEEDBACK_RULES.get(reason))
+
+recipe = Recipe()
+recipe.update_from_batch(
+    Counter({"low_grpo_signal_prediction": 3, "invalid_schema": 1}),
+    {"weak_mean": 0.2, "strong_mean": 0.95})
+check("recipe update_from_batch surfaces MT gate learnings",
+      any("GRPO" in ln or "sweet" in ln.lower() for ln in recipe.learnings),
+      recipe.learnings)
+check("recipe feedback_block is non-empty after MT rejections",
+      "LEARNINGS FROM PREVIOUS BATCHES" in recipe.feedback_block()
+      and "GRPO" in recipe.feedback_block(), recipe.feedback_block())
+
+
 if __name__ == "__main__":
     if FAILURES:
         print(f"\n{len(FAILURES)} FAILURE(S): {FAILURES}")
