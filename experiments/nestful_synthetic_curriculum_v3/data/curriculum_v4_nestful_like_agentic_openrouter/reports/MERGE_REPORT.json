@@ -1,0 +1,111 @@
+{
+  "per_stage": [
+    {
+      "stage": "stage3_3call_agentic_openrouter",
+      "workers": {
+        "gpu0": {
+          "loaded": 27,
+          "kept": 27,
+          "dropped_as_duplicate": 0
+        },
+        "gpu1": {
+          "loaded": 0,
+          "kept": 0,
+          "dropped_as_duplicate": 0
+        },
+        "gpu2": {
+          "loaded": 0,
+          "kept": 0,
+          "dropped_as_duplicate": 0
+        },
+        "gpu3": {
+          "loaded": 0,
+          "kept": 0,
+          "dropped_as_duplicate": 0
+        }
+      },
+      "total_loaded": 27,
+      "total_kept": 27,
+      "total_dropped_as_duplicate": 0,
+      "duplicate_examples_sample": []
+    }
+  ],
+  "corpus_stats_by_stage": {
+    "stage3_3call_agentic_openrouter": {
+      "n_rows": 27,
+      "call_count_dist": {
+        "3": 27
+      },
+      "offered_tools_dist": {
+        "8": 5,
+        "9": 6,
+        "11": 6,
+        "12": 5,
+        "13": 2,
+        "15": 2,
+        "17": 1
+      },
+      "tool_arity_dist": {
+        "1": 78,
+        "2": 207,
+        "3": 8
+      },
+      "arg_type_dist": {
+        "array": 5,
+        "number": 90,
+        "reference": 49,
+        "string": 4
+      },
+      "answer_type_dist": {
+        "boolean": 10,
+        "scalar": 14,
+        "string": 3
+      },
+      "motif_dist": {
+        "reference_reuse": 6,
+        "long_chain": 6,
+        "fan_in": 6,
+        "argument_binding": 5,
+        "distractor_heavy": 4
+      },
+      "tool_family_dist": {
+        "geometry": 28,
+        "statistics": 18,
+        "shopping": 13,
+        "units": 10,
+        "finance": 8,
+        "text": 4
+      },
+      "question_template_dist": {
+        "conditional": 11,
+        "narrative_other": 7,
+        "interrogative": 7,
+        "first_then": 2
+      },
+      "used_tools_top": {
+        "scale_dimension": 10,
+        "is_above_threshold": 10,
+        "rectangle_area": 6,
+        "circle_area": 4,
+        "triangle_area": 4,
+        "rectangle_perimeter": 4,
+        "ratio_of": 4,
+        "apply_discount": 3,
+        "percentage_of": 3,
+        "difference_of": 3,
+        "travel_time_hours": 3,
+        "increase_by_percent": 3,
+        "format_as_currency": 3,
+        "total_price": 2,
+        "sum_of_values": 2
+      },
+      "mean_question_words": 33.4,
+      "dominance": {
+        "motif": 0.2222,
+        "answer_type": 0.5185,
+        "tool_family": 0.3457,
+        "question_template": 0.4074
+      }
+    }
+  }
+}
