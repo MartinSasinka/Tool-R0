@@ -237,6 +237,53 @@ export SOLVER_MT_WEAK_TEMPERATURE=0.2
 export SOLVER_MT_STRONG_TEMPERATURE=0.7
 ```
 
+### Executor mode for synthetic tools (CRITICAL — read before probing/training)
+
+Agentic tool names (e.g. `units_per_box`, `percentage_of`) come from
+`nestful_like_generator.TOOLS` — they are **not** entries in the real NESTFUL
+IBM function registry. That real registry IS present in this repo (used for
+genuine NESTFUL data), so any code path that resolves
+`executor.mode="auto"` against it will pick `full` execution and try to run
+predicted tool calls against the **real** IBM functions. On this corpus that
+either:
+
+1. hard-fails almost every episode on the first call with
+   `exec:unknown_function:<name>` (most synthetic names aren't real IBM
+   functions), or
+2. **silently executes a different, real IBM function** when a synthetic
+   name happens to collide with one (confirmed in practice: the synthetic
+   `rectangle_area` tool coincidentally matches a real IBM function and
+   returns a plausible-looking but uncontrolled result).
+
+Either way the reward is corrupted, independent of how good the model's
+completion is. This is fixed inside the generation gate itself
+(`rollout_signal.load_rollout_config` / `multiturn_solver._context` always
+force `executor.mode=gold_replay`), and `probe_stage.py` / `run_grpo.sh` now
+**auto-detect** agentic dataset paths (or a `source` field containing
+`"agentic"`) and force `executor.mode=gold_replay` too — but if you write a
+NEW script against `nestful_mtgrpo_minimal/run.py` / `vllm_dp_pool.py`
+directly, you MUST pass this override yourself:
+
+```bash
+# probe_stage.py — auto-forced when the dataset path/`source` looks agentic;
+# override explicitly if you ever need to force a different mode:
+python .../probe_stage.py --dataset .../stage2_2call_agentic_openrouter.jsonl \
+  --override executor.mode=gold_replay ...
+
+# run_grpo.sh — auto-forced via EXTRA_TRAIN_OVERRIDES_STR when any
+# STAGE<N>_FILE_OVERRIDE path looks agentic; verify in the printed log line
+# "[grpo] AGENTIC dataset detected — forcing executor.mode=gold_replay".
+```
+
+A live repro before this fix: probing `stage2_2call_agentic_openrouter.jsonl`
+with the default config gave `dead_group_rate=0.33-0.88` even with a
+STUB backend emitting the exact gold trace — the episode was failing on
+`unknown_function`, not on genuine task difficulty. After forcing
+`gold_replay`, the same stub probe gives `dead_group_rate=0.0`. Any prior
+`PROBE_REPORT.json` for this dataset that does not show
+`"executor_mode": "gold_replay"` should be treated as unreliable and
+re-run.
+
 Quick start (repo root):
 
 ```bash

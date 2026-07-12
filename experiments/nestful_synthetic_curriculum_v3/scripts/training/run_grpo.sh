@@ -97,6 +97,7 @@ fi
 
 # ── dataset validation ───────────────────────────────────────────────────────
 CURR="$V3/outputs/curriculum_v3_1/filtered"
+AGENTIC_DATASET_DETECTED=0
 for n in $STAGES; do
   ov_var="STAGE${n}_FILE_OVERRIDE"
   ov="${!ov_var:-}"
@@ -107,6 +108,15 @@ for n in $STAGES; do
     case "$ov" in *filtered_toolr0_synthetic*)
       echo "[grpo] ERROR: $ov_var points into LEGACY dataset B" >&2; exit 1;;
     esac
+    # Agentic synthetic-tool datasets (curriculum_v4_*_agentic_*) are NOT real
+    # IBM NESTFUL functions. executor.mode=auto resolves to `full` (the real
+    # registry IS present in this repo) and either hard-fails every episode
+    # on unknown_function, or worse, silently executes a colliding real IBM
+    # function instead of the synthetic gold trace — corrupting the reward
+    # either way. See docs/AGENTIC_DATA_GENERATION.md.
+    case "$ov" in *agentic_openrouter*|*agentic_hybrid*|*agentic_workers*|*nestful_like_agentic*|*curriculum_v4*)
+      AGENTIC_DATASET_DETECTED=1;;
+    esac
     echo "[grpo] stage $n dataset: OVERRIDE $ov"
   else
     f="$(ls "$CURR"/stage${n}_*.jsonl 2>/dev/null | head -n1 || true)"
@@ -116,6 +126,14 @@ for n in $STAGES; do
     echo "[grpo] stage $n dataset: $f"
   fi
 done
+if [ "$AGENTIC_DATASET_DETECTED" = "1" ]; then
+  if ! echo "${EXTRA_TRAIN_OVERRIDES_STR:-}" | grep -q "executor.mode="; then
+    EXTRA_TRAIN_OVERRIDES_STR="${EXTRA_TRAIN_OVERRIDES_STR:-} --override executor.mode=gold_replay"
+    echo "[grpo] AGENTIC dataset detected — forcing executor.mode=gold_replay"
+    echo "       (pass EXTRA_TRAIN_OVERRIDES_STR with executor.mode=... yourself to override)"
+  fi
+  export EXTRA_TRAIN_OVERRIDES_STR
+fi
 
 # ── init checkpoint validation ───────────────────────────────────────────────
 if [ -n "${CHECKPOINT_IN:-}" ]; then

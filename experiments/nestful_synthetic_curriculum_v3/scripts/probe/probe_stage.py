@@ -46,7 +46,7 @@ sys.path.insert(0, os.path.join(_HERE, "..", "lib"))
 
 from paths import (  # noqa: E402
     CANONICAL_STAGE_FILES, MINIMAL_ROOT, REPO_ROOT, V3_ROOT,
-    dataset_info, is_legacy_dataset_path,
+    dataset_info, is_agentic_synthetic_dataset, is_legacy_dataset_path,
 )
 from run_manifest import build_manifest, write_manifest  # noqa: E402
 
@@ -205,6 +205,20 @@ def run_probe(args) -> int:
         f"experiment.output_dir={out_dir}",
         f"hardware.use_vllm={'true' if args.backend == 'vllm' else 'false'}",
     ]
+    user_overrides = list(args.override or [])
+    user_keys = {ov.split("=", 1)[0] for ov in user_overrides if "=" in ov}
+    # Agentic synthetic-tool datasets are NOT real IBM NESTFUL functions —
+    # executor.mode=auto resolves to `full` (the IBM registry IS present in
+    # this repo for real NESTFUL data) and either hard-fails every episode on
+    # `unknown_function`, or worse, silently executes a DIFFERENT real IBM
+    # function on a name collision. Force gold_replay unless the caller
+    # explicitly overrode executor.mode themselves.
+    if is_agentic_synthetic_dataset(dataset_path) and "executor.mode" not in user_keys:
+        print("[probe] dataset looks AGENTIC (synthetic tools) — forcing "
+              "executor.mode=gold_replay (pass --override executor.mode=... "
+              "to change).", flush=True)
+        overrides.append("executor.mode=gold_replay")
+    overrides.extend(user_overrides)
     base_run._apply_overrides(config, overrides)
     base_run._normalize_config_paths(config)
     # the probe's own output dir must not be re-rooted by config normalization
@@ -342,6 +356,7 @@ def run_probe(args) -> int:
         "probe_version": 1,
         "backend": args.backend,
         "stub_warning": (args.backend == "stub"),
+        "executor_mode": (config.get("executor") or {}).get("mode"),
         "dataset": dataset_info(dataset_path),
         "reward": reward_info,
         "checkpoint": args.checkpoint,
@@ -403,7 +418,8 @@ def run_probe(args) -> int:
         f"Dataset: `{report['dataset']['path']}` (n_probed={n_groups}, "
         f"sha256={report['dataset']['sha256'][:12]}…)",
         f"Reward: `{reward_info['resolved_policy']}` | checkpoint: "
-        f"`{args.checkpoint or 'base model'}`",
+        f"`{args.checkpoint or 'base model'}` | "
+        f"executor.mode: `{report['executor_mode']}`",
         f"Decoding: T={args.temperature} top_p={args.top_p} seed={args.seed} | "
         f"{args.num_generations} generations/group",
         "",
@@ -495,6 +511,10 @@ def main() -> int:
     ap.add_argument("--backend", choices=["vllm", "hf", "stub"], default="hf")
     ap.add_argument("--dead-low-threshold", type=float, default=0.35)
     ap.add_argument("--allow-legacy-dataset", action="store_true")
+    ap.add_argument("--override", action="append", metavar="KEY=VALUE",
+                    help="extra config override, e.g. --override executor.mode=full "
+                    "(repeatable). Takes precedence over the automatic "
+                    "agentic-dataset gold_replay guard.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     return run_probe(args)

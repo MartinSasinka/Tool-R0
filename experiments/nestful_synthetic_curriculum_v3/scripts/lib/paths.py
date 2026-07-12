@@ -8,7 +8,9 @@ used silently. When the P3 archive move happens, only this module changes.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
+from typing import Optional
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 # .../experiments/nestful_synthetic_curriculum_v3/scripts/lib -> repo root
@@ -48,6 +50,61 @@ def is_legacy_dataset_path(path: str) -> bool:
     """True if `path` points into the legacy dataset B tree."""
     norm = os.path.normpath(path).replace("\\", "/")
     return any(marker in norm for marker in _LEGACY_MARKERS)
+
+
+# --- agentic synthetic-tool datasets (executor.mode=gold_replay REQUIRED) ---
+# Tool names in these datasets come from ``nestful_like_generator.TOOLS``
+# (LLM-invented, e.g. "units_per_box", "percentage_of") and are NOT entries in
+# the real NESTFUL IBM function registry. Since that registry IS present in
+# this repo (used for genuine NESTFUL data), ``executor.mode=auto`` resolves
+# to ``full`` and either (a) hard-fails every episode on the first call with
+# ``unknown_function`` (most tool names), or worse (b) silently executes a
+# DIFFERENT real IBM function on a name collision (e.g. "rectangle_area" is
+# also a real registry entry) and scores against its output instead of the
+# synthetic gold trace. Either way the reward is corrupted. Always force
+# ``executor.mode=gold_replay`` for these datasets — see
+# docs/AGENTIC_DATA_GENERATION.md.
+_AGENTIC_MARKERS = ("agentic_openrouter", "agentic_hybrid", "agentic_workers",
+                   "nestful_like_agentic", "curriculum_v4")
+
+
+def is_agentic_synthetic_dataset_path(path: str) -> bool:
+    """Path-based heuristic: True if `path` looks like an agentic v4 dataset."""
+    norm = os.path.normpath(path).replace("\\", "/")
+    return any(marker in norm for marker in _AGENTIC_MARKERS)
+
+
+def peek_dataset_source(path: str) -> Optional[str]:
+    """Best-effort read of the first row's ``source`` field, or None."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except json.JSONDecodeError:
+                    return None
+                src = row.get("source")
+                return str(src) if src is not None else None
+    except OSError:
+        return None
+    return None
+
+
+def is_agentic_synthetic_dataset(path: str) -> bool:
+    """True when `path`'s tools are SYNTHETIC (agentic generator), not real
+    IBM NESTFUL functions — i.e. the executor MUST run in gold_replay mode.
+
+    Checks the path first (cheap), then falls back to peeking at the first
+    row's ``source`` field (handles datasets copied/renamed off the standard
+    ``curriculum_v4_*`` tree).
+    """
+    if is_agentic_synthetic_dataset_path(path):
+        return True
+    source = peek_dataset_source(path)
+    return bool(source) and "agentic" in source.lower()
 
 
 def sha256_file(path: str, chunk: int = 1 << 20) -> str:
