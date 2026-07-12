@@ -25,6 +25,9 @@ from .rollout_signal import ROLLOUT_N, probe_rollout_signal
 from .schema import (MOTIFS, STAGES, candidate_schema_errors, final_row,
                      looks_like_cot)
 from .semantics import semantic_errors
+from .multiturn_solver import (solver_gap_mode, solve_strong_multiturn,
+                               solve_weak_multiturn)
+from .rollout_signal import target_is_local
 from .solvers import (best_of, parse_solver_output, score_prediction,
                       solver_messages, solver_params)
 from .trace_validation import hard_trace_errors
@@ -247,9 +250,10 @@ class Orchestrator:
                 return None
             raise
 
-    def _solve(self, role: str, question: str, tools: List[Dict[str, Any]],
-               gold_calls, gold_obs, gold_answer, *, strong: bool,
-               seed: int) -> Dict[str, Any]:
+    def _solve_single_shot(self, role: str, question: str,
+                           tools: List[Dict[str, Any]],
+                           gold_calls, gold_obs, gold_answer, *, strong: bool,
+                           seed: int) -> Dict[str, Any]:
         params = solver_params(strong)   # WEAK_SOLVER_MODE / STRONG_SOLVER_MODE
         scores: List[Dict[str, Any]] = []
         for a in range(params["attempts"]):
@@ -261,15 +265,36 @@ class Orchestrator:
                 max_tokens=params["max_tokens"],
                 json_mode=True, seed=seed + a)
             if resp is None:
-                return {"score": 0.0, "status": "api_error", "n_calls": 0}
+                return {"score": 0.0, "status": "api_error", "n_calls": 0,
+                        "solver_mode": "single_shot"}
             if resp.get("dry_run"):
-                return {"score": 0.0, "status": "dry_run", "n_calls": 0}
+                return {"score": 0.0, "status": "dry_run", "n_calls": 0,
+                        "solver_mode": "single_shot"}
             parsed = resp["parsed"]
             calls = parse_solver_output(parsed)
             final = parsed.get("final_answer") if isinstance(parsed, dict) else None
-            scores.append(score_prediction(calls, final, gold_calls,
-                                           gold_obs, gold_answer))
+            scored = score_prediction(calls, final, gold_calls,
+                                      gold_obs, gold_answer)
+            scored["solver_mode"] = "single_shot"
+            scores.append(scored)
         return best_of(scores)
+
+    def _solve(self, role: str, question: str, tools: List[Dict[str, Any]],
+               gold_calls, gold_obs, gold_answer, *, strong: bool,
+               seed: int, stage: str) -> Dict[str, Any]:
+        if solver_gap_mode() == "multiturn":
+            if strong:
+                return solve_strong_multiturn(
+                    self._api_chat, self.models[role],
+                    question, tools, gold_calls, gold_obs, gold_answer,
+                    stage=stage, seed=seed)
+            if target_is_local():
+                return solve_weak_multiturn(
+                    question, tools, gold_calls, gold_obs, gold_answer,
+                    stage=stage, seed=seed)
+        return self._solve_single_shot(
+            role, question, tools, gold_calls, gold_obs, gold_answer,
+            strong=strong, seed=seed)
 
     # ------------------------------------------------------------ main loop
     def generate_stage(self, stage: str, target: int,
@@ -506,17 +531,20 @@ class Orchestrator:
                 # 5. weak solver (skip strong when weak passes — saves compute)
                 weak = self._solve("weak_solver", question, tools, gold_calls,
                                    observations, gold_answer, strong=False,
-                                   seed=self.seed + iteration)
+                                   seed=self.seed + iteration, stage=stage)
                 batch_weak.append(weak["score"])
                 strong = None
                 if weak["score"] <= 0.5:
                     strong = self._solve("strong_solver", question, tools,
                                          gold_calls, observations, gold_answer,
-                                         strong=True, seed=self.seed + iteration)
+                                         strong=True,
+                                         seed=self.seed + iteration, stage=stage)
                     batch_strong.append(strong["score"])
                 gap_ok, gap_reason = solver_gap_verdict(weak, strong)
                 gap_rec = {
-                    "stage": stage, "weak_status": weak["status"],
+                    "stage": stage,
+                    "solver_gap_mode": solver_gap_mode(),
+                    "weak_status": weak["status"],
                     "weak_score": weak["score"],
                     "strong_status": strong["status"] if strong else "skipped",
                     "strong_score": strong["score"] if strong else None,

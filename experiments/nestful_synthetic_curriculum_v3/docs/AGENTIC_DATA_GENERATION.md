@@ -71,10 +71,10 @@ OPENROUTER_MAX_SPEND_USD=20         # hard spend budget
 
 Generation stops early (with partial outputs + reports) when: the request or
 spend budget is exhausted; the acceptance rate is below threshold after warmup
-(`< 2%` after 5 batches on fresh runs; `< 0.5%` after 50 batches and at least
-100 iterations on `--resume`); the contamination gate fires 10 times; the
-per-stage iteration budget runs out. Override via `WARMUP_BATCHES`,
-`MIN_ACCEPT_RATE`, `RESUME_MIN_ITERATIONS`.
+(``< 2%`` after 5 batches on fresh runs; ``< 0.5%`` after 50 batches and at least
+100 iterations on ``--resume``) — **disable via** ``MIN_ACCEPT_RATE=0``; the
+contamination gate fires 10 times; the per-stage iteration budget runs out.
+Override via ``WARMUP_BATCHES``, ``MIN_ACCEPT_RATE``, ``RESUME_MIN_ITERATIONS``.
 Cost report: `reports/OPENROUTER_COST_REPORT.md`.
 
 ## Acceptance gates (per example)
@@ -223,6 +223,18 @@ export ROLLOUT_N=8
 export ROLLOUT_TEMPERATURE=0.8
 # optional per-turn cap (0 = training config stage_defaults)
 export ROLLOUT_MAX_TOKENS=0
+```
+
+### Solver-gap (multi-turn, default when local weak)
+
+Weak and strong solvers use the same ``run_episode(mode="train")`` path as the
+rollout gate when ``WEAK_SOLVER_BACKEND=local`` (override with
+``AGENTIC_SOLVER_GAP_MODE=single_shot`` for legacy JSON probing only).
+
+```bash
+export AGENTIC_SOLVER_GAP_MODE=multiturn   # default when local
+export SOLVER_MT_WEAK_TEMPERATURE=0.2
+export SOLVER_MT_STRONG_TEMPERATURE=0.7
 ```
 
 Quick start (repo root):

@@ -99,6 +99,9 @@ def load_rollout_config(num_calls: int, *,
             sd[stage_key] = dict(sd[stage_key])
             sd[stage_key]["max_new_tokens"] = ROLLOUT_MAX_TOKENS
             config.setdefault("token_budget", {})["stage_defaults"] = sd
+    # Agentic tools are synthetic — IBM full execution is wrong; gold_replay
+    # matches how probe/training score structural correctness on this corpus.
+    overrides.append("executor.mode=gold_replay")
     base_run._apply_overrides(config, overrides)
     base_run._normalize_config_paths(config)
     registry = base_run.build_registry(config)
