@@ -3,11 +3,16 @@ setup (local HF backend only — this IS the training-target checkpoint, not
 an API proxy).
 
 For every candidate we sample ``ROLLOUT_N`` (default 8) independent
-completions from the SAME prompt the weak solver used, score each with the
+**multi-turn** episodes via ``run_episode(mode="train")`` — the same rollout
+path as ``probe_stage.py`` and MT-GRPO training — score each with the
 **same training reward dispatch** as GRPO (``vllm_dp_pool.resolve_reward_info``,
 default ``execution_aware_v3_2_dense`` via ``AGENTIC_REWARD_POLICY`` /
 ``REWARD_POLICY``), and summarize whether the task carries usable training
 signal.
+
+Legacy single-shot JSON probing (``solver_messages`` + one JSON blob) is
+available only when ``AGENTIC_ROLLOUT_MODE=single_shot``; it is **not**
+aligned with MT-GRPO and must not be used for accept/reject decisions.
 
 A task is GRPO-signal-positive when, across the rollouts:
   * unique_rewards >= 2                    (not degenerate: some spread)
@@ -25,32 +30,137 @@ target Qwen3-4B setup is only available locally.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from .solvers import parse_solver_output, solver_messages
-from .training_reward import (build_task_dict, configured_reward_policy,
-                              get_training_reward_fn,
+from .training_reward import (PARTIAL, MINIMAL, build_task_dict,
+                              configured_reward_policy,
+                              get_training_reward_fn, score_episode_trajectory,
                               score_with_training_reward)
 
 ROLLOUT_N = int(os.environ.get("ROLLOUT_N", "8"))
 ROLLOUT_TEMPERATURE = float(os.environ.get("ROLLOUT_TEMPERATURE", "0.8"))
-# Deliberately smaller than the single-shot weak-solver budget (700): Stage 2
-# gold traces are 2 short tool calls, and this budget is paid 8x per accepted
-# row (batched — see LocalWeakSolver.generate_n) so wall-clock matters.
-ROLLOUT_MAX_TOKENS = int(os.environ.get("ROLLOUT_MAX_TOKENS", "260"))
+ROLLOUT_TOP_P = float(os.environ.get("ROLLOUT_TOP_P", "0.95"))
+# Optional per-turn cap override for multi-turn rollouts (0 = use training
+# config stage_defaults, which is what probe/GRPO use).
+ROLLOUT_MAX_TOKENS = int(os.environ.get("ROLLOUT_MAX_TOKENS", "0"))
+ROLLOUT_MODE = os.environ.get("AGENTIC_ROLLOUT_MODE", "multiturn").strip().lower()
 
 DEGENERATE_STATUSES = {"parse_error", "no_tool_call", "clipped"}
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
+
+_DEFAULT_CONFIG = PARTIAL / "config.yaml"
 
 
 def target_is_local() -> bool:
     """True iff the weak solver IS the exact target Qwen checkpoint running
     locally (not an OpenRouter proxy for a different model)."""
     return os.environ.get("WEAK_SOLVER_BACKEND", "openrouter") == "local"
+
+
+def rollout_mode() -> str:
+    """``multiturn`` (default) or legacy ``single_shot``."""
+    return "single_shot" if ROLLOUT_MODE in ("single_shot", "single-shot",
+                                             "singleshot") else "multiturn"
+
+
+def _load_base_run():
+    path = str(MINIMAL / "run.py")
+    spec = importlib.util.spec_from_file_location("mtgrpo_base_run_rollout", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def load_rollout_config(num_calls: int, *,
+                        temperature: Optional[float] = None,
+                        top_p: Optional[float] = None) -> Tuple[Dict[str, Any], Any]:
+    """Training-aligned config + tool registry (same loader as probe_stage)."""
+    from .training_reward import _ensure_training_import_paths
+    _ensure_training_import_paths()
+    base_run = _load_base_run()
+    config = base_run.load_config(str(_DEFAULT_CONFIG))
+    overrides = [
+        f"reward.train_policy={configured_reward_policy()}",
+        f"generation.temperature={temperature if temperature is not None else ROLLOUT_TEMPERATURE}",
+        f"generation.top_p={top_p if top_p is not None else ROLLOUT_TOP_P}",
+        "hardware.use_vllm=false",
+    ]
+    if ROLLOUT_MAX_TOKENS > 0:
+        overrides.append(f"generation.max_new_tokens_train={ROLLOUT_MAX_TOKENS}")
+        sd = (config.get("token_budget", {}) or {}).get("stage_defaults", {}) or {}
+        stage_key = str(num_calls)
+        if stage_key in sd:
+            sd[stage_key] = dict(sd[stage_key])
+            sd[stage_key]["max_new_tokens"] = ROLLOUT_MAX_TOKENS
+            config.setdefault("token_budget", {})["stage_defaults"] = sd
+    base_run._apply_overrides(config, overrides)
+    base_run._normalize_config_paths(config)
+    registry = base_run.build_registry(config)
+    return config, registry
+
+
+def _make_local_generate_fn(solver, *, temperature: float,
+                            rollout_seed: Optional[int]) -> Any:
+    """Wrap LocalWeakSolver for ``run_episode``'s generate_fn contract."""
+    state = {"turn": 0}
+
+    def generate_fn(messages: List[Dict[str, str]], max_new_tokens: int) -> Dict[str, Any]:
+        call_seed = None
+        if rollout_seed is not None:
+            call_seed = int(rollout_seed) + state["turn"]
+        state["turn"] += 1
+        text = solver.generate(
+            messages, temperature=temperature, max_tokens=max_new_tokens, seed=call_seed)
+        clipped = len(text) >= max_new_tokens if max_new_tokens > 0 else False
+        return {
+            "text": text,
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "clipped": clipped,
+            "prompt_overflow": False,
+        }
+
+    return generate_fn
+
+
+def run_multiturn_rollouts(question: str, tools: List[Dict[str, Any]],
+                           gold_calls: List[Dict[str, Any]],
+                           gold_observations: List[Any], gold_answer: Any,
+                           *, stage: str,
+                           n: Optional[int] = None,
+                           seed: Optional[int] = None) -> List[Dict[str, Any]]:
+    """Sample ``n`` independent multi-turn episodes; score with training reward."""
+    from .local_llm import get_local_weak_solver
+    from .training_reward import _ensure_training_import_paths
+    _ensure_training_import_paths()
+    from rollout import run_episode  # noqa: E402
+
+    solver = get_local_weak_solver()
+    n = ROLLOUT_N if n is None else n
+    num_calls = len(gold_calls)
+    task = build_task_dict(
+        gold_calls=gold_calls, gold_answer=gold_answer,
+        stage=stage, question=question, tools=tools)
+    config, registry = load_rollout_config(num_calls)
+    from reward import compute_gold_observations  # noqa: E402
+    gold_obs = compute_gold_observations(task, registry)
+
+    scored: List[Dict[str, Any]] = []
+    for i in range(n):
+        rollout_seed = (int(seed) + i) if seed is not None else None
+        gen_fn = _make_local_generate_fn(
+            solver, temperature=ROLLOUT_TEMPERATURE, rollout_seed=rollout_seed)
+        traj = run_episode(
+            None, None, task, config,
+            registry=registry, mode="train", generate_fn=gen_fn)
+        scored.append(score_episode_trajectory(traj, task, gold_obs))
+    return scored
 
 
 def _lenient_json(text: str) -> Optional[Any]:
@@ -76,28 +186,24 @@ def _lenient_json(text: str) -> Optional[Any]:
     return None
 
 
-def run_rollouts(question: str, tools: List[Dict[str, Any]],
-                 gold_calls: List[Dict[str, Any]], gold_observations: List[Any],
-                 gold_answer: Any, *, stage: str,
-                 n: Optional[int] = None,
-                 seed: Optional[int] = None) -> List[Dict[str, Any]]:
-    """Sample ``n`` independent local-weak-solver completions; return training-
-    reward scores (same dispatch as GRPO / stage probe).
-
-    Uses ``generate_n()`` (one batched forward pass, shared prefill) when the
-    solver supports it — 8 rollouts then cost roughly one generation instead
-    of eight sequential ones. Falls back to ``n`` sequential ``generate()`` calls
-    for any solver stub that only implements the single-completion API."""
+def run_single_shot_rollouts(question: str, tools: List[Dict[str, Any]],
+                             gold_calls: List[Dict[str, Any]],
+                             gold_observations: List[Any], gold_answer: Any,
+                             *, stage: str,
+                             n: Optional[int] = None,
+                             seed: Optional[int] = None) -> List[Dict[str, Any]]:
+    """Legacy single-shot JSON rollouts (NOT aligned with MT-GRPO)."""
     from .local_llm import get_local_weak_solver
     solver = get_local_weak_solver()
     n = ROLLOUT_N if n is None else n
+    max_tokens = ROLLOUT_MAX_TOKENS if ROLLOUT_MAX_TOKENS > 0 else 260
     messages = solver_messages(question, tools, strong=False)
     if hasattr(solver, "generate_n"):
         texts = solver.generate_n(messages, temperature=ROLLOUT_TEMPERATURE,
-                                  max_tokens=ROLLOUT_MAX_TOKENS, n=n, seed=seed)
+                                  max_tokens=max_tokens, n=n, seed=seed)
     else:
         texts = [solver.generate(messages, temperature=ROLLOUT_TEMPERATURE,
-                                 max_tokens=ROLLOUT_MAX_TOKENS,
+                                 max_tokens=max_tokens,
                                  seed=(seed + i) if seed is not None else None)
                 for i in range(n)]
     task = build_task_dict(
@@ -115,6 +221,21 @@ def run_rollouts(question: str, tools: List[Dict[str, Any]],
     return scored
 
 
+def run_rollouts(question: str, tools: List[Dict[str, Any]],
+                 gold_calls: List[Dict[str, Any]], gold_observations: List[Any],
+                 gold_answer: Any, *, stage: str,
+                 n: Optional[int] = None,
+                 seed: Optional[int] = None) -> List[Dict[str, Any]]:
+    """Dispatch to multi-turn (default) or legacy single-shot rollouts."""
+    if rollout_mode() == "single_shot":
+        return run_single_shot_rollouts(
+            question, tools, gold_calls, gold_observations, gold_answer,
+            stage=stage, n=n, seed=seed)
+    return run_multiturn_rollouts(
+        question, tools, gold_calls, gold_observations, gold_answer,
+        stage=stage, n=n, seed=seed)
+
+
 def _episode_reward(entry: Dict[str, Any]) -> float:
     return float(entry.get("episode_reward", entry.get("score", 0.0)))
 
@@ -124,7 +245,8 @@ def _status(entry: Dict[str, Any]) -> str:
 
 
 def summarize_rollouts(scored: List[Dict[str, Any]], n_gold_calls: int,
-                       *, reward_policy: Optional[str] = None
+                       *, reward_policy: Optional[str] = None,
+                       mode: Optional[str] = None
                        ) -> Dict[str, Any]:
     """Aggregate metrics + GRPO-signal-positive verdict over rollout scores."""
     n = len(scored)
@@ -172,6 +294,7 @@ def summarize_rollouts(scored: List[Dict[str, Any]], n_gold_calls: int,
     return {
         "n": n,
         "skipped": False,
+        "rollout_mode": mode or rollout_mode(),
         "reward_policy": reward_policy,
         "rewards": [round(r, 6) for r in rewards],
         "unique_rewards": unique_rewards,

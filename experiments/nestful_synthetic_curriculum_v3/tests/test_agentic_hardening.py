@@ -11,6 +11,7 @@ Run:  python experiments/nestful_synthetic_curriculum_v3/tests/test_agentic_hard
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
 
@@ -310,12 +311,21 @@ check("training reward scores unparseable output as parse_error",
 
 
 # ---- end-to-end run_rollouts() against a stubbed local weak solver (no GPU)
-class _StubLocalSolver:
-    def __init__(self, text: str) -> None:
-        self._text = text
+class _StubMultiTurnSolver:
+    """Emit gold tool calls one turn at a time (MT-GRPO format)."""
+
+    def __init__(self, gold_calls: List[Dict[str, Any]]) -> None:
+        self._gold = gold_calls
 
     def generate(self, messages, *, temperature, max_tokens, seed=None) -> str:
-        return self._text
+        turn = sum(1 for m in messages if m.get("role") == "assistant")
+        if turn < len(self._gold):
+            c = self._gold[turn]
+            payload = json.dumps(
+                {"name": c["name"], "arguments": c.get("arguments") or {}},
+                ensure_ascii=False)
+            return f"<tool_call_answer>[{payload}]</tool_call_answer>"
+        return "<tool_call_answer>[]</tool_call_answer>"
 
 
 import lib.agentic_data.local_llm as _local_llm_mod  # noqa: E402
@@ -323,25 +333,29 @@ import lib.agentic_data.local_llm as _local_llm_mod  # noqa: E402
 _old_backend = os.environ.get("WEAK_SOLVER_BACKEND")
 os.environ["WEAK_SOLVER_BACKEND"] = "local"
 _old_get_solver = _local_llm_mod.get_local_weak_solver
-_local_llm_mod.get_local_weak_solver = lambda: _StubLocalSolver(
-    '{"calls": [{"name": "triangle_area", "arguments": {"base": 8, "height": 5}, '
-    '"label": "$var1"}, {"name": "percentage_of", '
-    '"arguments": {"part": "$var1.result$", "whole": 50}, "label": "$var2"}], '
-    '"final_answer": null}')
+_local_llm_mod.get_local_weak_solver = lambda: _StubMultiTurnSolver(
+    WELL_FORMED["gold_calls"])
 try:
     check("target_is_local() reflects WEAK_SOLVER_BACKEND=local", target_is_local())
     gold_calls = WELL_FORMED["gold_calls"]
-    scored = run_rollouts("q", [], gold_calls, [20.0, 40.0], 40.0,
+    offered = [{"name": c["name"], "description": "d", "parameters": {
+        k: {"type": "number"} for k in (c.get("arguments") or {})}}
+               for c in gold_calls]
+    scored = run_rollouts("q", offered, gold_calls, [20.0, 40.0], 40.0,
                           stage="stage2_2call_agentic_openrouter", n=4, seed=1)
     check("run_rollouts against a stubbed local solver returns n scores",
          len(scored) == 4, scored)
-    check("run_rollouts uses training reward (fully_correct on gold trace)",
-         all(s["reward_class"] == "fully_correct" for s in scored), scored)
-    full = probe_rollout_signal("q", [], gold_calls, [20.0, 40.0], 40.0,
+    check("run_rollouts multi-turn scores perfect gold trace with 2 pred calls",
+         all(s.get("n_calls") == 2 for s in scored), scored)
+    check("run_rollouts multi-turn gives consistent rewards on identical rollouts",
+         len({round(s["episode_reward"], 6) for s in scored}) == 1, scored)
+    full = probe_rollout_signal("q", offered, gold_calls, [20.0, 40.0], 40.0,
                                   stage="stage2_2call_agentic_openrouter",
                                   n=4, seed=1)
     check("probe_rollout_signal runs end-to-end against the stub (not skipped)",
          full.get("skipped") is False, full)
+    check("probe_rollout_signal uses multiturn rollout mode by default",
+         full.get("rollout_mode") == "multiturn", full)
 finally:
     _local_llm_mod.get_local_weak_solver = _old_get_solver
     if _old_backend is None:

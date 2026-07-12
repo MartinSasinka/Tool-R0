@@ -71,9 +71,10 @@ def reset_reward_cache() -> None:
 def build_task_dict(*, gold_calls: List[Dict[str, Any]], gold_answer: Any,
                     stage: str, question: str,
                     task_id: str = "agentic_probe",
-                    num_calls: Optional[int] = None) -> Dict[str, Any]:
+                    num_calls: Optional[int] = None,
+                    tools: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     n = num_calls if num_calls is not None else len(gold_calls)
-    return {
+    task: Dict[str, Any] = {
         "task_id": task_id,
         "stage": stage,
         "num_calls": n,
@@ -81,6 +82,35 @@ def build_task_dict(*, gold_calls: List[Dict[str, Any]], gold_answer: Any,
         "gold_answer": gold_answer,
         "question": question,
         "terminal_stage": True,
+    }
+    if tools is not None:
+        _ensure_training_import_paths()
+        from data import _normalize_tool_schema  # noqa: E402
+        task["tools"] = _normalize_tool_schema(tools)
+    return task
+
+
+def score_episode_trajectory(traj: Any, task: Dict[str, Any],
+                             gold_observations: List[Any]) -> Dict[str, Any]:
+    """Score a multi-turn ``run_episode`` trajectory with training reward."""
+    reward_fn, info = get_training_reward_fn()
+    rr = reward_fn(traj, task, gold_observations)
+    episode = float(rr["episode_reward"])
+    diag = rr.get("diagnostics") or {}
+    reward_class = str(diag.get("reward_class") or diag.get("reward_cap_reason")
+                       or "unknown")
+    n_pred = int(diag.get("n_pred_calls") or diag.get("predicted_num_calls")
+                or len([t for t in traj.turns
+                        if getattr(t, "parsed_call", None)]))
+    return {
+        "score": episode,
+        "episode_reward": episode,
+        "status": reward_class,
+        "reward_class": reward_class,
+        "n_calls": n_pred,
+        "diagnostics": diag,
+        "reward_policy": info.get("resolved_policy")
+        or info.get("configured_policy"),
     }
 
 

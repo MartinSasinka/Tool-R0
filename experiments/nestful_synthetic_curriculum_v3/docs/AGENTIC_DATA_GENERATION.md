@@ -209,6 +209,22 @@ export OPENROUTER_STRONG_MODEL=qwen/qwen3-235b-a22b-2507
 export OPENROUTER_JUDGE_MODEL=deepseek/deepseek-v3.2
 ```
 
+### GRPO-signal rollout gate (multi-turn)
+
+The accept/reject gate samples `ROLLOUT_N` (default 8) **multi-turn** episodes via
+`run_episode(mode="train")` — the same path as `probe_stage.py` and MT-GRPO
+training — and scores them with `execution_aware_v3_2_dense` (or
+`AGENTIC_REWARD_POLICY`). It does **not** use the legacy single-shot JSON weak-solver
+prompt unless you explicitly set `AGENTIC_ROLLOUT_MODE=single_shot` (debug only).
+
+```bash
+export WEAK_SOLVER_BACKEND=local
+export ROLLOUT_N=8
+export ROLLOUT_TEMPERATURE=0.8
+# optional per-turn cap (0 = training config stage_defaults)
+export ROLLOUT_MAX_TOKENS=0
+```
+
 Quick start (repo root):
 
 ```bash
