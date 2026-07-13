@@ -32,31 +32,29 @@ from .solvers import (best_of, parse_solver_output, score_prediction,
                       solver_messages, solver_params)
 from .trace_validation import hard_trace_errors
 from .verifier import deterministic_verify, judge_messages, judge_verdict
+from .env_defaults import (
+    MIN_ACCEPT_RATE,
+    MIN_ACCEPT_RATE_RESUME,
+    RESUME_MIN_ITERATIONS,
+    WARMUP_BATCHES,
+    WARMUP_BATCHES_RESUME,
+    env_float,
+    env_int,
+)
 from ..nestful_like_generator import TOOLS, tool_schema
 
 CANDIDATES_PER_REQUEST = 5
-MIN_ACCEPT_RATE = 0.02          # abort stage when below this after warmup (fresh)
-WARMUP_BATCHES = 5
-# Resume defaults: longer patience — diversity caps on NEW rows only mean a
-# lower acceptance rate is expected while the generator hunts rarer buckets.
-MIN_ACCEPT_RATE_RESUME = 0.005
-WARMUP_BATCHES_RESUME = 50
-RESUME_MIN_ITERATIONS = 100     # never accept-rate-stop before this on resume
 MAX_CONTAMINATION_STRIKES = 10
 
 
 def _accept_rate_stop_params(*, is_resume: bool) -> tuple[int, float, int]:
     """(warmup_batches, min_accept_rate, min_iterations_before_stop)."""
-    env = os.environ
-    warmup = int(env.get(
-        "WARMUP_BATCHES",
-        str(WARMUP_BATCHES_RESUME if is_resume else WARMUP_BATCHES)))
-    rate = float(env.get(
-        "MIN_ACCEPT_RATE",
-        str(MIN_ACCEPT_RATE_RESUME if is_resume else MIN_ACCEPT_RATE)))
-    min_iters = int(env.get(
-        "RESUME_MIN_ITERATIONS",
-        str(RESUME_MIN_ITERATIONS if is_resume else warmup)))
+    default_warmup = WARMUP_BATCHES_RESUME if is_resume else WARMUP_BATCHES
+    default_rate = MIN_ACCEPT_RATE_RESUME if is_resume else MIN_ACCEPT_RATE
+    default_min_iters = RESUME_MIN_ITERATIONS if is_resume else default_warmup
+    warmup = env_int("WARMUP_BATCHES", default_warmup)
+    rate = env_float("MIN_ACCEPT_RATE", default_rate)
+    min_iters = env_int("RESUME_MIN_ITERATIONS", default_min_iters)
     return warmup, rate, min_iters
 
 

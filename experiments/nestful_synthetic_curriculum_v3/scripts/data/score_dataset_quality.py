@@ -225,13 +225,21 @@ def _entropy(counter: Counter) -> float:
     return round(ent, 4)
 
 
+from lib.agentic_data.env_defaults import (  # noqa: E402
+    DIVERSITY_MAX_SAME_FAILURE_TYPE,
+    DIVERSITY_MAX_SAME_WEAK_SCORE,
+    DIVERSITY_MIN_FAILURE_TYPES_PER_STAGE,
+    env_float,
+    env_int,
+)
+
 # Diversity gates for training_candidate (mirror of the generation-time caps)
-MAX_WEAK_BUCKET_DOMINANCE = float(
-    os.environ.get("DIVERSITY_MAX_SAME_WEAK_SCORE", "0.40"))
-MAX_FAILURE_TYPE_DOMINANCE = float(
-    os.environ.get("DIVERSITY_MAX_SAME_FAILURE_TYPE", "0.40"))
-MIN_FAILURE_TYPES_PER_STAGE = int(
-    os.environ.get("DIVERSITY_MIN_FAILURE_TYPES_PER_STAGE", "4"))
+MAX_WEAK_BUCKET_DOMINANCE = env_float(
+    "DIVERSITY_MAX_SAME_WEAK_SCORE", DIVERSITY_MAX_SAME_WEAK_SCORE)
+MAX_FAILURE_TYPE_DOMINANCE = env_float(
+    "DIVERSITY_MAX_SAME_FAILURE_TYPE", DIVERSITY_MAX_SAME_FAILURE_TYPE)
+MIN_FAILURE_TYPES_PER_STAGE = env_int(
+    "DIVERSITY_MIN_FAILURE_TYPES_PER_STAGE", DIVERSITY_MIN_FAILURE_TYPES_PER_STAGE)
 MIN_STRONG_EXACT_WIN_RATE = 0.95
 
 

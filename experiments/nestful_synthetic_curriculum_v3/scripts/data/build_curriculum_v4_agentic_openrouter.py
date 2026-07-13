@@ -43,6 +43,13 @@ from lib.agentic_data.contamination import ContaminationChecker  # noqa: E402
 from lib.agentic_data.distribution import corpus_stats, distance_report  # noqa: E402
 from lib.agentic_data.orchestrator import (Orchestrator, StageBudgetStop,  # noqa: E402
                                            count_jsonl_rows, write_outputs)
+from lib.agentic_data.env_defaults import (  # noqa: E402
+    DIVERSITY_ENFORCE_AFTER,
+    DIVERSITY_MAX_SAME_FAILURE_TYPE,
+    DIVERSITY_MAX_SAME_WEAK_SCORE,
+    LOCAL_WEAK_4BIT,
+    LOCAL_WEAK_MODEL,
+)
 from lib.agentic_data.schema import STAGES, TOOL_SCHEMA_SOURCE_POLICY  # noqa: E402
 from lib.agentic_data.semantics import semantic_errors  # noqa: E402
 from lib.agentic_data.trace_validation import hard_trace_errors  # noqa: E402
@@ -278,11 +285,11 @@ def write_reports(out_root: str, accepted_by_stage: Dict[str, List[Dict[str, Any
         "strong must be a TRUE executable win / solution-equivalent, score "
         "1.0; partial strong solutions never enter the filtered set).",
         "Diversity caps on accepted rows: max "
-        f"{os.environ.get('DIVERSITY_MAX_SAME_WEAK_SCORE', '0.40')} same "
+        f"{os.environ.get('DIVERSITY_MAX_SAME_WEAK_SCORE', str(DIVERSITY_MAX_SAME_WEAK_SCORE))} same "
         "weak-score bucket, max "
-        f"{os.environ.get('DIVERSITY_MAX_SAME_FAILURE_TYPE', '0.40')} same "
+        f"{os.environ.get('DIVERSITY_MAX_SAME_FAILURE_TYPE', str(DIVERSITY_MAX_SAME_FAILURE_TYPE))} same "
         "failure type (enforced after "
-        f"{os.environ.get('DIVERSITY_ENFORCE_AFTER', '25')} accepted).",
+        f"{os.environ.get('DIVERSITY_ENFORCE_AFTER', str(DIVERSITY_ENFORCE_AFTER))} accepted).",
         "Strong solver runs ONLY when the weak solver failed (compute saving "
         "from the Autodata paper).",
         "",
@@ -657,8 +664,8 @@ def main() -> int:
     print(f"  backend               = {backend_label}")
     if weak_solver_backend() == "local":
         print(f"  weak_solver_backend   = local HF")
-        print(f"  LOCAL_WEAK_MODEL      = {env.get('LOCAL_WEAK_MODEL', 'Qwen/Qwen3-4B-Instruct-2507')}")
-        print(f"  LOCAL_WEAK_4BIT       = {env.get('LOCAL_WEAK_4BIT', '1')}")
+        print(f"  LOCAL_WEAK_MODEL      = {env.get('LOCAL_WEAK_MODEL', LOCAL_WEAK_MODEL)}")
+        print(f"  LOCAL_WEAK_4BIT       = {env.get('LOCAL_WEAK_4BIT', '0' if not LOCAL_WEAK_4BIT else '1')}")
     for role, model in models.items():
         print(f"  model.{role:13s} = {model}")
     print(f"  max_requests          = {env.get('OPENROUTER_MAX_REQUESTS', '1000')}")

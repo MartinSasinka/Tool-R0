@@ -3,15 +3,15 @@
 Used when WEAK_SOLVER_BACKEND=local so the weak solver is the exact same
 Qwen3-4B-Instruct checkpoint used in GRPO/SFT — not an API proxy.
 
-Default: 4-bit load (fits ~6 GB laptop GPUs). Override via LOCAL_WEAK_4BIT=0
-for full bf16 on larger GPUs.
+Default: bf16 on multi-GPU pods. Override via LOCAL_WEAK_4BIT=1 for 4-bit
+load on ~6 GB laptop GPUs.
 """
 from __future__ import annotations
 
 import os
 from typing import Any, Dict, List, Optional
 
-_DEFAULT_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+from .env_defaults import LOCAL_WEAK_MODEL as _DEFAULT_MODEL, local_weak_load_4bit
 _INSTANCE: Optional["LocalWeakSolver"] = None
 
 
@@ -22,7 +22,7 @@ class LocalWeakSolver:
         env = os.environ
         self.model_id = env.get("LOCAL_WEAK_MODEL", _DEFAULT_MODEL)
         self.device = env.get("LOCAL_WEAK_DEVICE", "cuda:0")
-        self.load_4bit = env.get("LOCAL_WEAK_4BIT", "1") == "1"
+        self.load_4bit = local_weak_load_4bit()
         self._model = None
         self._tokenizer = None
 

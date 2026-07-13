@@ -19,8 +19,16 @@ from .solvers import STRONG_ATTEMPTS, best_of
 from .training_reward import build_task_dict, score_episode_trajectory
 
 SOLVER_GAP_MODES = ("multiturn", "single_shot")
-SOLVER_MT_WEAK_TEMPERATURE = float(os.environ.get("SOLVER_MT_WEAK_TEMPERATURE", "0.2"))
-SOLVER_MT_STRONG_TEMPERATURE = float(os.environ.get("SOLVER_MT_STRONG_TEMPERATURE", "0.7"))
+from .env_defaults import (
+    SOLVER_MT_STRONG_TEMPERATURE as _SOLVER_MT_STRONG_TEMPERATURE_DEFAULT,
+    SOLVER_MT_WEAK_TEMPERATURE as _SOLVER_MT_WEAK_TEMPERATURE_DEFAULT,
+    env_float,
+)
+
+SOLVER_MT_WEAK_TEMPERATURE = env_float(
+    "SOLVER_MT_WEAK_TEMPERATURE", _SOLVER_MT_WEAK_TEMPERATURE_DEFAULT)
+SOLVER_MT_STRONG_TEMPERATURE = env_float(
+    "SOLVER_MT_STRONG_TEMPERATURE", _SOLVER_MT_STRONG_TEMPERATURE_DEFAULT)
 
 _WIN_STATUSES = frozenset({"fully_correct", "win", "solution_equivalent"})
 _CONFIG_CACHE: Dict[int, Tuple[Dict[str, Any], Any]] = {}

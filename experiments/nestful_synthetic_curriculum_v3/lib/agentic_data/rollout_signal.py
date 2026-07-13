@@ -41,13 +41,23 @@ from .training_reward import (PARTIAL, MINIMAL, build_task_dict,
                               configured_reward_policy,
                               get_training_reward_fn, score_episode_trajectory,
                               score_with_training_reward)
+from .env_defaults import (
+    ROLLOUT_MAX_TOKENS as _ROLLOUT_MAX_TOKENS_DEFAULT,
+    ROLLOUT_N as _ROLLOUT_N_DEFAULT,
+    ROLLOUT_REQUIRE_ACHIEVABLE_WIN as _ROLLOUT_REQUIRE_ACHIEVABLE_WIN_DEFAULT,
+    ROLLOUT_TEMPERATURE as _ROLLOUT_TEMPERATURE_DEFAULT,
+    ROLLOUT_TOP_P as _ROLLOUT_TOP_P_DEFAULT,
+    env_bool,
+    env_float,
+    env_int,
+)
 
-ROLLOUT_N = int(os.environ.get("ROLLOUT_N", "8"))
-ROLLOUT_TEMPERATURE = float(os.environ.get("ROLLOUT_TEMPERATURE", "0.8"))
-ROLLOUT_TOP_P = float(os.environ.get("ROLLOUT_TOP_P", "0.95"))
+ROLLOUT_N = env_int("ROLLOUT_N", _ROLLOUT_N_DEFAULT)
+ROLLOUT_TEMPERATURE = env_float("ROLLOUT_TEMPERATURE", _ROLLOUT_TEMPERATURE_DEFAULT)
+ROLLOUT_TOP_P = env_float("ROLLOUT_TOP_P", _ROLLOUT_TOP_P_DEFAULT)
 # Optional per-turn cap override for multi-turn rollouts (0 = use training
 # config stage_defaults, which is what probe/GRPO use).
-ROLLOUT_MAX_TOKENS = int(os.environ.get("ROLLOUT_MAX_TOKENS", "0"))
+ROLLOUT_MAX_TOKENS = env_int("ROLLOUT_MAX_TOKENS", _ROLLOUT_MAX_TOKENS_DEFAULT)
 ROLLOUT_MODE = os.environ.get("AGENTIC_ROLLOUT_MODE", "multiturn").strip().lower()
 
 DEGENERATE_STATUSES = {"parse_error", "no_tool_call", "clipped"}
@@ -61,8 +71,8 @@ def require_achievable_win() -> bool:
     noise (still has unique_rewards >= 2 but the model never demonstrates a
     complete solution in any sample).
     """
-    return os.environ.get("ROLLOUT_REQUIRE_ACHIEVABLE_WIN", "0").strip().lower() in (
-        "1", "true", "yes", "on")
+    return env_bool("ROLLOUT_REQUIRE_ACHIEVABLE_WIN",
+                    _ROLLOUT_REQUIRE_ACHIEVABLE_WIN_DEFAULT)
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
 

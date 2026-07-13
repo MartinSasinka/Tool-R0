@@ -71,10 +71,10 @@ OPENROUTER_MAX_SPEND_USD=20         # hard spend budget
 
 Generation stops early (with partial outputs + reports) when: the request or
 spend budget is exhausted; the acceptance rate is below threshold after warmup
-(``< 2%`` after 5 batches on fresh runs; ``< 0.5%`` after 50 batches and at least
-100 iterations on ``--resume``) — **disable via** ``MIN_ACCEPT_RATE=0``; the
+(**disabled by default**: ``MIN_ACCEPT_RATE=0``, ``WARMUP_BATCHES=999999``;
+legacy pilot values were ``< 2%`` after 5 batches on fresh runs) — override via
+``WARMUP_BATCHES``, ``MIN_ACCEPT_RATE``, ``RESUME_MIN_ITERATIONS``; the
 contamination gate fires 10 times; the per-stage iteration budget runs out.
-Override via ``WARMUP_BATCHES``, ``MIN_ACCEPT_RATE``, ``RESUME_MIN_ITERATIONS``.
 Cost report: `reports/OPENROUTER_COST_REPORT.md`.
 
 ## Acceptance gates (per example)
@@ -115,9 +115,9 @@ To avoid a homogeneous dataset (e.g. 95% `weak_score=0.5` /
 **accepted** set, checked before the (paid) judge call:
 
 ```bash
-DIVERSITY_MAX_SAME_WEAK_SCORE=0.40    # max fraction in one weak-score bucket
-DIVERSITY_MAX_SAME_FAILURE_TYPE=0.40  # max fraction with one failure type
-DIVERSITY_ENFORCE_AFTER=25            # warmup: caps off below this many accepted
+DIVERSITY_MAX_SAME_WEAK_SCORE=0.55    # max fraction in one weak-score bucket
+DIVERSITY_MAX_SAME_FAILURE_TYPE=0.55  # max fraction with one failure type
+DIVERSITY_ENFORCE_AFTER=50            # warmup: caps off below this many accepted
 ```
 
 A candidate that would push a bucket over its cap is rejected with
@@ -132,9 +132,9 @@ the **enforced** set.
   legacy seed. A homogeneous partial corpus (e.g. 93% `weak_score=0.50`) no
   longer blocks the common bucket forever; caps still enforce diversity among
   the new 572 rows at 0.40 per bucket/type.
-- Acceptance-rate early-stop is more patient: default `WARMUP_BATCHES=50`,
-  `MIN_ACCEPT_RATE=0.005`, and no stop before `RESUME_MIN_ITERATIONS=100`
-  (override via env). Fresh runs keep `WARMUP_BATCHES=5`, `MIN_ACCEPT_RATE=0.02`.
+- Acceptance-rate early-stop is **disabled by default** (same as fresh runs:
+  `MIN_ACCEPT_RATE=0`, `WARMUP_BATCHES=999999`). Override for stricter pilots
+  via env. See `lib/agentic_data/env_defaults.py`.
 
 ```bash
 # Resume stage2 with diversity on NEW rows (recommended)
@@ -202,7 +202,7 @@ proxy. Set:
 ```bash
 export WEAK_SOLVER_BACKEND=local
 export LOCAL_WEAK_MODEL=Qwen/Qwen3-4B-Instruct-2507
-export LOCAL_WEAK_4BIT=1          # fits 6 GB GPUs; set 0 on A100+
+export LOCAL_WEAK_4BIT=0          # default bf16 on RunPod; set 1 for ~6 GB laptops
 
 export OPENROUTER_CHALLENGER_MODEL=deepseek/deepseek-v3.2
 export OPENROUTER_STRONG_MODEL=qwen/qwen3-235b-a22b-2507
@@ -221,9 +221,9 @@ prompt unless you explicitly set `AGENTIC_ROLLOUT_MODE=single_shot` (debug only)
 export WEAK_SOLVER_BACKEND=local
 export ROLLOUT_N=8
 export ROLLOUT_TEMPERATURE=1.0
-# Require at least one full-win rollout (but not all) — model CAN solve it
-# sometimes; rejects spread-only partial-failure tasks.
-export ROLLOUT_REQUIRE_ACHIEVABLE_WIN=1
+# Default off — accepts spread-only partial-failure tasks with GRPO variance.
+# Set 1 to require at least one full-win rollout (but not all).
+export ROLLOUT_REQUIRE_ACHIEVABLE_WIN=0
 # optional per-turn cap (0 = training config stage_defaults)
 export ROLLOUT_MAX_TOKENS=0
 ```
@@ -236,7 +236,7 @@ rollout gate when ``WEAK_SOLVER_BACKEND=local`` (override with
 
 ```bash
 export AGENTIC_SOLVER_GAP_MODE=multiturn   # default when local
-export SOLVER_MT_WEAK_TEMPERATURE=0.2
+export SOLVER_MT_WEAK_TEMPERATURE=0.5
 export SOLVER_MT_STRONG_TEMPERATURE=0.7
 ```
 

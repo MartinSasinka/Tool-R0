@@ -7,6 +7,13 @@ from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ..nestful_like_generator import question_hash, trace_hash
+from .env_defaults import (
+    DIVERSITY_ENFORCE_AFTER,
+    DIVERSITY_MAX_SAME_FAILURE_TYPE,
+    DIVERSITY_MAX_SAME_WEAK_SCORE,
+    env_float,
+    env_int,
+)
 
 # Preferred solver-gap acceptance (spec §6; Autodata's weak-fail/strong-pass).
 # Override via env for fill-vs-quality tradeoffs:
@@ -81,13 +88,15 @@ class DiversityTracker:
                  max_same_weak_score: Optional[float] = None,
                  max_same_failure_type: Optional[float] = None,
                  enforce_after: Optional[int] = None) -> None:
-        env = os.environ
         self.resume_mode = resume_mode
-        self.max_ws = float(env.get("DIVERSITY_MAX_SAME_WEAK_SCORE", "0.40")) \
+        self.max_ws = env_float("DIVERSITY_MAX_SAME_WEAK_SCORE",
+                               DIVERSITY_MAX_SAME_WEAK_SCORE) \
             if max_same_weak_score is None else max_same_weak_score
-        self.max_ft = float(env.get("DIVERSITY_MAX_SAME_FAILURE_TYPE", "0.40")) \
+        self.max_ft = env_float("DIVERSITY_MAX_SAME_FAILURE_TYPE",
+                                DIVERSITY_MAX_SAME_FAILURE_TYPE) \
             if max_same_failure_type is None else max_same_failure_type
-        self.enforce_after = int(env.get("DIVERSITY_ENFORCE_AFTER", "25")) \
+        self.enforce_after = env_int("DIVERSITY_ENFORCE_AFTER",
+                                     DIVERSITY_ENFORCE_AFTER) \
             if enforce_after is None else enforce_after
         # NEW rows this run (enforcement counters)
         self.ws: Counter = Counter()

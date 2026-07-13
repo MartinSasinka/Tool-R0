@@ -38,9 +38,9 @@ MERGE="$V3_ROOT/scripts/data/merge_refilter_shards.py"
 
 export WEAK_SOLVER_BACKEND="${WEAK_SOLVER_BACKEND:-local}"
 export LOCAL_WEAK_MODEL="${LOCAL_WEAK_MODEL:-Qwen/Qwen3-4B-Instruct-2507}"
-export LOCAL_WEAK_4BIT="${LOCAL_WEAK_4BIT:-1}"
+export LOCAL_WEAK_4BIT="${LOCAL_WEAK_4BIT:-0}"
 export ROLLOUT_N="${ROLLOUT_N:-8}"
-export ROLLOUT_TEMPERATURE="${ROLLOUT_TEMPERATURE:-0.8}"
+export ROLLOUT_TEMPERATURE="${ROLLOUT_TEMPERATURE:-1.0}"
 export ROLLOUT_MAX_TOKENS="${ROLLOUT_MAX_TOKENS:-0}"
 
 echo "======================================================================="
