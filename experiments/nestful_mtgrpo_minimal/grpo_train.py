@@ -690,13 +690,33 @@ def train(
     }
     _log({"reward_dispatch": dispatch_info})
 
+    num_tasks = len(tasks)
+    if wandb_run is not None:
+        _wandb_setup_train_metrics(wandb_run, num_tasks)
+
+    # Per-task reward history for cross-epoch W&B deltas (epoch N vs N-1).
+    task_prev_mean: Dict[str, float] = {}
+    task_best_mean: Dict[str, float] = {}
+    task_prev_rollout_rewards: Dict[str, List[float]] = {}
+
     for epoch in range(epochs):
         model.train()
         optimizer.zero_grad(set_to_none=True)
         accum = 0
         epoch_rewards: List[float] = []
+        epoch_win_rates: List[float] = []
+        epoch_n_unique: List[int] = []
+        epoch_task_means: Dict[str, float] = {}
+        epoch_task_rollouts: Dict[str, List[float]] = {}
         epoch_dead_groups = 0
         epoch_task_groups = 0
+        tasks_improved = 0
+        tasks_regressed = 0
+        reward_deltas: List[float] = []
+        epoch_rollouts_improved_per_task: List[int] = []
+        epoch_rollout_improve_rates: List[float] = []
+        total_rollouts_improved = 0
+        total_rollouts_regressed = 0
         for ti, task in enumerate(tasks):
             gold_n = int(task.get("num_calls") or gold_n_default)
             episodes: List[Episode] = []
@@ -782,6 +802,31 @@ def train(
 
             rewards = [e.reward for e in episodes]
             mean_r = sum(rewards) / len(rewards)
+            task_id = str(task["task_id"])
+            win_rate = _rollout_win_rate(rewards)
+            if epoch > 0 and task_id in task_prev_mean:
+                delta = mean_r - task_prev_mean[task_id]
+                reward_deltas.append(delta)
+                if delta > 1e-6:
+                    tasks_improved += 1
+                elif delta < -1e-6:
+                    tasks_regressed += 1
+            task_best_mean[task_id] = max(task_best_mean.get(task_id, mean_r), mean_r)
+            epoch_task_means[task_id] = mean_r
+            epoch_win_rates.append(win_rate)
+            epoch_n_unique.append(len(set(round(float(r), 6) for r in rewards)))
+            epoch_task_rollouts[task_id] = [float(r) for r in rewards]
+            rollout_slot_cmp: Dict[str, Any] = {}
+            if epoch > 0 and task_id in task_prev_rollout_rewards:
+                rollout_slot_cmp = _compare_rollouts_slotwise(
+                    task_prev_rollout_rewards[task_id], rewards)
+                if rollout_slot_cmp["rollouts_compared"] > 0:
+                    epoch_rollouts_improved_per_task.append(
+                        int(rollout_slot_cmp["rollouts_improved"]))
+                    epoch_rollout_improve_rates.append(
+                        float(rollout_slot_cmp["rollout_improve_rate"]))
+                    total_rollouts_improved += int(rollout_slot_cmp["rollouts_improved"])
+                    total_rollouts_regressed += int(rollout_slot_cmp["rollouts_regressed"])
 
             # Per-episode turn-level returns: G_t = sum_{k>=t} gamma^(k-t) r_k
             #   + lambda_episode * gamma^(T-t+1) * R_episode
@@ -849,6 +894,10 @@ def train(
                 "gold_num_calls": gold_n,
                 **fail_counts,
                 "strict_gold_trace_pass": mean_r,
+                "win_rate": win_rate,
+                "max_reward": max(rewards) if rewards else 0.0,
+                "min_reward": min(rewards) if rewards else 0.0,
+                **rollout_slot_cmp,
                 "zero_tool_calls": sum(
                     1 for e in episodes if e.trajectory.zero_tool_calls
                 ) / len(episodes),
@@ -916,7 +965,13 @@ def train(
             if dead:
                 _log({**rec, "update": "skipped_dead_group",
                       "optimizer_step_executed": False, "contributing_turns": 0})
-                _wandb_log_task(wandb_run, rec, stage, global_step)
+                _wandb_log_task(
+                    wandb_run, rec, stage=stage, num_tasks=num_tasks,
+                    task_step=epoch * num_tasks + ti,
+                    optimizer_step=global_step,
+                    task_prev_mean=task_prev_mean.get(task_id),
+                    task_best_mean=task_best_mean.get(task_id),
+                )
                 continue
 
             step_loss = 0.0
@@ -978,7 +1033,13 @@ def train(
             rec["mean_logprob"] = (logp_sum / logp_count) if logp_count else 0.0
             rec["optimizer_step_executed"] = (accum % grad_accum == 0)
             _log({**rec, "update": "accumulated"})
-            _wandb_log_task(wandb_run, rec, stage, global_step)
+            _wandb_log_task(
+                wandb_run, rec, stage=stage, num_tasks=num_tasks,
+                task_step=epoch * num_tasks + ti,
+                optimizer_step=global_step,
+                task_prev_mean=task_prev_mean.get(task_id),
+                task_best_mean=task_best_mean.get(task_id),
+            )
 
             if accum % grad_accum == 0:
                 import torch as _t
@@ -988,6 +1049,8 @@ def train(
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
                 global_step += 1
+                _wandb_log_optimizer_step(
+                    wandb_run, optimizer_step=global_step, grad_norm=float(gnorm))
 
         # Flush any remaining grads at epoch end.
         if accum % grad_accum != 0:
@@ -1002,7 +1065,42 @@ def train(
             _log({"epoch": epoch, "dead_group_rate": dgr,
                   "dead_groups": epoch_dead_groups, "task_groups": epoch_task_groups})
 
-        _wandb_log_epoch(wandb_run, epoch, stage, len(tasks), epoch_rewards, summary["fallback_used"])
+        mean_reward_epoch = (sum(epoch_rewards) / len(epoch_rewards)
+                             if epoch_rewards else 0.0)
+        mean_unique = (sum(epoch_n_unique) / len(epoch_n_unique)
+                       if epoch_n_unique else 0.0)
+        mean_win = (sum(epoch_win_rates) / len(epoch_win_rates)
+                    if epoch_win_rates else 0.0)
+        mean_delta = (sum(reward_deltas) / len(reward_deltas)
+                      if reward_deltas else None)
+        mean_rollouts_improved = (
+            sum(epoch_rollouts_improved_per_task) / len(epoch_rollouts_improved_per_task)
+            if epoch_rollouts_improved_per_task else None)
+        mean_rollout_improve = (
+            sum(epoch_rollout_improve_rates) / len(epoch_rollout_improve_rates)
+            if epoch_rollout_improve_rates else None)
+        _wandb_log_epoch(
+            wandb_run,
+            epoch=epoch,
+            stage=stage,
+            tasks_seen=len(tasks),
+            dead_group_rate=(epoch_dead_groups / epoch_task_groups)
+            if epoch_task_groups else 0.0,
+            mean_unique_rewards=mean_unique,
+            mean_win_rate=mean_win,
+            mean_reward=mean_reward_epoch,
+            tasks_improved=tasks_improved,
+            tasks_regressed=tasks_regressed,
+            mean_reward_delta=mean_delta,
+            mean_rollouts_improved_per_task=mean_rollouts_improved,
+            mean_rollout_improve_rate=mean_rollout_improve,
+            total_rollouts_improved=total_rollouts_improved,
+            total_rollouts_regressed=total_rollouts_regressed,
+            fallback_used=summary["fallback_used"],
+            optimizer_step=global_step,
+        )
+        task_prev_mean.update(epoch_task_means)
+        task_prev_rollout_rewards.update(epoch_task_rollouts)
 
         if tr.get("save_every_epoch", True):
             out_dir = config["model"]["output_adapter_dir"]
@@ -1108,52 +1206,226 @@ def _turn_returns(
     return returns
 
 
-def _wandb_log_task(wandb_run, rec: Dict[str, Any], stage: int, global_step: int) -> None:
-    """Log per-task training metrics to W&B (no-op if wandb_run is None)."""
-    if wandb_run is None:
-        return
+_WIN_REWARD_THRESHOLD = 0.99
+_ROLLOUT_DELTA_EPS = 1e-6
+
+
+def _rollout_win_rate(rewards: List[float]) -> float:
+    if not rewards:
+        return 0.0
+    return sum(1 for r in rewards if float(r) >= _WIN_REWARD_THRESHOLD) / len(rewards)
+
+
+def _compare_rollouts_slotwise(
+    prev: List[float], curr: List[float], *, eps: float = _ROLLOUT_DELTA_EPS,
+) -> Dict[str, Any]:
+    """Compare rollout rewards slot-by-slot (index i vs i) across epochs.
+
+    GRPO generates ``num_generations`` rollouts per task in a fixed order each
+    epoch; slot-wise delta tracks how each group position moved after training.
+    """
+    n = min(len(prev), len(curr))
+    if n == 0:
+        return {
+            "rollouts_compared": 0,
+            "rollouts_improved": 0,
+            "rollouts_regressed": 0,
+            "rollouts_unchanged": 0,
+            "rollout_slot_deltas": [],
+            "rollout_improve_rate": 0.0,
+            "rollout_regress_rate": 0.0,
+            "rollout_mean_slot_delta": 0.0,
+        }
+    deltas = [float(curr[i]) - float(prev[i]) for i in range(n)]
+    improved = sum(1 for d in deltas if d > eps)
+    regressed = sum(1 for d in deltas if d < -eps)
+    unchanged = n - improved - regressed
+    return {
+        "rollouts_compared": n,
+        "rollouts_improved": improved,
+        "rollouts_regressed": regressed,
+        "rollouts_unchanged": unchanged,
+        "rollout_slot_deltas": deltas,
+        "rollout_improve_rate": improved / n,
+        "rollout_regress_rate": regressed / n,
+        "rollout_mean_slot_delta": sum(deltas) / n,
+    }
+
+
+def _wandb_setup_train_metrics(wandb_run, num_tasks: int) -> None:
+    """Register W&B chart axes: per-task steps + epoch summaries."""
     try:
-        wandb_run.log({
-            "train/mean_reward":       rec.get("mean_reward", 0.0),
-            "train/strict_pass":       rec.get("strict_gold_trace_pass", 0.0),
-            "train/loss":              rec.get("loss", 0.0),
-            "train/contributing_turns": rec.get("contributing_turns", 0),
-            "train/clipped_rate":      rec.get("clipped_rate", 0.0),
-            "train/dead_group":        1.0 if rec.get("dead_group") else 0.0,
-            "train/group_mixed":       1.0 if rec.get("group_mixed") else 0.0,
-            "train/zero_tool_calls":   rec.get("zero_tool_calls", 0.0),
-            "train/return_std":        rec.get("return_std", 0.0),
-            "train/kl":                rec.get("kl", 0.0),
-            "train/mean_logprob":      rec.get("mean_logprob", 0.0),
-            "train/parse_error_rate":  rec.get("parse_error_rate", 0.0),
-            "train/no_tool_call_rate": rec.get("no_tool_call_rate", 0.0),
-            "train/too_few_calls_rate": rec.get("too_few_calls_rate", 0.0),
-            "train/invalid_reference_rate": rec.get("invalid_reference_rate", 0.0),
-            "train/executor_error_rate": rec.get("executor_error_rate", 0.0),
-            "train/executable_trajectory_rate": rec.get("executable_trajectory_rate", 0.0),
-            "train/tool_final_answer_pass_rate": rec.get("tool_final_answer_pass_rate", 0.0),
-            "train/rollout_length_mean": rec.get("rollout_length_mean", 0.0),
-            "train/stage":             stage,
-            "train/epoch":             rec.get("epoch", 0),
-        }, step=global_step)
+        import wandb
+        wandb.define_metric("task_step")
+        wandb.define_metric("task_id")
+        wandb.define_metric("train/*", step_metric="task_step")
+        wandb.define_metric("epoch")
+        wandb.define_metric("epoch/*", step_metric="epoch")
+        wandb.define_metric("optimizer_step")
+        wandb.define_metric("optimizer/*", step_metric="optimizer_step")
+        wandb_run.config.update({"wandb_num_tasks": num_tasks})
     except Exception:
         pass
 
 
-def _wandb_log_epoch(wandb_run, epoch: int, stage: int, tasks_seen: int,
-                     rewards: List[float], fallback_used: bool) -> None:
-    """Log end-of-epoch summary to W&B."""
-    if wandb_run is None or not rewards:
+def _wandb_log_task(
+    wandb_run,
+    rec: Dict[str, Any],
+    *,
+    stage: int,
+    num_tasks: int,
+    task_step: int,
+    optimizer_step: int,
+    task_prev_mean: Optional[float] = None,
+    task_best_mean: Optional[float] = None,
+) -> None:
+    """Log per-task group metrics keyed by task_step = epoch * num_tasks + task_idx."""
+    if wandb_run is None:
+        return
+    try:
+        episode_rewards = rec.get("episode_rewards") or []
+        mean_r = float(rec.get("mean_reward", 0.0))
+        max_r = float(rec.get("max_reward", max(episode_rewards) if episode_rewards else mean_r))
+        min_r = float(rec.get("min_reward", min(episode_rewards) if episode_rewards else mean_r))
+        n_unique = int(rec.get("n_unique_episode_rewards", 0))
+        win_rate = float(rec.get("win_rate", _rollout_win_rate(episode_rewards)))
+        epoch = int(rec.get("epoch", 0))
+        task_id = str(rec.get("task_id", ""))
+
+        reward_delta = None
+        if task_prev_mean is not None and epoch > 0:
+            reward_delta = mean_r - float(task_prev_mean)
+        best_so_far = max(float(task_best_mean) if task_best_mean is not None else mean_r, mean_r)
+
+        payload: Dict[str, Any] = {
+            "task_step": task_step,
+            "task_id": task_id,
+            "train/mean_reward": mean_r,
+            "train/mean_reward_dense": mean_r,
+            "train/win_rate": win_rate,
+            "train/max_reward": max_r,
+            "train/min_reward": min_r,
+            "train/n_unique_rewards": float(n_unique),
+            "train/rollout_reward_std": float(rec.get("reward_std_episode", 0.0)),
+            "train/n_unique_completions": float(rec.get("n_unique_completion_hashes", 0)),
+            "train/full_success_rollout_rate": win_rate,
+            "train/mean_predicted_calls": (
+                sum(rec.get("predicted_num_calls") or []) / len(rec["predicted_num_calls"])
+                if rec.get("predicted_num_calls") else 0.0),
+            "train/gold_num_calls": float(rec.get("gold_num_calls", 0)),
+            "train/reward_best_so_far": best_so_far,
+            "train/loss": float(rec.get("loss", 0.0)),
+            "train/contributing_turns": int(rec.get("contributing_turns", 0)),
+            "train/clipped_rate": float(rec.get("clipped_rate", 0.0)),
+            "train/dead_group": 1.0 if rec.get("dead_group") else 0.0,
+            "train/group_mixed": 1.0 if rec.get("group_mixed") else 0.0,
+            "train/zero_tool_calls": float(rec.get("zero_tool_calls", 0.0)),
+            "train/return_std": float(rec.get("return_std", 0.0)),
+            "train/kl": float(rec.get("kl", 0.0)),
+            "train/mean_logprob": float(rec.get("mean_logprob", 0.0)),
+            "train/parse_error_rate": float(rec.get("parse_error_rate", 0.0)),
+            "train/no_tool_call_rate": float(rec.get("no_tool_call_rate", 0.0)),
+            "train/too_few_calls_rate": float(rec.get("too_few_calls_rate", 0.0)),
+            "train/invalid_reference_rate": float(rec.get("invalid_reference_rate", 0.0)),
+            "train/executor_error_rate": float(rec.get("executor_error_rate", 0.0)),
+            "train/executable_trajectory_rate": float(rec.get("executable_trajectory_rate", 0.0)),
+            "train/tool_final_answer_pass_rate": float(
+                rec.get("tool_final_answer_pass_rate", 0.0)),
+            "train/rollout_length_mean": float(rec.get("rollout_length_mean", 0.0)),
+            "train/first_error_turn_mean": float(rec.get("first_error_turn_mean") or 0.0),
+            "train/stage": stage,
+            "train/epoch": epoch,
+            "train/task_idx": int(rec.get("task_idx", 0)),
+            "optimizer_step": optimizer_step,
+            "optimizer/global_step": optimizer_step,
+        }
+        if reward_delta is not None:
+            payload["train/reward_delta_vs_prev_epoch"] = reward_delta
+            payload["train/improved_vs_prev_epoch"] = 1.0 if reward_delta > 1e-6 else 0.0
+
+        compared = int(rec.get("rollouts_compared", 0))
+        if compared > 0:
+            payload["train/rollouts_compared"] = float(compared)
+            payload["train/rollouts_improved"] = float(rec.get("rollouts_improved", 0))
+            payload["train/rollouts_regressed"] = float(rec.get("rollouts_regressed", 0))
+            payload["train/rollouts_unchanged"] = float(rec.get("rollouts_unchanged", 0))
+            payload["train/rollout_improve_rate"] = float(rec.get("rollout_improve_rate", 0.0))
+            payload["train/rollout_regress_rate"] = float(rec.get("rollout_regress_rate", 0.0))
+            payload["train/rollout_mean_slot_delta"] = float(
+                rec.get("rollout_mean_slot_delta", 0.0))
+            deltas = rec.get("rollout_slot_deltas") or []
+            if deltas:
+                try:
+                    import wandb
+                    payload["train/rollout_slot_delta_hist"] = wandb.Histogram(deltas)
+                except Exception:
+                    pass
+
+        wandb_run.log(payload, commit=True)
+    except Exception:
+        pass
+
+
+def _wandb_log_epoch(
+    wandb_run,
+    *,
+    epoch: int,
+    stage: int,
+    tasks_seen: int,
+    dead_group_rate: float,
+    mean_unique_rewards: float,
+    mean_win_rate: float,
+    mean_reward: float,
+    tasks_improved: int,
+    tasks_regressed: int,
+    mean_reward_delta: Optional[float],
+    mean_rollouts_improved_per_task: Optional[float],
+    mean_rollout_improve_rate: Optional[float],
+    total_rollouts_improved: int,
+    total_rollouts_regressed: int,
+    fallback_used: bool,
+    optimizer_step: int,
+) -> None:
+    """Log end-of-epoch rollout / task-improvement summary."""
+    if wandb_run is None or tasks_seen <= 0:
+        return
+    try:
+        payload: Dict[str, Any] = {
+            "epoch": epoch,
+            "epoch/mean_reward": mean_reward,
+            "epoch/mean_reward_dense": mean_reward,
+            "epoch/win_rate": mean_win_rate,
+            "epoch/dead_group_rate": dead_group_rate,
+            "epoch/mean_unique_rewards": mean_unique_rewards,
+            "epoch/tasks_seen": tasks_seen,
+            "epoch/tasks_improved": float(tasks_improved),
+            "epoch/tasks_regressed": float(tasks_regressed),
+            "epoch/fallback_used": 1.0 if fallback_used else 0.0,
+            "epoch/stage": stage,
+            "optimizer_step": optimizer_step,
+        }
+        if mean_reward_delta is not None:
+            payload["epoch/mean_reward_delta_vs_prev"] = mean_reward_delta
+        if mean_rollouts_improved_per_task is not None:
+            payload["epoch/mean_rollouts_improved_per_task"] = mean_rollouts_improved_per_task
+        if mean_rollout_improve_rate is not None:
+            payload["epoch/mean_rollout_improve_rate"] = mean_rollout_improve_rate
+        payload["epoch/total_rollouts_improved"] = float(total_rollouts_improved)
+        payload["epoch/total_rollouts_regressed"] = float(total_rollouts_regressed)
+        wandb_run.log(payload, commit=True)
+    except Exception:
+        pass
+
+
+def _wandb_log_optimizer_step(wandb_run, *, optimizer_step: int, grad_norm: float) -> None:
+    if wandb_run is None:
         return
     try:
         wandb_run.log({
-            "epoch/mean_reward":    sum(rewards) / len(rewards),
-            "epoch/strict_pass":    sum(1 for r in rewards if r == 1.0) / len(rewards),
-            "epoch/tasks_seen":     tasks_seen,
-            "epoch/fallback_used":  1.0 if fallback_used else 0.0,
-            "epoch/stage":          stage,
-            "epoch/epoch":          epoch,
-        })
+            "optimizer_step": optimizer_step,
+            "optimizer/global_step": optimizer_step,
+            "optimizer/grad_norm": grad_norm,
+        }, commit=True)
     except Exception:
         pass
 
