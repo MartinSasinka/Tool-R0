@@ -23,6 +23,10 @@
 #   WANDB_MODE / WANDB_PROJECT / WANDB_ENTITY / WANDB_GROUP / WANDB_TAGS  optional
 #   DRY_RUN=1            validate + print + manifest preview, execute nothing
 #   SMOKE=1              tiny run: 8 tasks, 2 generations, 1 epoch
+#   SINGLE_TURN=1        single-turn (Direct-prompting) GRPO ablation of MT-GRPO:
+#                        whole call plan in ONE completion, no executor feedback,
+#                        episode-level advantages; forces the DP rollout pool OFF
+#                        (single in-process vLLM engine). Same reward policy.
 if grep -q $'\r' "$0" 2>/dev/null; then
   exec /bin/bash <(sed 's/\r$//' "$0") "$@"
 fi
@@ -54,7 +58,21 @@ esac
 
 ROLLOUT_DP_GPUS="${ROLLOUT_DP_GPUS:-1,2,3}"
 DP_LEARNER_GPU="${DP_LEARNER_GPU:-0}"
-export REWARD_POLICY STAGES ROLLOUT_DP_GPUS DP_LEARNER_GPU
+
+# ── single-turn (Direct-prompting) GRPO ablation ─────────────────────────────
+# SINGLE_TURN=1: the policy emits the WHOLE call plan in ONE completion
+# (NESTFUL Direct paradigm; direct_eval prompt + lenient full-sequence parser),
+# never sees executor observations, and turn-level MT-GRPO collapses to plain
+# episode-level GRPO. Reward policy is unchanged. The DP rollout pool is
+# multi-turn only, so it is forced OFF (single in-process vLLM engine).
+SINGLE_TURN="${SINGLE_TURN:-0}"
+if [ "$SINGLE_TURN" = "1" ]; then
+  ROLLOUT_DP_GPUS=""
+  EXTRA_TRAIN_OVERRIDES_STR="${EXTRA_TRAIN_OVERRIDES_STR:-} --override training.single_turn=true --override mt_grpo.enabled=false"
+  echo "[grpo] SINGLE_TURN=1 — single-turn (Direct-prompting) GRPO ablation"
+  echo "       -> training.single_turn=true, mt_grpo.enabled=false, DP rollout pool OFF"
+fi
+export REWARD_POLICY STAGES ROLLOUT_DP_GPUS DP_LEARNER_GPU SINGLE_TURN
 
 # ── GPU topology validation ──────────────────────────────────────────────────
 GPU_COUNT=0
@@ -205,6 +223,7 @@ print(json.dumps({
     'num_generations': os.environ.get('NUM_GENERATIONS'),
     'max_epochs_per_stage': os.environ.get('MAX_EPOCHS_PER_STAGE'),
     'smoke': os.environ.get('SMOKE', '0') == '1',
+    'single_turn_ablation': os.environ.get('SINGLE_TURN', '0') == '1',
     'wandb_project': os.environ.get('WANDB_PROJECT') or None,
 }))" 2>/dev/null || echo '{}')"
 

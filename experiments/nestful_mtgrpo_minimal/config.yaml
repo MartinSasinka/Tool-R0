@@ -156,6 +156,18 @@ training:
   eval_after_epoch: true
   # Clipped (max_new_tokens reached) episodes: reward 0 AND masked from GRPO update.
   mask_clipped_from_update: true
+  # Single-turn (Direct-prompting) ABLATION of the multi-turn protocol: the model
+  # emits the WHOLE call plan in one completion (direct_eval prompt + lenient
+  # full-sequence parser), never sees executor observations, and turn-level
+  # MT-GRPO collapses to plain episode-level GRPO on one completion. Reward
+  # dispatch (reward.train_policy) is unchanged. Not compatible with
+  # hardware.rollout_data_parallel_gpus. Match the eval side with
+  # --override data.eval_paradigm=direct.
+  single_turn: false
+
+# Extra knobs for the single-turn ablation rollout (training.single_turn: true).
+single_turn:
+  num_icl: 0            # in-context examples prepended to the Direct train prompt
 
 # Curriculum advancement policy (used by run_curriculum.sh multi-epoch loop).
 # This mirrors the logic from curricullum/train/run_curriculum_training.py:

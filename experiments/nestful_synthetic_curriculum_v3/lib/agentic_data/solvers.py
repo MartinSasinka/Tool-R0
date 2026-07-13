@@ -62,7 +62,7 @@ def solver_params(strong: bool) -> Dict[str, Any]:
     return {"mode": mode,
             "attempts": 1,
             "max_tokens": 400 if mode == "handicapped" else WEAK_MAX_TOKENS,
-            "temperature": 0.2}
+            "temperature": 1.0}
 
 
 def solver_messages(question: str, tools: List[Dict[str, Any]],

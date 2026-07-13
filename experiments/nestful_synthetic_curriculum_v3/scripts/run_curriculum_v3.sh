@@ -259,8 +259,11 @@ if [ -n "${CHECKPOINT_IN:-}" ]; then
   fi
 fi
 
+# NOTE: ROLLOUT_DP_GPUS uses `-` (not `:-`) so an EXPLICITLY EMPTY value keeps
+# the DP pool off (required by the SINGLE_TURN=1 ablation in run_grpo.sh);
+# only a fully unset variable falls back to the 1,2,3 default.
 USE_VLLM="${USE_VLLM:-1}" \
-  ROLLOUT_DP_GPUS="${ROLLOUT_DP_GPUS:-1,2,3}" \
+  ROLLOUT_DP_GPUS="${ROLLOUT_DP_GPUS-1,2,3}" \
   DP_LEARNER_GPU="${DP_LEARNER_GPU:-0}" \
   bash "$MINIMAL/run_curriculum.sh"
 

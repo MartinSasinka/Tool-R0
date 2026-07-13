@@ -421,6 +421,111 @@ def _rollout_episode_for_train(
     return Episode(trajectory=traj, turn_tokens=turn_tokens, n_forced_turns=n_forced)
 
 
+def _rollout_episode_single_turn_for_train(
+    model, tokenizer, task, config, registry, *, vllm_gen_fn=None,
+) -> Episode:
+    """Single-turn (Direct-prompting) ablation rollout for GRPO.
+
+    Ablation of the multi-turn protocol: the model receives the question +
+    tools ONCE and must emit the ENTIRE call sequence in one completion
+    (NESTFUL "Direct" paradigm — same prompt as direct_eval.build_direct_messages,
+    same lenient full-sequence parser as the direct final_eval). The model never
+    sees executor observations; calls are executed afterwards only to score the
+    episode with the SAME reward dispatch as multi-turn training.
+
+    Exactly ONE TurnTokens per episode → the GRPO update degenerates to plain
+    episode-level advantage on a single completion (turn-level credit
+    assignment is impossible by construction). Enable via
+    ``training.single_turn: true`` (which also forces episode-level mode).
+    """
+    from direct_eval import build_direct_messages, load_icl_examples
+    from parser import parse_tool_calls_all
+
+    gen = config.get("generation", {})
+    exec_cfg = config.get("executor", {})
+    st_cfg = config.get("single_turn", {}) or {}
+    gold_n = int(task.get("num_calls") or len(task.get("gold_calls", [])))
+    budget = get_stage_token_budget(config, gold_n, "train")
+    max_new_tokens = budget["max_new_tokens"]
+    hf_prompt_budget = max(0, int(budget.get("max_model_length", 0)) - int(max_new_tokens))
+    temperature = float(gen.get("temperature", 0.7))
+    top_p = float(gen.get("top_p", 0.95))
+
+    num_icl = int(st_cfg.get("num_icl", 0) or 0)
+    icl = load_icl_examples(num_icl) if num_icl > 0 else []
+    messages = build_direct_messages(task, icl)
+
+    executor = ToolExecutor(
+        task, registry=registry, mode=exec_cfg.get("mode", "auto"),
+        ibm_call_timeout=float(exec_cfg.get("ibm_call_timeout", 30.0)),
+    )
+    traj = Trajectory(task["task_id"], gold_n, gold_n, executor_mode=executor.mode)
+
+    if vllm_gen_fn is not None:
+        g = vllm_gen_fn(messages, max_new_tokens)
+        if g.get("prompt_overflow"):
+            traj.prompt_overflow = True
+            traj.clipped_any = True
+            traj.stop_reason = "prompt_overflow"
+            return Episode(trajectory=traj, turn_tokens=[])
+        text = g["text"]
+        clipped = bool(g["clipped"])
+        c_len = int(g["completion_tokens"])
+        p_ids, c_ids = _retokenize_for_logprob(tokenizer, messages, text)
+        p_len = int(p_ids.shape[0])
+    else:
+        text, p_ids, c_ids, p_len, c_len, clipped, overflow = _generate_with_ids(
+            model, tokenizer, messages, max_new_tokens, temperature, top_p,
+            max_prompt_tokens=hf_prompt_budget,
+        )
+        if overflow:
+            traj.prompt_overflow = True
+            traj.clipped_any = True
+            traj.stop_reason = "prompt_overflow"
+            return Episode(trajectory=traj, turn_tokens=[])
+
+    turn_tokens = [TurnTokens(p_ids.detach().cpu(), c_ids.detach().cpu())]
+
+    if clipped:
+        traj.clipped_any = True
+        t0 = Turn(0, text, prompt_tokens=p_len, completion_tokens=c_len,
+                  clipped_completion=True)
+        t0.fail_reason = "clipped_completion"
+        traj.turns.append(t0)
+        traj.stop_reason = "clipped"
+        return Episode(trajectory=traj, turn_tokens=turn_tokens)
+
+    calls = parse_tool_calls_all(text)
+    if not calls:
+        t0 = Turn(0, text, prompt_tokens=p_len, completion_tokens=c_len)
+        t0.fail_reason = "parse:no_calls_in_single_turn_plan"
+        traj.turns.append(t0)
+        traj.stop_reason = "parse_fail"
+        return Episode(trajectory=traj, turn_tokens=turn_tokens)
+
+    # Cap pathological plans the same way multi-turn caps turns (gold_n + 4).
+    calls = calls[: gold_n + 4]
+    for i, call in enumerate(calls):
+        # The whole plan lives in ONE completion; attach the raw text (and
+        # token counts) to the first turn only, so token accounting stays 1:1
+        # with the single TurnTokens entry.
+        turn = Turn(i, text if i == 0 else "", parsed_call=call,
+                    prompt_tokens=p_len if i == 0 else 0,
+                    completion_tokens=c_len if i == 0 else 0)
+        res = executor.execute(call)
+        turn.observation = res.observation
+        if res.error is not None:
+            turn.fail_reason = f"exec:{res.error}"
+            traj.turns.append(turn)
+            traj.stop_reason = "executor_error"
+            break
+        traj.final_observation = res.observation
+        traj.turns.append(turn)
+    if traj.stop_reason is None:
+        traj.stop_reason = "single_turn_plan"
+    return Episode(trajectory=traj, turn_tokens=turn_tokens)
+
+
 def _retokenize_for_logprob(tokenizer, messages, completion_text: str):
     """Re-tokenise a (messages, completion) pair as 1-D CPU LongTensors.
 
@@ -509,6 +614,20 @@ def train(
     mt = config.get("mt_grpo", {}) or {}
     use_turn_level = bool(mt.get("enabled", True)) and \
         mt.get("mode", "turn_level_minimal") == "turn_level_minimal"
+
+    # Single-turn (Direct-prompting) ablation: one completion = the whole call
+    # plan, so per-turn credit assignment is impossible by construction.
+    single_turn = bool(tr.get("single_turn", False))
+    if single_turn and rollout_pool is not None:
+        raise ValueError(
+            "training.single_turn=true is not supported together with "
+            "hardware.rollout_data_parallel_gpus (the DP pool runs the "
+            "multi-turn episode loop only). Disable one of them.")
+    if single_turn and use_turn_level:
+        use_turn_level = False
+        print("[train] single_turn ablation: forcing episode-level advantages "
+              "(turn-level MT-GRPO disabled — one completion per episode)",
+              flush=True)
     gamma = float(mt.get("gamma", 1.0))
     lambda_episode = float(mt.get("lambda_episode", 1.0))
     normalize_advantage = bool(mt.get("normalize_advantage", True))
@@ -560,7 +679,10 @@ def train(
         "reward_fn_module": dispatch_info["reward_fn_module"],
         "reward_fn_name": dispatch_info["reward_fn_name"],
         "reward_fallback_used": bool(dispatch_info.get("fallback_used", False)),
-        "mt_grpo_mode": "turn_level_minimal" if use_turn_level else "episode_level",
+        "mt_grpo_mode": ("single_turn_episode_level" if single_turn
+                         else "turn_level_minimal" if use_turn_level
+                         else "episode_level"),
+        "single_turn": single_turn,
         "gamma": gamma, "lambda_episode": lambda_episode,
         "fallback_used": False,
         "vllm_rollout": (vllm_gen is not None) or (rollout_pool is not None),
@@ -603,6 +725,26 @@ def train(
                 _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
                 _train_max_turns = max(1, min(gold_n + _extra, gold_n + 4))
                 for _ in range(num_gen):
+                    if single_turn:
+                        ep = _rollout_episode_single_turn_for_train(
+                            model, tokenizer, task, config, registry,
+                            vllm_gen_fn=vllm_gen_fn,
+                        )
+                        # Same reward dispatch as multi-turn (module-global,
+                        # monkeypatch-aware) — scored on the executed plan.
+                        rinfo = episode_turn_reward_seq(
+                            ep.trajectory, task, gold_obs)
+                        ep.reward = rinfo["episode_reward"]
+                        # ONE generated segment per episode: collapse r_seq to a
+                        # single episode-level entry aligned with the single
+                        # TurnTokens (empty when prompt_overflow skipped it).
+                        r_seq = [float(ep.reward)] if ep.turn_tokens else []
+                        diag = dict(rinfo.get("diagnostics") or {})
+                        diag["single_turn"] = True
+                        episodes.append(ep)
+                        ep_r_seqs.append(r_seq)
+                        ep_diags.append(diag)
+                        continue
                     ep = _rollout_episode_for_train(
                         model, tokenizer, task, config, registry,
                         max_turns=_train_max_turns,
