@@ -126,6 +126,14 @@ for n in $STAGES; do
     case "$ov" in *filtered_toolr0_synthetic*)
       echo "[grpo] ERROR: $ov_var points into LEGACY dataset B" >&2; exit 1;;
     esac
+    # v5 registry datasets execute for REAL via executor.mode=synthetic; do not
+    # run them through this legacy launcher — use scripts/v5/train_stage2.sh
+    # (run_v5_pipeline.py), which enforces registry-hash consistency.
+    case "$ov" in *curriculum_v5*)
+      echo "[grpo] ERROR: $ov is a curriculum_v5 registry dataset." >&2
+      echo "       Use scripts/v5/train_stage2.sh (run_v5_pipeline.py) instead of run_grpo.sh." >&2
+      exit 1;;
+    esac
     # Agentic synthetic-tool datasets (curriculum_v4_*_agentic_*) are NOT real
     # IBM NESTFUL functions. executor.mode=auto resolves to `full` (the real
     # registry IS present in this repo) and either hard-fails every episode
@@ -147,7 +155,10 @@ done
 if [ "$AGENTIC_DATASET_DETECTED" = "1" ]; then
   if ! echo "${EXTRA_TRAIN_OVERRIDES_STR:-}" | grep -q "executor.mode="; then
     EXTRA_TRAIN_OVERRIDES_STR="${EXTRA_TRAIN_OVERRIDES_STR:-} --override executor.mode=gold_replay"
-    echo "[grpo] AGENTIC dataset detected — forcing executor.mode=gold_replay"
+    echo "[grpo] LEGACY agentic (v4) dataset detected — forcing executor.mode=gold_replay."
+    echo "       gold_replay CANNOT falsify wrong argument values; it is kept only as a"
+    echo "       baseline for pre-v5 datasets. New runs should use curriculum_v5 data with"
+    echo "       run_v5_pipeline.py (executor.mode=synthetic, real execution)."
     echo "       (pass EXTRA_TRAIN_OVERRIDES_STR with executor.mode=... yourself to override)"
   fi
   export EXTRA_TRAIN_OVERRIDES_STR

@@ -228,7 +228,8 @@ def run_episode_collect(
     max_new_tokens = budget["max_new_tokens"]
 
     if gold_obs is None:
-        gold_obs = compute_gold_observations(task, registry)
+        gold_obs = compute_gold_observations(
+            task, registry, mode=exec_cfg.get("mode", "auto"))
 
     executor = ToolExecutor(
         task, registry=registry, mode=exec_cfg.get("mode", "auto"),
@@ -337,6 +338,10 @@ def run_episode_collect(
 
     reward_diag = dict(rinfo.get("diagnostics") or {})
     reward_diag["teacher_forced_prefix_calls"] = n_forced
+    # Executor-failure categories (argument/reference/runtime errors) for
+    # train-log aggregation — scalars only, survives _sanitize_diag.
+    from rollout import exec_failure_categories
+    reward_diag.update(exec_failure_categories(traj))
 
     return RolloutResult(
         turn_token_ids=turn_token_ids,

@@ -41,6 +41,16 @@ LOCAL_WEAK_4BIT = False
 LOCAL_WEAK_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
 WEAK_SOLVER_BACKEND = "local"
 
+# --- Best-of-N candidate selection (spec: pick the best candidate out of
+# each challenger batch by a composite quality score, instead of accepting
+# every candidate that clears the gates in generation order) ---
+BEST_OF_N_ENABLED = True
+CANDIDATES_PER_REQUEST = 5          # challenger candidates requested per batch
+BEST_OF_N_MAX_ACCEPTS_PER_BATCH = 1  # top-K ranked survivors accepted / batch
+BEST_OF_N_WEIGHT_GAP = 0.5           # weight on solver-gap (strong - weak)
+BEST_OF_N_WEIGHT_NOVELTY = 0.3       # weight on tool-usage novelty (inverse freq)
+BEST_OF_N_WEIGHT_SIGNAL = 0.2        # weight on rollout GRPO-signal quality
+
 
 def env_str(key: str, default: str) -> str:
     return os.environ.get(key, default)

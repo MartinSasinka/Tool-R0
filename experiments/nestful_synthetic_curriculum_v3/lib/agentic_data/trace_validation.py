@@ -27,7 +27,7 @@ exactly why a structural check is needed on top of execution success.
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 _REF_RE = re.compile(r"^\$([A-Za-z_]\w*)\.(\w+)\$$")
 
@@ -61,10 +61,28 @@ def label_errors(gold_calls: List[Dict[str, Any]]) -> List[str]:
     return errs
 
 
+def _valid_ref_fields(tool_spec: Dict[str, Any]) -> Optional[set]:
+    """Legal `.field$` names for a producer tool, or ``None`` if the tool is
+    unknown (skip the field check — caller has no schema to validate against).
+
+    Object-typed outputs (``out_fields`` set) may ONLY be referenced by one
+    of their nested field names (e.g. ``$var1.area$``, never ``$var1.result$``
+    even though ``result`` is the tool's own ``out_key``). Scalar outputs may
+    only be referenced by their single ``out_key``."""
+    if not tool_spec:
+        return None
+    out_fields = tool_spec.get("out_fields")
+    if out_fields:
+        return set(out_fields.keys())
+    out_key = tool_spec.get("out_key")
+    return {out_key} if out_key is not None else None
+
+
 def reference_errors(gold_calls: List[Dict[str, Any]],
                      tools: Dict[str, Dict[str, Any]]) -> List[str]:
     """Every $varN.key$ reference must point to a PRIOR call's label, using
-    the EXACT output field that call's tool produces."""
+    a field the call's tool actually exposes (its sole ``out_key`` for a
+    scalar output, or one of its ``out_fields`` for an object output)."""
     errs: List[str] = []
     label_to_tool: Dict[str, str] = {}
     for i, call in enumerate(gold_calls):
@@ -92,12 +110,12 @@ def reference_errors(gold_calls: List[Dict[str, Any]],
                         "reference)")
                     continue
                 producer = label_to_tool[ref_label]
-                producer_out_key = (tools.get(producer) or {}).get("out_key")
-                if producer_out_key is not None and ref_key != producer_out_key:
+                valid_fields = _valid_ref_fields(tools.get(producer))
+                if valid_fields is not None and ref_key not in valid_fields:
                     errs.append(
                         f"call {i + 1} arg {k!r}: reference {v!r} uses field "
                         f"'.{ref_key}$' but {ref_label} ({producer}) only "
-                        f"outputs '.{producer_out_key}$'")
+                        f"outputs {sorted(valid_fields)}")
         if name:
             label_to_tool[own_label] = name
     return errs

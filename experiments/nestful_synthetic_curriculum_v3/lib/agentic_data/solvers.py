@@ -17,7 +17,7 @@ import json
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..nestful_like_generator import TOOLS, execute_call
+from .exec_bridge import execute_predicted_calls as _execute_predicted_via_executor
 
 WEAK_MAX_TOKENS = 700
 STRONG_MAX_TOKENS = 1400
@@ -134,26 +134,11 @@ def _num_eq(a: Any, b: Any) -> bool:
 
 
 def _execute_predicted(calls: List[Dict[str, Any]]) -> Tuple[List[Any], Optional[str]]:
-    scope: Dict[str, Any] = {}
-    observations: List[Any] = []
-    for i, call in enumerate(calls):
-        name = call["name"]
-        if name not in TOOLS:
-            return observations, f"wrong_tool:{name}"
-        expected = set(TOOLS[name]["params"].keys())
-        if set(call["arguments"].keys()) != expected:
-            return observations, "wrong_args"
-        try:
-            obs = execute_call(name, call["arguments"], scope)
-        except KeyError:
-            # unresolved $var reference — distinct failure mode (reference
-            # misuse), not a generic execution error
-            return observations, "invalid_reference"
-        except Exception:  # noqa: BLE001
-            return observations, "execution_error"
-        scope[str(call.get("label", f"$var{i + 1}")).lstrip("$")] = obs
-        observations.append(obs)
-    return observations, None
+    """Execute a solver's predicted calls through the REAL synthetic
+    executor (``exec_bridge.py``). A wrong argument value executes for real
+    and returns the (wrong) observation; it NEVER falls back to the gold
+    result — only schema/reference/runtime failures short-circuit here."""
+    return _execute_predicted_via_executor(calls)
 
 
 # Weak-failure taxonomy (diversity accounting). Every score_prediction status

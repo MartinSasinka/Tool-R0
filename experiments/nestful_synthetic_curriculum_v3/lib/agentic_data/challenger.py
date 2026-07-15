@@ -1,9 +1,10 @@
 """Challenger agent: proposes NESTFUL-like task candidates as structured JSON.
 
 The challenger does NOT invent tools and does NOT compute answers. It composes
-questions + gold-call plans over the deterministic executable tool registry
-(lib/nestful_like_generator.TOOLS — written from scratch, aggregate NESTFUL
-style only). The executor is the source of truth for observations/answers.
+questions + gold-call plans over the versioned executable tool registry
+(lib/synthetic_tools.py — 160+ tools, written from scratch, aggregate
+NESTFUL style only). The real synthetic executor is the source of truth for
+observations/answers.
 """
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ import json
 import random
 from typing import Any, Dict, List, Optional
 
-from ..nestful_like_generator import TOOLS
+from .exec_bridge import TOOLS
 from .schema import MOTIFS, STAGES
 
 _MOTIF_GOALS = {
@@ -71,7 +72,10 @@ def tool_catalog_text(tool_names: Optional[List[str]] = None) -> str:
     lines = []
     for name in sorted(tool_names or TOOLS.keys()):
         t = TOOLS[name]
-        params = ", ".join(f"{p}:{typ}" for p, (typ, _d) in t["params"].items())
+        params = ", ".join(
+            f"{p}:{meta['type']}" + ("?" if not meta.get("required", True) else "")
+            for p, meta in t["params"].items()
+        )
         lines.append(f"- {name}({params}) -> {t['out_key']}:{t['out_type']} | "
                      f"{t['description']}")
     return "\n".join(lines)
@@ -192,23 +196,25 @@ def repair_candidate(cand: Dict[str, Any]) -> Dict[str, Any]:
         args = call.get("arguments")
         if name not in TOOLS or not isinstance(args, dict):
             continue
-        expected = set(TOOLS[name]["params"].keys())
+        param_meta = TOOLS[name]["params"]
+        all_keys = set(param_meta.keys())
+        required = {p for p, m in param_meta.items() if m.get("required", True)}
         got = set(args.keys())
-        if got == expected:
+        if got <= all_keys and required <= got:
             continue
         # 1) case/underscore-insensitive rename
-        variant_map = {_key_variants(e): e for e in expected}
+        variant_map = {_key_variants(e): e for e in all_keys}
         renamed = {}
         for k, v in args.items():
             target = variant_map.get(_key_variants(k))
             renamed[target if target and target not in renamed else k] = v
-        if set(renamed.keys()) == expected:
+        if set(renamed.keys()) <= all_keys and required <= set(renamed.keys()):
             call["arguments"] = renamed
             repairs.append(f"call{i + 1}:arg_keys_case_repair")
             continue
-        # 2) single unknown key -> single missing key
-        unknown = got - expected
-        missing = expected - got
+        # 2) single unknown key -> single missing required key
+        unknown = got - all_keys
+        missing = required - got
         if len(unknown) == 1 and len(missing) == 1:
             k_bad, k_good = next(iter(unknown)), next(iter(missing))
             args[k_good] = args.pop(k_bad)

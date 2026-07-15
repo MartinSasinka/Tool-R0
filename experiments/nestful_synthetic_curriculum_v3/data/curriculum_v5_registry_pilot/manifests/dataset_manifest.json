@@ -1,0 +1,36 @@
+{
+  "created_at": "2026-07-15T10:17:18.923599+00:00",
+  "generator_version": "v5.0",
+  "registry_version": "5.0.0",
+  "registry_hash": "31a99c56b050281f855521bc7a03292c76f859ebfad3cf6635b02fd3e649f4e7",
+  "seed": 42,
+  "examples_per_stage": 40,
+  "max_tool_share": 0.08,
+  "trainer_replay": "all rows replayed through ToolExecutor(mode=synthetic)",
+  "contamination": {
+    "nestful_question_hashes_checked": 1860,
+    "nestful_trace_hashes_checked": 1847
+  },
+  "files": {
+    "v5_stage1_2call": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_registry_pilot\\filtered\\v5_stage1_2call.jsonl",
+      "rows": 40,
+      "sha256": "036099badbd6d7fa55c4e4540da23fad68d5b26b84ebab75928783f7e3027b5e"
+    },
+    "v5_stage2_3call": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_registry_pilot\\filtered\\v5_stage2_3call.jsonl",
+      "rows": 40,
+      "sha256": "a411a0af1105ed93abfd3048e263c1cdd19a046a0668929c8c3de00fd77a1ab8"
+    },
+    "v5_stage3_4call": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_registry_pilot\\filtered\\v5_stage3_4call.jsonl",
+      "rows": 40,
+      "sha256": "147efbc5eeb0c23f288aef914eb6f61f873aaf4ee500a40c7735cf939668ecff"
+    },
+    "v5_stage4_5to6call": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_registry_pilot\\filtered\\v5_stage4_5to6call.jsonl",
+      "rows": 40,
+      "sha256": "919675c9ad258959306fd722442b5b86c8aff2725ada7dd5af43caa9ea54bda4"
+    }
+  }
+}

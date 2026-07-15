@@ -1,10 +1,16 @@
 """Data-scientist orchestrator: the Autodata / Agentic Self-Instruct loop.
 
-Per stage, in cost order (cheapest gate first):
+Per batch (``CANDIDATES_PER_REQUEST`` challenger candidates), in cost order
+(cheapest gate first):
   challenger batch → schema gates → deterministic execution verifier →
   dedup + contamination → WEAK solver (skip strong if weak passes, saving
-  compute like the paper) → STRONG solver (best-of-N) → solver-gap policy →
-  LLM style judge → accept.
+  compute like the paper) → STRONG solver → solver-gap policy → hold in the
+  best-of-N POOL → rank pool by (gap, tool novelty) → for the top-ranked
+  candidates only: diversity caps → multi-rollout GRPO-signal probe → LLM
+  style judge → accept. Best-of-N means the orchestrator SELECTS the best
+  candidate(s) out of each batch (``BEST_OF_N_MAX_ACCEPTS_PER_BATCH``,
+  default 1) instead of accepting every candidate that clears the gates in
+  generation order — see ``_composite_quality_score()``.
 After every batch the orchestrator aggregates rejection reasons and revises
 the challenger recipe (batch-level analysis + prompt update).
 """
@@ -33,18 +39,79 @@ from .solvers import (best_of, parse_solver_output, score_prediction,
 from .trace_validation import hard_trace_errors
 from .verifier import deterministic_verify, judge_messages, judge_verdict
 from .env_defaults import (
+    BEST_OF_N_ENABLED,
+    BEST_OF_N_MAX_ACCEPTS_PER_BATCH,
+    BEST_OF_N_WEIGHT_GAP,
+    BEST_OF_N_WEIGHT_NOVELTY,
+    BEST_OF_N_WEIGHT_SIGNAL,
+    CANDIDATES_PER_REQUEST as _CANDIDATES_PER_REQUEST_DEFAULT,
     MIN_ACCEPT_RATE,
     MIN_ACCEPT_RATE_RESUME,
     RESUME_MIN_ITERATIONS,
     WARMUP_BATCHES,
     WARMUP_BATCHES_RESUME,
+    env_bool,
     env_float,
     env_int,
 )
-from ..nestful_like_generator import TOOLS, tool_schema
+from .exec_bridge import TOOLS, tool_schema
 
-CANDIDATES_PER_REQUEST = 5
+CANDIDATES_PER_REQUEST = env_int("CANDIDATES_PER_REQUEST",
+                                 _CANDIDATES_PER_REQUEST_DEFAULT)
 MAX_CONTAMINATION_STRIKES = 10
+
+
+def best_of_n_enabled() -> bool:
+    return env_bool("BEST_OF_N_ENABLED", BEST_OF_N_ENABLED)
+
+
+def best_of_n_max_accepts() -> int:
+    return max(1, env_int("BEST_OF_N_MAX_ACCEPTS_PER_BATCH",
+                          BEST_OF_N_MAX_ACCEPTS_PER_BATCH))
+
+
+def _composite_quality_score(*, gap: float, novelty: float,
+                             signal_score: float) -> float:
+    """Composite ranking score for Best-of-N candidate selection (spec:
+    "vyber nejlepsiho kandidata podle gap / GRPO signalu / diverzity", not
+    just the first candidate in the batch that clears every gate).
+
+    * ``gap`` — strong-solver-score minus weak-solver-score, already in
+      [0, 1] (a bigger separation means the task cleanly discriminates a
+      capable solver from a weak one — the core Autodata acceptance signal);
+    * ``novelty`` — mean inverse tool-usage frequency across this candidate's
+      gold_calls, in (0, 1] (keeps the corpus from being dominated by a
+      handful of tools even within otherwise-equal candidates);
+    * ``signal_score`` — normalized GRPO reward-variance from the rollout
+      probe, in [0, 1] (a stronger within-group reward spread is more useful
+      training signal for GRPO).
+    """
+    w_gap = env_float("BEST_OF_N_WEIGHT_GAP", BEST_OF_N_WEIGHT_GAP)
+    w_nov = env_float("BEST_OF_N_WEIGHT_NOVELTY", BEST_OF_N_WEIGHT_NOVELTY)
+    w_sig = env_float("BEST_OF_N_WEIGHT_SIGNAL", BEST_OF_N_WEIGHT_SIGNAL)
+    return (w_gap * max(0.0, min(1.0, gap))
+            + w_nov * max(0.0, min(1.0, novelty))
+            + w_sig * max(0.0, min(1.0, signal_score)))
+
+
+def _signal_score(rollout_signal: Dict[str, Any]) -> float:
+    """Normalize a rollout-probe summary to a [0, 1] ranking contribution."""
+    if rollout_signal.get("skipped"):
+        return 0.5   # neutral — no local weak backend to probe with
+    variance = float(rollout_signal.get("reward_variance") or 0.0)
+    # 0.25 ~= max variance for a 50/50 split between reward 0.0 and 1.0.
+    return max(0.0, min(1.0, variance / 0.25))
+
+
+def _tool_novelty(tool_names: List[str], usage: Counter) -> float:
+    """Mean inverse-frequency of this candidate's tools against everything
+    ALREADY accepted this stage — 1.0 for tools never used yet, decaying as a
+    tool is reused, mirroring ``synthetic_gen_v5._UsageBalancer``'s sampling
+    weight so best-of-N selection reinforces (not fights) generation-time
+    diversity."""
+    if not tool_names:
+        return 1.0
+    return sum(1.0 / (1.0 + usage.get(n, 0)) for n in tool_names) / len(tool_names)
 
 
 def _accept_rate_stop_params(*, is_resume: bool) -> tuple[int, float, int]:
@@ -200,6 +267,9 @@ class Orchestrator:
         self.accepted_by_stage: Dict[str, List[Dict[str, Any]]] = {}
         self.stage_paths: Dict[str, str] = {}
         self.diversity_by_stage: Dict[str, Any] = {}
+        # tool -> count of ACCEPTED gold_calls this stage, used only to rank
+        # best-of-N candidates by novelty (never gates acceptance itself).
+        self.tool_usage_by_stage: Dict[str, Counter] = {}
 
     def stage_file_path(self, stage: str, *, suffix: Optional[str] = None) -> str:
         from .schema import STAGE_FILES
@@ -403,11 +473,17 @@ class Orchestrator:
                     n_existing: int = 0, is_resume: bool = False) -> None:
         dedup = DedupIndex()
         diversity = DiversityTracker(resume_mode=is_resume)
+        tool_usage: Counter = Counter()
         if n_existing:
             dedup.seed_from_rows(accepted[:n_existing])
             # Reference-only: legacy rows inform reports but do NOT tighten caps.
             diversity.seed_reference_from_rows(accepted[:n_existing])
+            for row in accepted[:n_existing]:
+                for c in row.get("gold_calls") or []:
+                    if isinstance(c, dict) and c.get("name"):
+                        tool_usage[c["name"]] += 1
         self.diversity_by_stage[stage] = diversity
+        self.tool_usage_by_stage[stage] = tool_usage
         warmup_batches, min_accept_rate, min_iters_before_stop = \
             _accept_rate_stop_params(is_resume=is_resume)
         iteration = 0
@@ -456,6 +532,11 @@ class Orchestrator:
             batch_counter: Counter = Counter()
             batch_weak: List[float] = []
             batch_strong: List[float] = []
+            # Best-of-N pool: candidates that cleared every FREE/cheap gate
+            # plus the solver-gap policy, held back from acceptance until the
+            # whole batch has been scored so the orchestrator can pick the
+            # best one(s) instead of the first one encountered.
+            pool: List[Dict[str, Any]] = []
 
             for cand in candidates:
                 if len(accepted) >= target:
@@ -502,16 +583,21 @@ class Orchestrator:
                 observations, gold_answer = v["observations"], v["gold_answer"]
                 question = cand["question"].strip()
                 gold_calls = cand["gold_calls"]
-                # 3. dedup + contamination
+                # 3. dedup + contamination. `sid` here is PROVISIONAL (only
+                # used for the contamination sample_id-overlap check) — the
+                # final sample_id is assigned at ACCEPT time below, once
+                # best-of-N selection knows the candidate's real rank among
+                # accepted rows.
                 dup = dedup.check_and_add(question, gold_calls)
                 if dup:
                     self._reject(stage, cand, dup, None, recipe)
                     batch_counter[dup] += 1
                     continue
-                sid = (f"agentic_v4_{_short_stage(stage)}_"
-                       f"{len(accepted) + 1:06d}")
+                provisional_sid = (f"agentic_v5_{_short_stage(stage)}_pending_"
+                                   f"{iteration:06d}_{len(pool)}")
                 if self.contamination is not None:
-                    ok, why = self.contamination.check(question, gold_calls, sid)
+                    ok, why = self.contamination.check(
+                        question, gold_calls, provisional_sid)
                     if not ok:
                         contamination_strikes += 1
                         dedup.remove(question, gold_calls)
@@ -565,6 +651,52 @@ class Orchestrator:
                                  extra={"solver_gap": gap_rec})
                     batch_counter[gap_reason] += 1
                     continue
+                # Held for best-of-N ranking below — NOT accepted yet.
+                pool.append({
+                    "cand": cand, "question": question, "tools": tools,
+                    "gold_calls": gold_calls, "observations": observations,
+                    "gold_answer": gold_answer, "weak": weak, "strong": strong,
+                    "gap_rec": gap_rec,
+                })
+
+            # ---- best-of-N: rank the batch's surviving candidates and only
+            # accept the top BEST_OF_N_MAX_ACCEPTS_PER_BATCH (default 1),
+            # instead of accepting every candidate in generation order (spec:
+            # "vyber nejlepsiho kandidata podle gap / GRPO signalu /
+            # diverzity"). The diversity cap, rollout-signal probe and LLM
+            # judge — the remaining (expensive) gates — run only on ranked
+            # candidates, cheapest-first, stopping once enough are accepted.
+            tool_usage = self.tool_usage_by_stage[stage]
+            for item in pool:
+                item["novelty"] = _tool_novelty(
+                    [c["name"] for c in item["gold_calls"]], tool_usage)
+                item["gap_value"] = (item["gap_rec"]["gap"]
+                                     if item["gap_rec"]["gap"] is not None else 0.0)
+            ranked = sorted(
+                pool,
+                key=lambda it: _composite_quality_score(
+                    gap=it["gap_value"], novelty=it["novelty"], signal_score=0.5),
+                reverse=True) if best_of_n_enabled() else pool
+            max_accepts = best_of_n_max_accepts() if best_of_n_enabled() else len(ranked)
+
+            n_accepted_this_batch = 0
+            for rank, item in enumerate(ranked):
+                if len(accepted) >= target:
+                    break
+                cand, question = item["cand"], item["question"]
+                gold_calls, tools = item["gold_calls"], item["tools"]
+                observations, gold_answer = item["observations"], item["gold_answer"]
+                weak, strong, gap_rec = item["weak"], item["strong"], item["gap_rec"]
+                if n_accepted_this_batch >= max_accepts:
+                    dedup.remove(question, gold_calls)
+                    gap_rec["final_status"] = "best_of_n_not_selected"
+                    self._reject(stage, cand, "best_of_n_not_selected",
+                                 f"rank {rank + 1}/{len(ranked)} in batch "
+                                 f"(novelty={item['novelty']:.3f}, "
+                                 f"gap={item['gap_value']:.3f})", recipe,
+                                 extra={"solver_gap": gap_rec})
+                    batch_counter["best_of_n_not_selected"] += 1
+                    continue
                 # 5b. diversity caps (free) — the accepted set must not be
                 # dominated by one weak-score bucket / one failure type
                 div_reason = diversity.verdict(weak["score"], weak["status"])
@@ -582,9 +714,14 @@ class Orchestrator:
                 # with the SAME training reward dispatch as GRPO — default
                 # execution_aware_v3_2_dense). Hard-rejects candidates whose
                 # 8-rollout group lacks usable within-group reward variance.
+                # Only run on candidates that survive the diversity cap AND
+                # are still in contention for a batch accept slot — this is
+                # the priciest gate, so best-of-N keeps it off the candidates
+                # that already lost the ranking.
                 rollout_signal = probe_rollout_signal(
                     question, tools, gold_calls, observations, gold_answer,
                     stage=stage, seed=self.seed + iteration)
+                item["signal_score"] = _signal_score(rollout_signal)
                 if (not rollout_signal.get("skipped")
                         and not rollout_signal.get("grpo_signal_positive")):
                     dedup.remove(question, gold_calls)
@@ -621,7 +758,11 @@ class Orchestrator:
                                      recipe)
                         batch_counter[jv["reason"]] += 1
                         continue
-                # 7. accept
+                # 7. accept — final sample_id assigned NOW (deterministic on
+                # accepted-count, unaffected by how many candidates in the
+                # batch lost the best-of-N ranking).
+                sid = (f"agentic_v5_{_short_stage(stage)}_"
+                       f"{len(accepted) + 1:06d}")
                 row = final_row(
                     sample_id=sid, question=question, tools=tools,
                     gold_calls=gold_calls, observations=observations,
@@ -648,12 +789,25 @@ class Orchestrator:
                             resp.get("raw_path"), self.out_root),
                         "created_at": _now(),
                         "tool_schema_source_policy": "aggregate_style_only",
+                        "best_of_n": {
+                            "enabled": best_of_n_enabled(),
+                            "batch_size": len(candidates),
+                            "pool_size": len(pool),
+                            "rank_in_batch": rank + 1,
+                            "novelty": round(item["novelty"], 4),
+                            "gap": round(item["gap_value"], 4),
+                            "signal_score": round(item.get("signal_score", 0.5), 4),
+                        },
                     })
                 gap_rec["accepted"] = True
                 gap_rec["final_status"] = "accepted"
                 accepted.append(row)
                 writer.append(row)            # crash-safe: persisted NOW
                 diversity.add(weak["score"], weak["status"])
+                for c in gold_calls:
+                    if isinstance(c, dict) and c.get("name"):
+                        tool_usage[c["name"]] += 1
+                n_accepted_this_batch += 1
                 rounds_per_accept.append(rounds_since_accept)
                 rounds_since_accept = 0
                 if rounds_per_accept:
@@ -663,8 +817,8 @@ class Orchestrator:
                     f"[progress] ACCEPT {len(accepted)}/{target} | "
                     f"weak={weak['score']} {weak['status']} | "
                     f"strong={strong['score']} {strong['status']} | "
-                    f"motif={cand['motif_type']} | iter={iteration} | "
-                    f"id={sid}")
+                    f"motif={cand['motif_type']} | best_of_n_rank="
+                    f"{rank + 1}/{len(ranked)} | iter={iteration} | id={sid}")
 
             # ---- batch-level analysis → recipe revision (data scientist) ----
             batch_stats = {

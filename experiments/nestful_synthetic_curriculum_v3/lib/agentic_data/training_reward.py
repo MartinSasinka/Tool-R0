@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..nestful_like_generator import TOOLS, execute_call
+from .exec_bridge import execute_predicted_calls as _execute_predicted_via_executor
 
 V3_ROOT = Path(__file__).resolve().parents[2]
 EXPERIMENTS = V3_ROOT.parent
@@ -116,24 +116,9 @@ def score_episode_trajectory(traj: Any, task: Dict[str, Any],
 
 def _execute_predicted(calls: List[Dict[str, Any]]
                        ) -> Tuple[List[Any], Optional[str]]:
-    scope: Dict[str, Any] = {}
-    observations: List[Any] = []
-    for i, call in enumerate(calls):
-        name = call["name"]
-        if name not in TOOLS:
-            return observations, "wrong_tool"
-        expected = set(TOOLS[name]["params"].keys())
-        if set(call["arguments"].keys()) != expected:
-            return observations, "wrong_args"
-        try:
-            obs = execute_call(name, call["arguments"], scope)
-        except KeyError:
-            return observations, "invalid_reference"
-        except Exception:  # noqa: BLE001
-            return observations, "execution_error"
-        scope[str(call.get("label", f"$var{i + 1}")).lstrip("$")] = obs
-        observations.append(obs)
-    return observations, None
+    """Legacy single-shot rollout path — executes predicted calls through the
+    REAL synthetic executor (``exec_bridge.py``), same as ``solvers.py``."""
+    return _execute_predicted_via_executor(calls)
 
 
 def build_trajectory_from_completion(

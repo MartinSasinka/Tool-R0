@@ -103,6 +103,42 @@ class Trajectory:
         }
 
 
+def exec_failure_categories(traj: "Trajectory") -> Dict[str, int]:
+    """Categorised executor-failure counts for one trajectory (train logging).
+
+    Keys are `execfail_*` scalars so they survive the DP pool's diag
+    sanitisation and can be summed across a rollout group."""
+    cats = {
+        "execfail_total": 0,
+        "execfail_unknown_tool": 0,
+        "execfail_unresolved_reference": 0,
+        "execfail_argument_schema": 0,   # unknown/missing keys, type, range
+        "execfail_runtime": 0,           # tool raised during execution
+        "execfail_parse": 0,
+    }
+    for t in traj.turns:
+        fr = t.fail_reason or ""
+        if fr.startswith("parse:"):
+            cats["execfail_parse"] += 1
+            continue
+        if not fr.startswith("exec:"):
+            continue
+        cats["execfail_total"] += 1
+        body = fr[len("exec:"):]
+        if "unknown_tool" in body or "unregistered_tool" in body:
+            cats["execfail_unknown_tool"] += 1
+        elif "unresolved_variable" in body or "unresolved_field" in body:
+            cats["execfail_unresolved_reference"] += 1
+        elif ("unknown_argument" in body or "missing_required_argument" in body
+              or "argument_type_mismatch" in body or "argument_below_min" in body
+              or "argument_above_max" in body or "array_" in body
+              or "invalid_arguments_type" in body):
+            cats["execfail_argument_schema"] += 1
+        else:
+            cats["execfail_runtime"] += 1
+    return cats
+
+
 # ---------------------------------------------------------------------------
 #  Teacher-forced continuation prefix (Stage2b-style curriculum)
 # ---------------------------------------------------------------------------

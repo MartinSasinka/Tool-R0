@@ -574,7 +574,8 @@ def mode_smoke(config: dict) -> int:
             model, tokenizer, task, config,
             registry=registry, mode="smoke", generate_fn=generate_fn,
         )
-        gold_obs = compute_gold_observations(task, registry)
+        gold_obs = compute_gold_observations(
+            task, registry, mode=(config.get("executor", {}) or {}).get("mode", "auto"))
         rr = strict_gold_trace_reward(traj, task, gold_obs)
         rewards.append(rr.reward)
         rows.append({**traj.to_dict(), "reward_train_strict": rr.reward,
@@ -626,7 +627,8 @@ def mode_rollout_eval(config: dict, checkpoint: str | None) -> int:
             model, tokenizer, task, config,
             registry=registry, mode="eval", generate_fn=generate_fn,
         )
-        gold_obs = compute_gold_observations(task, registry)
+        gold_obs = compute_gold_observations(
+            task, registry, mode=(config.get("executor", {}) or {}).get("mode", "auto"))
         rr = strict_gold_trace_reward(traj, task, gold_obs)
         agg["strict_gold_trace_pass"].append(rr.reward)
         agg["final_answer_pass"].append(1.0 if rr.diagnostics["final_answer_pass"] else 0.0)
@@ -845,7 +847,9 @@ def mode_final_eval(config: dict, checkpoint: str | None) -> int:
     partial_fh = open(partial_path, "w", encoding="utf-8")
     for task in task_iter:
         try:
-            gold_obs = compute_gold_observations(task, registry)
+            gold_obs = compute_gold_observations(
+                task, registry,
+                mode=(config.get("executor", {}) or {}).get("mode", "auto"))
             rollout_internals, rollout_papers, rollout_trajs, rollout_rrs = [], [], [], []
 
             for _ in range(num_eval_rollouts):

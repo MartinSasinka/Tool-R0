@@ -1,159 +1,101 @@
-"""Semantic-type compatibility for tool argument/output bindings.
+"""Semantic-type compatibility for tool argument/output bindings (v5 registry).
 
 JSON-type compatibility (number == number) is not enough: a Fahrenheit
 temperature is JSON-number-compatible with a monetary `net_price`, but the
-composition is semantically nonsensical — no meaningful real-world
-transformation turns a temperature into a price. This module assigns every
-tool parameter and output a SEMANTIC type from a small closed vocabulary and
-rejects cross-family references unless one side is GENERIC — a deliberately
-unit-agnostic math slot (`part`, `whole`, `value`, `numerator`, ...) which is
-exactly the mechanism NESTFUL-style problems use to explicitly reinterpret a
-quantity ("using that area as a PART of a whole").
+composition is semantically nonsensical. Every v5 tool parameter/output
+already carries a fine-grained semantic tag from ``lib/synthetic_tools.py``
+(e.g. ``length_km``, ``length_mi``, ``temp_c``, ``temp_f``) — one tag PER
+UNIT, not per real-world quantity. The trainer's deterministic generator
+(``synthetic_gen_v5.py``) deliberately keeps bindings STRICT at that
+unit-exact granularity (``semantics_compatible()``: a consumer only accepts
+the identical tag, unless it is the unit-agnostic ``generic_number`` slot).
 
-Vocabulary: temperature_celsius, temperature_fahrenheit, money, percentage,
-distance, duration, area, mass, count, speed, fuel_volume, boolean, text,
-generic_scalar.
-
-Three real (accepted) pilot rows motivated this gate — all execute cleanly
-but compose unrelated real-world quantities:
-  agentic_v4_stage2_000003: Fahrenheit temperature -> add_sales_tax.net_price
-    (temperature -> money).
-  agentic_v4_stage2_000006: Fahrenheit temperature ->
-    calculate_simple_interest.annual_rate_percent (temperature -> percentage).
-  agentic_v4_stage2_000009: fuel liters ->
-    calculate_simple_interest.principal_amount (fuel_volume -> money).
+The agentic challenger/solver loop is more permissive by design (matches the
+old v4 behavior): it groups unit tags into real-world-quantity FAMILIES
+(``length_km`` and ``length_mi`` are both "length") and accepts ANY binding
+within the same family, plus the ``generic_number`` slot on EITHER side
+(symmetric — a generic result may flow into a specific slot and vice versa,
+exactly like NESTFUL problems that explicitly reinterpret a quantity as a
+"part of a whole"). It still rejects cross-family bindings (temperature ->
+money, fuel volume -> interest principal) which is the actual goal of this
+gate.
 """
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
-GENERIC = "generic_scalar"
+from .exec_bridge import TOOLS
 
-# Families that may consume EACH OTHER directly (besides GENERIC on either
-# side). Every family is at least self-compatible.
-_FAMILY_COMPATIBLE: Dict[str, set] = {
-    "temperature_celsius": {"temperature_celsius", "temperature_fahrenheit"},
-    "temperature_fahrenheit": {"temperature_celsius", "temperature_fahrenheit"},
-    "money": {"money"},
-    "percentage": {"percentage"},
-    "distance": {"distance"},
-    "duration": {"duration"},
-    "area": {"area"},
-    "mass": {"mass"},
-    "count": {"count"},
-    "speed": {"speed"},
-    "fuel_volume": {"fuel_volume"},
-    "boolean": {"boolean"},
-    "text": {"text"},
+GENERIC = "generic_number"
+
+# unit-tag -> real-world-quantity family. Tags not listed here are their own
+# singleton family (self-compatible only): count, money, percent, ratio,
+# text, flag, list_number, object, day_number, current_a, data_gb, data_mb,
+# force_n, power_w, pressure_pa, resistance_ohm, voltage_v, generic_number.
+_UNIT_FAMILY: Dict[str, str] = {
+    "length_cm": "length", "length_ft": "length", "length_in": "length",
+    "length_km": "length", "length_m": "length", "length_mi": "length",
+    "mass_g": "mass", "mass_kg": "mass", "mass_lb": "mass",
+    "mass_mg": "mass", "mass_oz": "mass",
+    "duration_day": "duration", "duration_h": "duration",
+    "duration_min": "duration", "duration_s": "duration",
+    "duration_week": "duration", "duration_year": "duration",
+    "temp_c": "temperature", "temp_f": "temperature", "temp_k": "temperature",
+    "volume_cm3": "volume", "volume_floz": "volume", "volume_gal": "volume",
+    "volume_l": "volume", "volume_m3": "volume", "volume_ml": "volume",
+    "speed_kmh": "speed", "speed_mph": "speed", "speed_ms": "speed",
+    "area_acre": "area", "area_m2": "area",
+    "energy_j": "energy", "energy_kcal": "energy", "energy_kwh": "energy",
+    "energy_mj": "energy",
 }
 
-# tool_name -> {"params": {pname: semtype}, "output": semtype}. Params not
-# listed default to GENERIC (safe: GENERIC never blocks a binding).
-SEMANTIC_TYPES: Dict[str, Dict[str, Any]] = {
-    # finance
-    "calculate_simple_interest": {
-        "params": {"principal_amount": "money", "annual_rate_percent": "percentage",
-                   "years": "duration"},
-        "output": "money"},
-    "apply_discount": {
-        "params": {"price": "money", "discount_percent": "percentage"},
-        "output": "money"},
-    "add_sales_tax": {
-        "params": {"net_price": "money", "tax_rate_percent": "percentage"},
-        "output": "money"},
-    "split_bill_evenly": {
-        "params": {"total_amount": "money", "num_people": "count"},
-        "output": "money"},
-    "calculate_tip_amount": {
-        "params": {"bill_amount": "money", "tip_percent": "percentage"},
-        "output": "money"},
-    "convert_currency": {
-        "params": {"amount": "money", "exchange_rate": GENERIC},
-        "output": "money"},
-    "monthly_installment": {
-        "params": {"loan_amount": "money", "num_months": "count"},
-        "output": "money"},
-    # geometry
-    "rectangle_area": {
-        "params": {"length": "distance", "width": "distance"}, "output": "area"},
-    "rectangle_perimeter": {
-        "params": {"length": "distance", "width": "distance"}, "output": "distance"},
-    "circle_area": {"params": {"radius": "distance"}, "output": "area"},
-    "triangle_area": {
-        "params": {"base": "distance", "height": "distance"}, "output": "area"},
-    "scale_dimension": {
-        "params": {"dimension": GENERIC, "scale_factor": GENERIC}, "output": GENERIC},
-    # units / physics
-    "celsius_to_fahrenheit": {
-        "params": {"celsius": "temperature_celsius"}, "output": "temperature_fahrenheit"},
-    "kilometers_to_miles": {
-        "params": {"kilometers": "distance"}, "output": "distance"},
-    "kilograms_to_pounds": {"params": {"kilograms": "mass"}, "output": "mass"},
-    "average_speed": {
-        "params": {"distance_km": "distance", "time_hours": "duration"},
-        "output": "speed"},
-    "travel_time_hours": {
-        "params": {"distance_km": "distance", "speed_kmh": "speed"},
-        "output": "duration"},
-    "hours_to_minutes": {"params": {"hours": "duration"}, "output": "duration"},
-    "fuel_needed_liters": {
-        "params": {"distance_km": "distance", "consumption_per_100km": "fuel_volume"},
-        "output": "fuel_volume"},
-    # statistics — deliberately unit-agnostic (GENERIC): these are the
-    # legitimate "reinterpret a quantity" slots NESTFUL-style tasks rely on
-    "mean_of_values": {"params": {"values": GENERIC}, "output": GENERIC},
-    "sum_of_values": {"params": {"values": GENERIC}, "output": GENERIC},
-    "max_of_values": {"params": {"values": GENERIC}, "output": GENERIC},
-    "value_range": {"params": {"values": GENERIC}, "output": GENERIC},
-    "percentage_of": {
-        "params": {"part": GENERIC, "whole": GENERIC}, "output": "percentage"},
-    "increase_by_percent": {
-        "params": {"value": GENERIC, "percent": "percentage"}, "output": GENERIC},
-    "difference_of": {
-        "params": {"minuend": GENERIC, "subtrahend": GENERIC}, "output": GENERIC},
-    "ratio_of": {
-        "params": {"numerator": GENERIC, "denominator": GENERIC}, "output": GENERIC},
-    # shopping / inventory
-    "total_price": {
-        "params": {"unit_price": "money", "quantity": "count"}, "output": "money"},
-    "remaining_stock": {
-        "params": {"initial_stock": "count", "units_sold": "count"}, "output": "count"},
-    "is_above_threshold": {
-        "params": {"value": GENERIC, "threshold": GENERIC}, "output": "boolean"},
-    "units_per_box": {
-        "params": {"total_units": "count", "box_capacity": "count"}, "output": "count"},
-    # text
-    "format_as_currency": {
-        "params": {"amount": "money", "currency_symbol": "text"}, "output": "text"},
-    "repeat_word": {"params": {"word": "text", "times": "count"}, "output": "text"},
-    "character_count": {"params": {"text": "text"}, "output": "count"},
-}
+
+def _family(sem: str) -> str:
+    return _UNIT_FAMILY.get(sem, sem)
 
 
 def param_type(tool_name: str, param: str) -> str:
-    return SEMANTIC_TYPES.get(tool_name, {}).get("params", {}).get(param, GENERIC)
+    """Semantic tag of a tool parameter (``generic_number`` if unknown)."""
+    t = TOOLS.get(tool_name)
+    if not t:
+        return GENERIC
+    meta = t["params"].get(param)
+    return meta["semantic"] if meta else GENERIC
 
 
-def output_type(tool_name: str) -> str:
-    return SEMANTIC_TYPES.get(tool_name, {}).get("output", GENERIC)
+def output_type(tool_name: str, field: str = None) -> str:  # noqa: RUF013
+    """Semantic tag of a tool's output, or of one ``out_fields`` field for
+    object-typed outputs (``$varN.field$`` references)."""
+    t = TOOLS.get(tool_name)
+    if not t:
+        return GENERIC
+    if field is not None and t.get("out_fields") and field in t["out_fields"]:
+        return t["out_fields"][field][1]
+    return t["out_semantic"]
 
 
 def compatible(producer_type: str, consumer_type: str) -> bool:
     """A binding is allowed when either side is GENERIC (unit-agnostic), or
-    both sides belong to the same semantic family."""
+    both sides belong to the same real-world-quantity family."""
     if producer_type == GENERIC or consumer_type == GENERIC:
         return True
-    return consumer_type in _FAMILY_COMPATIBLE.get(producer_type, {producer_type})
+    return _family(producer_type) == _family(consumer_type)
 
 
 _REF_RE = re.compile(r"^\$([A-Za-z_]\w*)\.(\w+)\$$")
 
 
 def semantic_errors(gold_calls: List[Dict[str, Any]],
-                    tools: Dict[str, Dict[str, Any]]) -> List[str]:
+                    tools: Dict[str, Dict[str, Any]] = None  # noqa: RUF013
+                    ) -> List[str]:
     """Reject cross-family bindings not covered by a GENERIC slot on either
-    side (e.g. temperature -> net_price, fuel volume -> principal_amount)."""
+    side (e.g. temperature -> net_price, fuel volume -> principal_amount).
+
+    ``tools`` is accepted for backward-compatible call sites but ignored —
+    this module always resolves tool metadata from the canonical v5
+    registry (``exec_bridge.TOOLS``) so generator/trainer stay in sync.
+    """
     errs: List[str] = []
     label_to_tool: Dict[str, str] = {}
     for i, call in enumerate(gold_calls):
@@ -169,18 +111,19 @@ def semantic_errors(gold_calls: List[Dict[str, Any]],
                 if not m:
                     continue
                 ref_label = "$" + m.group(1)
+                ref_field = m.group(2)
                 producer = label_to_tool.get(ref_label)
                 if not producer:
                     continue   # unknown/forward ref — reported by trace_validation
-                p_type = output_type(producer)
+                p_type = output_type(producer, ref_field)
                 c_type = param_type(name, k) if name else GENERIC
                 if not compatible(p_type, c_type):
                     errs.append(
                         f"call {i + 1} arg {k!r} ({c_type}) is fed by "
-                        f"{ref_label} = {producer}() output ({p_type}) — "
-                        "semantically incompatible: different real-world "
-                        "quantity families and neither side is a generic/"
-                        "unit-agnostic slot")
+                        f"{ref_label}.{ref_field} = {producer}() output "
+                        f"({p_type}) — semantically incompatible: different "
+                        "real-world quantity families and neither side is "
+                        "a generic/unit-agnostic slot")
         own_label = "$" + str(call.get("label") or "").lstrip("$")
         if name:
             label_to_tool[own_label] = name

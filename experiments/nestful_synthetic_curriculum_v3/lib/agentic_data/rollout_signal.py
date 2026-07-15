@@ -121,9 +121,12 @@ def load_rollout_config(num_calls: int, *,
             sd[stage_key] = dict(sd[stage_key])
             sd[stage_key]["max_new_tokens"] = ROLLOUT_MAX_TOKENS
             config.setdefault("token_budget", {})["stage_defaults"] = sd
-    # Agentic tools are synthetic — IBM full execution is wrong; gold_replay
-    # matches how probe/training score structural correctness on this corpus.
-    overrides.append("executor.mode=gold_replay")
+    # Agentic tools are synthetic — score rollouts with the SAME real
+    # executor the trainer uses by default (executor.mode=synthetic): a
+    # wrong predicted argument value executes for real and never falls back
+    # to a gold observation, so the pre-training probe and GRPO training see
+    # the identical reward landscape.
+    overrides.append("executor.mode=synthetic")
     base_run._apply_overrides(config, overrides)
     base_run._normalize_config_paths(config)
     registry = base_run.build_registry(config)
@@ -174,7 +177,8 @@ def run_multiturn_rollouts(question: str, tools: List[Dict[str, Any]],
         stage=stage, question=question, tools=tools)
     config, registry = load_rollout_config(num_calls)
     from reward import compute_gold_observations  # noqa: E402
-    gold_obs = compute_gold_observations(task, registry)
+    exec_mode = (config.get("executor", {}) or {}).get("mode", "auto")
+    gold_obs = compute_gold_observations(task, registry, mode=exec_mode)
 
     scored: List[Dict[str, Any]] = []
     for i in range(n):

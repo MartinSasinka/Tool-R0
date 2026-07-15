@@ -1,4 +1,7 @@
-"""Regression tests for the overnight-run persistence/count bugs (offline).
+"""v5 counterpart of test_agentic_persistence.py — same regression coverage,
+but drives build_curriculum_v5_agentic_openrouter.py (versioned executable
+synthetic_tools registry, real executor.mode=synthetic everywhere, best-of-N
+candidate selection) instead of the legacy v4 script/registry.
 
 Covers:
   1. early stop keeps accepted rows in memory AND on disk (crash-safe writer);
@@ -9,7 +12,7 @@ Covers:
   6. solver-gap log 'accepted' equals final accepted (judge rejections excluded);
   7. repair_candidate fixes unambiguous argument-key mistakes.
 
-Run:  python experiments/nestful_synthetic_curriculum_v3/tests/test_agentic_persistence.py
+Run:  python experiments/nestful_synthetic_curriculum_v3/tests/test_agentic_persistence_v5.py
 """
 from __future__ import annotations
 
@@ -44,8 +47,9 @@ def check(name, cond, detail=""):
 
 STAGE2 = "stage2_2call_agentic_openrouter"
 BUILDER = os.path.join(V3_ROOT, "scripts", "data",
-                       "build_curriculum_v4_agentic_openrouter.py")
+                       "build_curriculum_v5_agentic_openrouter.py")
 SCORER = os.path.join(V3_ROOT, "scripts", "data", "score_dataset_quality.py")
+MANIFEST_NAME = "curriculum_v5_agentic_openrouter_manifest.json"
 
 
 def _mk_orch(tmp, max_iters):
@@ -98,7 +102,7 @@ try:
     check("mock builder exit 0", proc.returncode == 0,
           proc.stderr[-500:] if proc.returncode else "")
     manifest = json.load(open(os.path.join(
-        tmp, "manifests", "curriculum_v4_agentic_openrouter_manifest.json"),
+        tmp, "manifests", MANIFEST_NAME),
         encoding="utf-8"))
     extra = manifest["extra"]
     ok_counts = True
@@ -126,12 +130,12 @@ try:
     check("printed targets match manifest targets",
           all(str(v) in printed[0] for v in extra["targets"].values()))
     # dataset report counts consistent with manifest
-    rep = open(os.path.join(tmp, "reports", "AGENTIC_DATASET_REPORT.md"),
+    rep = open(os.path.join(tmp, "reports", "AGENTIC_V5_DATASET_REPORT.md"),
                encoding="utf-8").read()
     total = sum(extra["accepted"].values())
     check("dataset report 'Accepted total' == manifest total",
           f"Accepted total: {total} " in rep)
-    gap_rep = open(os.path.join(tmp, "reports", "AGENTIC_SOLVER_GAP_REPORT.md"),
+    gap_rep = open(os.path.join(tmp, "reports", "AGENTIC_V5_SOLVER_GAP_REPORT.md"),
                    encoding="utf-8").read()
     check("solver-gap report 'finally accepted' == manifest total",
           f"finally accepted (this run): {total}" in gap_rep)
@@ -285,7 +289,7 @@ try:
     check("resume step2: stdout mentions existing rows",
           "existing" in proc2.stdout.lower())
     m2 = json.load(open(os.path.join(
-        tmp, "manifests", "curriculum_v4_agentic_openrouter_manifest.json"),
+        tmp, "manifests", MANIFEST_NAME),
         encoding="utf-8"))
     summ = m2["extra"]["stage_summaries"][STAGE2]
     check("resume manifest: resumed_from=3", summ.get("resumed_from") == 3, summ)
@@ -293,7 +297,7 @@ try:
     rows = load_jsonl_rows(canonical)
     ids = [r["sample_id"] for r in rows]
     check("resume: sample_id continues (000004, 000005 present)",
-          "agentic_v4_stage2_000004" in ids and "agentic_v4_stage2_000005" in ids,
+          "agentic_v5_stage2_000004" in ids and "agentic_v5_stage2_000005" in ids,
           ids[-2:])
     check("resume: count consistency OK", "count consistency OK" in proc2.stdout)
 finally:
@@ -320,7 +324,7 @@ try:
     from lib.agentic_data.schema import final_row
     models = {k: "m" for k in ("challenger", "weak_solver", "strong_solver", "judge")}
     good = final_row(
-        sample_id="agentic_v4_stage2_000001",
+        sample_id="agentic_v5_stage2_000001",
         question="Compute the area of a 10 by 4 rectangle, then apply a 10% "
                  "discount to that value as if it were a price in dollars today.",
         tools=[], gold_calls=GOLD, observations=v["observations"],

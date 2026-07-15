@@ -35,6 +35,7 @@ from reward import (
 from rollout import (
     Trajectory, Turn, get_stage_token_budget,
     resolve_teacher_forced_prefix_n, build_teacher_forced_prefix,
+    exec_failure_categories,
 )
 from group_stats import compute_group_stats
 
@@ -739,7 +740,9 @@ def train(
                     if res.first_error_turn is not None:
                         pool_first_errors.append(int(res.first_error_turn))
             else:
-                gold_obs = compute_gold_observations(task, registry)
+                gold_obs = compute_gold_observations(
+                    task, registry,
+                    mode=(config.get("executor", {}) or {}).get("mode", "auto"))
                 # v2: train turn budget = gold_n + max_extra_turns_train (cap +4).
                 # Default 0 reproduces the legacy max_turns_train = gold_n exactly.
                 _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
@@ -796,6 +799,7 @@ def train(
                             f"(n_forced={ep.n_forced_turns}).")
                     diag = dict(rinfo.get("diagnostics") or {})
                     diag["teacher_forced_prefix_calls"] = ep.n_forced_turns
+                    diag.update(exec_failure_categories(ep.trajectory))
                     episodes.append(ep)
                     ep_r_seqs.append(r_seq)
                     ep_diags.append(diag)
@@ -861,6 +865,12 @@ def train(
             turn_reward_values = sorted({float(x) for seq in ep_r_seqs for x in seq})
             episode_reward_values = sorted({float(r) for r in rewards})
             fail_counts = _diag_failure_counts(ep_diags)
+            # Executor-failure categories (unknown tool / bad reference /
+            # argument schema / runtime), summed over the rollout group.
+            for d in ep_diags:
+                for k, v in d.items():
+                    if k.startswith("execfail_"):
+                        fail_counts[k] = fail_counts.get(k, 0) + int(v or 0)
 
             rec = {
                 "epoch": epoch, "task_idx": ti, "task_id": task["task_id"],

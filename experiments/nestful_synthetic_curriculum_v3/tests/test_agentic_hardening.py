@@ -20,7 +20,7 @@ V3_ROOT = os.path.abspath(os.path.join(_HERE, ".."))
 sys.path.insert(0, V3_ROOT)
 sys.path.insert(0, os.path.join(V3_ROOT, "scripts", "data"))
 
-from lib.nestful_like_generator import TOOLS  # noqa: E402
+from lib.agentic_data.exec_bridge import TOOLS  # noqa: E402
 from lib.agentic_data.trace_validation import (  # noqa: E402
     hard_trace_errors, label_errors, reference_errors)
 from lib.agentic_data.semantics import semantic_errors  # noqa: E402

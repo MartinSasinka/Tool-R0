@@ -47,6 +47,7 @@ sys.path.insert(0, os.path.join(_HERE, "..", "lib"))
 from paths import (  # noqa: E402
     CANONICAL_STAGE_FILES, MINIMAL_ROOT, REPO_ROOT, V3_ROOT,
     dataset_info, is_agentic_synthetic_dataset, is_legacy_dataset_path,
+    is_v5_agentic_synthetic_dataset,
 )
 from run_manifest import build_manifest, write_manifest  # noqa: E402
 
@@ -211,13 +212,22 @@ def run_probe(args) -> int:
     # executor.mode=auto resolves to `full` (the IBM registry IS present in
     # this repo for real NESTFUL data) and either hard-fails every episode on
     # `unknown_function`, or worse, silently executes a DIFFERENT real IBM
-    # function on a name collision. Force gold_replay unless the caller
-    # explicitly overrode executor.mode themselves.
-    if is_agentic_synthetic_dataset(dataset_path) and "executor.mode" not in user_keys:
-        print("[probe] dataset looks AGENTIC (synthetic tools) — forcing "
-              "executor.mode=gold_replay (pass --override executor.mode=... "
-              "to change).", flush=True)
-        overrides.append("executor.mode=gold_replay")
+    # function on a name collision. v5 agentic datasets (lib/synthetic_tools.py,
+    # ~163 tools) ARE understood by the real executor — force
+    # executor.mode=synthetic. Legacy v4 agentic datasets are NOT — force
+    # executor.mode=gold_replay. Skipped if the caller explicitly overrode
+    # executor.mode themselves.
+    if "executor.mode" not in user_keys:
+        if is_v5_agentic_synthetic_dataset(dataset_path):
+            print("[probe] dataset looks v5 AGENTIC (synthetic_tools registry) "
+                  "— forcing executor.mode=synthetic (pass --override "
+                  "executor.mode=... to change).", flush=True)
+            overrides.append("executor.mode=synthetic")
+        elif is_agentic_synthetic_dataset(dataset_path):
+            print("[probe] dataset looks AGENTIC (legacy v4 synthetic tools) — "
+                  "forcing executor.mode=gold_replay (pass --override "
+                  "executor.mode=... to change).", flush=True)
+            overrides.append("executor.mode=gold_replay")
     overrides.extend(user_overrides)
     base_run._apply_overrides(config, overrides)
     base_run._normalize_config_paths(config)

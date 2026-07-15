@@ -6,7 +6,7 @@ import os
 import sys
 from typing import Any, Dict, List, Set, Tuple
 
-from ..nestful_like_generator import question_hash, trace_hash
+from .exec_bridge import question_hash, trace_hash
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 V3_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))

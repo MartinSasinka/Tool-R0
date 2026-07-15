@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
-SOURCE_NAME = "curriculum_v4_nestful_like_agentic_openrouter"
+SOURCE_NAME = "curriculum_v5_synthetic_tools_agentic_openrouter"
 TOOL_SCHEMA_SOURCE_POLICY = "aggregate_style_only"  # never exact NESTFUL signatures
 
 # stage name → (min_calls, max_calls). Stage 1 (1-call) intentionally absent:
@@ -60,6 +60,7 @@ REJECTION_REASONS = (
     "invalid_trace_labels",         # non-unique/non-sequential labels or bad references
     "semantic_incompatible_reference",  # cross-family binding (e.g. temperature -> money)
     "grpo_signal_negative",         # multi-rollout probe found no usable GRPO signal
+    "best_of_n_not_selected",       # a better-ranked candidate from the same batch won
 )
 
 _LEAK_TOKENS = ("motif", "stage", "cluster", "curriculum", "sample_id",
@@ -154,6 +155,10 @@ def final_row(*, sample_id: str, question: str, tools: List[Dict[str, Any]],
             "accepted": True,
             "rejection_reason": None,
             "validation_passed": True,
+            # key name kept for backward-compat with existing quality reports;
+            # means "gold trace replayed successfully through the REAL v5
+            # synthetic executor" (exec_bridge.execute_gold_trace), not the
+            # legacy gold_replay executor mode.
             "gold_replay_passed": True,
             "contamination_passed": True,
         },

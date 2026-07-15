@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..nestful_like_generator import TOOLS, execute_call
+from .exec_bridge import execute_gold_trace as _execute_gold_trace_via_executor
 from .schema import question_leak_errors
 
 JUDGE_MIN_QUALITY = float(os.environ.get("JUDGE_MIN_QUALITY", "0.6"))
@@ -19,30 +19,13 @@ JUDGE_MIN_QUALITY = float(os.environ.get("JUDGE_MIN_QUALITY", "0.6"))
 
 def execute_gold_trace(gold_calls: List[Dict[str, Any]]
                        ) -> Tuple[Optional[List[Any]], Optional[str]]:
-    """Execute a candidate gold trace. Returns (observations, error)."""
-    scope: Dict[str, Any] = {}
-    observations: List[Any] = []
-    for i, call in enumerate(gold_calls):
-        name = call.get("name")
-        if name not in TOOLS:
-            return None, f"unknown tool '{name}' (call {i + 1})"
-        args = call.get("arguments")
-        if not isinstance(args, dict):
-            return None, f"arguments of call {i + 1} not an object"
-        expected = set(TOOLS[name]["params"].keys())
-        if set(args.keys()) != expected:
-            return None, (f"call {i + 1} ({name}) argument keys {sorted(args)} "
-                          f"!= schema {sorted(expected)}")
-        try:
-            obs = execute_call(name, args, scope)
-        except KeyError as exc:
-            return None, f"unresolved reference in call {i + 1}: {exc}"
-        except Exception as exc:  # noqa: BLE001
-            return None, f"execution error in call {i + 1}: {type(exc).__name__}: {exc}"
-        label = str(call.get("label", f"$var{i + 1}")).lstrip("$")
-        scope[label] = obs
-        observations.append(obs)
-    return observations, None
+    """Execute a candidate gold trace through the REAL trainer executor
+    (``executor.mode="synthetic"``, ``exec_bridge.py``). Returns
+    ``(observations, error)``. Argument-key/type/value validation is now
+    enforced by the executor itself (unknown keys, missing required keys,
+    wrong types, out-of-range values are all hard errors), not by a manual
+    exact-key-set check here."""
+    return _execute_gold_trace_via_executor(gold_calls)
 
 
 def deterministic_verify(cand: Dict[str, Any]) -> Dict[str, Any]:

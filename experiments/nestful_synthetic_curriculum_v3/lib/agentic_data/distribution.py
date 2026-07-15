@@ -41,7 +41,7 @@ def question_template_bucket(question: str) -> str:
 
 def _tool_domain(name: str) -> str:
     try:
-        from ..nestful_like_generator import TOOLS
+        from .exec_bridge import TOOLS
         return TOOLS.get(name, {}).get("domain", "unknown")
     except ImportError:
         return "unknown"

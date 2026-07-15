@@ -6,7 +6,7 @@ import os
 from collections import Counter
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from ..nestful_like_generator import question_hash, trace_hash
+from .exec_bridge import question_hash, trace_hash
 from .env_defaults import (
     DIVERSITY_ENFORCE_AFTER,
     DIVERSITY_MAX_SAME_FAILURE_TYPE,

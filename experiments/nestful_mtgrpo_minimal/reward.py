@@ -24,20 +24,27 @@ class RewardResult:
 
 
 def compute_gold_observations(
-    task: Dict[str, Any], registry=None
+    task: Dict[str, Any], registry=None, mode: str = "auto"
 ) -> Optional[List[Any]]:
     """Execute the gold call sequence to obtain per-turn gold observations.
 
-    Returns a list of observations (one per gold call) in `full` executor mode,
-    or None if execution is not possible (gold_replay mode, or any gold call
-    errors). When None, per-turn observation matching is skipped and strict
-    correctness falls back to name + argument-key + final-answer checks.
+    Returns a list of observations (one per gold call) in `full` or `synthetic`
+    executor mode, or None if execution is not possible (gold_replay mode, or
+    any gold call errors). When None, per-turn observation matching is skipped
+    and strict correctness falls back to name + argument-key + final-answer
+    checks.
+
+    ``mode`` should be the configured executor mode (config["executor"]["mode"])
+    so gold observations come from the same execution backend as rollouts.
     """
     gold_calls = task.get("gold_calls", [])
     if not gold_calls:
         return None
-    ex = ToolExecutor(task, registry=registry, mode="auto")
-    if ex.mode != "full":
+    try:
+        ex = ToolExecutor(task, registry=registry, mode=mode)
+    except RuntimeError:
+        return None
+    if ex.mode not in ("full", "synthetic"):
         return None
     observations: List[Any] = []
     for call in gold_calls:

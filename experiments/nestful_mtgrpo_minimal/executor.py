@@ -5,20 +5,32 @@ project evaluator (nestful_evaluation/run.py: IBMFunctionRegistry, execute_one,
 resolve_variables, _matches_gold). It imports nothing from curricullum/ or
 nestful_evaluation/.
 
-Two executor modes:
+Three executor modes:
 
   full         The IBM/NESTFUL Python helper library (data_v2/executable_functions/)
                is available, so ANY parse- and schema-valid predicted call can be
                genuinely executed. win_rate / solution_equivalent_pass are REAL.
 
-  gold_replay  No IBM helper library found. The executor can only validate calls
+  synthetic    REAL execution of the executable synthetic tool registry
+               (nestful_synthetic_curriculum_v3/lib/synthetic_tools.py) — the
+               DEFAULT training mode for synthetic curriculum datasets. Predicted
+               calls are validated against the registry schema (tool name,
+               required/unknown keys, argument types and value constraints),
+               $varN[.field]$ references are resolved against previous REAL
+               observations only, and the tool function is executed with the
+               PREDICTED argument values. Wrong values produce wrong (real)
+               observations; the gold observation/answer is never substituted.
+               Construction fails hard when the registry is unavailable.
+
+  gold_replay  LEGACY / baseline-only. The executor can only validate calls
                against the tool schema and "replay" exact gold calls by mapping
                them onto known gold observations / the final gold answer. It
-               CANNOT compute observations for arbitrary non-gold calls.
+               CANNOT compute observations for arbitrary non-gold calls and it
+               CANNOT falsify wrong argument VALUES (only names + key sets).
                -> strict_gold_trace_pass and full_sequence_accuracy are trustworthy
                   (they only require gold-call reproduction + gold answer),
                   but win_rate / solution_equivalent_pass are LIMITED and must be
-                  reported as such.
+                  reported as such. Do not use for new synthetic training runs.
 
 See README "Executor limitations".
 """
@@ -128,6 +140,37 @@ def resolve_variables(
             ok, val = _lookup_variable(var_name, by_label, indexed)
             if not ok:
                 return resolved, f"unresolved_variable:{var_name}"
+            resolved[key] = val
+        else:
+            resolved[key] = value
+    return resolved, None
+
+
+def resolve_variables_fielded(
+    arguments: Dict[str, Any], by_label: Dict[str, Any], indexed: List[Any]
+) -> Tuple[Dict[str, Any], Optional[str]]:
+    """Like resolve_variables, but honours the ``.field`` part of a reference.
+
+    Used by the synthetic executor where tools can return OBJECT observations:
+    ``$var1.area$`` extracts ``obs["area"]`` when the stored observation is a
+    dict. For scalar observations the field is decorative output-key naming
+    (``$var1.result$`` on a scalar) and resolves to the whole observation —
+    matching NESTFUL's reference convention. A field that is named but missing
+    from a dict observation is a hard resolution error.
+    """
+    resolved: Dict[str, Any] = {}
+    for key, value in arguments.items():
+        if _is_variable_ref(value):
+            m = _VAR_REF_RE.match(value.strip())
+            assert m is not None
+            var_name, field = m.group(1), m.group(2)
+            ok, val = _lookup_variable(var_name, by_label, indexed)
+            if not ok:
+                return resolved, f"unresolved_variable:{var_name}"
+            if field and isinstance(val, dict):
+                if field not in val:
+                    return resolved, f"unresolved_field:{var_name}.{field}"
+                val = val[field]
             resolved[key] = val
         else:
             resolved[key] = value
@@ -439,6 +482,75 @@ def detect_ibm_functions_dir(
 #  ToolExecutor — per-task, stateful across a trajectory
 # =====================================================================
 
+
+def _synthetic_type_ok(declared: str, value: Any) -> bool:
+    """JSON-schema-ish type check for a RESOLVED argument value."""
+    if declared == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if declared == "integer":
+        if isinstance(value, bool):
+            return False
+        if isinstance(value, int):
+            return True
+        return isinstance(value, float) and float(value).is_integer()
+    if declared == "boolean":
+        return isinstance(value, bool)
+    if declared == "string":
+        return isinstance(value, str)
+    if declared == "array":
+        return isinstance(value, list)
+    if declared == "object":
+        return isinstance(value, dict)
+    return True
+
+
+def _prepare_synthetic_args(
+    spec: Dict[str, Any], resolved: Dict[str, Any]
+) -> Tuple[Dict[str, Any], Optional[str]]:
+    """Validate + coerce resolved args against the registry spec.
+
+    Checks: no unknown keys, all required keys present, types match the
+    declaration (numeric strings like "100" are coerced first — a benign
+    serialization difference, unlike a genuinely wrong type), value constraints
+    (min/max/min_len) hold. Integral floats are narrowed to int for
+    declared-integer params. Returns (coerced_args, error)."""
+    params: Dict[str, Dict[str, Any]] = spec["params"]
+    name = spec["name"]
+
+    unknown = set(resolved.keys()) - set(params.keys())
+    if unknown:
+        return resolved, f"synthetic:unknown_argument:{name}:{sorted(unknown)[0]}"
+    missing = [p for p, meta in params.items()
+               if meta.get("required", True) and p not in resolved]
+    if missing:
+        return resolved, f"synthetic:missing_required_argument:{name}:{missing[0]}"
+
+    out: Dict[str, Any] = {}
+    for key, value in resolved.items():
+        meta = params[key]
+        declared = meta["type"]
+        if declared in ("number", "integer") and isinstance(value, str):
+            value = coerce_numeric(value)
+        if not _synthetic_type_ok(declared, value):
+            return resolved, (f"synthetic:argument_type_mismatch:{name}:{key}:"
+                              f"expected_{declared}_got_{type(value).__name__}")
+        if declared in ("number", "integer"):
+            if "min" in meta and float(value) < float(meta["min"]):
+                return resolved, f"synthetic:argument_below_min:{name}:{key}"
+            if "max" in meta and float(value) > float(meta["max"]):
+                return resolved, f"synthetic:argument_above_max:{name}:{key}"
+        if declared == "array":
+            if "min_len" in meta and len(value) < int(meta["min_len"]):
+                return resolved, f"synthetic:array_too_short:{name}:{key}"
+            if not all(isinstance(x, (int, float)) and not isinstance(x, bool)
+                       for x in value):
+                return resolved, f"synthetic:array_element_type:{name}:{key}"
+        if declared == "integer" and isinstance(value, float):
+            value = int(value)
+        out[key] = value
+    return out, None
+
+
 @dataclass
 class ExecResult:
     observation: Any
@@ -465,11 +577,27 @@ class ToolExecutor:
         self.registry = registry
         self.timeout = ibm_call_timeout
         self._tool_schema = {t.get("name"): t for t in task.get("tools", [])}
+        self.synthetic_registry = None
         # Determine effective mode.
         if mode == "full":
             self.mode = "full" if (registry and registry.available) else "gold_replay"
         elif mode == "gold_replay":
             self.mode = "gold_replay"
+        elif mode == "synthetic":
+            # REAL execution of synthetic tools — never falls back silently:
+            # a missing registry would degrade training into replay-imitation,
+            # which is exactly the failure mode this mode exists to remove.
+            from synthetic_tool_registry import get_synthetic_registry
+            sreg = get_synthetic_registry()
+            if not sreg.available:
+                raise RuntimeError(
+                    "executor.mode=synthetic requires the executable synthetic "
+                    f"tool registry, which failed to load: {sreg.load_error}. "
+                    "Set SYNTHETIC_TOOLS_DIR or fix "
+                    "nestful_synthetic_curriculum_v3/lib/synthetic_tools.py."
+                )
+            self.synthetic_registry = sreg
+            self.mode = "synthetic"
         else:  # auto
             self.mode = "full" if (registry and registry.available) else "gold_replay"
         # Per-episode variable scope.
@@ -513,13 +641,20 @@ class ToolExecutor:
         if not self.tool_exists(name):
             return ExecResult(None, f"unknown_tool:{name}", name, label, {})
 
-        resolved, var_err = resolve_variables(args_raw, self.by_label, self.indexed)
+        if self.mode == "synthetic":
+            resolved, var_err = resolve_variables_fielded(
+                args_raw, self.by_label, self.indexed)
+        else:
+            resolved, var_err = resolve_variables(
+                args_raw, self.by_label, self.indexed)
         if var_err is not None:
             return ExecResult(None, var_err, name, label, resolved)
         resolved = normalize_arguments(resolved)
 
         if self.mode == "full":
             obs, err = self._execute_full(name, resolved)
+        elif self.mode == "synthetic":
+            obs, err = self._execute_synthetic(name, resolved)
         else:
             obs, err = self._execute_gold_replay(idx, name, args_raw, resolved)
 
@@ -552,6 +687,34 @@ class ToolExecutor:
         except BaseException as exc:
             return None, f"runtime_error:{type(exc).__name__}:{exc}"
         return result, None
+
+    # --- synthetic execution (REAL execution of registry tools) ----------
+    def _execute_synthetic(
+        self, name: str, resolved: Dict[str, Any]
+    ) -> Tuple[Any, Optional[str]]:
+        """Execute a predicted call against the executable synthetic registry.
+
+        The observation is computed from the PREDICTED argument values — a call
+        with wrong values executes fine and returns the (wrong) real result; it
+        never receives the gold observation. Schema violations (missing/unknown
+        keys, wrong types, out-of-range values) are hard errors that propagate
+        to the model as tool errors.
+        """
+        spec = self.synthetic_registry.get(name)
+        if spec is None:
+            return None, f"synthetic:unregistered_tool:{name}"
+
+        coerced, err = _prepare_synthetic_args(spec, resolved)
+        if err is not None:
+            return None, err
+
+        try:
+            obs = spec["fn"](**coerced)
+        except ZeroDivisionError:
+            return None, f"synthetic:division_by_zero:{name}"
+        except (ValueError, ArithmeticError, TypeError, KeyError, IndexError) as exc:
+            return None, f"synthetic:runtime_error:{type(exc).__name__}:{exc}"
+        return obs, None
 
     def _execute_gold_replay(
         self,

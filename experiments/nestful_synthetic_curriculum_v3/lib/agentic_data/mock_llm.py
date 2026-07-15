@@ -14,7 +14,7 @@ import random
 import re
 from typing import Any, Dict, List
 
-from ..nestful_like_generator import _build_chain, _question_from_phrases
+from ..synthetic_gen_v5 import DiversityConfig, _UsageBalancer, _build_chain, _question_from_phrases
 from .schema import STAGES
 
 _TASK_RE = re.compile(r"TASK:\n(.*)\Z", re.DOTALL)
@@ -29,11 +29,22 @@ class MockLLM:
         self.rng = random.Random(seed)
         self.gold_by_question: Dict[str, List[Dict[str, Any]]] = {}
         self.n_generated = 0
+        self.balancer = _UsageBalancer(DiversityConfig())
 
     # ------------------------------------------------------------ challenger
     def _make_candidate(self, n_calls: int, motif: str) -> Dict[str, Any]:
-        calls, observations, phrases = _build_chain(self.rng, n_calls, motif)
-        question = _question_from_phrases(self.rng, phrases, n_calls)
+        for _attempt in range(10):
+            try:
+                calls, observations, phrases = _build_chain(
+                    self.rng, n_calls, motif, self.balancer)
+                break
+            except RuntimeError:
+                continue
+        else:
+            # every attempt dead-ended — fall back to a trivial 1-call chain
+            calls, observations, phrases = _build_chain(
+                self.rng, 1, motif, self.balancer)
+        question = _question_from_phrases(self.rng, phrases, len(calls))
         self.n_generated += 1
         flaw = self.n_generated % 9
         if flaw == 7:      # exercise non_executable_gold_trace

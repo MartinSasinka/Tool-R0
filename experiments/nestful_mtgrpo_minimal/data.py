@@ -40,6 +40,12 @@ _METADATA_FIELDS = (
     "source_failure_cluster",
     "trajectory_id",
     "tool_families",
+    # v5 synthetic curriculum: gold per-call observations (used by graded
+    # rewards under executor.mode=synthetic) + registry provenance so the
+    # trainer can verify it executes the same registry the generator used.
+    "observations",
+    "registry_version",
+    "registry_hash",
 )
 
 _EXPECTED_FORMAT = (

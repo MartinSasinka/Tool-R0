@@ -67,9 +67,30 @@ def is_legacy_dataset_path(path: str) -> bool:
 _AGENTIC_MARKERS = ("agentic_openrouter", "agentic_hybrid", "agentic_workers",
                    "nestful_like_agentic", "curriculum_v4")
 
+# v5 agentic datasets (lib/agentic_data + lib/synthetic_tools.py, ~163 tools):
+# their tool names ARE understood by the trainer's real executor in
+# executor.mode="synthetic" (unlike the legacy v4 generator's tools, which
+# only ever worked under gold_replay). Checked BEFORE _AGENTIC_MARKERS by
+# is_agentic_synthetic_dataset_path()/is_agentic_synthetic_dataset() below —
+# a v5 path must never be misclassified as a legacy v4 gold_replay-only one.
+_V5_SYNTHETIC_MARKERS = ("curriculum_v5_agentic", "agentic_v5", "v5_agentic")
+
+
+def is_v5_agentic_synthetic_dataset_path(path: str) -> bool:
+    """Path-based heuristic: True if `path` looks like a v5 agentic dataset
+    (``lib/synthetic_tools.py`` registry — real ``executor.mode=synthetic``
+    execution, NOT gold_replay)."""
+    norm = os.path.normpath(path).replace("\\", "/")
+    return any(marker in norm for marker in _V5_SYNTHETIC_MARKERS)
+
 
 def is_agentic_synthetic_dataset_path(path: str) -> bool:
-    """Path-based heuristic: True if `path` looks like an agentic v4 dataset."""
+    """Path-based heuristic: True if `path` looks like a LEGACY v4 agentic
+    dataset (``lib/nestful_like_generator.py`` — gold_replay only). Returns
+    False for v5 agentic datasets even though both trees contain the
+    substring "agentic" — see ``is_v5_agentic_synthetic_dataset_path``."""
+    if is_v5_agentic_synthetic_dataset_path(path):
+        return False
     norm = os.path.normpath(path).replace("\\", "/")
     return any(marker in norm for marker in _AGENTIC_MARKERS)
 
@@ -94,17 +115,34 @@ def peek_dataset_source(path: str) -> Optional[str]:
 
 
 def is_agentic_synthetic_dataset(path: str) -> bool:
-    """True when `path`'s tools are SYNTHETIC (agentic generator), not real
-    IBM NESTFUL functions — i.e. the executor MUST run in gold_replay mode.
+    """True when `path`'s tools are the LEGACY v4 agentic generator's
+    synthetic tools (not real IBM NESTFUL functions, and NOT understood by
+    the v5 real synthetic executor either) — i.e. the executor MUST run in
+    gold_replay mode. False for v5 agentic datasets (source contains
+    "v5"/"synthetic_tools" — see ``is_v5_agentic_synthetic_dataset``), which
+    should use ``executor.mode=synthetic`` instead.
 
     Checks the path first (cheap), then falls back to peeking at the first
     row's ``source`` field (handles datasets copied/renamed off the standard
     ``curriculum_v4_*`` tree).
     """
+    if is_v5_agentic_synthetic_dataset(path):
+        return False
     if is_agentic_synthetic_dataset_path(path):
         return True
     source = peek_dataset_source(path)
-    return bool(source) and "agentic" in source.lower()
+    return (bool(source) and "agentic" in source.lower()
+            and "v5" not in source.lower())
+
+
+def is_v5_agentic_synthetic_dataset(path: str) -> bool:
+    """True when `path`'s tools come from the v5 ``lib/synthetic_tools.py``
+    registry (real ``executor.mode=synthetic`` execution required/expected —
+    never gold_replay)."""
+    if is_v5_agentic_synthetic_dataset_path(path):
+        return True
+    source = peek_dataset_source(path)
+    return bool(source) and "v5" in source.lower() and "agentic" in source.lower()
 
 
 def sha256_file(path: str, chunk: int = 1 << 20) -> str:
