@@ -603,6 +603,9 @@ class Orchestrator:
             # whole batch has been scored so the orchestrator can pick the
             # best one(s) instead of the first one encountered.
             pool: List[Dict[str, Any]] = []
+            _progress_log(
+                f"[progress] BATCH {iteration} start | candidates={len(candidates)} "
+                f"| accepted {len(accepted)}/{target}")
 
             for cand in candidates:
                 if len(accepted) >= target:
@@ -727,9 +730,20 @@ class Orchestrator:
                     "gap_rec": gap_rec,
                 })
 
+            n_pool = len(pool)
+            cheap_rejects = sum(batch_counter.values())
+            _progress_log(
+                f"[progress] BATCH {iteration} gates | pool={n_pool}/{len(candidates)} "
+                f"| cheap_rejects={cheap_rejects}")
+
             # ---- rollout GRPO-signal probe on every pool survivor (primary
             # gate under rollout_primary; ranking input for best-of-N).
             rollout_pool: List[Dict[str, Any]] = []
+            if n_pool:
+                _progress_log(
+                    f"[progress] BATCH {iteration} rollout | probing {n_pool} "
+                    f"candidates x{ROLLOUT_N} (may take several min; "
+                    f"[override]/[executor] lines are per-rollout noise)")
             for item in pool:
                 rollout_signal = probe_rollout_signal(
                     item["question"], item["tools"], item["gold_calls"],
@@ -758,6 +772,9 @@ class Orchestrator:
                     continue
                 rollout_pool.append(item)
             pool = rollout_pool
+            _progress_log(
+                f"[progress] BATCH {iteration} rollout done | grpo_ok="
+                f"{len(pool)}/{n_pool}")
 
             # ---- best-of-N: rank survivors by composite (signal, gap, novelty)
             tool_usage = self.tool_usage_by_stage[stage]
