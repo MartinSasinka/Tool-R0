@@ -1,18 +1,14 @@
 """Data-scientist orchestrator: the Autodata / Agentic Self-Instruct loop.
 
-Per batch (``CANDIDATES_PER_REQUEST`` challenger candidates), in cost order
-(cheapest gate first):
-  challenger batch → schema gates → deterministic execution verifier →
-  dedup + contamination → WEAK solver (skip strong if weak passes, saving
-  compute like the paper) → STRONG solver → solver-gap policy → hold in the
-  best-of-N POOL → rank pool by (gap, tool novelty) → for the top-ranked
-  candidates only: diversity caps → multi-rollout GRPO-signal probe → LLM
-  style judge → accept. Best-of-N means the orchestrator SELECTS the best
-  candidate(s) out of each batch (``BEST_OF_N_MAX_ACCEPTS_PER_BATCH``,
-  default 1) instead of accepting every candidate that clears the gates in
-  generation order — see ``_composite_quality_score()``.
-After every batch the orchestrator aggregates rejection reasons and revises
-the challenger recipe (batch-level analysis + prompt update).
+Per batch (``CANDIDATES_PER_REQUEST`` candidates), in cost order (cheapest
+gate first):
+  registry-first skeleton OR challenger batch → schema gates → deterministic
+  execution verifier → dedup + contamination → WEAK solver (metadata /
+  optional prefilter; never hard-vetoes weak passes under rollout_primary) →
+  optional STRONG solver → hold in best-of-N POOL → 8-rollout GRPO-signal
+  probe on every pool survivor (primary acceptance gate when local Qwen is
+  available) → rank by (signal, gap, novelty) → diversity caps → LLM judge
+  → accept.
 """
 from __future__ import annotations
 
@@ -23,9 +19,13 @@ import random
 from collections import Counter
 from typing import Any, Dict, List, Optional, Tuple
 
-from .challenger import (challenger_messages, normalize_candidate,
-                         parse_candidates, repair_candidate)
-from .quality import DedupIndex, DiversityTracker, solver_gap_verdict
+from .challenger import (challenger_messages, gen_mode, normalize_candidate,
+                         parse_candidates, question_polish_messages,
+                         repair_candidate)
+from .quality import (DedupIndex, DiversityTracker, acceptance_policy,
+                      solver_gap_verdict, solver_weak_max)
+from .registry_first import (attach_polished_questions,
+                             generate_registry_skeletons)
 from .recipe import Recipe
 from .rollout_signal import ROLLOUT_N, probe_rollout_signal
 from .schema import (MOTIFS, STAGES, candidate_schema_errors, final_row,
@@ -55,6 +55,7 @@ from .env_defaults import (
     env_int,
 )
 from .exec_bridge import TOOLS, tool_schema
+from ..synthetic_gen_v5 import DiversityConfig, _UsageBalancer, _question_from_phrases
 
 CANDIDATES_PER_REQUEST = env_int("CANDIDATES_PER_REQUEST",
                                  _CANDIDATES_PER_REQUEST_DEFAULT)
@@ -270,6 +271,19 @@ class Orchestrator:
         # tool -> count of ACCEPTED gold_calls this stage, used only to rank
         # best-of-N candidates by novelty (never gates acceptance itself).
         self.tool_usage_by_stage: Dict[str, Counter] = {}
+        self._registry_balancer: Optional[_UsageBalancer] = None
+
+    def _record_local_inference(self, role: str = "weak_solver", n: int = 1) -> None:
+        """Count local HF weak-solver episodes (bypass OpenRouter client.chat)."""
+        r = self.client.stats.by_role.setdefault(role, {
+            "requests": 0, "cache_hits": 0, "prompt_tokens": 0,
+            "completion_tokens": 0, "spend_usd": 0.0, "local_requests": 0})
+        r["local_requests"] = r.get("local_requests", 0) + n
+
+    def _registry_balancer_for_stage(self, stage: str) -> _UsageBalancer:
+        if self._registry_balancer is None:
+            self._registry_balancer = _UsageBalancer(DiversityConfig())
+        return self._registry_balancer
 
     def stage_file_path(self, stage: str, *, suffix: Optional[str] = None) -> str:
         from .schema import STAGE_FILES
@@ -357,9 +371,11 @@ class Orchestrator:
                     question, tools, gold_calls, gold_obs, gold_answer,
                     stage=stage, seed=seed)
             if target_is_local():
-                return solve_weak_multiturn(
+                result = solve_weak_multiturn(
                     question, tools, gold_calls, gold_obs, gold_answer,
                     stage=stage, seed=seed)
+                self._record_local_inference("weak_solver", 1)
+                return result
         return self._solve_single_shot(
             role, question, tools, gold_calls, gold_obs, gold_answer,
             strong=strong, seed=seed)
@@ -509,22 +525,69 @@ class Orchestrator:
             stage_motifs = motifs_for_stage(stage)
             motif = stage_motifs[(iteration - 1) % len(stage_motifs)]
 
-            resp = self._api_chat(
-                role="challenger", model=self.models["challenger"],
-                messages=challenger_messages(
-                    stage=stage, motif=motif,
-                    n_candidates=CANDIDATES_PER_REQUEST,
-                    feedback_block=recipe.feedback_block(), rng=rng),
-                temperature=0.9, max_tokens=2400, json_mode=True,
-                seed=self.seed * 1000 + iteration)
-            if resp is None:
-                continue
-            if resp.get("dry_run"):
-                print(f"[orchestrator] DRY RUN — stage {stage} stops here.")
-                return
-            candidates = parse_candidates(resp["parsed"])
+            if gen_mode() == "registry_first":
+                balancer = self._registry_balancer_for_stage(stage)
+                skeletons = generate_registry_skeletons(
+                    stage, motif, CANDIDATES_PER_REQUEST, rng, balancer)
+                if not skeletons:
+                    self._reject(stage, {"question": ""}, "invalid_json",
+                                 "registry-first: no executable skeletons",
+                                 recipe)
+                    continue
+                if getattr(self.client, "backend", None) == "mock":
+                    mock_cands = []
+                    for sk in skeletons:
+                        q = _question_from_phrases(
+                            rng, sk["_phrases"], sk["_n_calls"])
+                        mock_cands.append({
+                            "question": q,
+                            "tool_names": sk["tool_names"],
+                            "gold_calls": sk["gold_calls"],
+                            "motif_type": sk["motif_type"],
+                            "answer_type": sk["answer_type"],
+                            "rationale": "registry-first deterministic trace",
+                            "_registry_first": True,
+                        })
+                    candidates = mock_cands
+                    handler = getattr(self.client, "mock_handler", None)
+                    if handler is not None:
+                        for cand in candidates:
+                            key = " ".join(cand["question"].lower().split())
+                            handler.gold_by_question[key] = cand["gold_calls"]
+                else:
+                    resp = self._api_chat(
+                        role="challenger", model=self.models["challenger"],
+                        messages=question_polish_messages(
+                            skeletons=skeletons,
+                            feedback_block=recipe.feedback_block()),
+                        temperature=0.85, max_tokens=1800, json_mode=True,
+                        seed=self.seed * 1000 + iteration)
+                    if resp is None:
+                        continue
+                    if resp.get("dry_run"):
+                        print(f"[orchestrator] DRY RUN — stage {stage} stops here.")
+                        return
+                    candidates = attach_polished_questions(skeletons, resp["parsed"])
+            else:
+                resp = self._api_chat(
+                    role="challenger", model=self.models["challenger"],
+                    messages=challenger_messages(
+                        stage=stage, motif=motif,
+                        n_candidates=CANDIDATES_PER_REQUEST,
+                        feedback_block=recipe.feedback_block(), rng=rng),
+                    temperature=0.9, max_tokens=2400, json_mode=True,
+                    seed=self.seed * 1000 + iteration)
+                if resp is None:
+                    continue
+                if resp.get("dry_run"):
+                    print(f"[orchestrator] DRY RUN — stage {stage} stops here.")
+                    return
+                candidates = parse_candidates(resp["parsed"])
             if not candidates:
-                self._reject(stage, {"question": resp["text"][:200]},
+                snippet = ""
+                if gen_mode() != "registry_first" and resp is not None:
+                    snippet = resp.get("text", "")[:200]
+                self._reject(stage, {"question": snippet},
                              "invalid_json", "challenger output unparseable",
                              recipe)
                 continue
@@ -618,7 +681,8 @@ class Orchestrator:
                                    seed=self.seed + iteration, stage=stage)
                 batch_weak.append(weak["score"])
                 strong = None
-                if weak["score"] <= 0.5:
+                weak_max = solver_weak_max()
+                if weak["score"] <= weak_max:
                     strong = self._solve("strong_solver", question, tools,
                                          gold_calls, observations, gold_answer,
                                          strong=True,
@@ -627,6 +691,7 @@ class Orchestrator:
                 gap_ok, gap_reason = solver_gap_verdict(weak, strong)
                 gap_rec = {
                     "stage": stage,
+                    "acceptance_policy": acceptance_policy(),
                     "solver_gap_mode": solver_gap_mode(),
                     "weak_status": weak["status"],
                     "weak_score": weak["score"],
@@ -638,20 +703,20 @@ class Orchestrator:
                     "n_gold_calls": len(gold_calls),
                     "weak_n_calls": weak.get("n_calls"),
                     "strong_n_calls": strong.get("n_calls") if strong else None,
-                    # gap_passed = passed the solver-gap gate; "accepted" is
-                    # only set True at FINAL accept (after the judge), so the
-                    # solver-gap report can never over-count accepted rows.
                     "gap_passed": gap_ok,
+                    "would_reject_solver_gap": gap_reason,
                     "accepted": False,
                 }
                 self.solver_gap_log.append(gap_rec)
-                if not gap_ok:
+                if acceptance_policy() == "solver_gap" and not gap_ok:
                     dedup.remove(question, gold_calls)
                     self._reject(stage, cand, gap_reason, None, recipe,
                                  extra={"solver_gap": gap_rec})
                     batch_counter[gap_reason] += 1
                     continue
-                # Held for best-of-N ranking below — NOT accepted yet.
+                elif acceptance_policy() == "rollout_primary" and not gap_ok:
+                    gap_rec["gap_passed"] = True
+                # Held for rollout probe + best-of-N ranking — NOT accepted yet.
                 pool.append({
                     "cand": cand, "question": question, "tools": tools,
                     "gold_calls": gold_calls, "observations": observations,
@@ -659,13 +724,39 @@ class Orchestrator:
                     "gap_rec": gap_rec,
                 })
 
-            # ---- best-of-N: rank the batch's surviving candidates and only
-            # accept the top BEST_OF_N_MAX_ACCEPTS_PER_BATCH (default 1),
-            # instead of accepting every candidate in generation order (spec:
-            # "vyber nejlepsiho kandidata podle gap / GRPO signalu /
-            # diverzity"). The diversity cap, rollout-signal probe and LLM
-            # judge — the remaining (expensive) gates — run only on ranked
-            # candidates, cheapest-first, stopping once enough are accepted.
+            # ---- rollout GRPO-signal probe on every pool survivor (primary
+            # gate under rollout_primary; ranking input for best-of-N).
+            rollout_pool: List[Dict[str, Any]] = []
+            for item in pool:
+                rollout_signal = probe_rollout_signal(
+                    item["question"], item["tools"], item["gold_calls"],
+                    item["observations"], item["gold_answer"],
+                    stage=stage, seed=self.seed + iteration)
+                if target_is_local() and not rollout_signal.get("skipped"):
+                    self._record_local_inference("weak_solver", ROLLOUT_N)
+                item["rollout_signal"] = rollout_signal
+                item["signal_score"] = _signal_score(rollout_signal)
+                cand, gap_rec = item["cand"], item["gap_rec"]
+                if rollout_signal.get("skipped"):
+                    rollout_pool.append(item)
+                    continue
+                if not rollout_signal.get("grpo_signal_positive"):
+                    dedup.remove(item["question"], item["gold_calls"])
+                    gap_rec["final_status"] = "low_grpo_signal_prediction"
+                    self._reject(stage, cand, "low_grpo_signal_prediction",
+                                 f"policy={rollout_signal.get('reward_policy')}; "
+                                 f"unique_rewards={rollout_signal.get('unique_rewards')}; "
+                                 f"variance={rollout_signal.get('reward_variance')}; "
+                                 f"rewards={rollout_signal.get('rewards')}; "
+                                 f"weak_status={item['weak']['status']}", recipe,
+                                 extra={"solver_gap": gap_rec,
+                                        "rollout_signal": rollout_signal})
+                    batch_counter["low_grpo_signal_prediction"] += 1
+                    continue
+                rollout_pool.append(item)
+            pool = rollout_pool
+
+            # ---- best-of-N: rank survivors by composite (signal, gap, novelty)
             tool_usage = self.tool_usage_by_stage[stage]
             for item in pool:
                 item["novelty"] = _tool_novelty(
@@ -675,7 +766,8 @@ class Orchestrator:
             ranked = sorted(
                 pool,
                 key=lambda it: _composite_quality_score(
-                    gap=it["gap_value"], novelty=it["novelty"], signal_score=0.5),
+                    gap=it["gap_value"], novelty=it["novelty"],
+                    signal_score=it.get("signal_score", 0.5)),
                 reverse=True) if best_of_n_enabled() else pool
             max_accepts = best_of_n_max_accepts() if best_of_n_enabled() else len(ranked)
 
@@ -709,32 +801,8 @@ class Orchestrator:
                                  extra={"solver_gap": gap_rec})
                     batch_counter[div_reason] += 1
                     continue
-                # 5c. multi-rollout GRPO-signal probe against the EXACT
-                # target Qwen weak-solver setup (local backend only; scored
-                # with the SAME training reward dispatch as GRPO — default
-                # execution_aware_v3_2_dense). Hard-rejects candidates whose
-                # 8-rollout group lacks usable within-group reward variance.
-                # Only run on candidates that survive the diversity cap AND
-                # are still in contention for a batch accept slot — this is
-                # the priciest gate, so best-of-N keeps it off the candidates
-                # that already lost the ranking.
-                rollout_signal = probe_rollout_signal(
-                    question, tools, gold_calls, observations, gold_answer,
-                    stage=stage, seed=self.seed + iteration)
-                item["signal_score"] = _signal_score(rollout_signal)
-                if (not rollout_signal.get("skipped")
-                        and not rollout_signal.get("grpo_signal_positive")):
-                    dedup.remove(question, gold_calls)
-                    gap_rec["final_status"] = "low_grpo_signal_prediction"
-                    self._reject(stage, cand, "low_grpo_signal_prediction",
-                                 f"policy={rollout_signal.get('reward_policy')}; "
-                                 f"unique_rewards={rollout_signal.get('unique_rewards')}; "
-                                 f"variance={rollout_signal.get('reward_variance')}; "
-                                 f"weak_status={weak['status']}", recipe,
-                                 extra={"solver_gap": gap_rec,
-                                       "rollout_signal": rollout_signal})
-                    batch_counter["low_grpo_signal_prediction"] += 1
-                    continue
+                # Rollout probe already ran on the full pool above.
+                rollout_signal = item.get("rollout_signal") or {"skipped": True}
                 # 6. LLM style judge (secondary; cannot override execution)
                 if self.run_judge:
                     jresp = self._api_chat(

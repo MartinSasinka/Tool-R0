@@ -34,6 +34,30 @@ STRONG_MIN = 0.80   # re-export default for tests/docs
 WEAK_MAX = 0.50
 GAP_MIN = 0.25
 
+ACCEPTANCE_POLICIES = ("rollout_primary", "solver_gap")
+
+
+def acceptance_policy() -> str:
+    """How candidates are accepted after technical validation.
+
+    ``rollout_primary`` (default when ``WEAK_SOLVER_BACKEND=local``):
+      weak/strong solvers are cheap metadata only — they never veto a task
+      solely because the weak model passed once. The 8-rollout GRPO-signal
+      probe is the capability gate (≥2 reward levels, non-zero variance).
+
+    ``solver_gap``: legacy Autodata weak-fail / strong-pass policy.
+    """
+    raw = os.environ.get("AGENTIC_ACCEPTANCE_POLICY", "").strip().lower()
+    if raw in ACCEPTANCE_POLICIES:
+        return raw
+    backend = os.environ.get("WEAK_SOLVER_BACKEND", "local").strip().lower()
+    return "rollout_primary" if backend == "local" else "solver_gap"
+
+
+def solver_weak_max() -> float:
+    return _solver_thresholds()[0]
+
+
 # STRONG_PASS_POLICY (explicit, spec 7D):
 #   exact_win (default) — the strong solver must achieve a TRUE executable win
 #     or solution-equivalent answer (score == 1.0). Partial strong solutions
@@ -50,7 +74,13 @@ def strong_pass_policy() -> str:
 
 def solver_gap_verdict(weak: Dict[str, Any], strong: Optional[Dict[str, Any]]
                        ) -> Tuple[bool, Optional[str]]:
-    """(accepted, rejection_reason). `strong` is None when skipped."""
+    """(accepted, rejection_reason). `strong` is None when skipped.
+
+    Under ``rollout_primary`` acceptance, always returns ``(True, None)`` —
+    the multi-rollout probe decides usability for GRPO, not a one-shot weak
+    pass."""
+    if acceptance_policy() == "rollout_primary":
+        return True, None
     weak_max, gap_min, strong_min = _solver_thresholds()
     w = float(weak["score"])
     if strong is None:

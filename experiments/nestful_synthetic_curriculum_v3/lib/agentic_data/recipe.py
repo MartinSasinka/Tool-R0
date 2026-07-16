@@ -22,9 +22,10 @@ _FEEDBACK_RULES: Dict[str, str] = {
         "distractor tools from the same domain, and pick less common tool "
         "combinations. Do NOT spell out which tool to use at each step.",
     "weak_solver_passed":
-        "The weak solver keeps succeeding. Increase implicitness: avoid "
-        "phrasing that mirrors tool names, require the model to infer the "
-        "correct order of dependent calls.",
+        "Legacy solver-gap mode only: weak model solved in one shot. Under "
+        "rollout_primary acceptance this is NOT a veto — check rollout_signal "
+        "for GRPO variance. In solver_gap mode: increase implicitness, avoid "
+        "phrasing that mirrors tool names, require inferring call order.",
     "too_hard_both_solvers_fail":
         "Previous tasks were TOO HARD or ambiguous (even the strong solver "
         "failed). Keep every needed literal value stated explicitly once, "

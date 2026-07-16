@@ -15,6 +15,18 @@ from typing import Any, Dict, List, Optional
 from .exec_bridge import TOOLS
 from .schema import MOTIFS, STAGES
 
+GEN_MODES = ("registry_first", "llm_trace")
+
+
+def gen_mode() -> str:
+    """``registry_first``: deterministic trace + LLM question only.
+    ``llm_trace``: legacy challenger invents the full trace."""
+    import os
+    raw = os.environ.get("AGENTIC_GEN_MODE", "registry_first").strip().lower()
+    if raw in GEN_MODES:
+        return raw
+    return "registry_first"
+
 _MOTIF_GOALS = {
     "long_chain": "a strict linear chain: every call after the first consumes "
                   "the previous call's result",
@@ -134,6 +146,47 @@ def challenger_messages(*, stage: str, motif: str, n_candidates: int,
         "  \"answer_type\": \"scalar|string|boolean|list\",\n"
         "  \"rationale\": \"one short sentence\"\n"
         "}]}"
+    )
+    return [{"role": "system", "content": system},
+            {"role": "user", "content": user}]
+
+
+def question_polish_messages(
+        *, skeletons: List[Dict[str, Any]], feedback_block: str,
+) -> List[Dict[str, str]]:
+    """Ask the challenger LLM to write natural questions for pre-built traces.
+
+    The model receives step phrases and tool names only — never $var$ syntax —
+    and must NOT change the underlying computation plan."""
+    lines = []
+    for i, sk in enumerate(skeletons):
+        phrases = sk.get("_phrases") or []
+        tools = ", ".join(sk.get("tool_names") or [])
+        step_text = "; ".join(phrases) if phrases else "(steps omitted)"
+        lines.append(
+            f"{i + 1}) tools=[{tools}] | steps: {step_text}")
+    system = (
+        "You write natural-language TRAINING QUESTIONS for a tool-use model.\n"
+        "You are given PRE-BUILT computation plans (tools + step phrases). "
+        "Your job is ONLY to phrase each plan as one concise, concrete "
+        "paragraph (25-60 words) that a human would understand without "
+        "seeing tool names or $var$ syntax.\n"
+        "Rules:\n"
+        "- Output STRICT JSON only.\n"
+        "- Every literal quantity from the step phrases must appear in the "
+        "question in natural language.\n"
+        "- Imply call order through narrative flow ('then', 'using that "
+        "result', 'finally') — at most one candidate may use numbered steps.\n"
+        "- Do NOT mention tool names, stages, motifs, datasets or $var$.\n"
+        "- Do NOT state or compute the final answer.\n"
+        "- Do NOT change the computation — only rephrase the given steps."
+    )
+    user = (
+        f"Write one question per plan below ({len(skeletons)} total).\n"
+        f"{feedback_block}\n"
+        "PLANS:\n" + "\n".join(lines) + "\n\n"
+        "OUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, "
+        "\"question\": \"...\"}, ...]}"
     )
     return [{"role": "system", "content": system},
             {"role": "user", "content": user}]

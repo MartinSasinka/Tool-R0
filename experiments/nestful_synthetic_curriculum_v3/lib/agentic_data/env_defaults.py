@@ -29,6 +29,10 @@ RESUME_MIN_ITERATIONS = 999_999
 SOLVER_MT_WEAK_TEMPERATURE = 0.5
 SOLVER_MT_STRONG_TEMPERATURE = 0.7
 
+# --- Acceptance policy (rollout GRPO signal vs legacy solver-gap) ---
+AGENTIC_ACCEPTANCE_POLICY = "rollout_primary"   # rollout_primary | solver_gap
+AGENTIC_GEN_MODE = "registry_first"             # registry_first | llm_trace
+
 # --- GRPO rollout probe (local weak backend only) ---
 ROLLOUT_N = 8
 ROLLOUT_TEMPERATURE = 1.0

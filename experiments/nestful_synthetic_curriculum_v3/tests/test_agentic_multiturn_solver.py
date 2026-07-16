@@ -14,6 +14,8 @@ from lib.agentic_data.multiturn_solver import (  # noqa: E402
     solve_weak_multiturn)
 from lib.agentic_data.quality import solver_gap_verdict  # noqa: E402
 
+os.environ["AGENTIC_ACCEPTANCE_POLICY"] = "solver_gap"
+
 FAILURES: list[str] = []
 
 

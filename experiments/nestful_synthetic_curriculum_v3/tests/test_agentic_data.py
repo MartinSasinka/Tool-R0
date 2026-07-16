@@ -109,11 +109,25 @@ check("score: executable wrong final in 0.5-0.8 (correct prefix)",
       0.5 <= s["score"] <= 0.8, s)
 
 # --------------------------------------------------------- gap policy
+os.environ["AGENTIC_ACCEPTANCE_POLICY"] = "solver_gap"
+from lib.agentic_data.quality import acceptance_policy  # noqa: E402
+check("gap: legacy solver_gap policy active in unit tests",
+      acceptance_policy() == "solver_gap")
 ok, why = solver_gap_verdict({"score": 0.5, "status": "under_call"},
                              {"score": 1.0, "status": "win"})
 check("gap: weak-fail strong-pass accepted", ok, why)
 ok, why = solver_gap_verdict({"score": 1.0, "status": "win"}, None)
 check("gap: weak passed rejected", not ok and why == "weak_solver_passed")
+os.environ["AGENTIC_ACCEPTANCE_POLICY"] = "rollout_primary"
+from importlib import reload
+import lib.agentic_data.quality as qmod  # noqa: E402
+reload(qmod)
+from lib.agentic_data.quality import solver_gap_verdict as sgv2  # noqa: E402
+ok_rp, why_rp = sgv2({"score": 1.0, "status": "win"}, None)
+check("rollout_primary: weak pass does not veto", ok_rp and why_rp is None, why_rp)
+os.environ["AGENTIC_ACCEPTANCE_POLICY"] = "solver_gap"
+reload(qmod)
+from lib.agentic_data.quality import solver_gap_verdict  # noqa: E402
 ok, why = solver_gap_verdict({"score": 0.1, "status": "wrong_tool"},
                              {"score": 0.2, "status": "wrong_args"})
 check("gap: both fail rejected", not ok and why == "too_hard_both_solvers_fail")
