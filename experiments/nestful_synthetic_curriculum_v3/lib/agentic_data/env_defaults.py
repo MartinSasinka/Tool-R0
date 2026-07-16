@@ -39,6 +39,35 @@ ROLLOUT_TEMPERATURE = 1.0
 ROLLOUT_TOP_P = 0.95
 ROLLOUT_MAX_TOKENS = 0
 ROLLOUT_REQUIRE_ACHIEVABLE_WIN = False
+# Universal floor — reject micro-variance even with 2 unique reward buckets.
+ROLLOUT_UNIVERSAL_MIN_REWARD_RANGE = 0.01
+# Meaningful spread threshold (partial-frontier without multi-class contrast).
+ROLLOUT_MIN_REWARD_RANGE = 0.05
+ROLLOUT_MAX_PARSE_CLIP_RATE = 0.25
+ROLLOUT_BORDERLINE_CONFIRM = True
+
+# --- Quality-tier quotas (per-stage during generation) ---
+TIER_QUOTA_ENFORCE_AFTER = 10
+# Legacy global defaults (used for unknown stages / merge targets).
+TIER_QUOTA_MIN_FRONTIER = 0.50
+TIER_QUOTA_MAX_PARTIAL_FRONTIER = 0.35
+TIER_QUOTA_MAX_EASY_ANCHOR = 0.15
+# Stage 2 — more frontier anchors.
+TIER_QUOTA_STAGE2_MIN_FRONTIER = 0.60
+TIER_QUOTA_STAGE2_MAX_PARTIAL_FRONTIER = 0.30
+TIER_QUOTA_STAGE2_MAX_EASY_ANCHOR = 0.15
+# Stage 3 — allow more partial-frontier signal.
+TIER_QUOTA_STAGE3_MIN_FRONTIER = 0.35
+TIER_QUOTA_STAGE3_MAX_PARTIAL_FRONTIER = 0.60
+TIER_QUOTA_STAGE3_MAX_EASY_ANCHOR = 0.15
+# Final merged dataset targets (used by merge script stratified pick).
+TIER_QUOTA_MERGE_MIN_FRONTIER = 0.50
+TIER_QUOTA_MERGE_MAX_PARTIAL_FRONTIER = 0.40
+TIER_QUOTA_MERGE_MAX_EASY_ANCHOR = 0.15
+
+# --- Rollout failure-contrast cap (dominant probe failure type) ---
+ROLLOUT_FAILURE_MAX_SAME_TYPE = 0.60
+ROLLOUT_FAILURE_ENFORCE_AFTER = 10
 
 # --- Local weak HF solver ---
 LOCAL_WEAK_4BIT = False
@@ -50,7 +79,8 @@ WEAK_SOLVER_BACKEND = "local"
 # every candidate that clears the gates in generation order) ---
 BEST_OF_N_ENABLED = True
 CANDIDATES_PER_REQUEST = 5          # challenger candidates requested per batch
-BEST_OF_N_MAX_ACCEPTS_PER_BATCH = 1  # top-K ranked survivors accepted / batch
+BEST_OF_N_MAX_ACCEPTS_PER_BATCH = 2  # top-K ranked survivors accepted / batch
+BEST_OF_N_ACCEPT_ALL_QUALIFIED = False  # accept every grpo_ok survivor (dedup/caps still apply)
 BEST_OF_N_WEIGHT_GAP = 0.5           # weight on solver-gap (strong - weak)
 BEST_OF_N_WEIGHT_NOVELTY = 0.3       # weight on tool-usage novelty (inverse freq)
 BEST_OF_N_WEIGHT_SIGNAL = 0.2        # weight on rollout GRPO-signal quality

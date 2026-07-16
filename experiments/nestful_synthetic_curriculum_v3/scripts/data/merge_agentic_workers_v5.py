@@ -39,7 +39,50 @@ if V3_ROOT not in sys.path:
 
 from lib.agentic_data.distribution import corpus_stats  # noqa: E402
 from lib.agentic_data.exec_bridge import question_hash, trace_hash  # noqa: E402
+from lib.agentic_data.quality import tier_quotas_for_merge  # noqa: E402
 from lib.agentic_data.schema import STAGE_FILES, STAGES  # noqa: E402
+
+
+def _row_tier(row: Dict[str, Any]) -> str:
+    return ((row.get("quality") or {}).get("quality_tier")
+            or (row.get("rollout_signal") or {}).get("quality_tier")
+            or "unknown")
+
+
+def apply_merge_tier_quotas(rows: List[Dict[str, Any]],
+                            *, min_frontier: float,
+                            max_partial: float,
+                            max_easy: float) -> List[Dict[str, Any]]:
+    """Greedy stratified pick toward global tier targets (post-dedup merge)."""
+    if not rows:
+        return rows
+    target_n = len(rows)
+    min_frontier_n = int(round(min_frontier * target_n))
+    max_partial_n = int(round(max_partial * target_n))
+    max_easy_n = int(round(max_easy * target_n))
+    buckets = {"frontier": [], "partial_frontier": [], "easy_anchor": [], "other": []}
+    for row in rows:
+        t = _row_tier(row)
+        buckets.get(t, buckets["other"]).append(row)
+    picked: List[Dict[str, Any]] = []
+    counts = {"frontier": 0, "partial_frontier": 0, "easy_anchor": 0}
+
+    def _take(pool: List[Dict[str, Any]], tier: str, limit: int) -> None:
+        while pool and len(picked) < target_n and counts[tier] < limit:
+            picked.append(pool.pop(0))
+            counts[tier] += 1
+
+    _take(buckets["frontier"], "frontier", target_n)
+    while counts["frontier"] < min_frontier_n and buckets["frontier"]:
+        picked.append(buckets["frontier"].pop(0))
+        counts["frontier"] += 1
+    _take(buckets["partial_frontier"], "partial_frontier", max_partial_n)
+    _take(buckets["easy_anchor"], "easy_anchor", max_easy_n)
+    for pool in (buckets["frontier"], buckets["partial_frontier"],
+                 buckets["easy_anchor"], buckets["other"]):
+        while pool and len(picked) < target_n:
+            picked.append(pool.pop(0))
+    return picked[:target_n]
 
 
 def _short_stage(stage: str) -> str:
@@ -112,8 +155,9 @@ def merge_stage(stage: str, worker_dirs: List[str], *, max_rows: int = None
     if max_rows is not None:
         merged = merged[:max_rows]
 
-    # renumber sample_id sequentially — old ids are collision-prone (every
-    # worker independently started counting from 1)
+    # renumber sample_id sequentially — worker-local ids may collide across GPUs;
+    # merge dedups by question/trace hash (not by sample_id). provenance.worker_id
+    # / run_id are preserved for audit.
     short = _short_stage(stage)
     for i, row in enumerate(merged):
         row["sample_id"] = f"agentic_v5_{short}_{i + 1:06d}"
@@ -201,6 +245,9 @@ def main() -> int:
     ap.add_argument("--max-rows-per-stage", type=int, default=None,
                     help="optional cap on merged rows per stage (keeps the "
                          "first N in worker order after dedup)")
+    ap.add_argument("--apply-merge-tier-quotas", action="store_true",
+                    help="stratified trim toward global tier targets "
+                         "(TIER_QUOTA_MERGE_*) after dedup")
     args = ap.parse_args()
 
     worker_dirs: List[str] = []
@@ -228,6 +275,16 @@ def main() -> int:
     for stage in args.stages:
         merged, report = merge_stage(stage, worker_dirs,
                                      max_rows=args.max_rows_per_stage)
+        if args.apply_merge_tier_quotas and merged:
+            before = len(merged)
+            mf, mp, me = tier_quotas_for_merge()
+            merged = apply_merge_tier_quotas(merged, min_frontier=mf,
+                                             max_partial=mp, max_easy=me)
+            report["tier_quota_applied"] = True
+            report["tier_quota_targets"] = {
+                "min_frontier": mf, "max_partial": mp, "max_easy": me}
+            report["rows_before_tier_quota"] = before
+            report["rows_after_tier_quota"] = len(merged)
         merged_by_stage[stage] = merged
         per_stage_reports.append(report)
         out_path = os.path.join(out_root, "filtered", STAGE_FILES[stage])

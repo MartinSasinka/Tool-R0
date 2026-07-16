@@ -42,7 +42,7 @@ import math
 import random
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-REGISTRY_VERSION = "5.0.0"
+REGISTRY_VERSION = "5.0.1"
 
 TOOLS: Dict[str, Dict[str, Any]] = {}
 
@@ -393,6 +393,15 @@ _add_binary("unit_price", "finance", "pricing",
             "the unit price when {quantity} items cost {total_price} in total",
             t2="integer", c2={"min": 1})
 
+_add_binary("total_price", "finance", "pricing",
+            "Computes the total price for a quantity of items at a unit price.",
+            "unit_price", "money", ([1.5, 2.5, 4, 7.99, 12, 25, 49.9],),
+            "quantity", "generic_number", (2, 40),
+            "output_0", "money",
+            lambda unit_price, quantity: _r2(float(unit_price) * float(quantity)),
+            "the total price of {quantity} items at {unit_price} each",
+            t2="number", chain_in="unit_price")
+
 _add(
     "bulk_order_total", "finance", "pricing",
     "Computes the total for a bulk order after a bulk discount.",
@@ -593,6 +602,13 @@ _add_binary("subtract_numbers", "math", "arithmetic",
             lambda minuend, subtrahend: _r2(float(minuend) - float(subtrahend)),
             "the difference between {minuend} and {subtrahend}")
 
+_add_binary("difference_of", "statistics", "arithmetic",
+            "Computes the difference between two values (first minus second).",
+            "minuend", "generic_number", (100, 900), "subtrahend", "generic_number", (5, 90),
+            "output_0", "generic_number",
+            lambda minuend, subtrahend: _r2(float(minuend) - float(subtrahend)),
+            "the difference between {minuend} and {subtrahend}")
+
 _add_binary("multiply_numbers", "math", "arithmetic",
             "Multiplies two numbers.",
             "first_factor", "generic_number", (2, 60), "second_factor", "generic_number", (2, 40),
@@ -763,6 +779,10 @@ _add_list("max_of_values", "aggregation",
           "Returns the largest number in a list.",
           lambda vs: _r2(max(float(x) for x in vs)), "the largest of {v}")
 _add_list("range_of_values", "aggregation",
+          "Computes the range (max minus min) of a list of numbers.",
+          lambda vs: _r2(max(float(x) for x in vs) - min(float(x) for x in vs)),
+          "the range of {v}")
+_add_list("value_range", "aggregation",
           "Computes the range (max minus min) of a list of numbers.",
           lambda vs: _r2(max(float(x) for x in vs) - min(float(x) for x in vs)),
           "the range of {v}")
@@ -1086,6 +1106,15 @@ _add_binary("boxes_needed", "logistics", "packing",
             lambda total_units, box_capacity: int(math.ceil(int(float(total_units)) / int(box_capacity))),
             "the number of boxes of {box_capacity} needed for {total_units} units",
             t1="integer", t2="integer", c2={"min": 1}, out_type="integer")
+
+_add_binary("units_per_box", "logistics", "packing",
+            "Computes how many full boxes are needed for a number of units (integer division, rounding up).",
+            "total_units", "count", (20, 900), "box_capacity", "count",
+            ([6, 8, 10, 12, 24],),
+            "output_0", "count",
+            lambda total_units, box_capacity: float(-(-int(total_units) // int(box_capacity))),
+            "the number of boxes of {box_capacity} needed for {total_units} units",
+            t1="number", t2="number", c2={"min": 1})
 
 _add(
     "pallets_needed", "logistics", "packing",
@@ -1544,6 +1573,13 @@ def numeric_output(name: str) -> bool:
 _DUP_PROBES_1 = [7, 33.5, 120]
 _DUP_PROBES_2 = [(7, 3), (33.5, 12), (120, 48), (5, 12)]
 
+# v4 nestful_like names kept alongside v5 equivalents (same behaviour + semantics).
+_LEGACY_BEHAVIOUR_ALIAS_GROUPS = [
+    frozenset({"subtract_numbers", "difference_of"}),
+    frozenset({"range_of_values", "value_range"}),
+    frozenset({"boxes_needed", "units_per_box"}),
+]
+
 
 def _behaviour_signature(t: Dict[str, Any]) -> Optional[str]:
     """Signature from outputs on SHARED probes (None when not probe-compatible).
@@ -1622,7 +1658,11 @@ def validate_registry(seed: int = 20260715, probes: int = 3) -> Dict[str, Any]:
         for n in names:
             by_sem.setdefault(_semantic_signature(TOOLS[n]), []).append(n)
         for sem_group in by_sem.values():
-            if len(sem_group) > 1:
+            if len(sem_group) <= 1:
+                continue
+            alias = next((g for g in _LEGACY_BEHAVIOUR_ALIAS_GROUPS
+                          if set(sem_group) <= g), None)
+            if alias is None:
                 duplicates.append(sorted(sem_group))
         if len(by_sem) > 1:
             behaviour_twins.append(sorted(names))

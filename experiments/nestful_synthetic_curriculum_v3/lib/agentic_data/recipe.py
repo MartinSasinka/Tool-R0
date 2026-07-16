@@ -76,13 +76,14 @@ _FEEDBACK_RULES: Dict[str, str] = {
         "the hard part, sometimes tool choice among similar distractors, "
         "sometimes reference reuse of an EARLY result, sometimes chain length.",
     "low_grpo_signal_prediction":
-        "Tasks lacked usable GRPO training signal for the weak model: rollouts "
-        "were all the same reward (too easy, all identical failures, or only "
-        "parse errors). Target the SWEET SPOT: the weak model should sometimes "
-        "succeed on a full trace but not always — vary WHICH step is hard "
-        "(tool choice among same-domain distractors, argument binding, or "
-        "reusing an earlier result). Avoid questions where every rollout fails "
-        "in exactly the same way.",
+        "Tasks lacked usable GRPO training signal for the weak model. Common "
+        "sub-reasons: all_same_reward (every rollout scored identically), "
+        "parse_dominated (>25% parse/clipped), weak_partial_low_range "
+        "(one failure class with tiny reward spread), no_full_success when "
+        "achievable-win is required. Target meaningful contrast: mix failure "
+        "classes (wrong_tool vs correct_tool_wrong_args vs too_few_calls), "
+        "different call counts, or reward_range >= 0.05 — not numeric noise "
+        "within one error bucket.",
     "weak_strong_gap_too_small":
         "Weak and strong solvers scored too similarly — the task does not "
         "separate them enough. Make the correct tool chain less obvious in the "

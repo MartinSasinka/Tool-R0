@@ -27,7 +27,9 @@ from lib.agentic_data.semantics import semantic_errors  # noqa: E402
 from lib.agentic_data.orchestrator import _offered_schemas  # noqa: E402
 import random  # noqa: E402
 from lib.agentic_data.rollout_signal import (  # noqa: E402
-    summarize_rollouts, run_rollouts, probe_rollout_signal, target_is_local)
+    summarize_rollouts, run_rollouts, probe_rollout_signal, target_is_local,
+    _failure_pattern_stable, _is_outlier_driven_borderline)
+from lib.agentic_data.quality import TierQuotaTracker, tier_quotas_for_stage  # noqa: E402
 from lib.agentic_data.training_reward import (  # noqa: E402
     build_task_dict, score_with_training_reward, configured_reward_policy)
 
@@ -257,10 +259,14 @@ check("rollout signal: mixed rollouts have unique_rewards >= 2",
 check("rollout signal: mixed rollouts have reward_variance > 0",
      summ["reward_variance"] > 0, summ)
 
-# parse-error-heavy but ONE valid partial trace -> still signal-positive
+# parse-error-heavy but ONE valid partial trace -> reject (parse_dominated)
 ONE_VALID_AMONG_DEGENERATE = ([_score(0.0, "parse_error", 0) for _ in range(7)]
                              + [_score(0.5, "correct_prefix_then_stop", 1)])
 summ = summarize_rollouts(ONE_VALID_AMONG_DEGENERATE, n_gold_calls=2)
+check("rollout signal: parse-dominated group is NOT grpo-signal-positive",
+     summ["grpo_signal_positive"] is False, summ)
+check("rollout signal: parse-dominated sub_reason",
+     summ["grpo_sub_reason"] == "parse_dominated", summ)
 check("rollout signal: one valid trace among 7 parse errors has_valid_trace True",
      summ["has_valid_trace"] is True, summ)
 check("rollout signal: predicted_call_distribution recorded",
@@ -280,12 +286,84 @@ SPREAD_NO_WIN = [_score(0.53, "correct_tool_wrong_args", 2),
 summ = summarize_rollouts(SPREAD_NO_WIN, n_gold_calls=2)
 check("rollout signal: spread-without-win IS grpo-positive by default",
      summ["grpo_signal_positive"] is True, summ)
+check("rollout signal: spread-without-win tier is partial_frontier",
+     summ["quality_tier"] == "partial_frontier", summ)
+
+WEAK_PARTIAL = [_score(0.564, "correct_tool_wrong_args", 2) for _ in range(4)]
+WEAK_PARTIAL += [_score(0.568, "correct_tool_wrong_args", 2) for _ in range(4)]
+summ = summarize_rollouts(WEAK_PARTIAL, n_gold_calls=2)
+check("rollout signal: same failure class + tiny range is NOT grpo-positive",
+     summ["grpo_signal_positive"] is False, summ)
+check("rollout signal: universal min range sub_reason",
+     summ["grpo_sub_reason"] == "reward_range_below_universal_min", summ)
+check("rollout signal: advantage preview fields present",
+     "advantage_std" in summ and "max_abs_advantage" in summ, summ)
+
+MICRO_TWO_CLASS = ([_score(0.5625, "correct_tool_wrong_args", 2) for _ in range(4)]
+                   + [_score(0.5667, "wrong_tool", 1) for _ in range(4)])
+summ = summarize_rollouts(MICRO_TWO_CLASS, n_gold_calls=2)
+check("rollout signal: two classes but range < universal min rejected",
+     summ["grpo_signal_positive"] is False
+     and summ["grpo_sub_reason"] == "reward_range_below_universal_min", summ)
+
+GOOD_PARTIAL = ([_score(0.25, "wrong_tool", 1) for _ in range(5)]
+                + [_score(0.54, "correct_tool_wrong_args", 2) for _ in range(3)])
+summ = summarize_rollouts(GOOD_PARTIAL, n_gold_calls=2)
+check("rollout signal: mixed failure classes without win IS grpo-positive",
+     summ["grpo_signal_positive"] is True, summ)
+check("rollout signal: mixed failure classes tier is partial_frontier",
+     summ["quality_tier"] == "partial_frontier", summ)
+
+s2_min, s2_part, _ = tier_quotas_for_stage("stage2_2call_agentic_openrouter")
+s3_min, s3_part, _ = tier_quotas_for_stage("stage3_3call_agentic_openrouter")
+check("stage3 tier quotas allow more partial than stage2",
+     s3_part > s2_part and s3_min < s2_min, (s2_min, s2_part, s3_min, s3_part))
+tq3 = TierQuotaTracker(stage="stage3_3call_agentic_openrouter", enforce_after=10)
+for _ in range(4):
+    tq3.add("frontier")
+for _ in range(5):
+    tq3.add("partial_frontier")
+check("stage3 accepts partial at 55% when frontier=40%",
+     tq3.verdict("partial_frontier") is None, tq3.stats())
+tq2 = TierQuotaTracker(stage="stage2_2call_agentic_openrouter", enforce_after=3)
+for _ in range(2):
+    tq2.add("frontier")
+tq2.add("partial_frontier")
+check("stage2 blocks non-frontier when frontier share below 60%",
+     tq2.verdict("weak_partial") == "tier_quota_need_frontier", tq2.stats())
+tq2_cap = TierQuotaTracker(stage="stage2_2call_agentic_openrouter", enforce_after=4)
+for _ in range(3):
+    tq2_cap.add("frontier")
+for _ in range(1):
+    tq2_cap.add("partial_frontier")
+check("stage2 blocks partial above 30% cap",
+     tq2_cap.verdict("partial_frontier") == "tier_quota_partial_frontier",
+     tq2_cap.stats())
+
+primary_a = {"dominant_rollout_failure": "correct_tool_wrong_args",
+             "meaningful_failure_classes": ["correct_tool_wrong_args", "too_few_calls"],
+             "unique_rewards": 2, "parse_or_clipped_rate": 0.0,
+             "rewards": [0.53, 0.53, 0.53, 0.53, 0.24, 0.24, 0.24, 0.24]}
+secondary_b = {"dominant_rollout_failure": "correct_tool_wrong_args",
+               "meaningful_failure_classes": ["correct_tool_wrong_args"],
+               "unique_rewards": 1, "parse_or_clipped_rate": 0.0,
+               "rewards": [0.53] * 8}
+combined_ab = {"meaningful_failure_classes": ["correct_tool_wrong_args", "too_few_calls"],
+               "reward_range": 0.29, "grpo_signal_positive": True}
+check("borderline: overlapping failure classes are stable",
+     _failure_pattern_stable(primary_a, secondary_b, combined_ab))
+check("borderline: 7+1 outlier pattern detected",
+     _is_outlier_driven_borderline(
+         {"unique_rewards": 2, "parse_or_clipped_rate": 0.125,
+          "rewards": [0.56] * 7 + [0.0]},
+         {"unique_rewards": 1, "rewards": [0.56] * 8},
+         {"reward_range": 0.56}))
 os.environ["ROLLOUT_REQUIRE_ACHIEVABLE_WIN"] = "1"
 try:
     summ = summarize_rollouts(SPREAD_NO_WIN, n_gold_calls=2)
     check("rollout signal: spread-without-win rejected when achievable-win required",
-         summ["grpo_signal_positive"] is False and summ["achievable_win"] is False,
-         summ)
+         summ["grpo_signal_positive"] is False
+         and summ["grpo_sub_reason"] == "no_full_success", summ)
     summ = summarize_rollouts(MIXED, n_gold_calls=2)
     check("rollout signal: win+loss mix passes achievable-win gate",
          summ["grpo_signal_positive"] is True and summ["achievable_win"] is True,

@@ -22,23 +22,25 @@ from typing import Any, Dict, List, Optional, Tuple
 from .challenger import (challenger_messages, gen_mode, normalize_candidate,
                          parse_candidates, question_polish_messages,
                          repair_candidate)
-from .quality import (DedupIndex, DiversityTracker, acceptance_policy,
+from .quality import (DedupIndex, DiversityTracker, RolloutFailureTracker,
+                      TierQuotaTracker, acceptance_policy,
                       solver_gap_verdict, solver_weak_max)
 from .registry_first import (attach_polished_questions,
                              generate_registry_skeletons)
 from .recipe import Recipe
-from .rollout_signal import ROLLOUT_N, probe_rollout_signal
-from .schema import (MOTIFS, STAGES, candidate_schema_errors, final_row,
+from .rollout_signal import (ROLLOUT_N, probe_rollout_signal_confirmed,
+                              target_is_local)
+from .schema import (STAGES, candidate_schema_errors, final_row,
                      looks_like_cot)
 from .semantics import semantic_errors
 from .multiturn_solver import (solver_gap_mode, solve_strong_multiturn,
                                solve_weak_multiturn)
-from .rollout_signal import target_is_local
 from .solvers import (best_of, parse_solver_output, score_prediction,
                       solver_messages, solver_params)
 from .trace_validation import hard_trace_errors
 from .verifier import deterministic_verify, judge_messages, judge_verdict
 from .env_defaults import (
+    BEST_OF_N_ACCEPT_ALL_QUALIFIED,
     BEST_OF_N_ENABLED,
     BEST_OF_N_MAX_ACCEPTS_PER_BATCH,
     BEST_OF_N_WEIGHT_GAP,
@@ -67,6 +69,8 @@ def best_of_n_enabled() -> bool:
 
 
 def best_of_n_max_accepts() -> int:
+    if env_bool("BEST_OF_N_ACCEPT_ALL_QUALIFIED", BEST_OF_N_ACCEPT_ALL_QUALIFIED):
+        return 999_999
     return max(1, env_int("BEST_OF_N_MAX_ACCEPTS_PER_BATCH",
                           BEST_OF_N_MAX_ACCEPTS_PER_BATCH))
 
@@ -100,8 +104,42 @@ def _signal_score(rollout_signal: Dict[str, Any]) -> float:
     if rollout_signal.get("skipped"):
         return 0.5   # neutral — no local weak backend to probe with
     variance = float(rollout_signal.get("reward_variance") or 0.0)
-    # 0.25 ~= max variance for a 50/50 split between reward 0.0 and 1.0.
-    return max(0.0, min(1.0, variance / 0.25))
+    reward_range = float(rollout_signal.get("reward_range") or 0.0)
+    tier = rollout_signal.get("quality_tier") or ""
+    tier_boost = {
+        "frontier": 0.15,
+        "partial_frontier": 0.05,
+        "easy_anchor": 0.0,
+    }.get(tier, 0.0)
+    var_score = max(0.0, min(1.0, variance / 0.25))
+    range_score = max(0.0, min(1.0, reward_range / 0.5))
+    adv_std = float(rollout_signal.get("advantage_std") or 0.0)
+    adv_score = max(0.0, min(1.0, adv_std / 0.35))
+    return max(0.0, min(1.0,
+                        0.50 * var_score + 0.40 * range_score
+                        + 0.05 * adv_score + tier_boost))
+
+
+def _worker_label(out_root: str) -> str:
+    explicit = os.environ.get("AGENTIC_WORKER_ID", "").strip()
+    if explicit:
+        return explicit
+    base = os.path.basename(out_root.rstrip("/\\"))
+    return base or "w0"
+
+
+def _run_label(out_root: str) -> str:
+    explicit = os.environ.get("AGENTIC_RUN_ID", "").strip()
+    if explicit:
+        return explicit
+    parent = os.path.basename(os.path.dirname(out_root.rstrip("/\\")))
+    return parent or "run"
+
+
+def _make_sample_id(stage: str, seq: int, *, out_root: str, seed: int) -> str:
+    worker = _worker_label(out_root).replace(" ", "_")[:24]
+    run = _run_label(out_root).replace(" ", "_")[:24]
+    return (f"agentic_v5_{_short_stage(stage)}_{worker}_s{seed}_{seq:06d}")
 
 
 def _tool_novelty(tool_names: List[str], usage: Counter) -> float:
@@ -153,6 +191,30 @@ class StageWriter:
             pass
         self.n_written += 1
         self.n_new += 1
+
+    def close(self) -> None:
+        if not self._fh.closed:
+            self._fh.close()
+
+
+class RejectWriter:
+    """Crash-safe incremental writer for rejected candidates + rollout probes."""
+
+    def __init__(self, path: str, *, append: bool = False) -> None:
+        self.path = path
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        mode = "a" if append else "w"
+        self._fh = open(path, mode, encoding="utf-8")
+        self.n_written = 0
+
+    def append(self, row: Dict[str, Any]) -> None:
+        self._fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        self._fh.flush()
+        try:
+            os.fsync(self._fh.fileno())
+        except OSError:
+            pass
+        self.n_written += 1
 
     def close(self) -> None:
         if not self._fh.closed:
@@ -272,6 +334,7 @@ class Orchestrator:
         # best-of-N candidates by novelty (never gates acceptance itself).
         self.tool_usage_by_stage: Dict[str, Counter] = {}
         self._registry_balancer: Optional[_UsageBalancer] = None
+        self._reject_writer: Optional[RejectWriter] = None
 
     def _record_local_inference(self, role: str = "weak_solver", n: int = 1) -> None:
         """Count local HF weak-solver episodes (bypass OpenRouter client.chat)."""
@@ -320,6 +383,8 @@ class Orchestrator:
         if extra:
             rec.update(extra)
         self.rejected.append(rec)
+        if self._reject_writer is not None:
+            self._reject_writer.append(rec)
 
     def _api_chat(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
         """client.chat; transient API/budget failures return None (skip)."""
@@ -434,6 +499,11 @@ class Orchestrator:
 
         writer = StageWriter(out_path, append=resume and n_existing > 0,
                              existing_rows=n_existing)
+        reject_path = os.path.join(self.out_root, "rejected",
+                                   "rejected_examples.jsonl")
+        reject_append = (resume and os.path.isfile(reject_path)
+                         and count_jsonl_rows(reject_path) > 0)
+        self._reject_writer = RejectWriter(reject_path, append=reject_append)
         rng = random.Random(f"agentic|{stage}|{self.seed}")
         recipe = Recipe()
         iteration = 0
@@ -447,6 +517,9 @@ class Orchestrator:
             raise
         finally:
             writer.close()
+            if self._reject_writer is not None:
+                self._reject_writer.close()
+                self._reject_writer = None
             status = "complete" if len(accepted) >= target else "partial"
             if iteration:
                 api = _client_progress_snapshot(self.client)
@@ -480,6 +553,13 @@ class Orchestrator:
                 "resume_source": resume_source,
                 "diversity": (self.diversity_by_stage[stage].stats()
                               if stage in self.diversity_by_stage else None),
+                "tier_quota": (self.tier_quota_by_stage[stage].stats()
+                               if hasattr(self, "tier_quota_by_stage")
+                               and stage in self.tier_quota_by_stage else None),
+                "rollout_failure_mix": (
+                    self.rollout_failure_by_stage[stage].stats()
+                    if hasattr(self, "rollout_failure_by_stage")
+                    and stage in self.rollout_failure_by_stage else None),
             }
         return accepted
 
@@ -489,16 +569,23 @@ class Orchestrator:
                     n_existing: int = 0, is_resume: bool = False) -> None:
         dedup = DedupIndex()
         diversity = DiversityTracker(resume_mode=is_resume)
+        tier_quota = TierQuotaTracker(stage=stage, resume_mode=is_resume)
+        rollout_failure = RolloutFailureTracker(resume_mode=is_resume)
         tool_usage: Counter = Counter()
         if n_existing:
             dedup.seed_from_rows(accepted[:n_existing])
-            # Reference-only: legacy rows inform reports but do NOT tighten caps.
             diversity.seed_reference_from_rows(accepted[:n_existing])
+            tier_quota.seed_reference_from_rows(accepted[:n_existing])
+            rollout_failure.seed_reference_from_rows(accepted[:n_existing])
             for row in accepted[:n_existing]:
                 for c in row.get("gold_calls") or []:
                     if isinstance(c, dict) and c.get("name"):
                         tool_usage[c["name"]] += 1
         self.diversity_by_stage[stage] = diversity
+        self.tier_quota_by_stage = getattr(self, "tier_quota_by_stage", {})
+        self.rollout_failure_by_stage = getattr(self, "rollout_failure_by_stage", {})
+        self.tier_quota_by_stage[stage] = tier_quota
+        self.rollout_failure_by_stage[stage] = rollout_failure
         self.tool_usage_by_stage[stage] = tool_usage
         warmup_batches, min_accept_rate, min_iters_before_stop = \
             _accept_rate_stop_params(is_resume=is_resume)
@@ -745,12 +832,14 @@ class Orchestrator:
                     f"candidates x{ROLLOUT_N} (may take several min; "
                     f"[override]/[executor] lines are per-rollout noise)")
             for item in pool:
-                rollout_signal = probe_rollout_signal(
+                rollout_signal = probe_rollout_signal_confirmed(
                     item["question"], item["tools"], item["gold_calls"],
                     item["observations"], item["gold_answer"],
                     stage=stage, seed=self.seed + iteration)
                 if target_is_local() and not rollout_signal.get("skipped"):
-                    self._record_local_inference("weak_solver", ROLLOUT_N)
+                    n_rollouts = ROLLOUT_N * (
+                        2 if rollout_signal.get("confirm_probe") else 1)
+                    self._record_local_inference("weak_solver", n_rollouts)
                 item["rollout_signal"] = rollout_signal
                 item["signal_score"] = _signal_score(rollout_signal)
                 cand, gap_rec = item["cand"], item["gap_rec"]
@@ -760,14 +849,22 @@ class Orchestrator:
                 if not rollout_signal.get("grpo_signal_positive"):
                     dedup.remove(item["question"], item["gold_calls"])
                     gap_rec["final_status"] = "low_grpo_signal_prediction"
+                    sub = rollout_signal.get("grpo_sub_reason") or "unknown"
+                    tier = rollout_signal.get("quality_tier") or "unknown"
                     self._reject(stage, cand, "low_grpo_signal_prediction",
+                                 f"sub={sub}; tier={tier}; "
                                  f"policy={rollout_signal.get('reward_policy')}; "
                                  f"unique_rewards={rollout_signal.get('unique_rewards')}; "
+                                 f"range={rollout_signal.get('reward_range')}; "
                                  f"variance={rollout_signal.get('reward_variance')}; "
+                                 f"parse_rate={rollout_signal.get('parse_or_clipped_rate')}; "
+                                 f"failure_classes={rollout_signal.get('meaningful_failure_classes')}; "
                                  f"rewards={rollout_signal.get('rewards')}; "
                                  f"weak_status={item['weak']['status']}", recipe,
                                  extra={"solver_gap": gap_rec,
-                                        "rollout_signal": rollout_signal})
+                                        "rollout_signal": rollout_signal,
+                                        "grpo_sub_reason": sub,
+                                        "quality_tier": tier})
                     batch_counter["low_grpo_signal_prediction"] += 1
                     continue
                 rollout_pool.append(item)
@@ -789,7 +886,9 @@ class Orchestrator:
                     gap=it["gap_value"], novelty=it["novelty"],
                     signal_score=it.get("signal_score", 0.5)),
                 reverse=True) if best_of_n_enabled() else pool
-            max_accepts = best_of_n_max_accepts() if best_of_n_enabled() else len(ranked)
+            max_accepts = len(ranked)
+            if best_of_n_enabled():
+                max_accepts = min(len(ranked), best_of_n_max_accepts())
 
             n_accepted_this_batch = 0
             for rank, item in enumerate(ranked):
@@ -823,6 +922,28 @@ class Orchestrator:
                     continue
                 # Rollout probe already ran on the full pool above.
                 rollout_signal = item.get("rollout_signal") or {"skipped": True}
+                tier = rollout_signal.get("quality_tier") or "unknown"
+                tier_reason = tier_quota.verdict(tier)
+                if tier_reason:
+                    dedup.remove(question, gold_calls)
+                    gap_rec["final_status"] = tier_reason
+                    self._reject(stage, cand, tier_reason,
+                                 f"tier={tier}; rollout_tier_cap", recipe,
+                                 extra={"solver_gap": gap_rec,
+                                        "rollout_signal": rollout_signal})
+                    batch_counter[tier_reason] += 1
+                    continue
+                dom_fail = rollout_signal.get("dominant_rollout_failure") or "unknown"
+                rf_reason = rollout_failure.verdict(dom_fail)
+                if rf_reason:
+                    dedup.remove(question, gold_calls)
+                    gap_rec["final_status"] = rf_reason
+                    self._reject(stage, cand, rf_reason,
+                                 f"dominant_rollout_failure={dom_fail}", recipe,
+                                 extra={"solver_gap": gap_rec,
+                                        "rollout_signal": rollout_signal})
+                    batch_counter[rf_reason] += 1
+                    continue
                 # 6. LLM style judge (secondary; cannot override execution)
                 if self.run_judge:
                     jresp = self._api_chat(
@@ -849,8 +970,9 @@ class Orchestrator:
                 # 7. accept — final sample_id assigned NOW (deterministic on
                 # accepted-count, unaffected by how many candidates in the
                 # batch lost the best-of-N ranking).
-                sid = (f"agentic_v5_{_short_stage(stage)}_"
-                       f"{len(accepted) + 1:06d}")
+                sid = _make_sample_id(
+                    stage, len(accepted) + 1,
+                    out_root=self.out_root, seed=self.seed)
                 row = final_row(
                     sample_id=sid, question=question, tools=tools,
                     gold_calls=gold_calls, observations=observations,
@@ -870,10 +992,13 @@ class Orchestrator:
                         "gap": gap_rec.get("gap"),
                     },
                     rollout_signal=rollout_signal,
+                    quality_tier=rollout_signal.get("quality_tier"),
                     provenance={
                         "recipe_version": recipe.version,
                         "iteration": iteration,
                         "prompt_hash": None,
+                        "worker_id": _worker_label(self.out_root),
+                        "run_id": _run_label(self.out_root),
                         "raw_response_path": _relpath_or_none(
                             (challenger_resp or {}).get("raw_path"), self.out_root),
                         "created_at": _now(),
@@ -893,6 +1018,8 @@ class Orchestrator:
                 accepted.append(row)
                 writer.append(row)            # crash-safe: persisted NOW
                 diversity.add(weak["score"], weak["status"])
+                tier_quota.add(tier)
+                rollout_failure.add(dom_fail)
                 for c in gold_calls:
                     if isinstance(c, dict) and c.get("name"):
                         tool_usage[c["name"]] += 1

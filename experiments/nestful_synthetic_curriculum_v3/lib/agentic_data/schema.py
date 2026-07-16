@@ -56,6 +56,10 @@ REJECTION_REASONS = (
     "metadata_leakage",
     "diversity_cap_weak_score",     # accepting would over-concentrate one weak-score bucket
     "diversity_cap_failure_type",   # accepting would over-concentrate one weak failure type
+    "tier_quota_easy_anchor",
+    "tier_quota_partial_frontier",
+    "tier_quota_need_frontier",
+    "rollout_failure_type_cap",
     "api_error",                    # transient OpenRouter / budget failure after retries
     "invalid_trace_labels",         # non-unique/non-sequential labels or bad references
     "semantic_incompatible_reference",  # cross-family binding (e.g. temperature -> money)
@@ -127,7 +131,8 @@ def final_row(*, sample_id: str, question: str, tools: List[Dict[str, Any]],
               gold_answer: Any, stage: str, motif_type: str, answer_type: str,
               generation_seed: int, models: Dict[str, str],
               solver_gap: Dict[str, Any], provenance: Dict[str, Any],
-              rollout_signal: Optional[Dict[str, Any]] = None
+              rollout_signal: Optional[Dict[str, Any]] = None,
+              quality_tier: Optional[str] = None,
               ) -> Dict[str, Any]:
     """Assemble an ACCEPTED row in the exact spec §4 schema."""
     return {
@@ -161,6 +166,7 @@ def final_row(*, sample_id: str, question: str, tools: List[Dict[str, Any]],
             # legacy gold_replay executor mode.
             "gold_replay_passed": True,
             "contamination_passed": True,
+            "quality_tier": quality_tier,
         },
         "provenance": provenance,
     }

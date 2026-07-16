@@ -296,8 +296,9 @@ try:
     check("resume manifest: accepted_new=2", summ.get("accepted_new") == 2, summ)
     rows = load_jsonl_rows(canonical)
     ids = [r["sample_id"] for r in rows]
-    check("resume: sample_id continues (000004, 000005 present)",
-          "agentic_v5_stage2_000004" in ids and "agentic_v5_stage2_000005" in ids,
+    check("resume: sample_id continues (seq 000004, 000005 present)",
+          any(sid.endswith("_000004") for sid in ids)
+          and any(sid.endswith("_000005") for sid in ids),
           ids[-2:])
     check("resume: count consistency OK", "count consistency OK" in proc2.stdout)
 finally:

@@ -26,11 +26,13 @@
 #   NUM_GPUS=4                          workers to launch (default: nvidia-smi count, capped 4)
 #   STAGES="stage2_2call_agentic_openrouter stage3_3call_agentic_openrouter stage4_4to6call_agentic_openrouter"
 #   TOTAL_PER_STAGE=60                  TOTAL accepted rows wanted PER STAGE, summed over ALL workers
+#                                     (pilot first: 40–80 total ≈ 10–20/GPU before scaling to 200+)
 #   BASE_SEED=45                        worker i uses seed BASE_SEED+i
 #   OUT_BASE=<v3_root>/data/agentic_v5_workers   worker i writes to $OUT_BASE/gpu$i
 #   TOTAL_SPEND_USD=20                  OpenRouter budget, split evenly across workers
 #   TOTAL_REQUESTS=4000                 OpenRouter request cap, split evenly across workers
-#   BEST_OF_N_ENABLED=1 BEST_OF_N_MAX_ACCEPTS_PER_BATCH=1   candidate-selection knobs
+#   OPENROUTER_MAX_ITERATIONS_PER_STAGE=10   fixed-budget pilot (10 batches × 5 cand)
+#   BEST_OF_N_ENABLED=1 BEST_OF_N_MAX_ACCEPTS_PER_BATCH=2   candidate-selection knobs
 #   LOCAL_WEAK_MODEL / LOCAL_WEAK_4BIT / OPENROUTER_CHALLENGER_MODEL / etc.
 #   Defaults mirror lib/agentic_data/env_defaults.py — override via env.
 #   DRY_RUN=1                           print the per-worker commands, launch nothing
@@ -107,7 +109,7 @@ DIVERSITY_MAX_SAME_FAILURE_TYPE_VAL="${DIVERSITY_MAX_SAME_FAILURE_TYPE:-0.55}"
 DIVERSITY_ENFORCE_AFTER_VAL="${DIVERSITY_ENFORCE_AFTER:-50}"
 CANDIDATES_PER_REQUEST_VAL="${CANDIDATES_PER_REQUEST:-5}"
 BEST_OF_N_ENABLED_VAL="${BEST_OF_N_ENABLED:-1}"
-BEST_OF_N_MAX_ACCEPTS_PER_BATCH_VAL="${BEST_OF_N_MAX_ACCEPTS_PER_BATCH:-1}"
+BEST_OF_N_MAX_ACCEPTS_PER_BATCH_VAL="${BEST_OF_N_MAX_ACCEPTS_PER_BATCH:-2}"
 BEST_OF_N_WEIGHT_GAP_VAL="${BEST_OF_N_WEIGHT_GAP:-0.5}"
 BEST_OF_N_WEIGHT_NOVELTY_VAL="${BEST_OF_N_WEIGHT_NOVELTY:-0.3}"
 BEST_OF_N_WEIGHT_SIGNAL_VAL="${BEST_OF_N_WEIGHT_SIGNAL:-0.2}"
@@ -165,6 +167,12 @@ export BEST_OF_N_MAX_ACCEPTS_PER_BATCH="$BEST_OF_N_MAX_ACCEPTS_PER_BATCH_VAL" &&
 export BEST_OF_N_WEIGHT_GAP="$BEST_OF_N_WEIGHT_GAP_VAL" && \
 export BEST_OF_N_WEIGHT_NOVELTY="$BEST_OF_N_WEIGHT_NOVELTY_VAL" && \
 export BEST_OF_N_WEIGHT_SIGNAL="$BEST_OF_N_WEIGHT_SIGNAL_VAL" && \
+export AGENTIC_WORKER_ID="gpu$i" && \
+export AGENTIC_RUN_ID="$(basename "$OUT_BASE")" && \
+export ROLLOUT_UNIVERSAL_MIN_REWARD_RANGE="${ROLLOUT_UNIVERSAL_MIN_REWARD_RANGE:-0.01}" && \
+export ROLLOUT_MIN_REWARD_RANGE="${ROLLOUT_MIN_REWARD_RANGE:-0.05}" && \
+export ROLLOUT_BORDERLINE_CONFIRM="${ROLLOUT_BORDERLINE_CONFIRM:-1}" && \
+export BEST_OF_N_ACCEPT_ALL_QUALIFIED="${BEST_OF_N_ACCEPT_ALL_QUALIFIED:-0}" && \
 export OPENROUTER_MAX_SPEND_USD="$PER_WORKER_SPEND" && \
 export OPENROUTER_MAX_REQUESTS="$PER_WORKER_REQUESTS" && \
 export OPENROUTER_MAX_ITERATIONS_PER_STAGE="$MAX_ITERS" && \

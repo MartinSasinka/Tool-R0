@@ -11,6 +11,21 @@ from .env_defaults import (
     DIVERSITY_ENFORCE_AFTER,
     DIVERSITY_MAX_SAME_FAILURE_TYPE,
     DIVERSITY_MAX_SAME_WEAK_SCORE,
+    ROLLOUT_FAILURE_ENFORCE_AFTER,
+    ROLLOUT_FAILURE_MAX_SAME_TYPE,
+    TIER_QUOTA_ENFORCE_AFTER,
+    TIER_QUOTA_MAX_EASY_ANCHOR,
+    TIER_QUOTA_MAX_PARTIAL_FRONTIER,
+    TIER_QUOTA_MERGE_MAX_EASY_ANCHOR,
+    TIER_QUOTA_MERGE_MAX_PARTIAL_FRONTIER,
+    TIER_QUOTA_MERGE_MIN_FRONTIER,
+    TIER_QUOTA_MIN_FRONTIER,
+    TIER_QUOTA_STAGE2_MAX_EASY_ANCHOR,
+    TIER_QUOTA_STAGE2_MAX_PARTIAL_FRONTIER,
+    TIER_QUOTA_STAGE2_MIN_FRONTIER,
+    TIER_QUOTA_STAGE3_MAX_EASY_ANCHOR,
+    TIER_QUOTA_STAGE3_MAX_PARTIAL_FRONTIER,
+    TIER_QUOTA_STAGE3_MIN_FRONTIER,
     env_float,
     env_int,
 )
@@ -239,3 +254,159 @@ class DedupIndex:
     def remove(self, question: str, gold_calls) -> None:
         self.q.discard(question_hash(question))
         self.t.discard(trace_hash(gold_calls))
+
+
+class TierQuotaTracker:
+    """Cap accepted quality-tier mix (frontier / partial_frontier / easy_anchor).
+
+    Quotas are stage-specific: Stage 2 targets more frontier anchors; Stage 3
+    allows a higher partial-frontier share. Final global mix is enforced at
+    merge time (see ``tier_quotas_for_merge``).
+    """
+
+    def __init__(self, *, stage: str, resume_mode: bool = False,
+                 enforce_after: Optional[int] = None) -> None:
+        self.stage = stage
+        self.resume_mode = resume_mode
+        self.enforce_after = env_int("TIER_QUOTA_ENFORCE_AFTER",
+                                     TIER_QUOTA_ENFORCE_AFTER) \
+            if enforce_after is None else enforce_after
+        self.min_frontier, self.max_partial, self.max_easy = \
+            tier_quotas_for_stage(stage)
+        self.tiers: Counter = Counter()
+        self.n = 0
+        self.seed_tiers: Counter = Counter()
+        self.n_seed = 0
+
+    def seed_reference_from_rows(self, rows: List[Dict[str, Any]]) -> None:
+        for row in rows:
+            tier = ((row.get("quality") or {}).get("quality_tier")
+                    or (row.get("rollout_signal") or {}).get("quality_tier")
+                    or "unknown")
+            self.seed_tiers[tier] += 1
+            self.n_seed += 1
+
+    def verdict(self, tier: str) -> Optional[str]:
+        if self.n < self.enforce_after:
+            return None
+        tier = tier or "unknown"
+        n_next = self.n + 1
+        if tier == "easy_anchor" and (self.tiers["easy_anchor"] + 1) / n_next > self.max_easy:
+            return "tier_quota_easy_anchor"
+        if tier == "partial_frontier" and (
+                self.tiers["partial_frontier"] + 1) / n_next > self.max_partial:
+            return "tier_quota_partial_frontier"
+        if tier != "frontier" and self.tiers["frontier"] / n_next < self.min_frontier:
+            return "tier_quota_need_frontier"
+        return None
+
+    def add(self, tier: str) -> None:
+        self.tiers[tier or "unknown"] += 1
+        self.n += 1
+
+    def stats(self) -> Dict[str, Any]:
+        return {
+            "n_new": self.n,
+            "tiers_new": dict(self.tiers),
+            "tier_shares_new": {k: round(v / self.n, 4) for k, v in self.tiers.items()}
+            if self.n else {},
+            "caps": {
+                "stage": self.stage,
+                "min_frontier": self.min_frontier,
+                "max_partial_frontier": self.max_partial,
+                "max_easy_anchor": self.max_easy,
+                "enforce_after": self.enforce_after,
+            },
+            "n_seed": self.n_seed,
+            "tiers_seed": dict(self.seed_tiers),
+        }
+
+
+class RolloutFailureTracker:
+    """Cap dominance of one rollout failure type across accepted tasks."""
+
+    def __init__(self, *, resume_mode: bool = False,
+                 enforce_after: Optional[int] = None,
+                 max_same_type: Optional[float] = None) -> None:
+        self.resume_mode = resume_mode
+        self.max_same = env_float("ROLLOUT_FAILURE_MAX_SAME_TYPE",
+                                  ROLLOUT_FAILURE_MAX_SAME_TYPE) \
+            if max_same_type is None else max_same_type
+        self.enforce_after = env_int("ROLLOUT_FAILURE_ENFORCE_AFTER",
+                                     ROLLOUT_FAILURE_ENFORCE_AFTER) \
+            if enforce_after is None else enforce_after
+        self.ft: Counter = Counter()
+        self.n = 0
+        self.seed_ft: Counter = Counter()
+        self.n_seed = 0
+
+    def seed_reference_from_rows(self, rows: List[Dict[str, Any]]) -> None:
+        for row in rows:
+            rs = row.get("rollout_signal") or {}
+            dom = rs.get("dominant_rollout_failure")
+            if dom:
+                self.seed_ft[dom] += 1
+                self.n_seed += 1
+
+    def verdict(self, dominant_failure: str) -> Optional[str]:
+        if self.n < self.enforce_after:
+            return None
+        dom = dominant_failure or "unknown"
+        if (self.ft[dom] + 1) / (self.n + 1) > self.max_same:
+            return "rollout_failure_type_cap"
+        return None
+
+    def add(self, dominant_failure: str) -> None:
+        self.ft[dominant_failure or "unknown"] += 1
+        self.n += 1
+
+    def stats(self) -> Dict[str, Any]:
+        return {
+            "n_new": self.n,
+            "failure_types_new": dict(self.ft),
+            "dominance_new": round(max(self.ft.values()) / self.n, 4) if self.n else None,
+            "cap": self.max_same,
+            "enforce_after": self.enforce_after,
+            "n_seed": self.n_seed,
+            "failure_types_seed": dict(self.seed_ft),
+        }
+
+
+def tier_quotas_for_stage(stage: str) -> Tuple[float, float, float]:
+    """(min_frontier, max_partial_frontier, max_easy_anchor) for a stage."""
+    s = (stage or "").lower()
+    if "stage2" in s:
+        return (
+            env_float("TIER_QUOTA_STAGE2_MIN_FRONTIER",
+                      TIER_QUOTA_STAGE2_MIN_FRONTIER),
+            env_float("TIER_QUOTA_STAGE2_MAX_PARTIAL_FRONTIER",
+                      TIER_QUOTA_STAGE2_MAX_PARTIAL_FRONTIER),
+            env_float("TIER_QUOTA_STAGE2_MAX_EASY_ANCHOR",
+                      TIER_QUOTA_STAGE2_MAX_EASY_ANCHOR),
+        )
+    if "stage3" in s:
+        return (
+            env_float("TIER_QUOTA_STAGE3_MIN_FRONTIER",
+                      TIER_QUOTA_STAGE3_MIN_FRONTIER),
+            env_float("TIER_QUOTA_STAGE3_MAX_PARTIAL_FRONTIER",
+                      TIER_QUOTA_STAGE3_MAX_PARTIAL_FRONTIER),
+            env_float("TIER_QUOTA_STAGE3_MAX_EASY_ANCHOR",
+                      TIER_QUOTA_STAGE3_MAX_EASY_ANCHOR),
+        )
+    return (
+        env_float("TIER_QUOTA_MIN_FRONTIER", TIER_QUOTA_MIN_FRONTIER),
+        env_float("TIER_QUOTA_MAX_PARTIAL_FRONTIER",
+                  TIER_QUOTA_MAX_PARTIAL_FRONTIER),
+        env_float("TIER_QUOTA_MAX_EASY_ANCHOR", TIER_QUOTA_MAX_EASY_ANCHOR),
+    )
+
+
+def tier_quotas_for_merge() -> Tuple[float, float, float]:
+    """Global tier targets when building the final merged v5 dataset."""
+    return (
+        env_float("TIER_QUOTA_MERGE_MIN_FRONTIER", TIER_QUOTA_MERGE_MIN_FRONTIER),
+        env_float("TIER_QUOTA_MERGE_MAX_PARTIAL_FRONTIER",
+                  TIER_QUOTA_MERGE_MAX_PARTIAL_FRONTIER),
+        env_float("TIER_QUOTA_MERGE_MAX_EASY_ANCHOR",
+                  TIER_QUOTA_MERGE_MAX_EASY_ANCHOR),
+    )
