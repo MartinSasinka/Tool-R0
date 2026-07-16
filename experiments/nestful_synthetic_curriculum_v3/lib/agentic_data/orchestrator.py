@@ -522,6 +522,7 @@ class Orchestrator:
             iteration += 1
             self._last_iteration = iteration
             rounds_since_accept += 1
+            challenger_resp: Optional[Dict[str, Any]] = None
             stage_motifs = motifs_for_stage(stage)
             motif = stage_motifs[(iteration - 1) % len(stage_motifs)]
 
@@ -562,6 +563,7 @@ class Orchestrator:
                             feedback_block=recipe.feedback_block()),
                         temperature=0.85, max_tokens=1800, json_mode=True,
                         seed=self.seed * 1000 + iteration)
+                    challenger_resp = resp
                     if resp is None:
                         continue
                     if resp.get("dry_run"):
@@ -577,6 +579,7 @@ class Orchestrator:
                         feedback_block=recipe.feedback_block(), rng=rng),
                     temperature=0.9, max_tokens=2400, json_mode=True,
                     seed=self.seed * 1000 + iteration)
+                challenger_resp = resp
                 if resp is None:
                     continue
                 if resp.get("dry_run"):
@@ -585,8 +588,8 @@ class Orchestrator:
                 candidates = parse_candidates(resp["parsed"])
             if not candidates:
                 snippet = ""
-                if gen_mode() != "registry_first" and resp is not None:
-                    snippet = resp.get("text", "")[:200]
+                if gen_mode() != "registry_first" and challenger_resp is not None:
+                    snippet = challenger_resp.get("text", "")[:200]
                 self._reject(stage, {"question": snippet},
                              "invalid_json", "challenger output unparseable",
                              recipe)
@@ -842,11 +845,12 @@ class Orchestrator:
                                  else "list"),
                     generation_seed=self.seed, models=self.models,
                     solver_gap={
-                        "weak_status": weak["status"],
-                        "strong_status": strong["status"],
-                        "weak_score": weak["score"],
-                        "strong_score": strong["score"],
-                        "gap": round(strong["score"] - weak["score"], 3),
+                        "weak_status": gap_rec.get("weak_status", weak["status"]),
+                        "strong_status": gap_rec.get("strong_status",
+                                                     (strong or {}).get("status", "skipped")),
+                        "weak_score": gap_rec.get("weak_score", weak["score"]),
+                        "strong_score": gap_rec.get("strong_score"),
+                        "gap": gap_rec.get("gap"),
                     },
                     rollout_signal=rollout_signal,
                     provenance={
@@ -854,7 +858,7 @@ class Orchestrator:
                         "iteration": iteration,
                         "prompt_hash": None,
                         "raw_response_path": _relpath_or_none(
-                            resp.get("raw_path"), self.out_root),
+                            (challenger_resp or {}).get("raw_path"), self.out_root),
                         "created_at": _now(),
                         "tool_schema_source_policy": "aggregate_style_only",
                         "best_of_n": {
@@ -884,7 +888,8 @@ class Orchestrator:
                 _progress_log(
                     f"[progress] ACCEPT {len(accepted)}/{target} | "
                     f"weak={weak['score']} {weak['status']} | "
-                    f"strong={strong['score']} {strong['status']} | "
+                    f"strong={(strong or {}).get('score', 'skipped')} "
+                    f"{(strong or {}).get('status', 'skipped')} | "
                     f"motif={cand['motif_type']} | best_of_n_rank="
                     f"{rank + 1}/{len(ranked)} | iter={iteration} | id={sid}")
 
