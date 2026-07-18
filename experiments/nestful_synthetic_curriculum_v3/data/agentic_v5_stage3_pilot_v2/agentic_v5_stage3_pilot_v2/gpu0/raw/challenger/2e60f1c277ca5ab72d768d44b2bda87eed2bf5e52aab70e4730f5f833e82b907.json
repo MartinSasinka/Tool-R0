@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "2e60f1c277ca5ab72d768d44b2bda87eed2bf5e52aab70e4730f5f833e82b907",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nPLANS:\n1) tools=[first_value, percentage_of, average_of_two] | steps: compute the first item of [66, 50, 94, 3, 6, 65, 44, 38]; use that result to get what percentage that result is of 127; use that result to get the average of that result and 85\n2) tools=[repeat_word, concat_texts, text_profile] | steps: compute the word 'harbor' repeated 2 times; use that result to get 'that result' joined with 'signal'; use that result to get the character and word counts of 'that result'\n3) tools=[last_value, reciprocal_of, reciprocal_of] | steps: compute the last item of [62, 80, 55, 64, 7, 43, 37, 23]; use that result to get the reciprocal of that result; use that result to get the reciprocal of that result\n4) tools=[monthly_installment, percent_change, values_equal] | steps: compute the monthly installment for a 3679 loan over 48 months; use that result to get the percentage change from that result to 617; use that result to get whether it equals 172\n5) tools=[trapezoid_area, percent_change, count_below_threshold] | steps: compute the area of a trapezoid with sides 24 and 12 and height 8; use that result to get the percentage change from that result to 808; use that result to get how many of [36, 82, 40, 50] are below that result\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\"candidates\": [{\"index\": 0, \"question\": \"Take the first number from [66, 50, 94, 3, 6, 65, 44, 38]. Then find what percentage that number is of 127. Finally, compute the average of that percentage and 85.\"}, {\"index\": 1, \"question\": \"Repeat the word 'harbor' two times, then join that resulting text with the word 'signal'. Finally, find the character count and word count of the combined text.\"}, {\"index\": 2, \"question\": \"Take the last number from [62, 80, 55, 64, 7, 43, 37, 23]. Then compute its reciprocal, and then compute the reciprocal of that new result.\"}, {\"index\": 3, \"question\": \"Calculate the monthly payment for a loan of 3679 over 48 months. Then find the percentage change from that payment amount to 617. Finally, determine if the resulting percentage change is equal to 172.\"}, {\"index\": 4, \"question\": \"Find the area of a trapezoid with parallel sides of 24 and 12 and a height of 8. Then calculate the percentage change from that area to 808. Finally, count how many numbers in the list [36, 82, 40, 50] are less than that percentage change.\"}]}",
+  "usage": {
+    "prompt_tokens": 566,
+    "completion_tokens": 300,
+    "cost_usd": 0.000261
+  },
+  "backend": "openrouter"
+}

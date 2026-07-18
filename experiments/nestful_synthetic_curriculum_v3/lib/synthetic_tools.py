@@ -42,7 +42,7 @@ import math
 import random
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-REGISTRY_VERSION = "5.0.1"
+REGISTRY_VERSION = "5.0.2"
 
 TOOLS: Dict[str, Dict[str, Any]] = {}
 
@@ -275,19 +275,19 @@ _add_binary("calculate_tip_amount", "finance", "pricing",
             "a {tip_percent}% tip on a bill of {bill_amount}")
 
 _add_binary("split_bill_evenly", "finance", "pricing",
-            "Splits a bill between people; each share is rounded UP to the next cent so the bill is always covered.",
+            "Splits a total bill evenly between a number of people and returns the per-person share.",
             "total_amount", "money", (40, 700), "num_people", "count", (2, 9),
             "output_0", "money",
-            lambda total_amount, num_people: math.ceil(float(total_amount) / int(num_people) * 100) / 100.0,
+            lambda total_amount, num_people: _r2(float(total_amount) / int(num_people)),
             "each person's share when {total_amount} is split between {num_people} people",
             t2="integer", c2={"min": 1})
 
 _add_binary("monthly_installment", "finance", "loans",
-            "Computes the monthly installment for a zero-interest loan, rounded up to a whole currency unit.",
+            "Computes the flat monthly installment for a loan repaid over a number of months (no interest).",
             "loan_amount", "money", (1000, 30000), "num_months", "count",
             ([6, 12, 24, 36, 48],),
             "output_0", "money",
-            lambda loan_amount, num_months: float(math.ceil(float(loan_amount) / int(num_months))),
+            lambda loan_amount, num_months: _r2(float(loan_amount) / int(num_months)),
             "the monthly installment for a {loan_amount} loan over {num_months} months",
             t2="integer", c2={"min": 1})
 
@@ -910,7 +910,7 @@ _add_binary("repeat_word", "text", "transform",
             lambda word, times: "-".join([str(word)] * int(times)),
             "the word '{word}' repeated {times} times",
             chain_in="word", out_type="string", t1="string", t2="integer",
-            c2={"min": 1, "max": 20})
+            c2={"min": 1})
 TOOLS["repeat_word"]["sample"] = lambda rng: {"word": rng.choice(_WORDS),
                                               "times": rng.randrange(2, 5)}
 

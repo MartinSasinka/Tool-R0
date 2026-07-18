@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "34a7a5cfcc635e1e3eaa253400d6b1c668d58a86cbd7bd1466a93e491aaffb93",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nDetermine how many whole times 9 fits into 319. Then, using that result, count how many numbers from the list [95, 98, 81, 74] are below it. Finally, check if that count is a positive number.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": false, \"ambiguous\": false, \"natural\": false, \"quality_score\": 0.4, \"issues\": [\"Too verbose (over 60 words).\", \"Phrasing is overly procedural and template-like, not a natural user request.\", \"The final step 'check if that count is a positive number' is trivial and unnatural for a real-world question.\"]}",
+  "usage": {
+    "prompt_tokens": 244,
+    "completion_tokens": 83,
+    "cost_usd": 7.9e-05
+  },
+  "backend": "openrouter"
+}

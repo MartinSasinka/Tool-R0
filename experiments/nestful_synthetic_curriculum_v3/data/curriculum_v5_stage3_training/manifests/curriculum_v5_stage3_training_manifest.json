@@ -1,0 +1,119 @@
+{
+  "created_at": "2026-07-18T15:45:05.602824+00:00",
+  "dataset": "curriculum_v5_stage3_training",
+  "stage": "stage3_3call_agentic_openrouter",
+  "executor_mode": "synthetic",
+  "registry_version": "5.0.2",
+  "registry_hash": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+  "rows": 468,
+  "training_candidate": true,
+  "source_runs": [
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full\\gpu*",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full_second_run(1)\\agentic_v5_stage3_full_second_run\\gpu*",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full_third_run\\agentic_v5_stage3_full_third_run\\gpu*",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2\\gpu*",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose\\gpu*"
+  ],
+  "merge": {
+    "stage": "stage3_3call_agentic_openrouter",
+    "workers": {
+      "gpu0": {
+        "loaded": 3,
+        "kept": 3,
+        "dropped_as_duplicate": 0
+      },
+      "gpu1": {
+        "loaded": 4,
+        "kept": 4,
+        "dropped_as_duplicate": 0
+      },
+      "gpu2": {
+        "loaded": 4,
+        "kept": 4,
+        "dropped_as_duplicate": 0
+      },
+      "gpu3": {
+        "loaded": 2,
+        "kept": 2,
+        "dropped_as_duplicate": 0
+      }
+    },
+    "total_loaded": 13,
+    "total_kept": 470,
+    "total_dropped_as_duplicate": 0,
+    "duplicate_examples_sample": [
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Calculate the final balance of $14,500 after 7 years of compounding at a 2% annual rate. Using that amount, figure out h"
+      },
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000004",
+        "question": "Find the profit margin for revenue of $4,803 and costs of $793. Then take the reciprocal of that margin, and divide that"
+      },
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000005",
+        "question": "Calculate the potential energy of a 29 kg object at a height of 56 meters. Then, reduce that energy value by 25%. Finall"
+      },
+      {
+        "worker": "gpu1",
+        "sample_id": "agentic_v5_stage3_000006",
+        "question": "Calculate the overtime pay for 29 extra hours at 46 dollars per hour. Reduce that pay by 25%, then find the percentage c"
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Take the phrase 'anchor drift lantern' and enclose it in brackets. Then, take that new bracketed text and enclose it in "
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000003",
+        "question": "Convert 855 kilometers to miles. Then add 196 to that value. Finally, determine if the new total is greater than 192."
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000005",
+        "question": "Calculate how many liters of fuel are needed for a 306 km journey at a rate of 6 liters per 100 km. Convert that result "
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000001",
+        "question": "Convert 782 grams to ounces, then subtract 43 from that result. Finally, add 615 to that difference."
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Compute the total minutes in 11 hours and 28 minutes. Round that number to two decimal places. Finally, add 790 to the r"
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000004",
+        "question": "Find the sum of the numbers 88, 98, 61, 11, 91, and 23. Then, calculate the ratio of that sum to 5. Finally, round that "
+      }
+    ]
+  },
+  "replay_failures_dropped": 2,
+  "replay_failure_samples": [
+    {
+      "sample_id": "agentic_v5_stage3_000066",
+      "detail": "£2.36"
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000240",
+      "detail": "752.67"
+    }
+  ],
+  "tier_counts": {
+    "partial_frontier": 283,
+    "frontier": 185
+  },
+  "files": {
+    "stage3_3call_agentic_openrouter.jsonl": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_stage3_training\\filtered\\stage3_3call_agentic_openrouter.jsonl",
+      "rows": 468,
+      "sha256": "228b126ab6f3b09e1ef11e5adf8beecabff17bb610a5c00baff56f90aa5eeb2c"
+    }
+  }
+}

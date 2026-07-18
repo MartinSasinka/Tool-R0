@@ -82,7 +82,11 @@ def _dataset_registry_hash(path: str):
             if not line:
                 continue
             row = json.loads(line)
-            hashes.add(row.get("registry_hash"))
+            rh = row.get("registry_hash")
+            if rh is None:
+                prov = row.get("provenance") or {}
+                rh = prov.get("registry_hash")
+            hashes.add(rh)
             if i >= 200:  # sampling 200 rows is enough to detect a mix
                 break
     hashes.discard(None)

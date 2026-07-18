@@ -1,0 +1,171 @@
+{
+  "per_stage": [
+    {
+      "stage": "stage3_3call_agentic_openrouter",
+      "workers": {
+        "gpu0": {
+          "loaded": 3,
+          "kept": 3,
+          "dropped_as_duplicate": 0
+        },
+        "gpu1": {
+          "loaded": 4,
+          "kept": 4,
+          "dropped_as_duplicate": 0
+        },
+        "gpu2": {
+          "loaded": 4,
+          "kept": 4,
+          "dropped_as_duplicate": 0
+        },
+        "gpu3": {
+          "loaded": 2,
+          "kept": 2,
+          "dropped_as_duplicate": 0
+        }
+      },
+      "total_loaded": 13,
+      "total_kept": 470,
+      "total_dropped_as_duplicate": 0,
+      "duplicate_examples_sample": [
+        {
+          "worker": "gpu0",
+          "sample_id": "agentic_v5_stage3_000002",
+          "question": "Calculate the final balance of $14,500 after 7 years of compounding at a 2% annual rate. Using that amount, figure out h"
+        },
+        {
+          "worker": "gpu0",
+          "sample_id": "agentic_v5_stage3_000004",
+          "question": "Find the profit margin for revenue of $4,803 and costs of $793. Then take the reciprocal of that margin, and divide that"
+        },
+        {
+          "worker": "gpu0",
+          "sample_id": "agentic_v5_stage3_000005",
+          "question": "Calculate the potential energy of a 29 kg object at a height of 56 meters. Then, reduce that energy value by 25%. Finall"
+        },
+        {
+          "worker": "gpu1",
+          "sample_id": "agentic_v5_stage3_000006",
+          "question": "Calculate the overtime pay for 29 extra hours at 46 dollars per hour. Reduce that pay by 25%, then find the percentage c"
+        },
+        {
+          "worker": "gpu2",
+          "sample_id": "agentic_v5_stage3_000002",
+          "question": "Take the phrase 'anchor drift lantern' and enclose it in brackets. Then, take that new bracketed text and enclose it in "
+        },
+        {
+          "worker": "gpu2",
+          "sample_id": "agentic_v5_stage3_000003",
+          "question": "Convert 855 kilometers to miles. Then add 196 to that value. Finally, determine if the new total is greater than 192."
+        },
+        {
+          "worker": "gpu2",
+          "sample_id": "agentic_v5_stage3_000005",
+          "question": "Calculate how many liters of fuel are needed for a 306 km journey at a rate of 6 liters per 100 km. Convert that result "
+        },
+        {
+          "worker": "gpu3",
+          "sample_id": "agentic_v5_stage3_000001",
+          "question": "Convert 782 grams to ounces, then subtract 43 from that result. Finally, add 615 to that difference."
+        },
+        {
+          "worker": "gpu3",
+          "sample_id": "agentic_v5_stage3_000002",
+          "question": "Compute the total minutes in 11 hours and 28 minutes. Round that number to two decimal places. Finally, add 790 to the r"
+        },
+        {
+          "worker": "gpu3",
+          "sample_id": "agentic_v5_stage3_000004",
+          "question": "Find the sum of the numbers 88, 98, 61, 11, 91, and 23. Then, calculate the ratio of that sum to 5. Finally, round that "
+        }
+      ]
+    }
+  ],
+  "corpus_stats_by_stage": {
+    "stage3_3call_agentic_openrouter": {
+      "n_rows": 468,
+      "call_count_dist": {
+        "3": 468
+      },
+      "offered_tools_dist": {
+        "8": 69,
+        "9": 62,
+        "10": 66,
+        "11": 61,
+        "12": 79,
+        "13": 83,
+        "14": 10,
+        "15": 9,
+        "16": 15,
+        "17": 14
+      },
+      "tool_arity_dist": {
+        "1": 1883,
+        "2": 2772,
+        "3": 566
+      },
+      "arg_type_dist": {
+        "array": 75,
+        "number": 1376,
+        "reference": 984,
+        "string": 64
+      },
+      "answer_type_dist": {
+        "boolean": 108,
+        "object": 7,
+        "scalar": 305,
+        "string": 48
+      },
+      "motif_dist": {
+        "argument_binding": 98,
+        "reference_reuse": 98,
+        "long_chain": 94,
+        "distractor_heavy": 92,
+        "fan_in": 86
+      },
+      "tool_family_dist": {
+        "math": 585,
+        "text": 156,
+        "conversion": 133,
+        "finance": 125,
+        "comparison": 108,
+        "logistics": 81,
+        "statistics": 75,
+        "geometry": 69,
+        "science": 32,
+        "scheduling": 21,
+        "health": 19
+      },
+      "question_template_dist": {
+        "narrative_other": 313,
+        "conditional": 112,
+        "first_then": 36,
+        "interrogative": 7
+      },
+      "used_tools_top": {
+        "multiply_numbers": 58,
+        "round_to_decimals": 56,
+        "divide_numbers": 45,
+        "square_root_of": 42,
+        "power_of": 41,
+        "add_numbers": 41,
+        "reciprocal_of": 40,
+        "floor_divide": 39,
+        "decrease_by_percent": 32,
+        "increase_by_percent": 31,
+        "clamp_value": 28,
+        "is_positive": 28,
+        "values_equal": 28,
+        "percent_change": 27,
+        "subtract_numbers": 26
+      },
+      "mean_question_words": 31.1,
+      "dominance": {
+        "motif": 0.2094,
+        "answer_type": 0.6517,
+        "tool_family": 0.4167,
+        "question_template": 0.6688
+      }
+    }
+  }
+}

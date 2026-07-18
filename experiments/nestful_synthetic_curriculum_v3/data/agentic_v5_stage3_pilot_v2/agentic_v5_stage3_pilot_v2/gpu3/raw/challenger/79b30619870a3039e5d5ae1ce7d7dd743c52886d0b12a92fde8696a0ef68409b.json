@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "79b30619870a3039e5d5ae1ce7d7dd743c52886d0b12a92fde8696a0ef68409b",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nPLANS:\n1) tools=[word_count, round_to_decimals, reciprocal_of] | steps: compute the number of words in 'ledger summit signal'; use that result to get that result rounded to 2 decimal places; use that result to get the reciprocal of that result\n2) tools=[kilometers_to_miles, clamp_value, percent_change] | steps: compute 447 kilometers converted to miles; use that result to get that result clamped between 60 and 158; use that result to get the percentage change from that result to 751\n3) tools=[grams_to_ounces, subtract_numbers, add_numbers] | steps: compute 782 grams converted to ounces; use that result to get the difference between that result and 43; use that result to get the sum of that result and 615\n4) tools=[trip_plan, average_of_two, count_below_threshold] | steps: compute the trip plan for 1177 km at 80 km/h; use that result to get the average of that result and 822; use that result to get how many of [79, 71, 45, 45, 56, 79] are below that result\n5) tools=[convert_currency, compound_savings_amount, divide_numbers] | steps: compute 2787 converted at an exchange rate of 1.08; use that result to get the final balance of that result compounded at 4% for 8 years; use that result to get that result divided by 28\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\"candidates\": [{\"index\": 0, \"question\": \"Find the number of words in the phrase 'ledger summit signal'. Then, round that number to two decimal places. Finally, find the reciprocal of that rounded value.\"}, {\"index\": 1, \"question\": \"Convert 447 kilometers to miles. Clamp that distance so it is between 60 and 158 miles. Then, calculate the percentage change from that clamped value to 751.\"}, {\"index\": 2, \"question\": \"Convert 782 grams to ounces. Subtract 43 from that weight in ounces. Then, add 615 to that difference.\"}, {\"index\": 3, \"question\": \"Calculate the time for a 1177 km trip at a speed of 80 km/h. Find the average of that time and 822. Then, determine how many numbers in the list [79, 71, 45, 45, 56, 79] are below that average.\"}, {\"index\": 4, \"question\": \"Convert 2787 units at an exchange rate of 1.08. Using that result, find the final balance if it is compounded at 4% interest for 8 years. Finally, divide that final balance by 28.\"}]}",
+  "usage": {
+    "prompt_tokens": 540,
+    "completion_tokens": 265,
+    "cost_usd": 0.000201
+  },
+  "backend": "openrouter"
+}

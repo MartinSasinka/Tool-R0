@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "81f28392fb0c823d9d1719ba4f5fc988e17f8644f8699dd093cc2b7498804fb5",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nTake the phrase 'anchor drift lantern' and enclose it in brackets. Then take that bracketed phrase and enclose it in another set of brackets. Finally, convert the doubly-bracketed text to title case.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'anchor drift lantern' is somewhat unusual, but the task itself is concrete and the steps are clear.\"]}",
+  "usage": {
+    "prompt_tokens": 236,
+    "completion_tokens": 56,
+    "cost_usd": 4.8e-05
+  },
+  "backend": "openrouter"
+}

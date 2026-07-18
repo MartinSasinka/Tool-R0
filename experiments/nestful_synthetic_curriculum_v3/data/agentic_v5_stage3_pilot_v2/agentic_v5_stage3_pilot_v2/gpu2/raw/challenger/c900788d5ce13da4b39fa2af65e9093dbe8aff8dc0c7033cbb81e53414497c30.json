@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "c900788d5ce13da4b39fa2af65e9093dbe8aff8dc0c7033cbb81e53414497c30",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nPLANS:\n1) tools=[boxes_needed, ratio_of, round_to_decimals] | steps: compute the number of boxes of 12 needed for 338 units; use that result to get the ratio of that result to 31; use that result to get that result rounded to 0 decimal places\n2) tools=[divide_numbers, absolute_difference, square_root_of] | steps: compute 616 divided by 2; use that result to get the absolute difference between that result and 371; use that result to get the square root of that result\n3) tools=[floor_divide, count_below_threshold, is_positive] | steps: compute how many whole times 9 fits into 319; use that result to get how many of [95, 98, 81, 74] are below that result; use that result to get whether that result is positive\n4) tools=[remove_sales_tax, monthly_installment, average_of_two] | steps: compute the net price when 663 already includes 8% tax; use that result to get the monthly installment for a that result loan over 24 months; use that result to get the average of that result and 446\n5) tools=[regular_polygon_perimeter, clamp_value, is_within_range] | steps: compute the perimeter of a regular 6-gon with side 15; use that result to get that result clamped between 21 and 158; use that result to get whether it lies between 30 and 134\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\"candidates\": [{\"index\": 0, \"question\": \"Find how many boxes of 12 are needed for 338 units. Then, determine the ratio of that number of boxes to 31. Finally, round that ratio to the nearest whole number.\"}, {\"index\": 1, \"question\": \"Calculate 616 divided by 2. Using that result, find its absolute difference from 371. Then, take the square root of that difference.\"}, {\"index\": 2, \"question\": \"Determine how many whole times 9 fits into 319. Then, using that result, count how many numbers from the list [95, 98, 81, 74] are below it. Finally, check if that count is a positive number.\"}, {\"index\": 3, \"question\": \"Find the original price before an 8% sales tax was added to a final price of 663. Using that net price, calculate the monthly payment for a loan of that amount spread over 24 months. Then, compute the average of that monthly payment and 446.\"}, {\"index\": 4, \"question\": \"Calculate the perimeter of a regular hexagon with a side length of 15. Then, clamp that perimeter value to be between 21 and 158. Finally, check if the resulting value is between 30 and 134, inclusive.\"}]}",
+  "usage": {
+    "prompt_tokens": 542,
+    "completion_tokens": 286,
+    "cost_usd": 0.00025
+  },
+  "backend": "openrouter"
+}

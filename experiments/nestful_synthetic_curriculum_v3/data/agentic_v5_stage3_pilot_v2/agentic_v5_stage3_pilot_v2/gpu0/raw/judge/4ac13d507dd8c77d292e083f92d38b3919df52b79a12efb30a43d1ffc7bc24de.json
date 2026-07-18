@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "4ac13d507dd8c77d292e083f92d38b3919df52b79a12efb30a43d1ffc7bc24de",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nFind the total price for 125 units at $2.5 each after a 12% bulk discount. Then, using that total, find the unit price if 45 items cost exactly that total. Finally, use that unit price to find the break-even quantity given a fixed cost equal to it, a selling price of 47 per unit, and a cost of 13 per unit.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": false, \"ambiguous\": false, \"natural\": false, \"quality_score\": 0.4, \"issues\": [\"Too long (over 60 words).\", \"Phrasing is overly procedural and template-like, not a natural user request.\", \"Contains explicit step count ('3 tool calls are required'), which is not natural for a user question.\"]}",
+  "usage": {
+    "prompt_tokens": 255,
+    "completion_tokens": 78,
+    "cost_usd": 9.9e-05
+  },
+  "backend": "openrouter"
+}

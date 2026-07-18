@@ -148,7 +148,9 @@ def merge_stage(stage: str, worker_dirs: List[str], *, max_rows: int = None
                 seen_t.add(th)
             merged.append(row)
             kept += 1
-        per_worker[os.path.basename(wdir.rstrip("/\\"))] = {
+        wkey = os.path.relpath(wdir, start=os.path.commonpath(worker_dirs)).replace("\\", "/") \
+            if len(worker_dirs) > 1 else os.path.basename(wdir.rstrip("/\\"))
+        per_worker[wkey] = {
             "loaded": len(rows), "kept": kept, "dropped_as_duplicate": dropped,
         }
 

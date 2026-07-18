@@ -1,0 +1,212 @@
+{
+  "created_at": "2026-07-18T15:39:28.594956+00:00",
+  "kind": "curriculum_v5_stage3_training",
+  "stage": "stage3_3call_agentic_openrouter",
+  "registry_version": "5.0.2",
+  "registry_hash": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+  "source_runs": [
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2"
+  ],
+  "worker_dirs": [
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full\\gpu0",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full\\gpu1",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full\\gpu2",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_full\\agentic_v5_stage3_full\\gpu3",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose\\gpu0",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose\\gpu1",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose\\gpu2",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_workers\\agentic_v5_stage3_loose\\agentic_v5_stage3_loose\\gpu3",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2\\gpu0",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2\\gpu1",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2\\gpu2",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\agentic_v5_stage3_pilot_v2\\agentic_v5_stage3_pilot_v2\\gpu3"
+  ],
+  "merge_report": {
+    "stage": "stage3_3call_agentic_openrouter",
+    "workers": {
+      "gpu0": {
+        "loaded": 4,
+        "kept": 1,
+        "dropped_as_duplicate": 3
+      },
+      "gpu1": {
+        "loaded": 4,
+        "kept": 3,
+        "dropped_as_duplicate": 1
+      },
+      "gpu2": {
+        "loaded": 4,
+        "kept": 1,
+        "dropped_as_duplicate": 3
+      },
+      "gpu3": {
+        "loaded": 8,
+        "kept": 4,
+        "dropped_as_duplicate": 4
+      }
+    },
+    "total_loaded": 20,
+    "total_kept": 275,
+    "total_dropped_as_duplicate": 11,
+    "duplicate_examples_sample": [
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Calculate the final balance of $14,500 after earning 2% compound interest for 7 years. Then, determine how many full gro"
+      },
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000003",
+        "question": "Find the profit margin when revenue is 4803 and cost is 793. Then take the reciprocal of that margin percentage. Finally"
+      },
+      {
+        "worker": "gpu0",
+        "sample_id": "agentic_v5_stage3_000004",
+        "question": "Calculate the potential energy in joules for a 29 kg mass at a height of 56 meters. Then decrease that energy value by 2"
+      },
+      {
+        "worker": "gpu1",
+        "sample_id": "agentic_v5_stage3_000004",
+        "question": "Calculate the overtime pay for 29 extra hours worked at a rate of 46 per hour. Reduce that pay amount by 25%. Then, find"
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000001",
+        "question": "Take the phrase 'anchor drift lantern' and enclose it in brackets. Then take that bracketed phrase and enclose it in ano"
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Convert 855 kilometers to miles, then add 196 to that value. Finally, check if the resulting sum exceeds 192."
+      },
+      {
+        "worker": "gpu2",
+        "sample_id": "agentic_v5_stage3_000003",
+        "question": "Calculate the fuel needed in liters for a 306 km trip at 6 liters per 100 km. Then convert that amount to US gallons, an"
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000001",
+        "question": "Convert 782 grams to ounces. Subtract 43 from that weight in ounces. Then, add 615 to that difference."
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000002",
+        "question": "Calculate the total number of minutes in 11 hours and 28 minutes. Then, round that total to two decimal places. Finally,"
+      },
+      {
+        "worker": "gpu3",
+        "sample_id": "agentic_v5_stage3_000003",
+        "question": "Calculate the sum of the numbers 88, 98, 61, 11, 91, and 23. Then, find the ratio of that sum to 5. Finally, round that "
+      }
+    ],
+    "replay_drops": 2,
+    "replay_drop_examples": [
+      {
+        "sample_id": "agentic_v5_stage3_000049",
+        "reason": "gold_replay_failed",
+        "detail": "£2.36"
+      },
+      {
+        "sample_id": "agentic_v5_stage3_000231",
+        "reason": "gold_replay_failed",
+        "detail": "752.67"
+      }
+    ],
+    "rows_before_replay": 275,
+    "rows_after_replay": 273
+  },
+  "corpus_stats": {
+    "n_rows": 273,
+    "call_count_dist": {
+      "3": 273
+    },
+    "offered_tools_dist": {
+      "8": 45,
+      "9": 39,
+      "10": 39,
+      "11": 32,
+      "12": 43,
+      "13": 48,
+      "14": 7,
+      "15": 4,
+      "16": 9,
+      "17": 7
+    },
+    "tool_arity_dist": {
+      "1": 1049,
+      "2": 1608,
+      "3": 357
+    },
+    "arg_type_dist": {
+      "array": 42,
+      "number": 836,
+      "reference": 578,
+      "string": 33
+    },
+    "answer_type_dist": {
+      "boolean": 64,
+      "object": 5,
+      "scalar": 178,
+      "string": 26
+    },
+    "motif_dist": {
+      "reference_reuse": 58,
+      "argument_binding": 55,
+      "long_chain": 55,
+      "distractor_heavy": 53,
+      "fan_in": 52
+    },
+    "tool_family_dist": {
+      "math": 326,
+      "finance": 91,
+      "text": 84,
+      "conversion": 78,
+      "comparison": 64,
+      "logistics": 55,
+      "statistics": 42,
+      "geometry": 34,
+      "science": 19,
+      "scheduling": 13,
+      "health": 13
+    },
+    "question_template_dist": {
+      "narrative_other": 187,
+      "conditional": 69,
+      "first_then": 14,
+      "interrogative": 3
+    },
+    "used_tools_top": {
+      "multiply_numbers": 32,
+      "divide_numbers": 31,
+      "round_to_decimals": 30,
+      "reciprocal_of": 22,
+      "power_of": 21,
+      "square_root_of": 21,
+      "add_numbers": 21,
+      "clamp_value": 19,
+      "subtract_numbers": 18,
+      "percent_change": 18,
+      "floor_divide": 17,
+      "decrease_by_percent": 16,
+      "values_equal": 16,
+      "increase_by_percent": 15,
+      "is_above_threshold": 14
+    },
+    "mean_question_words": 31.6,
+    "dominance": {
+      "motif": 0.2125,
+      "answer_type": 0.652,
+      "tool_family": 0.398,
+      "question_template": 0.685
+    }
+  },
+  "training": {
+    "executor_mode": "synthetic",
+    "dataset_path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_stage3_training\\filtered\\stage3_3call_agentic_openrouter.jsonl",
+    "rows": 273,
+    "sha256": "86aabedd9351a01f80898503016c589256b4317d42c34ea62535fd1656b93d91"
+  }
+}

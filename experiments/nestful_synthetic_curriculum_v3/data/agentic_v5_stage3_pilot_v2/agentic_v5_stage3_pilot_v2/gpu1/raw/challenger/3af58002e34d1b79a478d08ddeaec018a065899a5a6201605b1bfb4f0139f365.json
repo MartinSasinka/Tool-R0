@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "3af58002e34d1b79a478d08ddeaec018a065899a5a6201605b1bfb4f0139f365",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nLEARNINGS FROM PREVIOUS BATCHES (address ALL of these, try a different angle than before):\n- Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.\n\nPLANS:\n1) tools=[distance_travelled_km, average_speed, kmh_to_mph] | steps: compute the distance covered at 100 km/h in 2 hours; use that result to get the average speed for that result km in 1 hours; use that result to get that result kilometers per hour converted to miles per hour\n2) tools=[speed_of_object_ms, power_of, count_below_threshold] | steps: compute the speed of an object covering 1371 m in 197 s; use that result to get that result raised to the power of 2; use that result to get how many of [73, 75, 84, 12, 29, 30, 14, 58] are below that result\n3) tools=[min_of_values, round_to_decimals, percentage_of] | steps: compute the smallest of [96, 85, 10, 91, 4, 13, 33, 33]; use that result to get that result rounded to 2 decimal places; use that result to get what percentage that result is of 336\n4) tools=[percentage_of, format_as_percent, starts_with_letter] | steps: compute what percentage 57 is of 135; use that result to get that value formatted as a percent string; use that result to get whether 'that result' starts with 'c'\n5) tools=[text_profile, count_above_threshold, remainder_of] | steps: compute the character and word counts of 'anchor harbor'; use that result to get how many of [53, 21, 42, 74, 40, 27, 60, 37] exceed that result; use that result to get the remainder of that result divided by 25\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\"candidates\": [{\"index\": 0, \"question\": \"A vehicle travels for 2 hours at 100 km/h. Find the distance it covers. Then, using that distance, determine the average speed if the same distance were covered in just 1 hour. Finally, convert that speed from kilometers per hour to miles per hour.\"}, {\"index\": 1, \"question\": \"Calculate the speed of an object that moves 1371 meters in 197 seconds. Then, square that speed. Finally, using that squared value, find how many numbers in the list [73, 75, 84, 12, 29, 30, 14, 58] are below it.\"}, {\"index\": 2, \"question\": \"Identify the smallest number in the list [96, 85, 10, 91, 4, 13, 33, 33]. Then, round that number to 2 decimal places. Finally, find what percentage that rounded value is of 336.\"}, {\"index\": 3, \"question\": \"Find what percentage 57 is of 135. Then, format that percentage value as a string with a percent symbol. Finally, check if the resulting string begins with the letter 'c'.\"}, {\"index\": 4, \"question\": \"Analyze the text 'anchor harbor' to get its character and word counts. Then, see how many numbers in the list [53, 21, 42, 74, 40, 27, 60, 37] are greater than that result. Finally, take that count and find the remainder when it is divided by 25.\"}]}",
+  "usage": {
+    "prompt_tokens": 713,
+    "completion_tokens": 348,
+    "cost_usd": 0.000318
+  },
+  "backend": "openrouter"
+}

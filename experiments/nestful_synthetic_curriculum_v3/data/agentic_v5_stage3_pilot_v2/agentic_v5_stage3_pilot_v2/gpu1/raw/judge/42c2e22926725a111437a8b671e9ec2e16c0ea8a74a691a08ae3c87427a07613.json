@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "42c2e22926725a111437a8b671e9ec2e16c0ea8a74a691a08ae3c87427a07613",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nCalculate the overtime pay for 29 extra hours worked at a rate of 46 per hour. Reduce that pay amount by 25%. Then, find the percentage change from that reduced amount to 445.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'Reduce that pay amount by 25%' could be slightly ambiguous regarding whether it means 'reduce by 25 percentage points' or 'multiply by 0.75', but the latter is the overwhelmingly common interpretation in such contexts.\"]}",
+  "usage": {
+    "prompt_tokens": 233,
+    "completion_tokens": 83,
+    "cost_usd": 9.2e-05
+  },
+  "backend": "openrouter"
+}

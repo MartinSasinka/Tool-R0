@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "0ffed2c856ee9a3258c4a4ae699a6adfdf5e1d0872d8291f134cc01ef382f658",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nCalculate the area of an ellipse with axes 13 and 7. Next, find the reciprocal of that area. Finally, check whether that reciprocal lies between 46 and 228.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'lies between 46 and 228' could be slightly ambiguous regarding inclusivity, but the overall intent is clear.\"]}",
+  "usage": {
+    "prompt_tokens": 229,
+    "completion_tokens": 58,
+    "cost_usd": 8.2e-05
+  },
+  "backend": "openrouter"
+}

@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "1a2a4a1ca94196b373d0e6fc5fda4d11ffc64f2e164a2e378af4c738485d42d1",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nTake the given value and format it as a percent string. Using that resulting string, extract its initials. Then, convert that second result entirely to lowercase.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'Take the given value' is slightly vague, though the context of a tool-use task implies a specific input will be provided.\"]}",
+  "usage": {
+    "prompt_tokens": 223,
+    "completion_tokens": 61,
+    "cost_usd": 4.9e-05
+  },
+  "backend": "openrouter"
+}

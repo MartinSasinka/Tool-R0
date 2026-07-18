@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "6fd29bfa4772bd825ce4f7b613a72cee48b7736c3ad0557cbc229d9152fb6171",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nDetermine the potential energy for a mass of 68 kilograms at a height of 38 meters. Add 636 to this energy, then subtract the original potential energy value from this new sum.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": false, \"ambiguous\": false, \"natural\": false, \"quality_score\": 0.4, \"issues\": [\"Too verbose (exceeds 60 words).\", \"Not concrete everyday quantities (specifies '68 kilograms' and '38 meters' but the overall task is abstract).\", \"Phrasing is not a single, natural imperative/interrogative; it's a procedural description of a calculation.\", \"The phrase 'Add 636 to this energy, then subtract the original potential energy value from this new sum' is unnatural and template-like.\"]}",
+  "usage": {
+    "prompt_tokens": 230,
+    "completion_tokens": 121,
+    "cost_usd": 0.000106
+  },
+  "backend": "openrouter"
+}

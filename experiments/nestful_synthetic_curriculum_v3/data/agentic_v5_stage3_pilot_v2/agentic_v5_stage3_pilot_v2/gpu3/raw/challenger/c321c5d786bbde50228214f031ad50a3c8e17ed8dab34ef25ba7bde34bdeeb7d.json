@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "c321c5d786bbde50228214f031ad50a3c8e17ed8dab34ef25ba7bde34bdeeb7d",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nLEARNINGS FROM PREVIOUS BATCHES (address ALL of these, try a different angle than before):\n- Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.\n\nPLANS:\n1) tools=[kilowatt_hours_to_megajoules, percent_change, clamp_value] | steps: compute 317 kilowatt-hours converted to megajoules; use that result to get the percentage change from that result to 191; use that result to get that result clamped between 48 and 209\n2) tools=[right_triangle_hypotenuse, square_area, square_root_of] | steps: compute the hypotenuse of a right triangle with legs 7 and 38; use that result to get the area of a square with side that result; use that result to get the square root of that result\n3) tools=[wrap_in_brackets, reverse_text, first_characters] | steps: compute 'signal breeze' wrapped in brackets; use that result to get 'that result' reversed; use that result to get the first 5 characters of 'that result'\n4) tools=[triangle_area, count_below_threshold, clamp_value] | steps: compute the area of a triangle with base 10 and height 4; use that result to get how many of [12, 35, 3, 30, 29] are below that result; use that result to get that result clamped between 68 and 222\n5) tools=[total_minutes, round_to_decimals, add_numbers] | steps: compute the total minutes in 11 hours and 28 minutes; use that result to get that result rounded to 2 decimal places; use that result to get the sum of that result and 790\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\n    \"candidates\": [\n        {\n            \"index\": 0,\n            \"question\": \"Take 317 kilowatt-hours and convert it to megajoules. Using that energy value, find its percent change relative to 191. Finally, clamp that resulting percentage so it falls between 48 and 209.\"\n        },\n        {\n            \"index\": 1,\n            \"question\": \"Calculate the hypotenuse of a right triangle with legs 7 and 38. Using that hypotenuse as the side length, compute the area of a square. Then, take the square root of that area.\"\n        },\n        {\n            \"index\": 2,\n            \"question\": \"Wrap the phrase 'signal breeze' in brackets. Then, reverse the entire bracketed text. Finally, take the first five characters from the reversed string.\"\n        },\n        {\n            \"index\": 3,\n            \"question\": \"Find the area of a triangle with a base of 10 and a height of 4. Next, from the list [12, 35, 3, 30, 29], count how many numbers are below that triangle area. Then, clamp that count so it is between 68 and 222.\"\n        },\n        {\n            \"index\": 4,\n            \"question\": \"Calculate the total number of minutes in 11 hours and 28 minutes. Then, round that total to two decimal places. Finally, add 790 to that rounded value.\"\n        }\n    ]\n}",
+  "usage": {
+    "prompt_tokens": 660,
+    "completion_tokens": 305,
+    "cost_usd": 0.000178
+  },
+  "backend": "openrouter"
+}

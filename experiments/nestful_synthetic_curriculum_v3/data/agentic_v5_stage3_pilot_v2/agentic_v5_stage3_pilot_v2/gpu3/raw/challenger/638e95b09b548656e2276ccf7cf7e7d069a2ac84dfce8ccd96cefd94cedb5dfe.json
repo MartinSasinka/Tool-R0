@@ -1,0 +1,22 @@
+{
+  "role": "challenger",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "638e95b09b548656e2276ccf7cf7e7d069a2ac84dfce8ccd96cefd94cedb5dfe",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You write natural-language TRAINING QUESTIONS for a tool-use model.\nYou are given PRE-BUILT computation plans (tools + step phrases). Your job is ONLY to phrase each plan as one concise, concrete paragraph (25-60 words) that a human would understand without seeing tool names or $var$ syntax.\nRules:\n- Output STRICT JSON only.\n- Every literal quantity from the step phrases must appear in the question in natural language.\n- Imply call order through narrative flow ('then', 'using that result', 'finally') — at most one candidate may use numbered steps.\n- Do NOT mention tool names, stages, motifs, datasets or $var$.\n- Do NOT state or compute the final answer.\n- Do NOT change the computation — only rephrase the given steps."
+    },
+    {
+      "role": "user",
+      "content": "Write one question per plan below (5 total).\n\nLEARNINGS FROM PREVIOUS BATCHES (address ALL of these, try a different angle than before):\n- Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.\n- Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.\n\nPLANS:\n1) tools=[miles_to_kilometers, increase_by_percent, values_equal] | steps: compute 29 miles converted to kilometers; use that result to get that result increased by 25%; use that result to get whether it equals the first step's value\n2) tools=[rectangle_perimeter, cone_volume, reciprocal_of] | steps: compute the perimeter of a rectangle 13 by 4; use that result to get the volume of a cone with radius that result and height 10; use that result to get the reciprocal of that result\n3) tools=[rectangle_perimeter, cube_volume, square_root_of] | steps: compute the perimeter of a rectangle 29 by 30; use that result to get the volume of a cube with edge that result; use that result to get the square root of that result\n4) tools=[feet_to_meters, ratio_of, power_of] | steps: compute 199 feet converted to meters; use that result to get the ratio of that result to 29; use that result to get that result raised to the power of 3\n5) tools=[grams_to_ounces, floor_divide, average_of_two] | steps: compute 886 grams converted to ounces; use that result to get how many whole times 19 fits into that result; use that result to get the average of that result and the first step's value\n\nOUTPUT (strict JSON): {\"candidates\": [{\"index\": 0, \"question\": \"...\"}, ...]}"
+    }
+  ],
+  "text": "{\"candidates\": [{\"index\": 0, \"question\": \"Convert 29 miles to kilometers. Then increase that distance by 25%. Finally, check if this new distance equals the original kilometer conversion.\"}, {\"index\": 1, \"question\": \"Find the perimeter of a rectangle with sides 13 and 4. Using that number as the radius, calculate the volume of a cone with a height of 10. Then take the reciprocal of that volume.\"}, {\"index\": 2, \"question\": \"Calculate the perimeter of a 29 by 30 rectangle. Use that perimeter as the edge length to find the volume of a cube. Then compute the square root of the cube's volume.\"}, {\"index\": 3, \"question\": \"Convert 199 feet to meters. Then, find the ratio of those meters to 29. Finally, raise that ratio to the power of 3.\"}, {\"index\": 4, \"question\": \"Convert 886 grams to ounces. Then, determine how many whole times 19 fits into that ounce value. Finally, compute the average of this whole number and the original ounce conversion.\"}]}",
+  "usage": {
+    "prompt_tokens": 760,
+    "completion_tokens": 239,
+    "cost_usd": 0.000297
+  },
+  "backend": "openrouter"
+}

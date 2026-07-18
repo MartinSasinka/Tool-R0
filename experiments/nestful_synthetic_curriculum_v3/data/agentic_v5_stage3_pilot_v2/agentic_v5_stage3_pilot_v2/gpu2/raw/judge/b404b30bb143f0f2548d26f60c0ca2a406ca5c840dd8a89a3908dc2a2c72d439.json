@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "b404b30bb143f0f2548d26f60c0ca2a406ca5c840dd8a89a3908dc2a2c72d439",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nConvert 855 kilometers to miles, then add 196 to that value. Finally, check if the resulting sum exceeds 192.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'exceeds 192' is slightly ambiguous as it does not explicitly state the unit (miles), though it is strongly implied by the context of the previous step.\"]}",
+  "usage": {
+    "prompt_tokens": 218,
+    "completion_tokens": 69,
+    "cost_usd": 6.9e-05
+  },
+  "backend": "openrouter"
+}

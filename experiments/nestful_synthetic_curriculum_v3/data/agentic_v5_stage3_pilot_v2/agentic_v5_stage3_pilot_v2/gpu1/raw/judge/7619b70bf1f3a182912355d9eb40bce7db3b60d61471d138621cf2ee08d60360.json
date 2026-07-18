@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "7619b70bf1f3a182912355d9eb40bce7db3b60d61471d138621cf2ee08d60360",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nFind the area and perimeter of a 6 by 19 rectangle. Then decrease that value by 50%. Finally, express the final value as a percentage of the initial area and perimeter value.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": false, \"ambiguous\": false, \"natural\": false, \"quality_score\": 0.3, \"issues\": [\"Too concise (under 25 words).\", \"Phrasing is unnatural and template-like ('Then decrease that value by 50%. Finally, express the final value as a percentage of the initial area and perimeter value.').\", \"The final instruction is ambiguous: 'that value' and 'the final value' refer to a single value, but the initial request asks for two distinct values (area and perimeter). It's unclear if the operations should be applied to one, the other, or both, and how the final percentage should be reported.\"]}",
+  "usage": {
+    "prompt_tokens": 231,
+    "completion_tokens": 143,
+    "cost_usd": 7.6e-05
+  },
+  "backend": "openrouter"
+}

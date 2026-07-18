@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-07-18T16:03:46.558634+00:00",
+  "dataset": "curriculum_v5_stage2_training",
+  "stage": "stage2_2call_agentic_openrouter",
+  "executor_mode": "synthetic",
+  "registry_version": "5.0.2",
+  "registry_hash": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+  "rows": 496,
+  "training_candidate": true,
+  "rematerialized_from": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v4_nestful_like_agentic_openrouter\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+  "schema_drift_tools_fixed": [
+    "character_count",
+    "format_as_currency",
+    "hours_to_minutes",
+    "monthly_installment",
+    "remaining_stock",
+    "repeat_word",
+    "split_bill_evenly"
+  ],
+  "replay_failures_dropped": 0,
+  "replay_failure_samples": [],
+  "tier_counts": {
+    "frontier": 339,
+    "partial_frontier": 157
+  },
+  "files": {
+    "stage2_2call_agentic_openrouter.jsonl": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\curriculum_v5_stage2_training\\filtered\\stage2_2call_agentic_openrouter.jsonl",
+      "rows": 496,
+      "sha256": "7b92cb9935b6fffd46feba95a9cfc13f6e4c823c176807320c4c5e3fabbf8ded"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "4623bbdf22553193a0dddffaa7e88c95318700249001c05e87f88a142d6f8eea",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nFind the area of a circle with a radius of 6. Round that area to one decimal place. Then, using that rounded number, count how many values in the list [78, 70, 87, 85, 36, 16] are greater than it.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'Round that area to one decimal place' could be slightly more explicit about using the rounded number for the subsequent step, though the order is clear.\"]}",
+  "usage": {
+    "prompt_tokens": 250,
+    "completion_tokens": 65,
+    "cost_usd": 7.5e-05
+  },
+  "backend": "openrouter"
+}

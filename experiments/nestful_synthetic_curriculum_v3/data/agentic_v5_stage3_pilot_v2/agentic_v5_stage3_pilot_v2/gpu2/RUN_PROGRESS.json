@@ -1,0 +1,54 @@
+{
+  "status": "partial",
+  "stage": "stage3_3call_agentic_openrouter",
+  "accepted": 4,
+  "target": 10,
+  "accepted_new_this_run": 4,
+  "iterations": 10,
+  "mean_rounds_per_accept": 2.5,
+  "client": {
+    "n_requests": 27,
+    "n_cache_hits": 0,
+    "n_retries": 0,
+    "n_json_fallbacks": 0,
+    "prompt_tokens": 40594,
+    "completion_tokens": 4018,
+    "spend_usd": 0.008064,
+    "by_role": {
+      "challenger": {
+        "requests": 10,
+        "cache_hits": 0,
+        "prompt_tokens": 9515,
+        "completion_tokens": 2845,
+        "spend_usd": 0.002348,
+        "local_requests": 0
+      },
+      "weak_solver": {
+        "requests": 0,
+        "cache_hits": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "spend_usd": 0.0,
+        "local_requests": 450
+      },
+      "judge": {
+        "requests": 5,
+        "cache_hits": 0,
+        "prompt_tokens": 1155,
+        "completion_tokens": 350,
+        "spend_usd": 0.000357,
+        "local_requests": 0
+      },
+      "strong_solver": {
+        "requests": 12,
+        "cache_hits": 0,
+        "prompt_tokens": 29924,
+        "completion_tokens": 823,
+        "spend_usd": 0.005359,
+        "local_requests": 0
+      }
+    },
+    "local_weak_requests": 450
+  },
+  "updated_at": "2026-07-16T17:57:01.750893+00:00"
+}

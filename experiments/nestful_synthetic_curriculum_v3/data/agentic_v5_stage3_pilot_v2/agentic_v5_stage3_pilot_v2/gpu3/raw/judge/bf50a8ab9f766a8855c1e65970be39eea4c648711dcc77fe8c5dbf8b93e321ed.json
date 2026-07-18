@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "bf50a8ab9f766a8855c1e65970be39eea4c648711dcc77fe8c5dbf8b93e321ed",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nCalculate the sum of the numbers 88, 98, 61, 11, 91, and 23. Then, find the ratio of that sum to 5. Finally, round that ratio to one decimal place.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The phrase 'the ratio of that sum to 5' is slightly ambiguous; it could be interpreted as sum/5 or 5/sum, though the intended division is clear from context.\"]}",
+  "usage": {
+    "prompt_tokens": 239,
+    "completion_tokens": 72,
+    "cost_usd": 8.9e-05
+  },
+  "backend": "openrouter"
+}

@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "3ff4feb6ff5fa32f5a77679f618707e858ad1cf4275dd1db4da20e076619a40d",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nCalculate the potential energy in joules for a 29 kg mass at a height of 56 meters. Then decrease that energy value by 25%. Check if the resulting value is above a threshold of 419.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": true, \"ambiguous\": false, \"natural\": true, \"quality_score\": 0.9, \"issues\": [\"The threshold value '419' is given without units, which could be ambiguous, though context suggests joules.\"]}",
+  "usage": {
+    "prompt_tokens": 234,
+    "completion_tokens": 54,
+    "cost_usd": 8.1e-05
+  },
+  "backend": "openrouter"
+}

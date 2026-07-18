@@ -549,6 +549,11 @@ class DataParallelRolloutPool:
         print(f"[dp_pool] {len(self.gpus)} rollout workers ready on GPUs {self.gpus}",
               flush=True)
 
+    @property
+    def worker_pids(self) -> List[int]:
+        """PIDs of rollout worker processes (for targeted cleanup / logging)."""
+        return [int(p.pid) for p in self._procs if p.pid is not None]
+
     # ── public API ──────────────────────────────────────────────────────────
 
     def rollout_many(self, tasks: List[Dict[str, Any]]) -> List[RolloutResult]:

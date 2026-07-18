@@ -1,0 +1,329 @@
+{
+  "manifest_version": 1,
+  "kind": "curriculum_v5_agentic_openrouter",
+  "created_utc": "2026-07-16T18:02:31.797480+00:00",
+  "git": {
+    "commit": "adb262b47f530ed15ae115be599603cb890ff88e",
+    "branch": "main",
+    "dirty": null
+  },
+  "command": [
+    "experiments/nestful_synthetic_curriculum_v3/scripts/data/build_curriculum_v5_agentic_openrouter.py",
+    "--stages",
+    "stage3_3call_agentic_openrouter",
+    "--seed",
+    "45",
+    "--output-dir",
+    "experiments/nestful_synthetic_curriculum_v3/data/agentic_v5_stage3_pilot_v2/gpu0",
+    "--max-accepted-per-stage",
+    "10"
+  ],
+  "config": {
+    "path": null,
+    "sha256": null,
+    "overrides": []
+  },
+  "datasets": [
+    {
+      "name": "stage3_3call_agentic_openrouter.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/agentic_v5_stage3_pilot_v2/gpu0/filtered/stage3_3call_agentic_openrouter.jsonl",
+      "sha256": "cb757e2b9a7dc020b8fa464f1f3108cbca4e70631852c7f7a90beb10833e65fa",
+      "n_rows": 4
+    }
+  ],
+  "seed": 45,
+  "decoding": {},
+  "environment": {
+    "hostname": "11ca842eda17",
+    "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "torch": "2.11.0+cu128",
+    "vllm": null,
+    "transformers": "5.0.0",
+    "peft": null,
+    "gpu": {
+      "count": 4,
+      "gpus": [
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB",
+        "NVIDIA RTX PRO 4500 Blackwell, 32623 MiB"
+      ],
+      "cuda_visible_devices": "0"
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "backend": "openrouter",
+    "mock": false,
+    "salvage": false,
+    "resume": false,
+    "models": {
+      "challenger": "deepseek/deepseek-v3.2",
+      "weak_solver": "Qwen/Qwen3-4B-Instruct-2507",
+      "strong_solver": "qwen/qwen3-235b-a22b-2507",
+      "judge": "deepseek/deepseek-v3.2"
+    },
+    "registry_source": "synthetic_tools_v5",
+    "registry_version": "5.0.0",
+    "registry_hash": "31a99c56b050281f855521bc7a03292c76f859ebfad3cf6635b02fd3e649f4e7",
+    "executor_mode": "synthetic",
+    "best_of_n_enabled": true,
+    "best_of_n_max_accepts_per_batch": 1,
+    "targets": {
+      "stage3_3call_agentic_openrouter": 10
+    },
+    "target_resolution": {
+      "default": "800/stage",
+      "cli_override": 10,
+      "final_targets": {
+        "stage3_3call_agentic_openrouter": 10
+      }
+    },
+    "accepted": {
+      "stage3_3call_agentic_openrouter": 4
+    },
+    "completion": {
+      "stage3_3call_agentic_openrouter": {
+        "target": 10,
+        "accepted": 4,
+        "status": "partial"
+      }
+    },
+    "rejected_total": 46,
+    "rejection_reasons": {
+      "low_grpo_signal_prediction": 38,
+      "not_nestful_like": 6,
+      "unresolved_var": 1,
+      "best_of_n_not_selected": 1
+    },
+    "tool_schema_source_policy": "aggregate_style_only",
+    "client_stats": {
+      "n_requests": 35,
+      "n_cache_hits": 0,
+      "n_retries": 0,
+      "n_json_fallbacks": 0,
+      "prompt_tokens": 44275,
+      "completion_tokens": 5114,
+      "spend_usd": 0.00883,
+      "by_role": {
+        "challenger": {
+          "requests": 10,
+          "cache_hits": 0,
+          "prompt_tokens": 9071,
+          "completion_tokens": 2986,
+          "spend_usd": 0.002928,
+          "local_requests": 0
+        },
+        "weak_solver": {
+          "requests": 0,
+          "cache_hits": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "spend_usd": 0.0,
+          "local_requests": 441
+        },
+        "judge": {
+          "requests": 10,
+          "cache_hits": 0,
+          "prompt_tokens": 2322,
+          "completion_tokens": 803,
+          "spend_usd": 0.000975,
+          "local_requests": 0
+        },
+        "strong_solver": {
+          "requests": 15,
+          "cache_hits": 0,
+          "prompt_tokens": 32882,
+          "completion_tokens": 1325,
+          "spend_usd": 0.004926,
+          "local_requests": 0
+        }
+      }
+    },
+    "stage_summaries": {
+      "stage3_3call_agentic_openrouter": {
+        "target": 10,
+        "accepted": 4,
+        "resumed_from": 0,
+        "accepted_new": 4,
+        "status": "partial",
+        "iterations": 10,
+        "mean_rounds_per_accept": 2.5,
+        "recipe": {
+          "version": "agentic_v1.10",
+          "iteration": 10,
+          "learnings": [
+            "Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.",
+            "Style drifted from NESTFUL: keep questions concise (25-60 words), concrete, single-paragraph, imperative or interrogative, with realistic everyday quantities.",
+            "Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.",
+            "Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way.",
+            "Style drifted from NESTFUL: keep questions concise (25-60 words), concrete, single-paragraph, imperative or interrogative, with realistic everyday quantities.",
+            "Tasks lacked usable GRPO training signal for the weak model: rollouts were all the same reward (too easy, all identical failures, or only parse errors). Target the SWEET SPOT: the weak model should sometimes succeed on a full trace but not always — vary WHICH step is hard (tool choice among same-domain distractors, argument binding, or reusing an earlier result). Avoid questions where every rollout fails in exactly the same way."
+          ],
+          "history": [
+            {
+              "iteration": 1,
+              "rejections": {
+                "low_grpo_signal_prediction": 4
+              },
+              "batch_stats": {
+                "iteration": 1,
+                "accepted_total": 1,
+                "weak_mean": 0.564,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 2,
+              "rejections": {
+                "low_grpo_signal_prediction": 4,
+                "not_nestful_like": 1
+              },
+              "batch_stats": {
+                "iteration": 2,
+                "accepted_total": 1,
+                "weak_mean": 0.508,
+                "strong_mean": 0.0
+              }
+            },
+            {
+              "iteration": 3,
+              "rejections": {
+                "low_grpo_signal_prediction": 4,
+                "not_nestful_like": 1
+              },
+              "batch_stats": {
+                "iteration": 3,
+                "accepted_total": 1,
+                "weak_mean": 0.556,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 4,
+              "rejections": {
+                "low_grpo_signal_prediction": 5
+              },
+              "batch_stats": {
+                "iteration": 4,
+                "accepted_total": 1,
+                "weak_mean": 0.566,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 5,
+              "rejections": {
+                "low_grpo_signal_prediction": 5
+              },
+              "batch_stats": {
+                "iteration": 5,
+                "accepted_total": 1,
+                "weak_mean": 0.493,
+                "strong_mean": 0.279
+              }
+            },
+            {
+              "iteration": 6,
+              "rejections": {
+                "unresolved_var": 1,
+                "low_grpo_signal_prediction": 3
+              },
+              "batch_stats": {
+                "iteration": 6,
+                "accepted_total": 2,
+                "weak_mean": 0.567,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 7,
+              "rejections": {
+                "low_grpo_signal_prediction": 4,
+                "not_nestful_like": 1
+              },
+              "batch_stats": {
+                "iteration": 7,
+                "accepted_total": 2,
+                "weak_mean": 0.566,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 8,
+              "rejections": {
+                "low_grpo_signal_prediction": 3,
+                "not_nestful_like": 2
+              },
+              "batch_stats": {
+                "iteration": 8,
+                "accepted_total": 2,
+                "weak_mean": 0.563,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 9,
+              "rejections": {
+                "low_grpo_signal_prediction": 4
+              },
+              "batch_stats": {
+                "iteration": 9,
+                "accepted_total": 3,
+                "weak_mean": 0.556,
+                "strong_mean": null
+              }
+            },
+            {
+              "iteration": 10,
+              "rejections": {
+                "low_grpo_signal_prediction": 2,
+                "not_nestful_like": 1,
+                "best_of_n_not_selected": 1
+              },
+              "batch_stats": {
+                "iteration": 10,
+                "accepted_total": 4,
+                "weak_mean": 0.591,
+                "strong_mean": 0.0
+              }
+            }
+          ]
+        },
+        "stage_file": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/data/agentic_v5_stage3_pilot_v2/gpu0/filtered/stage3_3call_agentic_openrouter.jsonl",
+        "rows_written": 4,
+        "resume_source": null,
+        "diversity": {
+          "n_new": 4,
+          "weak_score_buckets_new": {
+            "0.56": 1,
+            "0.57": 2,
+            "0.54": 1
+          },
+          "failure_types_new": {
+            "correct_tool_wrong_args": 4
+          },
+          "weak_score_dominance_new": 0.5,
+          "failure_type_dominance_new": 1.0,
+          "caps": {
+            "max_same_weak_score": 0.55,
+            "max_same_failure_type": 0.55,
+            "enforce_after": 50,
+            "resume_mode": false
+          }
+        }
+      }
+    },
+    "stage_files": {
+      "stage3_3call_agentic_openrouter": {
+        "path": "experiments/nestful_synthetic_curriculum_v3/data/agentic_v5_stage3_pilot_v2/gpu0/filtered/stage3_3call_agentic_openrouter.jsonl",
+        "sha256": "cb757e2b9a7dc020b8fa464f1f3108cbca4e70631852c7f7a90beb10833e65fa",
+        "rows": 4
+      }
+    },
+    "status": "STOPPED EARLY: stage3_3call_agentic_openrouter: iteration budget 10 exhausted at 4/10 accepted",
+    "final_validation_problems": 0
+  }
+}

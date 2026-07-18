@@ -1,0 +1,29 @@
+{
+  "kind": "training_ready_v5",
+  "created_at": "2026-07-18T00:00:00+00:00",
+  "description": "Canonical v5 GRPO training datasets (two-phase curriculum)",
+  "registry_version": "5.0.2",
+  "executor_mode": "synthetic",
+  "reward_policy": "execution_aware_v3_2_dense",
+  "files": {
+    "phase1_stage2_train.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/training_ready_v5/filtered/phase1_stage2_train.jsonl",
+      "rows": 429,
+      "stage": "stage2_2call_agentic_openrouter",
+      "sha256": "05ebf7bbe82edc7b72551fb079c756b4dfbac7f78ed18850edb18a3847ccb777",
+      "phase": 1
+    },
+    "phase2_stage3_plus_stage2_replay.jsonl": {
+      "path": "experiments/nestful_synthetic_curriculum_v3/data/training_ready_v5/filtered/phase2_stage3_plus_stage2_replay.jsonl",
+      "rows": 466,
+      "composition": {
+        "stage3_3call_agentic_openrouter": 326,
+        "stage2_2call_agentic_openrouter": 140
+      },
+      "sha256": "417f1519e752b4bac14445025c7f7e406510e76311411130f2a77cf6f59d276a",
+      "phase": 2
+    }
+  },
+  "preflight": "scripts/training/preflight_training_datasets.py",
+  "orchestrator": "scripts/v5/run_two_phase_grpo.sh"
+}

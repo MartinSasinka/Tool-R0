@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "b14fef145c2657cf8dbfef35c059d9bcc29f3edc92290c10234012b56f45392f",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nCalculate the total cost for 140 units priced at 7.99 each with a 12% bulk discount. Using that total, find the depreciated value of an asset after 2 years, depreciating 700 per year. Finally, add a 5% sales tax to that depreciated value.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\"nestful_like\": false, \"ambiguous\": false, \"natural\": false, \"quality_score\": 0.4, \"issues\": [\"Too long (approx. 70 words).\", \"Not a single paragraph; it's a list of steps.\", \"Phrasing is imperative but reads like a template dump of mathematical steps.\", \"Contains abstract financial terms ('depreciated value of an asset') which are less everyday.\", \"The order of steps is clear, but the phrasing is unnatural for a real user request.\"]}",
+  "usage": {
+    "prompt_tokens": 254,
+    "completion_tokens": 110,
+    "cost_usd": 9e-05
+  },
+  "backend": "openrouter"
+}

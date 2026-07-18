@@ -576,6 +576,13 @@ def train(
     vllm_gen=None,
     rollout_pool=None,
     wandb_run=None,
+    optimizer=None,
+    global_step_start: int = 0,
+    log_append: bool = False,
+    task_prev_mean: Optional[Dict[str, float]] = None,
+    task_best_mean: Optional[Dict[str, float]] = None,
+    task_prev_rollout_rewards: Optional[Dict[str, List[float]]] = None,
+    phase_name: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run the GRPO training loop.
 
@@ -657,19 +664,22 @@ def train(
     agg_pred_calls = 0
 
     trainable = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.AdamW(trainable, lr=lr)
+    if optimizer is None:
+        optimizer = torch.optim.AdamW(trainable, lr=lr)
     has_ref = hasattr(model, "disable_adapter") and kl_beta > 0.0
 
     os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
-    log_f = open(log_path, "w", encoding="utf-8")
+    log_f = open(log_path, "a" if log_append else "w", encoding="utf-8")
 
     def _log(rec: Dict[str, Any]) -> None:
+        if phase_name:
+            rec.setdefault("phase", phase_name)
         log_f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         log_f.flush()
 
     vllm_gen_fn = vllm_gen.generate_fn if vllm_gen is not None else None
 
-    global_step = 0
+    global_step = int(global_step_start)
     stage = int(config.get("data", {}).get("train_stage", 0))
     summary = {
         "epochs": epochs, "num_tasks": len(tasks), "steps": 0,
@@ -696,9 +706,12 @@ def train(
         _wandb_setup_train_metrics(wandb_run, num_tasks)
 
     # Per-task reward history for cross-epoch W&B deltas (epoch N vs N-1).
-    task_prev_mean: Dict[str, float] = {}
-    task_best_mean: Dict[str, float] = {}
-    task_prev_rollout_rewards: Dict[str, List[float]] = {}
+    if task_prev_mean is None:
+        task_prev_mean = {}
+    if task_best_mean is None:
+        task_best_mean = {}
+    if task_prev_rollout_rewards is None:
+        task_prev_rollout_rewards = {}
 
     for epoch in range(epochs):
         model.train()
@@ -1171,6 +1184,12 @@ def train(
                         _log({"epoch": epoch, "vllm_adapter_synced": adapter_dir})
 
     summary["steps"] = global_step
+    summary["global_step_start"] = int(global_step_start)
+    summary["global_step_end"] = global_step
+    if phase_name:
+        summary["phase_name"] = phase_name
+    summary["continuous_training"] = bool(global_step_start > 0 or log_append)
+    summary["_optimizer"] = optimizer  # in-process only; strip before json dump
     summary["contributing_turns_total"] = total_contributing
     summary["trained"] = global_step > 0
     summary["dead_group_rate"] = (total_dead_groups / total_groups) if total_groups else None

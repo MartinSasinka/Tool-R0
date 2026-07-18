@@ -1,0 +1,94 @@
+{
+  "run": "agentic_v5_stage3_pilot_v2",
+  "workers": 4,
+  "per_gpu": {
+    "gpu0": [
+      4,
+      46
+    ],
+    "gpu1": [
+      4,
+      46
+    ],
+    "gpu2": [
+      4,
+      46
+    ],
+    "gpu3": [
+      8,
+      42
+    ]
+  },
+  "accepted": 20,
+  "rejected_logged": 180,
+  "candidates_logged": 200,
+  "accept_rate": 0.1,
+  "grpo_pass_rate": 0.1156,
+  "grpo_ok": 20,
+  "grpo_probed": 173,
+  "aggregate": {
+    "accepted": 20,
+    "target": 40,
+    "iterations": 40,
+    "local_weak_requests": 1791,
+    "api_spend_usd": 0.0465,
+    "api_requests": 155
+  },
+  "rollouts_per_accept": 89.5,
+  "accepted_tiers": {
+    "unknown": 20
+  },
+  "accepted_dominant_failures": {
+    "unknown": 20
+  },
+  "accepted_reward_range": {
+    "min": 0.005556000000000005,
+    "max": 0.5625,
+    "avg": 0.2506,
+    "below_0_01": 3
+  },
+  "parse_dominated_accepted": 0,
+  "borderline_in_accepted": 0,
+  "borderline_confirmed": 0,
+  "reject_reasons": {
+    "low_grpo_signal_prediction": 153,
+    "best_of_n_not_selected": 14,
+    "not_nestful_like": 12,
+    "unresolved_var": 1
+  },
+  "grpo_sub_reasons_rejects": {
+    "all_same_reward": 153
+  },
+  "top_tools_accepted": {},
+  "motifs": {
+    "unknown": 20
+  },
+  "sample_ids": [
+    "agentic_v5_stage3_000001",
+    "agentic_v5_stage3_000002",
+    "agentic_v5_stage3_000003",
+    "agentic_v5_stage3_000004",
+    "agentic_v5_stage3_000001",
+    "agentic_v5_stage3_000002",
+    "agentic_v5_stage3_000003",
+    "agentic_v5_stage3_000004",
+    "agentic_v5_stage3_000001",
+    "agentic_v5_stage3_000002",
+    "agentic_v5_stage3_000003",
+    "agentic_v5_stage3_000004",
+    "agentic_v5_stage3_000001",
+    "agentic_v5_stage3_000002",
+    "agentic_v5_stage3_000003",
+    "agentic_v5_stage3_000004",
+    "agentic_v5_stage3_000005",
+    "agentic_v5_stage3_000006",
+    "agentic_v5_stage3_000007",
+    "agentic_v5_stage3_000008"
+  ],
+  "advantage_preview": {
+    "n": 0,
+    "avg_nonzero_frac": null,
+    "avg_std": null,
+    "dead_groups": 0
+  }
+}

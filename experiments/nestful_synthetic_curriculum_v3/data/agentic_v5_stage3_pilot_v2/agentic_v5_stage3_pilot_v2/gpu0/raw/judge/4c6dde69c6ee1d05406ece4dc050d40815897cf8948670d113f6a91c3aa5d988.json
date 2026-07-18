@@ -1,0 +1,22 @@
+{
+  "role": "judge",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_hash": "4c6dde69c6ee1d05406ece4dc050d40815897cf8948670d113f6a91c3aa5d988",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a strict data-quality judge for tool-use training tasks in the style of the NESTFUL benchmark. Output STRICT JSON only."
+    },
+    {
+      "role": "user",
+      "content": "QUESTION (3 tool calls are required to solve it):\nConvert 2 acres to square meters. Then, clamp that area value so it is between 49 and 136. Finally, check if the resulting clamped value is a positive number.\n\nJudge ONLY the question text (the executable trace is verified separately). Criteria:\n- nestful_like: concise (25-60 words), concrete everyday quantities, single paragraph, multi-step imperative/interrogative phrasing;\n- unambiguous: every needed input value is stated exactly once and the order of steps is implied clearly;\n- natural: reads like a real user request, not a template dump.\n\nOUTPUT: {\"nestful_like\": true|false, \"ambiguous\": true|false, \"natural\": true|false, \"quality_score\": 0.0-1.0, \"issues\": [\"...\"]}"
+    }
+  ],
+  "text": "{\n    \"nestful_like\": false,\n    \"ambiguous\": false,\n    \"natural\": false,\n    \"quality_score\": 0.4,\n    \"issues\": [\"Sentence structure is unnatural, resembling a template dump with disjoint steps.\", \"Contains explicit step numbering (3 tool calls) and final verification clause, lacking multi-step imperative/interrogative phrasing.\", \"Word count is far below the 25-60 range; only 11 words in the core question.\", \"Violates NESTFUL-like style: not concise concrete everyday quantities in a single paragraph.\"]\n}",
+  "usage": {
+    "prompt_tokens": 214,
+    "completion_tokens": 118,
+    "cost_usd": 0.00021
+  },
+  "backend": "openrouter"
+}
