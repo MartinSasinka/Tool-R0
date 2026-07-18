@@ -616,7 +616,8 @@ def train(
     kl_beta = float(tr.get("kl_beta", 0.02))
     max_grad_norm = float(tr.get("max_grad_norm", 1.0))
     mask_clipped = bool(tr.get("mask_clipped_from_update", True))
-    gold_n_default = int(config.get("data", {}).get("train_stage", 3))
+    _train_stage = config.get("data", {}).get("train_stage")
+    gold_n_default = int(_train_stage if _train_stage is not None else 3)
 
     # Turn-level MT-GRPO settings (training rewards are gold-trace-derived only).
     mt = config.get("mt_grpo", {}) or {}
@@ -680,7 +681,7 @@ def train(
     vllm_gen_fn = vllm_gen.generate_fn if vllm_gen is not None else None
 
     global_step = int(global_step_start)
-    stage = int(config.get("data", {}).get("train_stage", 0))
+    stage = int(_train_stage if _train_stage is not None else 0)
     summary = {
         "epochs": epochs, "num_tasks": len(tasks), "steps": 0,
         "experimental": True,
