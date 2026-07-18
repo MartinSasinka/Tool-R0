@@ -111,6 +111,12 @@ class TwoPhaseTrainSession:
     def load_learner(self, checkpoint: Optional[str] = None) -> None:
         if self.model is not None:
             return
+        # Pin learner to GPU 0 *before* from_pretrained — start_rollout_workers()
+        # runs later but the model must not use device_map=auto across all GPUs.
+        if self._use_pool():
+            self.config.setdefault("hardware", {})["hf_device_map"] = {"": 0}
+            print("[session] hf_device_map pinned to GPU 0 (rollout pool on other GPUs)",
+                  flush=True)
         self.model, self.tokenizer = load_model_and_tokenizer(
             self.config, checkpoint, for_training=True)
 
