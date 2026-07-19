@@ -138,14 +138,16 @@ banner "preflight"
 
 # ── 4. Dry-run manifest ─────────────────────────────────────────────────────
 banner "dry-run manifest"
-"$PY" scripts/training/run_pure_stage3_two_epoch.py \
-  --run-dir "$RUN_DIR" \
-  --dataset "$TRAIN_DS" \
-  --dev-set "$DEV_SET" \
-  --test-set "$TEST_SET" \
-  --syntax-audit-verdict "$VERDICT" \
-  --syntax-audit-path "$AUDIT_JSON" \
-  --dry-run
+DRY_ARGS=(scripts/training/run_pure_stage3_two_epoch.py
+  --run-dir "$RUN_DIR"
+  --dataset "$TRAIN_DS"
+  --dev-set "$DEV_SET"
+  --test-set "$TEST_SET"
+  --syntax-audit-verdict "$VERDICT"
+  --syntax-audit-path "$AUDIT_JSON"
+  --dry-run)
+[ "${RESUME:-0}" = "1" ] && DRY_ARGS+=(--resume)
+"$PY" "${DRY_ARGS[@]}"
 
 # ── 5. Full overnight orchestrator ──────────────────────────────────────────
 banner "pure Stage 3 two-epoch training + eval"
