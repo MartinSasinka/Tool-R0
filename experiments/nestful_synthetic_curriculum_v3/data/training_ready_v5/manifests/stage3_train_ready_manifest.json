@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-07-19T21:31:05.080635+00:00",
+  "source": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\training_ready_v5\\filtered\\phase2_stage3_plus_stage2_replay.jsonl",
+  "source_sha256": "417f1519e752b4bac14445025c7f7e406510e76311411130f2a77cf6f59d276a",
+  "out": "C:\\Users\\Šunka\\AppData\\Local\\Temp\\tmpt__103wy\\stage3.jsonl",
+  "sha256": "0d3a2c6cce18ea14ead14e182a59b4b97ad3e76c65cff034b9196ccdea689e00",
+  "rows": 326,
+  "expected_rows": 326,
+  "stage_filter": "stage3_* excluding any stage2",
+  "note": "Derived from phase2 mix; original phase2 file unchanged."
+}

@@ -1,6 +1,0 @@
-motif_type,synthetic_count,nestful_count,synthetic_pct,nestful_pct,delta_pct
-fan_in,22,282,1.02,15.15,-14.13
-fan_out,0,1,0,0.05,-0.05
-independent_calls,0,27,0,1.45,-1.45
-linear_dependency,1524,956,70.65,51.37,19.28
-long_chain,611,595,28.33,31.97,-3.65

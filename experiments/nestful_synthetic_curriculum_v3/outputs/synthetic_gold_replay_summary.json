@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "tasks": 1030,
-  "successes": 1030,
-  "failures": 0,
-  "gold_replay_success_rate": 1.0,
-  "invalid_reference_count": 0
-}

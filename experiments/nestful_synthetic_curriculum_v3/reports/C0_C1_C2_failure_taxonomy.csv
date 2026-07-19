@@ -1,0 +1,11 @@
+failure_type,C0,C1,C2,C1_minus_C0,C2_minus_C1,C2_minus_C0
+"correct keys, wrong argument values",157,152,141,-5,-11,-16
+"correct tool, wrong argument keys",41,42,42,1,0,1
+"correct trajectory, wrong final answer",41,38,36,-3,-2,-5
+executable trajectory ending wrong result,172,179,187,7,8,15
+no tool call,108,113,112,5,-1,4
+parse/format error,74,68,63,-6,-5,-11
+success,885,889,894,4,5,9
+too few calls,18,19,13,1,-6,-5
+too many calls,2,1,1,-1,0,-1
+wrong tool,163,160,172,-3,12,9

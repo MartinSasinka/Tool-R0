@@ -1,0 +1,3950 @@
+{
+  "created_at": "2026-07-19T21:31:04.630985+00:00",
+  "input": "C:\\Users\\Šunka\\AppData\\Local\\Temp\\tmp9slxpz0c\\stage3.jsonl",
+  "input_sha256": "0d3a2c6cce18ea14ead14e182a59b4b97ad3e76c65cff034b9196ccdea689e00",
+  "output_path": null,
+  "output_sha256": null,
+  "n_rows": 326,
+  "n_refs_total": 684,
+  "n_hard_fail": 0,
+  "n_incompatible_refs": 0,
+  "n_rows_changed": 0,
+  "ref_class_counts": {
+    "tool_r0_canonical": 684
+  },
+  "problem_sample_ids": [],
+  "normalize_examples": [],
+  "normalize_meta_path": null,
+  "verdict": "NO_MISMATCH",
+  "verdict_rationale": "Trainer registry v5.0.2 hash=f945b18ccdc2… Tool-R0 ReAct prompt teaches `$varN.field$` (prompt.py). Executor accepts `$varN` and `$var_N` via var_?(\\d+). Official NESTFUL gold predominantly uses `$var_N.result$` (stylistic; scorer accepts both). Stage 3 refs: {'tool_r0_canonical': 684}. All Stage 3 rows replay through synthetic executor and match Tool-R0 canonical syntax. No derived dataset written.",
+  "canonical_syntax": {
+    "summary": "Tool-R0 training stack: labels `$varN`, references `$varN.<output_key>$` (prompt.py + executor.py). Field is required for object outputs; optional for scalars.",
+    "label": "$varN",
+    "reference": "$varN.field$",
+    "alternatives": [
+      "$var_N.field$ — NESTFUL gold / IBM scorer (accepted by executor)",
+      "$varN$ without field — accepted by executor for scalar obs"
+    ],
+    "sources": [
+      "experiments/nestful_mtgrpo_minimal/prompt.py",
+      "experiments/nestful_mtgrpo_minimal/executor.py (_VAR_REF_RE)",
+      "experiments/nestful_mtgrpo_minimal/data/NESTFUL-main/src/scorer.py"
+    ]
+  },
+  "registry_version": "5.0.2",
+  "registry_hash": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+  "per_row": [
+    {
+      "sample_id": "agentic_v5_stage3_000403",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000356",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000174",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000197",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000074",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000212",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000274",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000289",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000404",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000246",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000089",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000397",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000358",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000226",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000261",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000097",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000290",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000025",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000028",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000101",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000083",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000379",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000020",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000005",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000299",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000205",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000376",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000434",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000139",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000081",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000254",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000123",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000076",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000306",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000192",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000463",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000240",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000211",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000263",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000298",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000006",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000230",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000269",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000247",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000234",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000064",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000364",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000409",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000341",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000302",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000287",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000324",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000160",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000279",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000001",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000273",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000078",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000435",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000441",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000280",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000461",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000250",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000156",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000398",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000303",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000145",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000121",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000044",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000026",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000022",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000266",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000285",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000259",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000135",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000058",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000128",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000162",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000316",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000031",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000333",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000182",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000301",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000206",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000281",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000319",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000224",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000138",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000016",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000408",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000175",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000428",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000216",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000103",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000072",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000366",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000337",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000244",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000203",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000237",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000038",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000059",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000362",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000077",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000051",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000440",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000304",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000113",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000297",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000181",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000213",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000288",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000292",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000155",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000443",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000310",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000335",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000222",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000253",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000293",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000080",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000146",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000163",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000342",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000004",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000346",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000194",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000309",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000040",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000272",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000024",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000357",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000349",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000318",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000202",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000140",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000392",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000419",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000278",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000109",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000339",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000295",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000046",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000262",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000427",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000137",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000233",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000070",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000200",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000405",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000380",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000073",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000187",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000277",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000458",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000410",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000157",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000401",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000110",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000183",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000131",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000445",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000207",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000348",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000075",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000173",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000327",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000375",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000350",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000102",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000018",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000317",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000340",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000087",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000311",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000267",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000122",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000368",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000232",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000057",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000334",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000114",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000359",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000071",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000153",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000312",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000396",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000251",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000328",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000353",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000374",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000054",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000291",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000065",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000043",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000467",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000186",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000094",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000108",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000052",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000414",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000449",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000069",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000185",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000257",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000149",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000056",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000189",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000171",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000275",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000390",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000265",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000313",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000225",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000286",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000126",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000009",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000314",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000111",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000336",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000447",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000125",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000332",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000433",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000305",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000382",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000406",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000215",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000010",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000307",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000383",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000385",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000323",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000208",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000330",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000270",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000331",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000320",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000308",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000084",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000023",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000229",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000193",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000150",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000068",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000413",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000132",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000034",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000152",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000249",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000015",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000354",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000423",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000161",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000464",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000448",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000456",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000127",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000223",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000209",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000158",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000450",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000007",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000369",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000264",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000284",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000021",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000228",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000017",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000242",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000294",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000144",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000451",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000322",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000151",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000086",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000459",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000164",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000079",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000426",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000067",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000387",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000227",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000116",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000429",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000061",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000412",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000360",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000373",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000300",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000271",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000402",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000432",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000188",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000256",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000282",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000166",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000343",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000381",
+      "n_refs": 3,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 3
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000176",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000039",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000098",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000124",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000178",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000184",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000460",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000321",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000093",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000296",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000462",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000091",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000315",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000442",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000029",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000378",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000099",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000326",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000134",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000041",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000268",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000055",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000411",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000276",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000198",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000283",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000053",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    },
+    {
+      "sample_id": "agentic_v5_stage3_000255",
+      "n_refs": 2,
+      "hard_fail": false,
+      "issues": [],
+      "ref_classes": {
+        "tool_r0_canonical": 2
+      },
+      "label_classes": {
+        "tool_r0_canonical": 3
+      }
+    }
+  ]
+}
