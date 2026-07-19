@@ -157,6 +157,51 @@ class TwoPhaseTrainSession:
         wait_for_gpu_memory(self._dp_gpus or None)
         return pids
 
+    def unload_learner(self) -> None:
+        """Evict HF QLoRA learner + AdamW from GPU 0 so EVAL_TP=4 can use all GPUs.
+
+        Must be called only after training is finished (or aborted) — optimizer
+        state is discarded (already not persisted to disk).
+        """
+        import gc
+
+        if self.model is None and self.optimizer is None and self.tokenizer is None:
+            return
+        n_params = 0
+        if self.model is not None:
+            try:
+                n_params = sum(p.numel() for p in self.model.parameters())
+            except Exception:
+                pass
+        print(f"[session] unloading learner from GPU 0 "
+              f"(~{n_params/1e6:.0f}M params + optimizer)", flush=True)
+        # Prefer CPU move before delete — helps release device_map="cuda:0" caches.
+        if self.model is not None:
+            try:
+                self.model.to("cpu")
+            except Exception:
+                pass
+        self.optimizer = None
+        self.model = None
+        self.tokenizer = None
+        self.task_prev_mean.clear()
+        self.task_best_mean.clear()
+        self.task_prev_rollout_rewards.clear()
+        gc.collect()
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+                for i in range(torch.cuda.device_count()):
+                    free, total = torch.cuda.mem_get_info(i)
+                    print(f"[session] after unload cuda:{i} "
+                          f"{free/1e9:.1f}/{total/1e9:.1f} GB free", flush=True)
+        except Exception as exc:
+            print(f"[session] WARNING: cuda empty_cache failed: {exc}", flush=True)
+        # EVAL_TP=4 @ util≈0.85 needs ~27 GiB free on 32 GiB cards; require ≥20 GiB.
+        wait_for_gpu_memory(None, timeout_s=180.0, min_free_mib=20 * 1024)
+
     def sync_rollout_policy(self, adapter_path: str, *, label: str) -> str:
         """Push canonical checkpoint weights to rollout workers and log parity."""
         adapter_path = os.path.abspath(adapter_path)
@@ -270,4 +315,6 @@ class TwoPhaseTrainSession:
         return adapter, safe
 
     def close(self) -> None:
+        """Tear down rollout workers AND unload the learner (all GPUs free)."""
         self.shutdown_rollout_workers()
+        self.unload_learner()

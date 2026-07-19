@@ -196,8 +196,11 @@ bash scripts/v5/run_pure_stage3_two_epoch_overnight.sh 2>&1 | tee -a "$RUN_DIR/c
 | Crash before E1 done | Restart epoch 1 from base |
 | E1 done, crash before E2 | Load `S3_E1` adapter, **fresh AdamW** (not on disk) — logged in `resume_events` |
 | Same-process E1→E2 | Shared optimizer + monotonic `global_step` (preferred) |
+| Train OK, eval OOM on GPU 0 | Teardown now unloads the HF learner before eval; `RESUME=1` skips done train steps and re-runs pending evals. Before resume: `nvidia-smi` and kill leftover `VLLM::EngineCore` / `run.py` if any |
 
 Exact step resume is **not** supported.
+
+**Eval teardown note:** `session.close()` shuts down rollout workers **and** unloads the QLoRA learner + AdamW from GPU 0. Without that, `EVAL_TP=4` at `VLLM_GPU_UTIL=0.85` fails with ~9 GB free on cuda:0.
 
 ---
 

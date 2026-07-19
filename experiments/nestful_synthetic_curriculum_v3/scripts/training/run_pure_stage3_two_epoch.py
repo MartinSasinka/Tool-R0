@@ -409,6 +409,7 @@ def main() -> int:
     os.environ.setdefault("WANDB_PROJECT", "nestful-v5-pure-stage3")
     os.environ["WANDB_RUN_GROUP"] = wandb_group
 
+    session: Optional[TwoPhaseTrainSession] = None
     try:
         # ── preflight ──────────────────────────────────────────────
         if not args.skip_preflight and not _step_done(state, "preflight"):
@@ -434,7 +435,6 @@ def main() -> int:
             _save_state(run_dir, state)
 
         # ── training session ───────────────────────────────────────
-        session: Optional[TwoPhaseTrainSession] = None
         overrides = _build_overrides(args)
         expected = None if args.max_train_tasks else EXPECTED_ROWS
 
@@ -578,11 +578,11 @@ def main() -> int:
                     _mark_step(state, "credit_probe", jsonl=out_j, md=out_m)
                     _save_state(run_dir, state)
 
-            print("[pure-s3] training session closed; all GPUs free for eval",
-                  flush=True)
             session.close()
             session = None
             _save_json(os.path.join(run_dir, "logs", "rollout_worker_pids.json"), [])
+            print("[pure-s3] training session closed; learner unloaded; "
+                  "all GPUs free for eval", flush=True)
 
         # ── Dev evals E1 / E2 ──────────────────────────────────────
         e1_ckpt = os.path.join(run_dir, "checkpoints", "S3_E1")
@@ -659,7 +659,12 @@ def main() -> int:
         print(f"[pure-s3] FAILED: {exc}", file=sys.stderr)
         raise
     finally:
-        pass
+        if session is not None:
+            try:
+                session.close()
+            except Exception as close_exc:
+                print(f"[pure-s3] WARNING: session.close failed: {close_exc}",
+                      file=sys.stderr)
 
 
 if __name__ == "__main__":

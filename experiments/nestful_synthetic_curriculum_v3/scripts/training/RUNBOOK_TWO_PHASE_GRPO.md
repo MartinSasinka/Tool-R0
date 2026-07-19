@@ -2,7 +2,8 @@
 
 Continuous **in-process** training: Phase 1 (429× Stage 2) and Phase 2 (466× Stage 3 + replay)
 share one Python interpreter, one AdamW optimizer, and monotonic `global_step`.
-Rollout workers (GPUs 1–3) stay up between phases; training teardown frees all GPUs
+Rollout workers (GPUs 1–3) stay up between phases; training teardown shuts down
+workers **and** unloads the HF learner from GPU 0 so EVAL_TP=4 can use all GPUs
 before deferred C1/C2 dev eval (TP=4 on all four GPUs).
 
 **Canonical entry points (do not fork):**

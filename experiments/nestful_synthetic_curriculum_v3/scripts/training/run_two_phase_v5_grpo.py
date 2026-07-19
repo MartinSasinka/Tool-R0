@@ -530,8 +530,8 @@ def main() -> int:
         if session is not None:
             session.close()
             session = None
-            print("[two-phase] training session closed; all GPUs free for eval",
-                  flush=True)
+            print("[two-phase] training session closed; learner unloaded; "
+                  "all GPUs free for eval", flush=True)
 
         # ── 9 Eval C1 (deferred until after Phase 2) ──────────────────────
         c1_dir = state.get("steps", {}).get("eval_C1", {}).get(
