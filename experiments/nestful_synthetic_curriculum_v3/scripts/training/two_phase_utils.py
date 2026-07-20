@@ -263,6 +263,34 @@ def wait_for_gpu_memory(
           flush=True)
 
 
+def prep_gpus_for_eval(*, min_free_mib: int = 15 * 1024) -> None:
+    """Best-effort cleanup before EVAL_TP subprocess (zombie EngineCore / CUDA cache)."""
+    import subprocess
+    for pattern in ("VLLM::EngineCore", "VLLM::Worker"):
+        try:
+            subprocess.run(
+                ["pkill", "-f", pattern],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception:
+            pass
+    try:
+        import gc
+        import torch
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            for i in range(torch.cuda.device_count()):
+                free, total = torch.cuda.mem_get_info(i)
+                print(f"[eval-prep] cuda:{i} {free/1e9:.1f}/{total/1e9:.1f} GB free",
+                      flush=True)
+    except Exception as exc:
+        print(f"[eval-prep] WARNING: cuda cleanup skipped: {exc}", flush=True)
+    wait_for_gpu_memory(None, timeout_s=90.0, min_free_mib=min_free_mib)
+
+
 def json_safe_summary(summary: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in summary.items() if not str(k).startswith("_")}
 

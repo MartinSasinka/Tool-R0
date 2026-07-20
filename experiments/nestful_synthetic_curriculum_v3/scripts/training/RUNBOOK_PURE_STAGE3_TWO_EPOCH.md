@@ -202,6 +202,8 @@ Exact step resume is **not** supported.
 
 **Eval teardown note:** `session.close()` shuts down rollout workers **and** unloads the QLoRA learner + AdamW from GPU 0. Without that, `EVAL_TP=4` at `VLLM_GPU_UTIL=0.85` fails with ~9 GB free on cuda:0.
 
+Even with learner unloaded (~29 GB free on cuda:0), util=0.85 can still fail the vLLM startup check (needs free ≥ 0.85×total while rank-0 holds a CUDA context). `vllm_generate` now auto-caps util from measured free VRAM; before each eval the orchestrator also runs `prep_gpus_for_eval` (pkill leftover EngineCore + wait).
+
 ---
 
 ## 8. Standalone eval

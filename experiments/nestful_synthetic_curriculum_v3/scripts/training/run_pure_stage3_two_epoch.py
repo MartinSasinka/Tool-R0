@@ -51,6 +51,7 @@ from scripts.training.two_phase_utils import (  # noqa: E402
     collect_repro_manifest,
     count_jsonl_rows,
     discard_incomplete_checkpoint,
+    prep_gpus_for_eval,
     verify_dev_test_disjoint,
 )
 
@@ -153,6 +154,7 @@ def _eval(
     label: str,
     wandb_run_name: str,
 ) -> dict:
+    prep_gpus_for_eval()
     cmd = [sys.executable, _FINAL_EVAL, "run",
            "--label", label,
            "--out-dir", out_dir,

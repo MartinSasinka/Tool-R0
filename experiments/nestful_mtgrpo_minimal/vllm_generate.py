@@ -75,6 +75,46 @@ def _log_disk_space(prefix: str) -> None:
         pass
 
 
+def _cap_gpu_memory_utilization(
+    requested: float,
+    tensor_parallel_size: int,
+    *,
+    margin: float = 0.08,
+) -> float:
+    """Clamp util so vLLM's free>=util*total check can pass on every TP rank.
+
+    Rank-0 often holds a CUDA context / leftover VRAM while GPUs 1..N look empty.
+    Without this, util=0.85 fails on ~32GB cards when cuda:0 has only ~29GB free
+    (enough for the model, not enough for the startup reservation check).
+    """
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            return requested
+        n = max(1, min(int(tensor_parallel_size), torch.cuda.device_count()))
+        min_free_frac = 1.0
+        for i in range(n):
+            free_b, total_b = torch.cuda.mem_get_info(i)
+            if total_b <= 0:
+                continue
+            min_free_frac = min(min_free_frac, float(free_b) / float(total_b))
+        # Leave headroom for driver + EngineCore parent allocations during worker spawn.
+        safe = max(0.30, min_free_frac - float(margin))
+        if requested > safe + 1e-6:
+            print(
+                f"[vllm] capping gpu_memory_utilization "
+                f"{requested:.2f} → {safe:.2f} "
+                f"(min free_frac={min_free_frac:.3f} across tp={n} GPUs, "
+                f"margin={margin})",
+                flush=True,
+            )
+            return safe
+        return requested
+    except Exception as exc:
+        print(f"[vllm] WARNING: util cap skipped: {exc}", flush=True)
+        return requested
+
+
 def _import_vllm_llm():
     """Import vLLM LLM with a clear message on torch ABI mismatch."""
     import torch
@@ -182,6 +222,9 @@ class VLLMGenerator:
         # engine reloads the freshly-trained weights instead of serving stale ones.
         self._lora_id = 1
 
+        gpu_memory_utilization = _cap_gpu_memory_utilization(
+            float(gpu_memory_utilization), int(tensor_parallel_size),
+        )
         kwargs: Dict[str, Any] = dict(
             model=model,
             tensor_parallel_size=tensor_parallel_size,

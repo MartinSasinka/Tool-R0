@@ -70,6 +70,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         util = os.environ.get("VLLM_GPU_UTIL", "").strip()
         if util:
             cmd += ["--override", f"hardware.vllm_gpu_memory_utilization={util}"]
+        if os.environ.get("VLLM_ENFORCE_EAGER", "").strip() in ("1", "true", "True"):
+            cmd += ["--override", "hardware.vllm_enforce_eager=true"]
     if args.checkpoint:
         ck = os.path.abspath(args.checkpoint)
         if not os.path.isfile(os.path.join(ck, "adapter_config.json")):
