@@ -1,0 +1,284 @@
+{
+  "generated_at": "2026-07-22T14:02:34.577508+00:00",
+  "eval_run": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_smoke_20260719_213722",
+  "note": "8-task smoke train; E1 test missing",
+  "parity": {
+    "checks": {
+      "same_1661_task_ids": true,
+      "paired_by_task_id": true,
+      "same_eval_set_path": true,
+      "same_temperature": true,
+      "same_top_p": true,
+      "same_num_rollouts": true,
+      "same_paradigm": true,
+      "same_base_model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "same_vllm_tp": true,
+      "same_parser_pipeline": true,
+      "same_official_scorer_pipeline": true
+    },
+    "parity_table": {
+      "C0": {
+        "checkpoint": null,
+        "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+        "adapter_hash": null,
+        "task_set_sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+        "task_id_set_sha256": "ccf762a35104e948989d697310f02c6e6998a54e8c24b42fdedb7a4c8e5d43d4",
+        "prompt_sha256": "aeaae71414b47acc748772d11166e3b74dcae6f5c183cdee65acf4a0fd46dfe9",
+        "scorer_sha256": "c1a850ab56a840dc35f81d3e5fcc5f3bcd031adfeb35e760eaa509632e611cdb",
+        "executor_mode": "full (IBM)",
+        "decoding": {
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "num_rollouts": 1,
+          "paradigm": "react"
+        }
+      },
+      "E2": {
+        "checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_smoke_20260719_213722\\checkpoints\\S3_E2",
+        "model_revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+        "adapter_hash": "bbc8cbb17c3354fa7959857730140d235a50b1327681d2127de8af3b24410776",
+        "task_set_sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+        "task_id_set_sha256": "ccf762a35104e948989d697310f02c6e6998a54e8c24b42fdedb7a4c8e5d43d4",
+        "prompt_sha256": "aeaae71414b47acc748772d11166e3b74dcae6f5c183cdee65acf4a0fd46dfe9",
+        "scorer_sha256": "c1a850ab56a840dc35f81d3e5fcc5f3bcd031adfeb35e760eaa509632e611cdb",
+        "executor_mode": "full (IBM)",
+        "decoding": {
+          "temperature": 0.0,
+          "top_p": 1.0,
+          "num_rollouts": 1,
+          "paradigm": "react"
+        }
+      }
+    },
+    "parity_ok": true
+  },
+  "summary": {
+    "C0": {
+      "n": 1661,
+      "win_rate": 0.5382299819385912,
+      "f1_func_mean": 0.6208363802854019,
+      "f1_param_mean": 0.2973675571924404,
+      "first_tool_accuracy": 0.5706666666666667,
+      "full_sequence_accuracy": 0.021673690547862733,
+      "executability": 0.7898856110776641,
+      "final_answer_accuracy": 0.5875978326309452,
+      "under_calling": 0.605057194461168,
+      "over_calling": 0.056592414208308246,
+      "avg_pred_calls": 2.2612883804936783,
+      "taxonomy": {
+        "parse/format error": 69,
+        "success": 894,
+        "executable trajectory ending wrong result": 182,
+        "correct trajectory, wrong final answer": 39,
+        "wrong tool": 166,
+        "correct keys, wrong argument values": 143,
+        "no tool call": 110,
+        "too few calls": 18,
+        "correct tool, wrong argument keys": 38,
+        "too many calls": 2
+      }
+    },
+    "E2": {
+      "n": 1661,
+      "win_rate": 0.5340156532209512,
+      "f1_func_mean": 0.6225476873126644,
+      "f1_param_mean": 0.29652658344886323,
+      "first_tool_accuracy": 0.5738142952571811,
+      "full_sequence_accuracy": 0.022275737507525588,
+      "executability": 0.7886815171583383,
+      "final_answer_accuracy": 0.588199879590608,
+      "under_calling": 0.6056592414208308,
+      "over_calling": 0.060806742925948225,
+      "avg_pred_calls": 2.27212522576761,
+      "taxonomy": {
+        "parse/format error": 66,
+        "success": 887,
+        "correct trajectory, wrong final answer": 36,
+        "wrong tool": 164,
+        "executable trajectory ending wrong result": 182,
+        "correct keys, wrong argument values": 151,
+        "no tool call": 116,
+        "correct tool, wrong argument keys": 45,
+        "too few calls": 13,
+        "too many calls": 1
+      }
+    }
+  },
+  "transitions": {
+    "counts": {
+      "stable_win": 808,
+      "stable_loss": 688,
+      "lost_after_E2": 86,
+      "gained_after_E2": 79
+    },
+    "gained": 79,
+    "lost": 86,
+    "net": -7,
+    "mcnemar": {
+      "n_discordant": 165,
+      "b01": 79,
+      "b10": 86,
+      "chi2": 0.21818181818181817,
+      "p_value": 0.640428787412791
+    },
+    "bootstrap_delta": {
+      "mean": -0.004214328717639976,
+      "ci95": [
+        -0.01926550270921132,
+        0.010836845273931367
+      ],
+      "iters": 10000,
+      "seed": 20260715
+    }
+  },
+  "by_calls": {
+    "2": {
+      "n": 543,
+      "C0_win": 0.4567219152854512,
+      "E2_win": 0.4604051565377532,
+      "delta": 0.0036832412523020164
+    },
+    "3": {
+      "n": 363,
+      "C0_win": 0.6198347107438017,
+      "E2_win": 0.5977961432506887,
+      "delta": -0.02203856749311295
+    },
+    "4": {
+      "n": 223,
+      "C0_win": 0.600896860986547,
+      "E2_win": 0.600896860986547,
+      "delta": 0.0
+    },
+    "5": {
+      "n": 154,
+      "C0_win": 0.564935064935065,
+      "E2_win": 0.5714285714285714,
+      "delta": 0.00649350649350644
+    },
+    "6+": {
+      "n": 378,
+      "C0_win": 0.5291005291005291,
+      "E2_win": 0.5238095238095238,
+      "delta": -0.005291005291005235
+    }
+  },
+  "by_motif": {
+    "fan_in": {
+      "n": 255,
+      "C0_win": 0.6392156862745098,
+      "E2_win": 0.6313725490196078,
+      "delta": -0.007843137254901933
+    },
+    "fan_out": {
+      "n": 1,
+      "C0_win": 0.0,
+      "E2_win": 1.0,
+      "delta": 1.0
+    },
+    "independent_calls": {
+      "n": 23,
+      "C0_win": 0.2608695652173913,
+      "E2_win": 0.2608695652173913,
+      "delta": 0.0
+    },
+    "linear_dependency": {
+      "n": 850,
+      "C0_win": 0.5152941176470588,
+      "E2_win": 0.5094117647058823,
+      "delta": -0.00588235294117645
+    },
+    "long_chain": {
+      "n": 532,
+      "C0_win": 0.5394736842105263,
+      "E2_win": 0.5375939849624061,
+      "delta": -0.001879699248120259
+    }
+  },
+  "failure_shift_question": {
+    "wrong_argument_values": {
+      "C0": 0.08609271523178808,
+      "E2": 0.09090909090909091,
+      "delta_pp": 0.48163756773028366
+    },
+    "wrong_tool": {
+      "C0": 0.09993979530403371,
+      "E2": 0.09873570138470801,
+      "delta_pp": -0.12040939193257022
+    },
+    "executable_wrong_result": {
+      "C0": 0.10957254665863937,
+      "E2": 0.10957254665863937,
+      "delta_pp": 0.0
+    },
+    "pattern_values_down_tool_or_exec_up": false
+  },
+  "first_error_matrix": [
+    {
+      "first_error_class": "no_tool_call",
+      "C0": 110,
+      "E2": 116,
+      "E2_minus_C0": 6
+    },
+    {
+      "first_error_class": "invalid_format",
+      "C0": 69,
+      "E2": 66,
+      "E2_minus_C0": -3
+    },
+    {
+      "first_error_class": "wrong_first_tool",
+      "C0": 65,
+      "E2": 61,
+      "E2_minus_C0": -4
+    },
+    {
+      "first_error_class": "wrong_keys",
+      "C0": 38,
+      "E2": 45,
+      "E2_minus_C0": 7
+    },
+    {
+      "first_error_class": "wrong_value",
+      "C0": 20,
+      "E2": 25,
+      "E2_minus_C0": 5
+    },
+    {
+      "first_error_class": "observation_misuse",
+      "C0": 1,
+      "E2": 2,
+      "E2_minus_C0": 1
+    },
+    {
+      "first_error_class": "too_early_stop",
+      "C0": 301,
+      "E2": 296,
+      "E2_minus_C0": -5
+    },
+    {
+      "first_error_class": "too_many_calls",
+      "C0": 2,
+      "E2": 1,
+      "E2_minus_C0": -1
+    },
+    {
+      "first_error_class": "executable_wrong_result",
+      "C0": 123,
+      "E2": 128,
+      "E2_minus_C0": 5
+    },
+    {
+      "first_error_class": "wrong_final_answer",
+      "C0": 30,
+      "E2": 30,
+      "E2_minus_C0": 0
+    },
+    {
+      "first_error_class": "other",
+      "C0": 0,
+      "E2": 0,
+      "E2_minus_C0": 0
+    }
+  ]
+}

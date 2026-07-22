@@ -1,0 +1,290 @@
+{
+  "meta": {
+    "n_groups_epoch1": 326,
+    "n_groups_epoch2": 326,
+    "dataset_tasks": 326,
+    "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918"
+  },
+  "reward_alignment": {
+    "scheme_stats": {
+      "A0_current": {
+        "dead_pos": 484,
+        "total_pos": 1946,
+        "abs_adv": 9842.73287718492,
+        "good_neg": 4569,
+        "bad_pos": 62,
+        "local_pairs": 0,
+        "dead_pos_frac": 0.24871531346351491
+      },
+      "A1_no_episode": {
+        "dead_pos": 527,
+        "total_pos": 1946,
+        "abs_adv": 9570.70909159066,
+        "good_neg": 4335,
+        "bad_pos": 60,
+        "local_pairs": 0,
+        "dead_pos_frac": 0.27081192189105857
+      },
+      "A2_local": {
+        "dead_pos": 1058,
+        "total_pos": 1946,
+        "abs_adv": 5973.487969466098,
+        "good_neg": 2438,
+        "bad_pos": 40,
+        "local_pairs": 0,
+        "dead_pos_frac": 0.5436793422404933
+      },
+      "A3_local_plus_outcome": {
+        "dead_pos": 761,
+        "total_pos": 1946,
+        "abs_adv": 7998.397173855279,
+        "good_neg": 3790,
+        "bad_pos": 40,
+        "local_pairs": 0,
+        "dead_pos_frac": 0.3910585817060637
+      }
+    },
+    "horizon_pearson_G0_vs_len": 0.7007178900007827,
+    "horizon_spearman_G0_vs_len": 0.388696285706955,
+    "mean_r2_G0_by_episode_reward": 0.9821934094410196,
+    "pair_ordering_pred_call_count_proxy": {
+      "correct": 2199,
+      "reversed": 95,
+      "tie": 0
+    },
+    "too_few_vs_full_reward_gap": {
+      "n_groups": 195,
+      "mean_too_few_reward": 0.21713760324786316,
+      "mean_full_reward": 0.5722273162637359
+    },
+    "mean_reward_win": 1.0,
+    "mean_reward_loss": 0.47926261903478845,
+    "n_win_rollouts": 1507,
+    "n_loss_rollouts": 3709,
+    "per_epoch": {
+      "epoch1": {
+        "groups": 326,
+        "mean_reward": 0.62586263803681,
+        "dead": 91,
+        "mixed": 296
+      },
+      "epoch2": {
+        "groups": 326,
+        "mean_reward": 0.6335641464723931,
+        "dead": 49,
+        "mixed": 308
+      }
+    }
+  },
+  "failure_shift": {
+    "per_rollout_failure_rate": {
+      "epoch1": {
+        "wrong_tool_count": 0.19095092024539878,
+        "wrong_arg_count": 0.5245398773006135,
+        "invalid_ref_count": 0.0,
+        "premature_final_count": 0.0,
+        "too_few_calls_count": 0.14838957055214724,
+        "parse_error_count": 0.016487730061349692,
+        "no_tool_call_count": 0.0003834355828220859,
+        "execfail_total": 0.056365030674846626
+      },
+      "epoch2": {
+        "wrong_tool_count": 0.18366564417177914,
+        "wrong_arg_count": 0.5203220858895705,
+        "invalid_ref_count": 0.0,
+        "premature_final_count": 0.0,
+        "too_few_calls_count": 0.14455521472392638,
+        "parse_error_count": 0.017254601226993866,
+        "no_tool_call_count": 0.0003834355828220859,
+        "execfail_total": 0.04984662576687116
+      }
+    },
+    "abs_failure_counts": {
+      "epoch1": {
+        "wrong_tool_count": 498,
+        "wrong_arg_count": 1368,
+        "invalid_ref_count": 0,
+        "premature_final_count": 0,
+        "too_few_calls_count": 387,
+        "parse_error_count": 43,
+        "no_tool_call_count": 1,
+        "execfail_total": 147
+      },
+      "epoch2": {
+        "wrong_tool_count": 479,
+        "wrong_arg_count": 1357,
+        "invalid_ref_count": 0,
+        "premature_final_count": 0,
+        "too_few_calls_count": 377,
+        "parse_error_count": 45,
+        "no_tool_call_count": 1,
+        "execfail_total": 130
+      }
+    },
+    "n_rollouts": {
+      "epoch1": 2608,
+      "epoch2": 2608
+    },
+    "mean_group_win_rate": {
+      "epoch1": 0.2833588957055215,
+      "epoch2": 0.294478527607362
+    },
+    "mean_first_error_turn": {
+      "epoch1": 1.0950239808153477,
+      "epoch2": 1.1143162393162394
+    },
+    "win_by_gold_calls": {
+      "epoch1": {
+        "3": {
+          "mean_win": 0.2833588957055215,
+          "n": 326
+        }
+      },
+      "epoch2": {
+        "3": {
+          "mean_win": 0.294478527607362,
+          "n": 326
+        }
+      }
+    },
+    "win_by_motif": {
+      "epoch1": {
+        "fan_in": {
+          "mean_win": 0.2852112676056338,
+          "n": 71
+        },
+        "long_chain": {
+          "mean_win": 0.34765625,
+          "n": 64
+        },
+        "distractor_heavy": {
+          "mean_win": 0.24807692307692308,
+          "n": 65
+        },
+        "argument_binding": {
+          "mean_win": 0.2865384615384615,
+          "n": 65
+        },
+        "reference_reuse": {
+          "mean_win": 0.24795081967213115,
+          "n": 61
+        }
+      },
+      "epoch2": {
+        "long_chain": {
+          "mean_win": 0.333984375,
+          "n": 64
+        },
+        "reference_reuse": {
+          "mean_win": 0.23155737704918034,
+          "n": 61
+        },
+        "distractor_heavy": {
+          "mean_win": 0.27307692307692305,
+          "n": 65
+        },
+        "argument_binding": {
+          "mean_win": 0.3269230769230769,
+          "n": 65
+        },
+        "fan_in": {
+          "mean_win": 0.3028169014084507,
+          "n": 71
+        }
+      }
+    }
+  },
+  "checkpoint_delta": {
+    "adapter_norm_E1": 36.651895261737835,
+    "adapter_norm_E2": 36.654639565616414,
+    "delta_norm_E1_to_E2": 0.09348494283150606,
+    "cosine_E1_E2": 0.9999967581322621,
+    "rel_move_E1_to_E2_over_E1": 0.0025506168825353537,
+    "n_tensors": 504,
+    "note": "C0 baseline adapter norm = 0 (no LoRA). E1/E2 norms are deltas from base."
+  },
+  "c0_dev_baseline": {
+    "n": 200,
+    "win_rate": 0.54,
+    "class_distribution": {
+      "too_few_calls": 39,
+      "success": 108,
+      "executable_wrong_result": 22,
+      "no_tool_call": 15,
+      "non_executable": 16
+    },
+    "first_error_type_distribution": {
+      "parse:invalid_json": 4,
+      "exec:runtime_error:ValueError:Unknown format code 'b' for object of type 'str'": 1,
+      "exec:runtime_error:TypeError:unsupported operand type(s) for /: 'str' and 'int'": 4,
+      "exec:runtime_error:TypeError:unsupported operand type(s) for -: 'str' and 'int'": 1,
+      "exec:runtime_error:TypeError:unsupported operand type(s) for /: 'dict' and 'int'": 1,
+      "exec:runtime_error:AttributeError:'list' object has no attribute 'split'": 1,
+      "exec:runtime_error:TypeError:'>' not supported between instances of 'str' and 'int'": 1,
+      "parse:no_tag": 2,
+      "exec:runtime_error:TypeError:expected string or bytes-like object, got 'list'": 1
+    },
+    "win_by_gold_calls": {
+      "2": {
+        "n": 66,
+        "win_rate": 0.45454545454545453
+      },
+      "3": {
+        "n": 44,
+        "win_rate": 0.6590909090909091
+      },
+      "4": {
+        "n": 27,
+        "win_rate": 0.5925925925925926
+      },
+      "5": {
+        "n": 19,
+        "win_rate": 0.631578947368421
+      },
+      "6": {
+        "n": 14,
+        "win_rate": 0.5714285714285714
+      },
+      "7": {
+        "n": 8,
+        "win_rate": 0.375
+      },
+      "8": {
+        "n": 6,
+        "win_rate": 0.3333333333333333
+      },
+      "9": {
+        "n": 5,
+        "win_rate": 0.6
+      },
+      "10": {
+        "n": 2,
+        "win_rate": 0.5
+      },
+      "11": {
+        "n": 2,
+        "win_rate": 0.0
+      },
+      "12": {
+        "n": 2,
+        "win_rate": 0.5
+      },
+      "13": {
+        "n": 2,
+        "win_rate": 1.0
+      },
+      "14": {
+        "n": 1,
+        "win_rate": 0.0
+      },
+      "15": {
+        "n": 1,
+        "win_rate": 1.0
+      },
+      "18": {
+        "n": 1,
+        "win_rate": 0.0
+      }
+    }
+  }
+}

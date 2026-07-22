@@ -1,0 +1,1420 @@
+{
+  "generated_at": "2026-07-20T12:07:28.181394+00:00",
+  "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\two_phase_20260718_192902\\two_phase_20260718_192902",
+  "n_tasks": 1661,
+  "eval_dirs": {
+    "C0": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\two_phase_20260718_192902\\two_phase_20260718_192902\\eval\\eval\\final_test\\C0_baseline",
+    "C1": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\two_phase_20260718_192902\\two_phase_20260718_192902\\eval\\eval\\final_test\\C1_phase1",
+    "C2": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\two_phase_20260718_192902\\two_phase_20260718_192902\\eval\\eval\\C2_nestful_test"
+  },
+  "verdict": "FORMAT_LARGELY_RESOLVED_SEMANTIC_ERRORS_DOMINATE",
+  "definitions": {
+    "A_raw_output_format": "empty text, missing/unclosed <tool_call_answer>, invalid JSON inside tag, bare final answer in tag, truncation/clipped, no tool call emitted",
+    "B_parser_extraction": "internal ReAct parse_tool_call gate fail → stop_reason=parse_fail; reasons: no_tag, invalid_json, not_exactly_one, ...",
+    "C_schema": "unknown tool, missing/extra arg keys, type/serialization vs tool schema",
+    "D_reference": "malformed $...$, unresolvable var, missing output field",
+    "E_semantic": "wrong tool choice, wrong argument values, executable-but-wrong result, call-count mismatch with otherwise valid format",
+    "official_vs_internal_parse": "Official metrics_official.json reports num_pred_parsing_errors=0 because final_eval feeds the official Llama-3.1 parser a JSON-serialized list of ALREADY extracted predicted_calls (build_item → generated_text=json.dumps(calls)). That list always parses; empty/partial lists are scored as 0 calls, not parse errors. Internal taxonomy 'parse/format error' counts ReAct rollout stop_reason=parse_fail (strict single-call <tool_call_answer> gate in nestful_mtgrpo_minimal/parser.py)."
+  },
+  "contradiction": {
+    "official_num_pred_parsing_errors": {
+      "C0": 0,
+      "C1": 0,
+      "C2": 0
+    },
+    "internal_parse_fail_stop_reason": {
+      "C0": 74,
+      "C1": 68,
+      "C2": 63
+    },
+    "explanation": "Official metrics_official.json reports num_pred_parsing_errors=0 because final_eval feeds the official Llama-3.1 parser a JSON-serialized list of ALREADY extracted predicted_calls (build_item → generated_text=json.dumps(calls)). That list always parses; empty/partial lists are scored as 0 calls, not parse errors. Internal taxonomy 'parse/format error' counts ReAct rollout stop_reason=parse_fail (strict single-call <tool_call_answer> gate in nestful_mtgrpo_minimal/parser.py).",
+    "sample_ids_parse_fail_C0_head": [
+      "056e78aa-e183-4205-95b9-e527e36055a3",
+      "07341e6a-f838-45df-b83e-1ed142ffa487",
+      "07d3dbd1-5b23-499b-abf7-de415450280f",
+      "0acb0dee-55be-47d6-8bc6-8cceba632ecc",
+      "0af2696a-9970-4e55-ad31-57e14ca65f20",
+      "0ba7094f-2d50-457b-9db1-af4dcb4d7bc8",
+      "0cea3214-8bbb-443a-943e-de9038f8b5f9",
+      "1067e243-98e4-448a-a38b-2d916c16908a",
+      "10aa0352-2637-4415-b75e-e8e202f11a05",
+      "17d9feee-c5aa-43dd-a0d8-b014458db3ba",
+      "2074a161-d2f7-4c24-aa23-95d4bbf9a4a4",
+      "235150a8-b398-4bb5-94b5-98f0cf4b546a",
+      "236711c7-5a1c-4bf5-b578-6e965b98a085",
+      "2c503a4d-dca3-4289-9975-27ee9ca0ff4f",
+      "305ae825-5e9c-4983-8207-78dd809cba52"
+    ]
+  },
+  "rates": {
+    "C0": {
+      "raw_output_syntax_failure": {
+        "count": 182,
+        "n": 1661,
+        "rate": 0.10957254665863937,
+        "ci95": [
+          0.09391932570740517,
+          0.12522576760987358
+        ]
+      },
+      "parser_extraction_failure": {
+        "count": 74,
+        "n": 1661,
+        "rate": 0.044551475015051176,
+        "ci95": [
+          0.03431667670078266,
+          0.054184226369656835
+        ]
+      },
+      "malformed_tool_call": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "unknown_tool": {
+        "count": 8,
+        "n": 1661,
+        "rate": 0.00481637567730283,
+        "ci95": null
+      },
+      "missing_argument_key": {
+        "count": 41,
+        "n": 1661,
+        "rate": 0.024683925346177003,
+        "ci95": null
+      },
+      "extra_argument_key": {
+        "count": 41,
+        "n": 1661,
+        "rate": 0.024683925346177003,
+        "ci95": null
+      },
+      "wrong_type_serialization": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "malformed_reference": {
+        "count": 1,
+        "n": 1661,
+        "rate": 0.0006020469596628537,
+        "ci95": null
+      },
+      "unresolvable_reference": {
+        "count": 2,
+        "n": 1661,
+        "rate": 0.0012040939193257074,
+        "ci95": null
+      },
+      "missing_output_field": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "final_answer_extraction_failure": {
+        "count": 15,
+        "n": 1661,
+        "rate": 0.009030704394942806,
+        "ci95": null
+      },
+      "output_truncation": {
+        "count": 10,
+        "n": 1661,
+        "rate": 0.006020469596628537,
+        "ci95": [
+          0.002408187838651415,
+          0.010234798314268514
+        ]
+      },
+      "unsupported_trace": {
+        "count": 95,
+        "n": 1661,
+        "rate": 0.057194461167971104,
+        "ci95": [
+          0.046357615894039736,
+          0.06863335340156532
+        ]
+      },
+      "executable": {
+        "count": 1331,
+        "n": 1661,
+        "rate": 0.8013245033112583,
+        "ci95": [
+          0.7820590006020469,
+          0.8199879590608068
+        ]
+      },
+      "wrong_tool": {
+        "count": 163,
+        "n": 1661,
+        "rate": 0.09813365442504515,
+        "ci95": [
+          0.08368452739313667,
+          0.11258278145695365
+        ]
+      },
+      "wrong_argument_value": {
+        "count": 157,
+        "n": 1661,
+        "rate": 0.09452137266706803,
+        "ci95": [
+          0.0806742925948224,
+          0.10836845273931367
+        ]
+      },
+      "executable_wrong_result": {
+        "count": 172,
+        "n": 1661,
+        "rate": 0.10355207706201083,
+        "ci95": [
+          0.08910295003010235,
+          0.11860325105358217
+        ]
+      },
+      "no_tool_call": {
+        "count": 108,
+        "n": 1661,
+        "rate": 0.0650210716435882,
+        "ci95": null
+      },
+      "syntax_format": {
+        "count": 182,
+        "n": 1661,
+        "rate": 0.10957254665863937,
+        "ci95": [
+          0.09391932570740517,
+          0.12522576760987358
+        ]
+      },
+      "schema_or_reference": {
+        "count": 52,
+        "n": 1661,
+        "rate": 0.031306441902468396,
+        "ci95": [
+          0.022877784467188442,
+          0.039735099337748346
+        ]
+      },
+      "semantic_dominant": {
+        "count": 553,
+        "n": 1661,
+        "rate": 0.3329319686935581,
+        "ci95": [
+          0.31125827814569534,
+          0.3564118001204094
+        ]
+      },
+      "official_win": {
+        "count": 889,
+        "n": 1661,
+        "rate": 0.535219747140277,
+        "ci95": [
+          0.5111378687537628,
+          0.5586995785671283
+        ]
+      }
+    },
+    "C1": {
+      "raw_output_syntax_failure": {
+        "count": 181,
+        "n": 1661,
+        "rate": 0.10897049969897651,
+        "ci95": [
+          0.09452137266706803,
+          0.12402167369054787
+        ]
+      },
+      "parser_extraction_failure": {
+        "count": 68,
+        "n": 1661,
+        "rate": 0.040939193257074055,
+        "ci95": [
+          0.031306441902468396,
+          0.049969897652016856
+        ]
+      },
+      "malformed_tool_call": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "unknown_tool": {
+        "count": 9,
+        "n": 1661,
+        "rate": 0.005418422636965683,
+        "ci95": null
+      },
+      "missing_argument_key": {
+        "count": 42,
+        "n": 1661,
+        "rate": 0.025285972305839857,
+        "ci95": null
+      },
+      "extra_argument_key": {
+        "count": 42,
+        "n": 1661,
+        "rate": 0.025285972305839857,
+        "ci95": null
+      },
+      "wrong_type_serialization": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "malformed_reference": {
+        "count": 1,
+        "n": 1661,
+        "rate": 0.0006020469596628537,
+        "ci95": null
+      },
+      "unresolvable_reference": {
+        "count": 2,
+        "n": 1661,
+        "rate": 0.0012040939193257074,
+        "ci95": null
+      },
+      "missing_output_field": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "final_answer_extraction_failure": {
+        "count": 12,
+        "n": 1661,
+        "rate": 0.007224563515954244,
+        "ci95": null
+      },
+      "output_truncation": {
+        "count": 11,
+        "n": 1661,
+        "rate": 0.006622516556291391,
+        "ci95": [
+          0.0030102347983142685,
+          0.010836845273931367
+        ]
+      },
+      "unsupported_trace": {
+        "count": 89,
+        "n": 1661,
+        "rate": 0.05358217940999398,
+        "ci95": [
+          0.042745334136062615,
+          0.06441902468392535
+        ]
+      },
+      "executable": {
+        "count": 1316,
+        "n": 1661,
+        "rate": 0.7922937989163155,
+        "ci95": [
+          0.7730282962071041,
+          0.810957254665864
+        ]
+      },
+      "wrong_tool": {
+        "count": 160,
+        "n": 1661,
+        "rate": 0.09632751354605659,
+        "ci95": [
+          0.08308248043347381,
+          0.11017459361830223
+        ]
+      },
+      "wrong_argument_value": {
+        "count": 152,
+        "n": 1661,
+        "rate": 0.09151113786875377,
+        "ci95": [
+          0.07766405779650813,
+          0.10475617098133655
+        ]
+      },
+      "executable_wrong_result": {
+        "count": 179,
+        "n": 1661,
+        "rate": 0.10776640577965081,
+        "ci95": [
+          0.09331727874774233,
+          0.12402167369054787
+        ]
+      },
+      "no_tool_call": {
+        "count": 113,
+        "n": 1661,
+        "rate": 0.06803130644190247,
+        "ci95": null
+      },
+      "syntax_format": {
+        "count": 183,
+        "n": 1661,
+        "rate": 0.11017459361830223,
+        "ci95": [
+          0.09512341962673089,
+          0.12522576760987358
+        ]
+      },
+      "schema_or_reference": {
+        "count": 54,
+        "n": 1661,
+        "rate": 0.0325105358217941,
+        "ci95": [
+          0.024081878386514148,
+          0.041541240216736906
+        ]
+      },
+      "semantic_dominant": {
+        "count": 549,
+        "n": 1661,
+        "rate": 0.3305237808549067,
+        "ci95": [
+          0.3082480433473811,
+          0.3534015653220951
+        ]
+      },
+      "official_win": {
+        "count": 892,
+        "n": 1661,
+        "rate": 0.5370258880192655,
+        "ci95": [
+          0.5123419626730885,
+          0.5611077664057796
+        ]
+      }
+    },
+    "C2": {
+      "raw_output_syntax_failure": {
+        "count": 175,
+        "n": 1661,
+        "rate": 0.1053582179409994,
+        "ci95": [
+          0.09151113786875377,
+          0.11980734497290789
+        ]
+      },
+      "parser_extraction_failure": {
+        "count": 63,
+        "n": 1661,
+        "rate": 0.037928958458759786,
+        "ci95": [
+          0.028898254063816978,
+          0.04695966285370259
+        ]
+      },
+      "malformed_tool_call": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "unknown_tool": {
+        "count": 11,
+        "n": 1661,
+        "rate": 0.006622516556291391,
+        "ci95": null
+      },
+      "missing_argument_key": {
+        "count": 42,
+        "n": 1661,
+        "rate": 0.025285972305839857,
+        "ci95": null
+      },
+      "extra_argument_key": {
+        "count": 42,
+        "n": 1661,
+        "rate": 0.025285972305839857,
+        "ci95": null
+      },
+      "wrong_type_serialization": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "malformed_reference": {
+        "count": 1,
+        "n": 1661,
+        "rate": 0.0006020469596628537,
+        "ci95": null
+      },
+      "unresolvable_reference": {
+        "count": 1,
+        "n": 1661,
+        "rate": 0.0006020469596628537,
+        "ci95": null
+      },
+      "missing_output_field": {
+        "count": 0,
+        "n": 1661,
+        "rate": 0.0,
+        "ci95": null
+      },
+      "final_answer_extraction_failure": {
+        "count": 6,
+        "n": 1661,
+        "rate": 0.003612281757977122,
+        "ci95": null
+      },
+      "output_truncation": {
+        "count": 8,
+        "n": 1661,
+        "rate": 0.00481637567730283,
+        "ci95": [
+          0.001806140878988561,
+          0.008428657435279952
+        ]
+      },
+      "unsupported_trace": {
+        "count": 100,
+        "n": 1661,
+        "rate": 0.060204695966285374,
+        "ci95": [
+          0.04876580373269115,
+          0.0716435881998796
+        ]
+      },
+      "executable": {
+        "count": 1314,
+        "n": 1661,
+        "rate": 0.7910897049969897,
+        "ci95": [
+          0.7718242022877785,
+          0.8103552077062011
+        ]
+      },
+      "wrong_tool": {
+        "count": 172,
+        "n": 1661,
+        "rate": 0.10355207706201083,
+        "ci95": [
+          0.08910295003010235,
+          0.11739915713425647
+        ]
+      },
+      "wrong_argument_value": {
+        "count": 141,
+        "n": 1661,
+        "rate": 0.08488862131246237,
+        "ci95": [
+          0.07104154124021674,
+          0.09873570138470801
+        ]
+      },
+      "executable_wrong_result": {
+        "count": 187,
+        "n": 1661,
+        "rate": 0.11258278145695365,
+        "ci95": [
+          0.0975316074653823,
+          0.12823600240818783
+        ]
+      },
+      "no_tool_call": {
+        "count": 112,
+        "n": 1661,
+        "rate": 0.06742925948223961,
+        "ci95": null
+      },
+      "syntax_format": {
+        "count": 175,
+        "n": 1661,
+        "rate": 0.1053582179409994,
+        "ci95": [
+          0.09151113786875377,
+          0.11980734497290789
+        ]
+      },
+      "schema_or_reference": {
+        "count": 55,
+        "n": 1661,
+        "rate": 0.033112582781456956,
+        "ci95": [
+          0.024683925346177003,
+          0.041541240216736906
+        ]
+      },
+      "semantic_dominant": {
+        "count": 550,
+        "n": 1661,
+        "rate": 0.33112582781456956,
+        "ci95": [
+          0.30885009030704397,
+          0.35460565924142085
+        ]
+      },
+      "official_win": {
+        "count": 896,
+        "n": 1661,
+        "rate": 0.5394340758579169,
+        "ci95": [
+          0.5147501505117399,
+          0.563515954244431
+        ]
+      }
+    }
+  },
+  "paired": {
+    "syntax_format": {
+      "C1_vs_C0": {
+        "new_positive": 45,
+        "resolved_positive": 44,
+        "both_positive": 138,
+        "both_negative": 1434,
+        "net_rate_delta": 0.0006020469596628537,
+        "ci95": [
+          -0.011438892233594221,
+          0.011438892233594221
+        ]
+      },
+      "C2_vs_C1": {
+        "new_positive": 45,
+        "resolved_positive": 53,
+        "both_positive": 130,
+        "both_negative": 1433,
+        "net_rate_delta": -0.00481637567730283,
+        "ci95": [
+          -0.016857314870559904,
+          0.006622516556291391
+        ]
+      },
+      "C2_vs_C0": {
+        "new_positive": 40,
+        "resolved_positive": 47,
+        "both_positive": 135,
+        "both_negative": 1439,
+        "net_rate_delta": -0.004214328717639976,
+        "ci95": [
+          -0.015653220951234198,
+          0.006622516556291391
+        ]
+      }
+    },
+    "parser_extraction_failure": {
+      "C1_vs_C0": {
+        "new_positive": 20,
+        "resolved_positive": 26,
+        "both_positive": 48,
+        "both_negative": 1567,
+        "net_rate_delta": -0.003612281757977122,
+        "ci95": [
+          -0.011438892233594221,
+          0.004214328717639976
+        ]
+      },
+      "C2_vs_C1": {
+        "new_positive": 22,
+        "resolved_positive": 27,
+        "both_positive": 41,
+        "both_negative": 1571,
+        "net_rate_delta": -0.0030102347983142685,
+        "ci95": [
+          -0.010836845273931367,
+          0.00481637567730283
+        ]
+      },
+      "C2_vs_C0": {
+        "new_positive": 20,
+        "resolved_positive": 31,
+        "both_positive": 43,
+        "both_negative": 1567,
+        "net_rate_delta": -0.006622516556291391,
+        "ci95": [
+          -0.015051173991571343,
+          0.0012040939193257074
+        ]
+      }
+    },
+    "semantic_dominant": {
+      "C1_vs_C0": {
+        "new_positive": 87,
+        "resolved_positive": 91,
+        "both_positive": 462,
+        "both_negative": 1021,
+        "net_rate_delta": -0.002408187838651415,
+        "ci95": [
+          -0.018061408789885613,
+          0.013245033112582781
+        ]
+      },
+      "C2_vs_C1": {
+        "new_positive": 83,
+        "resolved_positive": 82,
+        "both_positive": 467,
+        "both_negative": 1029,
+        "net_rate_delta": 0.0006020469596628537,
+        "ci95": [
+          -0.014449127031908489,
+          0.01625526791089705
+        ]
+      },
+      "C2_vs_C0": {
+        "new_positive": 86,
+        "resolved_positive": 89,
+        "both_positive": 464,
+        "both_negative": 1022,
+        "net_rate_delta": -0.001806140878988561,
+        "ci95": [
+          -0.016857314870559904,
+          0.013847080072245636
+        ]
+      }
+    },
+    "official_win": {
+      "C1_vs_C0": {
+        "new_positive": 84,
+        "resolved_positive": 81,
+        "both_positive": 808,
+        "both_negative": 688,
+        "net_rate_delta": 0.001806140878988561,
+        "ci95": [
+          -0.013245033112582781,
+          0.016857314870559904
+        ]
+      },
+      "C2_vs_C1": {
+        "new_positive": 83,
+        "resolved_positive": 79,
+        "both_positive": 813,
+        "both_negative": 686,
+        "net_rate_delta": 0.002408187838651415,
+        "ci95": [
+          -0.013245033112582781,
+          0.018061408789885613
+        ]
+      },
+      "C2_vs_C0": {
+        "new_positive": 88,
+        "resolved_positive": 81,
+        "both_positive": 808,
+        "both_negative": 684,
+        "net_rate_delta": 0.004214328717639976,
+        "ci95": [
+          -0.010836845273931367,
+          0.01926550270921132
+        ]
+      }
+    },
+    "raw_output_syntax_failure": {
+      "C1_vs_C0": {
+        "new_positive": 45,
+        "resolved_positive": 46,
+        "both_positive": 136,
+        "both_negative": 1434,
+        "net_rate_delta": -0.0006020469596628537,
+        "ci95": [
+          -0.012642986152919929,
+          0.010234798314268514
+        ]
+      },
+      "C2_vs_C1": {
+        "new_positive": 45,
+        "resolved_positive": 51,
+        "both_positive": 130,
+        "both_negative": 1435,
+        "net_rate_delta": -0.003612281757977122,
+        "ci95": [
+          -0.015051173991571343,
+          0.007826610475617099
+        ]
+      },
+      "C2_vs_C0": {
+        "new_positive": 40,
+        "resolved_positive": 47,
+        "both_positive": 135,
+        "both_negative": 1439,
+        "net_rate_delta": -0.004214328717639976,
+        "ci95": [
+          -0.015653220951234198,
+          0.006622516556291391
+        ]
+      }
+    }
+  },
+  "stop_reason_dist": {
+    "C0": {
+      "terminal": 1403,
+      "executor_error": 75,
+      "max_turns": 99,
+      "parse_fail": 74,
+      "clipped": 10
+    },
+    "C1": {
+      "terminal": 1401,
+      "executor_error": 86,
+      "max_turns": 95,
+      "parse_fail": 68,
+      "clipped": 11
+    },
+    "C2": {
+      "terminal": 1415,
+      "executor_error": 84,
+      "max_turns": 91,
+      "parse_fail": 63,
+      "clipped": 8
+    }
+  },
+  "parse_reason_dist": {
+    "C0": {
+      "no_tag": 19,
+      "invalid_json": 55
+    },
+    "C1": {
+      "no_tag": 23,
+      "invalid_json": 45
+    },
+    "C2": {
+      "no_tag": 24,
+      "invalid_json": 39
+    }
+  },
+  "per_turn_syntax": {
+    "C0": {
+      "unknown_or_no_call": {
+        "count": 98,
+        "rate_of_all_tasks": 0.059000602046959665,
+        "rate_of_syntax_fails": 0.5384615384615384
+      },
+      "turn_1": {
+        "count": 57,
+        "rate_of_all_tasks": 0.03431667670078266,
+        "rate_of_syntax_fails": 0.3131868131868132
+      },
+      "turn_2": {
+        "count": 11,
+        "rate_of_all_tasks": 0.006622516556291391,
+        "rate_of_syntax_fails": 0.06043956043956044
+      },
+      "turn_4+": {
+        "count": 8,
+        "rate_of_all_tasks": 0.00481637567730283,
+        "rate_of_syntax_fails": 0.04395604395604396
+      },
+      "final_answer_segment": {
+        "count": 15,
+        "rate_of_all_tasks": 0.009030704394942806,
+        "rate_of_syntax_fails": 0.08241758241758242
+      },
+      "turn_3": {
+        "count": 8,
+        "rate_of_all_tasks": 0.00481637567730283,
+        "rate_of_syntax_fails": 0.04395604395604396
+      }
+    },
+    "C1": {
+      "unknown_or_no_call": {
+        "count": 104,
+        "rate_of_all_tasks": 0.06261288380493679,
+        "rate_of_syntax_fails": 0.5683060109289617
+      },
+      "turn_1": {
+        "count": 60,
+        "rate_of_all_tasks": 0.036122817579771226,
+        "rate_of_syntax_fails": 0.32786885245901637
+      },
+      "turn_2": {
+        "count": 7,
+        "rate_of_all_tasks": 0.004214328717639976,
+        "rate_of_syntax_fails": 0.03825136612021858
+      },
+      "turn_4+": {
+        "count": 6,
+        "rate_of_all_tasks": 0.003612281757977122,
+        "rate_of_syntax_fails": 0.03278688524590164
+      },
+      "final_answer_segment": {
+        "count": 12,
+        "rate_of_all_tasks": 0.007224563515954244,
+        "rate_of_syntax_fails": 0.06557377049180328
+      },
+      "turn_3": {
+        "count": 6,
+        "rate_of_all_tasks": 0.003612281757977122,
+        "rate_of_syntax_fails": 0.03278688524590164
+      }
+    },
+    "C2": {
+      "unknown_or_no_call": {
+        "count": 104,
+        "rate_of_all_tasks": 0.06261288380493679,
+        "rate_of_syntax_fails": 0.5942857142857143
+      },
+      "turn_1": {
+        "count": 52,
+        "rate_of_all_tasks": 0.031306441902468396,
+        "rate_of_syntax_fails": 0.29714285714285715
+      },
+      "turn_2": {
+        "count": 12,
+        "rate_of_all_tasks": 0.007224563515954244,
+        "rate_of_syntax_fails": 0.06857142857142857
+      },
+      "final_answer_segment": {
+        "count": 6,
+        "rate_of_all_tasks": 0.003612281757977122,
+        "rate_of_syntax_fails": 0.03428571428571429
+      },
+      "turn_3": {
+        "count": 3,
+        "rate_of_all_tasks": 0.001806140878988561,
+        "rate_of_syntax_fails": 0.017142857142857144
+      },
+      "turn_4+": {
+        "count": 4,
+        "rate_of_all_tasks": 0.002408187838651415,
+        "rate_of_syntax_fails": 0.022857142857142857
+      }
+    }
+  },
+  "by_call_bucket": {
+    "C0": {
+      "2": {
+        "n": 543,
+        "syntax_format": {
+          "count": 42,
+          "n": 543,
+          "rate": 0.07734806629834254,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 21,
+          "n": 543,
+          "rate": 0.03867403314917127,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 42,
+          "n": 543,
+          "rate": 0.07734806629834254,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 214,
+          "n": 543,
+          "rate": 0.39410681399631675,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 3,
+          "n": 543,
+          "rate": 0.0055248618784530384,
+          "ci95": null
+        }
+      },
+      "3": {
+        "n": 363,
+        "syntax_format": {
+          "count": 52,
+          "n": 363,
+          "rate": 0.14325068870523416,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 18,
+          "n": 363,
+          "rate": 0.049586776859504134,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 5,
+          "n": 363,
+          "rate": 0.013774104683195593,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 94,
+          "n": 363,
+          "rate": 0.25895316804407714,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 3,
+          "n": 363,
+          "rate": 0.008264462809917356,
+          "ci95": null
+        }
+      },
+      "4": {
+        "n": 223,
+        "syntax_format": {
+          "count": 26,
+          "n": 223,
+          "rate": 0.11659192825112108,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 11,
+          "n": 223,
+          "rate": 0.04932735426008968,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 3,
+          "n": 223,
+          "rate": 0.013452914798206279,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 60,
+          "n": 223,
+          "rate": 0.26905829596412556,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 0,
+          "n": 223,
+          "rate": 0.0,
+          "ci95": null
+        }
+      },
+      "5": {
+        "n": 154,
+        "syntax_format": {
+          "count": 15,
+          "n": 154,
+          "rate": 0.09740259740259741,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 5,
+          "n": 154,
+          "rate": 0.032467532467532464,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 2,
+          "n": 154,
+          "rate": 0.012987012987012988,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 47,
+          "n": 154,
+          "rate": 0.3051948051948052,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 1,
+          "n": 154,
+          "rate": 0.006493506493506494,
+          "ci95": null
+        }
+      },
+      "6+": {
+        "n": 378,
+        "syntax_format": {
+          "count": 47,
+          "n": 378,
+          "rate": 0.12433862433862433,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 19,
+          "n": 378,
+          "rate": 0.05026455026455026,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 0,
+          "n": 378,
+          "rate": 0.0,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 138,
+          "n": 378,
+          "rate": 0.36507936507936506,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 3,
+          "n": 378,
+          "rate": 0.007936507936507936,
+          "ci95": null
+        }
+      }
+    },
+    "C1": {
+      "2": {
+        "n": 543,
+        "syntax_format": {
+          "count": 48,
+          "n": 543,
+          "rate": 0.08839779005524862,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 25,
+          "n": 543,
+          "rate": 0.04604051565377532,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 39,
+          "n": 543,
+          "rate": 0.0718232044198895,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 212,
+          "n": 543,
+          "rate": 0.39042357274401474,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 4,
+          "n": 543,
+          "rate": 0.007366482504604052,
+          "ci95": null
+        }
+      },
+      "3": {
+        "n": 363,
+        "syntax_format": {
+          "count": 56,
+          "n": 363,
+          "rate": 0.15426997245179064,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 14,
+          "n": 363,
+          "rate": 0.03856749311294766,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 9,
+          "n": 363,
+          "rate": 0.024793388429752067,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 87,
+          "n": 363,
+          "rate": 0.2396694214876033,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 3,
+          "n": 363,
+          "rate": 0.008264462809917356,
+          "ci95": null
+        }
+      },
+      "4": {
+        "n": 223,
+        "syntax_format": {
+          "count": 24,
+          "n": 223,
+          "rate": 0.10762331838565023,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 10,
+          "n": 223,
+          "rate": 0.04484304932735426,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 3,
+          "n": 223,
+          "rate": 0.013452914798206279,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 63,
+          "n": 223,
+          "rate": 0.2825112107623318,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 0,
+          "n": 223,
+          "rate": 0.0,
+          "ci95": null
+        }
+      },
+      "5": {
+        "n": 154,
+        "syntax_format": {
+          "count": 18,
+          "n": 154,
+          "rate": 0.11688311688311688,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 6,
+          "n": 154,
+          "rate": 0.03896103896103896,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 1,
+          "n": 154,
+          "rate": 0.006493506493506494,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 44,
+          "n": 154,
+          "rate": 0.2857142857142857,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 0,
+          "n": 154,
+          "rate": 0.0,
+          "ci95": null
+        }
+      },
+      "6+": {
+        "n": 378,
+        "syntax_format": {
+          "count": 37,
+          "n": 378,
+          "rate": 0.09788359788359788,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 13,
+          "n": 378,
+          "rate": 0.03439153439153439,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 2,
+          "n": 378,
+          "rate": 0.005291005291005291,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 143,
+          "n": 378,
+          "rate": 0.3783068783068783,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 4,
+          "n": 378,
+          "rate": 0.010582010582010581,
+          "ci95": null
+        }
+      }
+    },
+    "C2": {
+      "2": {
+        "n": 543,
+        "syntax_format": {
+          "count": 43,
+          "n": 543,
+          "rate": 0.07918968692449356,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 22,
+          "n": 543,
+          "rate": 0.040515653775322284,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 39,
+          "n": 543,
+          "rate": 0.0718232044198895,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 219,
+          "n": 543,
+          "rate": 0.40331491712707185,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 2,
+          "n": 543,
+          "rate": 0.003683241252302026,
+          "ci95": null
+        }
+      },
+      "3": {
+        "n": 363,
+        "syntax_format": {
+          "count": 48,
+          "n": 363,
+          "rate": 0.1322314049586777,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 14,
+          "n": 363,
+          "rate": 0.03856749311294766,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 10,
+          "n": 363,
+          "rate": 0.027548209366391185,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 91,
+          "n": 363,
+          "rate": 0.25068870523415976,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 1,
+          "n": 363,
+          "rate": 0.0027548209366391185,
+          "ci95": null
+        }
+      },
+      "4": {
+        "n": 223,
+        "syntax_format": {
+          "count": 22,
+          "n": 223,
+          "rate": 0.09865470852017937,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 7,
+          "n": 223,
+          "rate": 0.03139013452914798,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 3,
+          "n": 223,
+          "rate": 0.013452914798206279,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 71,
+          "n": 223,
+          "rate": 0.3183856502242152,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 0,
+          "n": 223,
+          "rate": 0.0,
+          "ci95": null
+        }
+      },
+      "5": {
+        "n": 154,
+        "syntax_format": {
+          "count": 15,
+          "n": 154,
+          "rate": 0.09740259740259741,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 5,
+          "n": 154,
+          "rate": 0.032467532467532464,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 3,
+          "n": 154,
+          "rate": 0.01948051948051948,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 50,
+          "n": 154,
+          "rate": 0.3246753246753247,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 0,
+          "n": 154,
+          "rate": 0.0,
+          "ci95": null
+        }
+      },
+      "6+": {
+        "n": 378,
+        "syntax_format": {
+          "count": 47,
+          "n": 378,
+          "rate": 0.12433862433862433,
+          "ci95": null
+        },
+        "parser_extraction_failure": {
+          "count": 15,
+          "n": 378,
+          "rate": 0.03968253968253968,
+          "ci95": null
+        },
+        "schema_or_reference": {
+          "count": 0,
+          "n": 378,
+          "rate": 0.0,
+          "ci95": null
+        },
+        "semantic_dominant": {
+          "count": 119,
+          "n": 378,
+          "rate": 0.3148148148148148,
+          "ci95": null
+        },
+        "output_truncation": {
+          "count": 5,
+          "n": 378,
+          "rate": 0.013227513227513227,
+          "ci95": null
+        }
+      }
+    }
+  },
+  "layer_mix_among_nonwins": {
+    "C0": {
+      "E_semantic": 543,
+      "A_syntax_or_parser": 178,
+      "C_D_schema_or_reference": 51
+    },
+    "C1": {
+      "E_semantic": 536,
+      "A_syntax_or_parser": 180,
+      "C_D_schema_or_reference": 53
+    },
+    "C2": {
+      "E_semantic": 538,
+      "A_syntax_or_parser": 173,
+      "C_D_schema_or_reference": 54
+    }
+  },
+  "nonwin_semantic_fraction": {
+    "C0": 0.716321243523316,
+    "C1": 0.7139141742522757,
+    "C2": 0.7189542483660131
+  },
+  "reference_totals": {
+    "C0": {
+      "tool_r0_canonical": 707,
+      "malformed_dollar_ref": 1
+    },
+    "C1": {
+      "tool_r0_canonical": 703,
+      "malformed_dollar_ref": 1
+    },
+    "C2": {
+      "tool_r0_canonical": 810,
+      "malformed_dollar_ref": 1
+    }
+  },
+  "reference_verdict": "NO_REFERENCE_FORMAT_MISMATCH",
+  "stage3_train_audit_verdict": "NO_MISMATCH",
+  "c0_syntax_rate": 0.10957254665863937,
+  "c2_syntax_rate": 0.1053582179409994,
+  "c0_parse_fail_rate": 0.044551475015051176,
+  "c2_parse_fail_rate": 0.037928958458759786,
+  "c0_semantic_rate": 0.3329319686935581,
+  "c2_semantic_rate": 0.33112582781456956
+}

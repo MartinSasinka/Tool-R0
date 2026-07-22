@@ -1,0 +1,12 @@
+first_error_class,C0,E2,E2_minus_C0
+no_tool_call,110,116,6
+invalid_format,69,66,-3
+wrong_first_tool,65,61,-4
+wrong_keys,38,45,7
+wrong_value,20,25,5
+observation_misuse,1,2,1
+too_early_stop,301,296,-5
+too_many_calls,2,1,-1
+executable_wrong_result,123,128,5
+wrong_final_answer,30,30,0
+other,0,0,0

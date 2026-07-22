@@ -1,0 +1,1662 @@
+task_id,gold_call_count,gold_motif,C0_failure,E2_failure,transition,failure_changed
+000b6bed-2a29-4199-a359-0e107922a1ff,3,fan_in,success,success,stable_win,False
+003e29b9-7757-4365-93aa-efdaa8e2f7c1,2,linear_dependency,success,success,stable_win,False
+00830acf-eda7-4310-8396-aff5f243860e,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+008d5d59-d7f6-450a-8b28-9fffb47a5ca4,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+00fd73c1-50e8-47a9-9d20-82a730c02de3,3,fan_in,success,success,stable_win,False
+013c1149-7617-42df-ad8e-122f87f55cb7,3,linear_dependency,success,"correct keys, wrong argument values",lost_after_E2,True
+01548212-310b-4162-89b2-ec5b92b02811,3,fan_in,success,success,stable_win,False
+01a82a8e-0f8c-4b7b-a5de-963ce5c2c971,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+01b4eab5-4d33-4a71-86f9-64a481dfa37a,8,long_chain,success,success,stable_win,False
+01cb6e48-053d-4af1-a500-bb21f6ee84bb,6,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+01e1c208-31dc-4ae6-89ae-da9efb73c7e3,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+01fad8be-a35d-41e8-a3ce-7e89fcabdc3e,2,linear_dependency,success,success,stable_win,False
+0204f50a-a048-4333-a523-afebeebc9898,3,linear_dependency,success,success,stable_win,False
+020f129c-336e-41a2-97a2-5f2dc6ddd3f4,4,fan_in,success,success,stable_win,False
+0214b225-23ae-4a8f-bb93-8fbaec94831c,5,long_chain,no tool call,no tool call,stable_loss,False
+0219f9a1-ced9-4e6d-9b99-1570e1178b66,2,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+02294fa2-cc75-4e2e-8fb7-1cea86c7e1a6,4,fan_in,success,executable trajectory ending wrong result,lost_after_E2,True
+0235f005-b78c-4bb1-9209-8060426a1e0a,2,linear_dependency,success,success,stable_win,False
+0307db3d-719a-4972-bae5-204c97f4fcd2,2,linear_dependency,success,success,stable_win,False
+0308c795-2a66-4896-b45f-cf509a266c3e,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+0310afd8-e25a-4812-8b9f-599adf5e6500,2,linear_dependency,success,success,stable_win,False
+0335ed3e-e613-420b-a07a-9d481b2a791e,25,long_chain,success,success,stable_win,False
+0348fbf7-432c-4759-8a11-5dda28d98ce3,4,fan_in,wrong tool,wrong tool,stable_loss,False
+037ab7a7-2503-4a04-9bde-f2d81c184790,4,fan_in,success,wrong tool,lost_after_E2,True
+038d6798-cb67-4083-8293-acf7a4719d36,6,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+038f3d86-b97b-49e6-b878-1b80c73fb744,2,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+04738948-d434-4928-9552-85c7d887353a,4,fan_in,success,success,stable_win,False
+047fb639-ca36-4a73-9407-507b8c3b4c5d,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+04833334-0a98-443d-b24e-41b78da083b1,2,linear_dependency,success,success,stable_win,False
+04bd68f8-3e77-4cda-b43f-c42616d95d33,3,fan_in,success,success,stable_win,False
+04d81d58-98bf-4665-87aa-6eed765ce6f0,7,long_chain,no tool call,no tool call,stable_loss,False
+056e78aa-e183-4205-95b9-e527e36055a3,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+05701016-377a-4a7f-aa60-696c65010e5b,2,linear_dependency,success,success,stable_win,False
+05ac6aae-4022-49c9-ad2e-f89dcb79be11,4,fan_in,success,success,stable_win,False
+05b1bdbd-de3f-4773-b867-990b6006aef2,2,linear_dependency,success,success,stable_win,False
+05e066ff-e829-4ff9-b8fe-a9bf5264c2a2,2,linear_dependency,no tool call,no tool call,stable_loss,False
+05ec87ae-0659-42c3-82e8-a0645c4a70df,4,linear_dependency,success,success,stable_win,False
+06396ffd-3356-4f13-bcbd-856ba2910e4d,4,fan_in,success,success,stable_win,False
+063dea57-8a7e-47e2-a00b-db0d4a708fa1,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+063fea0b-8980-4c38-b196-3121c69c8671,3,linear_dependency,success,success,stable_win,False
+0648f2f5-1f1c-4c26-8ff4-de4307ff9ae7,3,linear_dependency,success,success,stable_win,False
+064e9802-1efb-452f-9e16-22dcb17606a9,5,long_chain,no tool call,no tool call,stable_loss,False
+06706b83-4657-4e2c-b372-af1d826f1b6e,2,linear_dependency,success,success,stable_win,False
+06da593d-833c-457a-a042-343e08425e0c,2,linear_dependency,success,success,stable_win,False
+071bf373-5abf-402a-86c8-7458eec02243,3,fan_in,success,success,stable_win,False
+072f5a5e-dddd-407b-b641-6121f1cc8b87,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+07341e6a-f838-45df-b83e-1ed142ffa487,7,long_chain,parse/format error,success,gained_after_E2,True
+07421ac8-4030-4262-a84f-8f2ef84d6010,2,linear_dependency,success,success,stable_win,False
+075cbdb6-b1d3-426a-8d6c-0bd706d6cf5a,3,linear_dependency,success,success,stable_win,False
+07a9a371-6afa-4c46-ad60-3deeea19e0f9,2,linear_dependency,parse/format error,executable trajectory ending wrong result,stable_loss,True
+07d3dbd1-5b23-499b-abf7-de415450280f,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+07df2ad6-7ac0-4c6a-b79a-0b02782d0235,36,long_chain,wrong tool,wrong tool,stable_loss,False
+081ad64a-4bb8-4a0c-b2df-c21b7bc8cc35,5,long_chain,no tool call,no tool call,stable_loss,False
+085ee854-a8f1-483e-a7d9-1f19402046f3,7,long_chain,wrong tool,wrong tool,stable_loss,False
+08948f35-7eef-49b4-abd6-4dda3f56f0f3,3,linear_dependency,success,success,stable_win,False
+08cd84c5-99cc-4dab-ae0d-0d62e3491865,2,linear_dependency,success,success,stable_win,False
+091b5d2a-206a-4ac4-81df-754ec6393b92,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+09737368-d88d-472c-9588-d0c387bbcc1b,11,long_chain,success,success,stable_win,False
+09906ab5-1606-4725-82a2-39329768c4d7,2,linear_dependency,success,success,stable_win,False
+0a126d0d-6cfc-4370-b0e1-765cae294529,5,long_chain,no tool call,no tool call,stable_loss,False
+0a31a4fd-fc27-4339-80b7-9a07e32f60d0,3,fan_in,success,success,stable_win,False
+0a5bee61-0e2f-49fc-a0d1-e303c980f6de,7,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+0a78c579-29ef-4c96-918c-e8df417194dc,4,fan_in,success,success,stable_win,False
+0ab5c7ba-2c53-4207-af42-6c1ce32aac9b,9,long_chain,wrong tool,wrong tool,stable_loss,False
+0acb0dee-55be-47d6-8bc6-8cceba632ecc,3,linear_dependency,success,parse/format error,lost_after_E2,True
+0ad0e667-db2a-4513-8cf6-34ce21840bca,3,linear_dependency,no tool call,no tool call,stable_loss,False
+0af2696a-9970-4e55-ad31-57e14ca65f20,4,fan_in,executable trajectory ending wrong result,success,gained_after_E2,True
+0b134f1e-5e3d-4ebc-8f4d-d02b8b372bfa,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+0b64e26d-d18e-4ec6-8d97-4746b387b377,7,long_chain,success,success,stable_win,False
+0b801791-fd2b-42ee-9c06-01ee900e065f,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+0b84b61f-8ee3-443f-a2f6-120462682951,3,linear_dependency,success,success,stable_win,False
+0b8c39be-fcda-4d8c-b2d9-710a48d8d955,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+0b9639f5-37a5-4904-8e92-fb6f377082f9,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+0ba3858e-3c4a-4c19-8796-c2e1c2c9459e,4,fan_in,wrong tool,wrong tool,stable_loss,False
+0ba7094f-2d50-457b-9db1-af4dcb4d7bc8,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+0baca5f1-6810-42b0-a9b4-051f76316bf1,5,long_chain,success,success,stable_win,False
+0bb06ff9-8b0e-4eba-ae38-7dbab0ccc741,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+0be5f136-0c70-4904-b5a9-2e7be2edafd8,3,linear_dependency,too few calls,too few calls,stable_loss,False
+0be783b8-30c8-4b6d-a8cd-100d6e4a999d,4,linear_dependency,executable trajectory ending wrong result,"correct keys, wrong argument values",stable_loss,True
+0c1474f0-aebe-49d2-ae89-2ecd437fd188,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+0c2bb42b-09bd-41c8-b1c3-a3e0aec4c077,3,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+0c3f5a6d-1aec-4d52-9310-c0e0ab651fef,2,linear_dependency,no tool call,no tool call,stable_loss,False
+0c5881b2-9556-42dd-8922-00d35a26becd,2,linear_dependency,success,success,stable_win,False
+0ca2e361-39c1-4889-b296-cf1963a11a42,3,fan_in,wrong tool,"correct keys, wrong argument values",stable_loss,True
+0cea3214-8bbb-443a-943e-de9038f8b5f9,2,linear_dependency,parse/format error,executable trajectory ending wrong result,stable_loss,True
+0d266b2a-325c-4cdb-9615-28475d4e2d37,2,linear_dependency,success,success,stable_win,False
+0d3a8c3b-1f90-4d60-8cb7-370965a70b93,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+0d77d7ab-46ff-419f-882f-a34511651f6a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+0e370f74-67af-4218-a65f-8f39d4562c48,4,fan_in,no tool call,wrong tool,stable_loss,True
+0ea2de11-7f2c-45ef-a7f9-cd7ae540bcb7,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+0eb6128c-ee7e-4e72-93be-6045b8ded248,3,fan_in,wrong tool,wrong tool,stable_loss,False
+0ecf337f-9422-47ab-866a-5c45464dd128,2,linear_dependency,success,success,stable_win,False
+0edcb8a5-990e-4830-b55e-f920ac2ec474,11,long_chain,no tool call,no tool call,stable_loss,False
+0ef8ad41-e5ac-47dc-bc73-3ff7e647aa7e,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+0f0a365f-d57e-4682-891b-b43b9d244d33,2,linear_dependency,success,success,stable_win,False
+0f0b7dac-2c2a-4919-8b62-41b964f06856,5,long_chain,parse/format error,parse/format error,stable_loss,False
+0f1d3aca-4e40-45a9-b1e8-9ef76e1e1cd2,4,linear_dependency,success,success,stable_win,False
+0f4234c1-7508-46d2-85b3-6f659be4a9e5,5,long_chain,success,success,stable_win,False
+0f5b1aaf-4c8d-43bb-b3eb-ccae2cdb723f,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+0f94497b-462b-4f7f-bb8b-6af1c6af2177,2,linear_dependency,success,success,stable_win,False
+0fb74912-8660-495e-9cad-a36ef86fedd5,8,long_chain,success,success,stable_win,False
+0fcd0f80-2059-4e14-ba8f-04a89cb13ec8,5,long_chain,success,success,stable_win,False
+0feb53d5-e450-4a1e-b0ad-13bc7097a92e,12,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+100cb8c9-03ec-428f-ad0c-75e2fc296aaa,3,linear_dependency,success,success,stable_win,False
+1067e243-98e4-448a-a38b-2d916c16908a,5,long_chain,parse/format error,parse/format error,stable_loss,False
+10994d45-1097-43fa-965c-6cbdd1f7a2a0,3,fan_in,success,success,stable_win,False
+10aa0352-2637-4415-b75e-e8e202f11a05,21,long_chain,wrong tool,wrong tool,stable_loss,False
+10bd4232-f4bd-49a8-9992-ead6f447300e,6,long_chain,success,success,stable_win,False
+115e0164-7c78-42bc-9fd9-9ef06892325b,4,fan_in,success,success,stable_win,False
+1163aa42-d931-4ae3-a9af-3800e1200319,19,long_chain,success,success,stable_win,False
+117281b4-527c-4b81-aa5c-3395570d916b,2,linear_dependency,success,success,stable_win,False
+117d6a34-b155-4ecb-92ee-c6764b4ed3ad,3,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+119e58ab-5500-4e2d-bc53-bf4b4797ad3d,10,long_chain,success,success,stable_win,False
+11a47ffa-0eea-4162-9902-1bddc3740bec,3,fan_in,success,no tool call,lost_after_E2,True
+11be58dc-0879-4cb5-8059-1f419f0e9d2b,3,linear_dependency,no tool call,no tool call,stable_loss,False
+123ce206-69a4-4901-93c1-ec1089eb8660,6,long_chain,success,success,stable_win,False
+124ed3aa-ed76-4e5c-9ab9-92ddd06962e8,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+125c4ba6-7e51-43d0-9c29-3a03565bf06d,3,linear_dependency,no tool call,no tool call,stable_loss,False
+127a6fdd-24ca-4bfb-841c-3e1d9605dc1e,5,long_chain,success,success,stable_win,False
+127bde39-c109-4e4b-9bbd-8351becff7a6,2,linear_dependency,success,success,stable_win,False
+12b16d2a-7804-4be3-b278-86320411678e,5,long_chain,wrong tool,wrong tool,stable_loss,False
+12dc2f74-7b39-4722-a840-bca49488c27e,8,long_chain,success,wrong tool,lost_after_E2,True
+12e54ca0-6b81-4bff-8d11-49da5280d283,2,linear_dependency,success,success,stable_win,False
+1310e585-1996-4df5-93f4-9f0b5a0838fd,3,fan_in,success,success,stable_win,False
+13437262-d59c-448d-91eb-317a79a99477,12,long_chain,wrong tool,wrong tool,stable_loss,False
+139b3427-bcac-4e67-aa20-de8bd3ad996b,5,long_chain,no tool call,no tool call,stable_loss,False
+13cbad3d-d768-4d4d-bfce-542b6af4c28c,2,linear_dependency,success,success,stable_win,False
+13ccade6-a862-4e14-aab5-f3e0baca0a5e,2,linear_dependency,success,success,stable_win,False
+13ce6625-e8fe-4415-8615-3522f86f0c1e,3,linear_dependency,success,success,stable_win,False
+13d0e964-c728-4490-8094-0b2ec84a6f40,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+13d599b3-0a9f-4856-8fbf-2fd376400988,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+13fe18cf-12c6-4ab2-9c70-07825b256fcf,4,fan_in,wrong tool,wrong tool,stable_loss,False
+140ab128-b764-44f4-808c-0bf1f14ab4fd,9,long_chain,"correct keys, wrong argument values",parse/format error,stable_loss,True
+141c02ac-0e10-4b84-8fee-d2c6d9878ff1,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+147ffda7-4f8d-49e7-b4d7-799e4e43d10a,4,fan_in,no tool call,no tool call,stable_loss,False
+1486b674-af4e-4bd4-9a48-2bf0f4aa9995,7,long_chain,wrong tool,success,gained_after_E2,True
+14c6e9be-72f7-4a6c-9d36-6f165f14b1cc,3,linear_dependency,success,success,stable_win,False
+14dcf34c-1e76-4163-ae1e-b5d073ab2e30,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+1522c983-00c5-48b6-be88-8922f76c3dbe,2,linear_dependency,success,success,stable_win,False
+152ba32e-de73-44e6-acaa-0dc2a21a3a79,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+15475c99-4877-45c2-acb6-82b1b8fda842,4,fan_in,success,success,stable_win,False
+1570d37f-b2c3-460c-867e-354c972965ba,2,linear_dependency,success,success,stable_win,False
+1579051b-d62f-4e93-9c54-e5d68fb14f1c,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+15b677c0-9517-49fc-a660-630caafe5a8d,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+15c44ed2-3566-4319-b273-97c4c86fee73,5,long_chain,wrong tool,wrong tool,stable_loss,False
+15cb5396-99d3-43fb-a781-496349778973,5,long_chain,success,success,stable_win,False
+1602d8ff-7bac-4174-b12e-a2e3be5a6090,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+160cac0b-0e2d-4519-b36a-dff0af06eb2b,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+162bc9d2-4ec9-4bed-9e0b-4e9353dd8a93,4,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+162c1b3b-3624-4da9-96ba-ffa345c5b030,2,linear_dependency,success,parse/format error,lost_after_E2,True
+162db0f4-cf45-4d19-b905-a260e1b63507,14,long_chain,success,success,stable_win,False
+16660bf8-8f48-4fa3-98af-b47e5de5d240,2,linear_dependency,success,success,stable_win,False
+168257a8-a944-4dbc-8ae6-9b183edb9018,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1687e9c2-fcd0-43f9-9cd4-ffbcdb497c48,6,long_chain,wrong tool,wrong tool,stable_loss,False
+1717147f-edc7-419b-9f2d-5f7fd6e2314b,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+174a02ed-7ae5-4508-9754-d9408a886790,5,long_chain,wrong tool,wrong tool,stable_loss,False
+176117a2-22ed-4802-9675-ef58e13cb518,2,linear_dependency,success,success,stable_win,False
+1765d48e-b1d2-4dd2-bdf5-cc49496ac350,24,long_chain,success,wrong tool,lost_after_E2,True
+17d51682-6eff-4e65-9961-ac33c0307bdf,3,linear_dependency,success,success,stable_win,False
+17d9feee-c5aa-43dd-a0d8-b014458db3ba,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+1810cf06-7295-4bcb-aafb-ae1e0b6244cf,5,long_chain,wrong tool,wrong tool,stable_loss,False
+18167c8f-e3d1-4d86-a7b4-6df8591ebaec,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+183ec111-273c-4830-8d98-e0acc098d2a9,4,fan_in,success,success,stable_win,False
+1853ad03-a772-48e3-986a-8e6f18dee06b,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+185a7140-1b85-41cf-bcf2-ae8025282e07,8,long_chain,wrong tool,wrong tool,stable_loss,False
+18c1e7de-838f-402c-b0eb-92740963761e,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+18f2119a-53e9-4e04-bd1a-2b88f2e68919,3,fan_in,executable trajectory ending wrong result,success,gained_after_E2,True
+18f9c0ab-75c2-47c4-920a-7c644c356d53,3,linear_dependency,success,success,stable_win,False
+196be0c3-aed1-41dd-a972-31a5908720cc,5,long_chain,success,wrong tool,lost_after_E2,True
+199540f3-fbe0-4dc9-9dc3-eaf5d71960f9,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+19a9aa68-70f0-4b34-9729-8fa8ed17ba46,8,long_chain,success,success,stable_win,False
+19c00ba0-a91c-4b7d-8f4c-85bdc1345aaa,2,linear_dependency,no tool call,no tool call,stable_loss,False
+19c019ad-3316-4149-8b01-f3385a280958,6,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+19dd3e9b-c499-4369-a5ba-c81c8c76f165,9,long_chain,success,success,stable_win,False
+1a003cf7-911c-45e5-8b04-d35763f52d99,4,linear_dependency,success,success,stable_win,False
+1a23d01d-1bf7-4680-bcfc-784c194f031c,2,linear_dependency,success,success,stable_win,False
+1a3dfe3d-d7c2-41f8-8b42-cc84a645c308,3,linear_dependency,success,wrong tool,lost_after_E2,True
+1a6e703b-89d1-4041-934b-fc419cba64b0,4,fan_in,success,success,stable_win,False
+1a8f41bf-70ed-4d8c-aa59-c126c1f7b529,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+1a95ac9a-3832-4f34-9b24-c5b7f210d666,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1ab63375-0be1-47c1-bc2f-64b9b6271391,2,linear_dependency,wrong tool,success,gained_after_E2,True
+1b2de267-c06a-4419-9321-20601038d85f,3,linear_dependency,success,success,stable_win,False
+1b41306e-1f29-4d59-99e5-f72b47afb112,7,long_chain,wrong tool,wrong tool,stable_loss,False
+1b676365-4461-4b1a-b034-1e3f7906cb26,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1b6997ba-ed29-403b-b9d6-9c04137cf07c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+1b79e333-e3fc-4292-9d59-987fc3b606f8,26,long_chain,success,wrong tool,lost_after_E2,True
+1b7ed220-f588-4dc7-a7a7-565b9e727a78,6,long_chain,parse/format error,success,gained_after_E2,True
+1bad7592-3f54-4c20-9d6d-fbd9a5967a49,2,linear_dependency,success,success,stable_win,False
+1bbfe06b-1180-4a6e-b212-29243120dfb2,9,long_chain,too few calls,"correct keys, wrong argument values",stable_loss,True
+1bed5660-486d-4212-a47a-1421bed21f05,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+1bfd16bd-f4a1-42fb-8400-b94ead0d6ef4,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1c055a2e-5491-46d7-aa89-b52d6c44c2d4,3,fan_in,success,success,stable_win,False
+1c15787f-a7d3-48be-a715-23befba14fe3,6,long_chain,success,parse/format error,lost_after_E2,True
+1c5f421d-82a1-41ee-82f1-44efc7f013ff,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+1ca21f3a-57c9-4dab-a473-9dd979bb208e,5,long_chain,success,success,stable_win,False
+1cae131e-698c-4d7c-9452-d2ea84debf42,3,linear_dependency,success,success,stable_win,False
+1cde162a-7754-4a14-9160-4391f5a39481,3,linear_dependency,success,success,stable_win,False
+1cea2017-6b5e-4d6c-969e-9d72f58cdc7a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+1d7544df-ed8c-43e9-abb0-f7bc6228e485,4,fan_in,wrong tool,wrong tool,stable_loss,False
+1d83b12d-fdce-4d75-ac3c-8d61a885d942,2,linear_dependency,success,success,stable_win,False
+1d9e8e22-8ba2-44ba-96d9-19bdafaa1f4f,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+1da6066a-3761-4fec-bdce-11b0ebc7af42,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+1dcdbf2f-b7ae-4293-ba08-46491c9a32eb,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1ddeac74-83ee-4119-9100-83133001b0f5,5,long_chain,success,success,stable_win,False
+1e47237d-fb1b-40c1-84f2-f95f0a550efc,13,long_chain,success,success,stable_win,False
+1e781788-3bef-4730-8371-d563ba9e468c,2,linear_dependency,success,success,stable_win,False
+1e9cc106-de96-423d-a75f-e5d9bc48e150,6,long_chain,success,success,stable_win,False
+1ed76362-d447-432f-8693-6b77e9b03e61,5,long_chain,success,success,stable_win,False
+1ee89ff9-234b-4316-8f65-6fceef8d6073,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+1f2362ec-e4dd-42ef-abe0-15b8f3c7c82e,3,linear_dependency,success,success,stable_win,False
+1f8c2c28-457e-4f22-a153-40abeee6b930,6,long_chain,success,success,stable_win,False
+1fdcc183-f3ca-49ca-b7d9-2a8466034136,5,long_chain,success,success,stable_win,False
+1ff34864-aaf4-45ad-9132-b96cc6de3c63,5,long_chain,success,success,stable_win,False
+203ee03e-405f-4fed-9322-30d5b03a0364,5,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+2054e45e-6281-48a9-a9fb-8f8333db41d9,2,linear_dependency,success,success,stable_win,False
+2074a161-d2f7-4c24-aa23-95d4bbf9a4a4,3,fan_in,parse/format error,parse/format error,stable_loss,False
+2074df88-ff97-47f7-824b-f0dea1f34aa8,4,fan_in,success,success,stable_win,False
+2092563a-202f-4984-b18b-d971f42a0f6e,4,fan_in,success,success,stable_win,False
+2092fde9-2097-41c2-b146-5f72934289f3,3,fan_in,no tool call,no tool call,stable_loss,False
+2130114f-44c1-44b8-a691-845e81164f3c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+2137514c-b124-42a1-a902-7b903792d2c7,8,long_chain,no tool call,no tool call,stable_loss,False
+2140a918-5ea0-4afb-bf9c-a6eaf5f74a1e,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+215a654f-549a-47c1-b1ce-772fc2910045,4,linear_dependency,executable trajectory ending wrong result,"correct keys, wrong argument values",stable_loss,True
+21611a3d-1312-4ca5-a55d-53ac907b8b95,3,linear_dependency,success,"correct keys, wrong argument values",lost_after_E2,True
+21d13279-bf86-4ffe-92fd-c65f65389f43,2,linear_dependency,"correct keys, wrong argument values","correct tool, wrong argument keys",stable_loss,True
+21ed738a-5914-4e64-9ff9-7d9edb97644b,3,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+22040b6d-3b03-4762-a3bb-9688fac0fd97,3,linear_dependency,no tool call,no tool call,stable_loss,False
+22189646-8f33-479f-8c1c-9fa573072a25,4,fan_in,success,success,stable_win,False
+2241b636-3c5d-4849-a578-e6f289accc13,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+22b03741-ca95-407c-a30c-e6cbbe90436d,4,linear_dependency,success,success,stable_win,False
+22b583c4-f1f1-4f08-9868-46f3a5cc50fe,7,long_chain,success,success,stable_win,False
+22e261c5-6873-4bf8-9ad4-59bb993bed31,3,linear_dependency,success,success,stable_win,False
+232ab8ef-d590-4f29-9225-548ca132f893,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+235150a8-b398-4bb5-94b5-98f0cf4b546a,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+236711c7-5a1c-4bf5-b578-6e965b98a085,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+236b5116-b02d-45f2-9a4e-18c83a35e11b,5,long_chain,success,success,stable_win,False
+23710d8f-9663-4b33-92c6-aa716afb96ac,3,linear_dependency,"correct tool, wrong argument keys","correct keys, wrong argument values",stable_loss,True
+23ad8f56-aeec-4264-93fb-02df5aa7c50e,2,linear_dependency,success,success,stable_win,False
+23fb2017-6788-4dc2-a28a-403c6b473adb,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+24288ec0-758f-48d2-8e76-ce42e70cbf8d,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+24a1101f-819c-4ca7-a4e4-e7dee741c4f6,4,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+24ae4dc9-6d14-426d-8a74-b148e2546e4d,2,linear_dependency,success,success,stable_win,False
+24bb3a2d-ec01-49dd-8441-44f3134679b8,6,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+25558ef9-4c6d-4de8-b3a4-a1f4bf6eb7b9,4,fan_in,success,success,stable_win,False
+25632e5c-db71-4cc7-a47b-b41c35a1d514,3,linear_dependency,success,success,stable_win,False
+2570300a-af5a-4e4c-baa7-a5da634ac67c,4,linear_dependency,success,success,stable_win,False
+25710d2f-620b-4da5-b405-6f91811cc366,7,long_chain,success,success,stable_win,False
+25797860-12b0-49be-a53e-e8b0933e0900,3,linear_dependency,success,success,stable_win,False
+25a74db4-c7b7-48c7-ab23-76bf679487fd,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+2627d4f3-d25c-4cf9-9653-5d029ee32b4a,3,linear_dependency,success,success,stable_win,False
+262ed5c8-1e4b-45b0-ae60-13ef3433b303,3,fan_in,success,success,stable_win,False
+2657c4d9-92c5-4217-8893-e0614028498a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+266ec704-de4a-42a9-b0fe-5bded7b4ed40,2,linear_dependency,success,success,stable_win,False
+27468e82-a565-4ac8-861b-13a7170839e9,3,fan_in,success,success,stable_win,False
+2795c8df-921d-4311-b6d4-ece1204f2ef5,7,long_chain,wrong tool,wrong tool,stable_loss,False
+27ce6fb4-422d-4803-8744-2984b5bca434,2,linear_dependency,too few calls,too few calls,stable_loss,False
+2804303f-3831-4977-8b0f-8298c475c032,2,linear_dependency,no tool call,"correct keys, wrong argument values",stable_loss,True
+280e037c-5f80-4828-9699-a32ef4d83c0c,3,linear_dependency,success,success,stable_win,False
+2829663a-a30b-420d-a777-ba7c289924c8,4,fan_in,success,success,stable_win,False
+2866f717-aa3b-44b8-b672-a0593d2207a3,6,long_chain,success,success,stable_win,False
+287795be-a3e3-4a06-9572-f3438ccbcb34,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+28cc5dca-3281-4afc-949b-f41784c210a4,4,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+290efd81-b0ce-44b6-82a3-ed5598b30965,7,long_chain,success,success,stable_win,False
+294bfbc7-01f7-45db-86b8-6289f9f11033,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+2961839f-bd25-495a-8d20-5d470b7dbada,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+29be7af9-9686-403a-9ae9-ef7f4aec928d,8,long_chain,success,success,stable_win,False
+29da38b0-234d-4c80-944f-e35040bdd6cb,9,long_chain,wrong tool,wrong tool,stable_loss,False
+2a028d50-5021-4cbd-9401-e9a949adc1fa,3,linear_dependency,success,"correct tool, wrong argument keys",lost_after_E2,True
+2a1226e5-e74e-4464-a887-213f4acefc82,3,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+2a21551d-1077-4a04-a539-12ee1fd5a86f,3,fan_in,success,success,stable_win,False
+2a22dbc6-0db5-454d-9f51-08ae20dc6d47,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+2a2913fd-33a1-441c-8c16-e7bd17808144,3,fan_in,success,success,stable_win,False
+2a7a31c7-8070-41c1-8d20-84148a705ccc,4,fan_in,success,success,stable_win,False
+2a9516d7-fe85-49c4-9d22-d31f22721ded,2,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+2b2c1931-a5c2-44a9-8283-08a4067256c2,4,fan_in,success,executable trajectory ending wrong result,lost_after_E2,True
+2b328f6f-30b3-46fe-a6d8-c51dd8720977,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+2b51319c-9997-4760-9111-50cec120c41c,5,long_chain,success,success,stable_win,False
+2b820d2a-4e43-433b-939c-69e6e8719c57,4,fan_in,wrong tool,wrong tool,stable_loss,False
+2b837d55-e28b-4101-aba9-0f5bb4a2bfdf,2,linear_dependency,success,success,stable_win,False
+2bb28af9-3cd9-4287-bfe3-c43b74cc6675,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+2c098c15-d9f0-4e9b-8354-0cfa5d624e8e,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+2c0af534-599e-4ac7-b90a-e29a64323668,5,long_chain,success,success,stable_win,False
+2c14dd56-bee2-417a-be80-f1ee15e4e9da,3,linear_dependency,success,success,stable_win,False
+2c1f922a-f817-4b89-bb9e-9d24187ce1b5,2,linear_dependency,success,success,stable_win,False
+2c4dad3c-1c93-456b-a172-846d887fe793,4,fan_in,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+2c503a4d-dca3-4289-9975-27ee9ca0ff4f,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+2c787f80-62fe-4cd5-8205-930bb711b22a,3,linear_dependency,"correct keys, wrong argument values",no tool call,stable_loss,True
+2cc0bbe7-00cb-453f-94d0-c8ba7dc40ad9,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+2d151251-59a4-4470-a5ce-2b961771cce9,3,fan_in,success,success,stable_win,False
+2d87c2a9-119e-4dca-a137-bad72526368e,5,long_chain,success,success,stable_win,False
+2d889f67-4268-4127-8af8-7412e813208d,6,long_chain,too few calls,"correct tool, wrong argument keys",stable_loss,True
+2d8f19d8-ad3c-4616-87f7-32ea3d1a42f2,2,linear_dependency,success,success,stable_win,False
+2db1d09b-4f85-4b85-be86-7fc2c68477a7,4,fan_in,"correct keys, wrong argument values",wrong tool,stable_loss,True
+2de63c8e-4a0e-418c-a608-998e6157ba44,5,long_chain,success,success,stable_win,False
+2e2575b0-16f5-4b4b-a609-d8455afa3763,3,fan_in,success,success,stable_win,False
+2e458b03-c3d8-4794-8fc6-25f505ecbdc1,3,linear_dependency,success,success,stable_win,False
+2e70b1d4-a123-4c7a-b4a7-3e31ac5cb464,53,long_chain,success,no tool call,lost_after_E2,True
+2e76a708-23a4-4091-bbd5-1ac893b3f389,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+2eafdc2f-793b-4847-a6a0-c41366fe30d8,2,linear_dependency,success,success,stable_win,False
+2eec5ed9-4c65-43c2-a217-c425bc005381,3,linear_dependency,success,success,stable_win,False
+2efdd7cf-4643-427e-bcf3-7288f77d6a9d,4,fan_in,no tool call,no tool call,stable_loss,False
+2effd81d-6cc7-4291-a06f-ad803a993312,8,long_chain,success,success,stable_win,False
+2f3e431f-95d8-4377-afb9-1e8aec084487,3,fan_in,success,success,stable_win,False
+2fda8d65-cacf-41a7-ac58-3f96be3fdc8b,12,long_chain,success,success,stable_win,False
+2ffc5104-b4b9-4442-9008-e750f89625ce,3,independent_calls,success,success,stable_win,False
+302eabef-4f96-49db-89c4-e046ff358d50,3,fan_in,success,success,stable_win,False
+30559c69-6370-4eb4-82e8-724968e008b3,15,long_chain,wrong tool,wrong tool,stable_loss,False
+305ae825-5e9c-4983-8207-78dd809cba52,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+3088e2b6-0018-431d-90f5-6b138ba676f2,4,fan_in,wrong tool,success,gained_after_E2,True
+309caad0-09b3-4ebf-8ea8-2456d45ec64c,2,linear_dependency,success,success,stable_win,False
+30af9f02-7490-4c7f-be99-e2f99fc57f62,22,long_chain,wrong tool,wrong tool,stable_loss,False
+30def804-3937-4b44-b218-1e931d69c494,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+30f68c04-c3c2-4c38-8905-8d215cea46be,8,long_chain,parse/format error,parse/format error,stable_loss,False
+3106c0ed-dab3-49f7-88a2-d96f9d28adb3,3,linear_dependency,success,success,stable_win,False
+31140711-d426-4a53-8744-6da34e7122b8,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+3123b2ac-7a92-4a50-a64d-d513bcfcac5b,4,fan_in,no tool call,"correct keys, wrong argument values",stable_loss,True
+3129f9c0-c62b-4e2e-a3a5-11e8398b8403,4,fan_in,success,success,stable_win,False
+31362efe-b619-4718-9201-99cd47a8295f,3,linear_dependency,success,no tool call,lost_after_E2,True
+3171c089-3152-48db-90be-f576f555dfd6,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+31906924-317d-4b4d-a82e-8174e8c658fe,2,linear_dependency,success,success,stable_win,False
+31ad35eb-a8a3-4995-b003-7e92b8bb0375,3,linear_dependency,success,success,stable_win,False
+31dd3632-50ae-4e80-995a-5392138ec4fa,2,linear_dependency,success,success,stable_win,False
+31f07d8f-242f-4bae-b93d-47dab6a7f7f3,3,linear_dependency,success,success,stable_win,False
+320629df-4548-4c22-984d-6ca08f47f331,4,linear_dependency,success,success,stable_win,False
+325ca0e4-f4f2-4f1e-bf66-8d362f0a2b95,3,linear_dependency,success,success,stable_win,False
+32881593-1d74-40fd-9d4e-9ea812030a17,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+329e3bee-90fb-459b-a240-ccb5696525d5,4,linear_dependency,success,success,stable_win,False
+33022899-8e8c-4e1b-8a76-0ed698453c77,16,long_chain,success,success,stable_win,False
+333ae580-8cb9-42b0-af5a-eb2db01a9998,6,long_chain,no tool call,no tool call,stable_loss,False
+3340816b-d199-413a-b892-e346e5be6fc5,7,long_chain,success,success,stable_win,False
+335daef0-edbe-4bb7-ae22-e68e0d60c81d,5,long_chain,success,wrong tool,lost_after_E2,True
+337b5e4f-294a-41e2-af72-79dcbf1fccde,7,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+338fc6ec-f0b9-4659-8fad-cffa199b9b14,4,linear_dependency,success,success,stable_win,False
+33911fb8-f9fc-479d-b24d-c2cfb004cc29,7,long_chain,success,success,stable_win,False
+33a9175f-a6b5-482a-b954-749f5bcbe4e1,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+33c1c532-92ed-4ba0-bf3e-28d4b1ff77e6,4,linear_dependency,success,success,stable_win,False
+33d33356-6596-4d0d-b729-f834c0d2e5b2,4,fan_in,no tool call,no tool call,stable_loss,False
+33e81b7e-bc37-43a9-8b7f-335f3a168bdd,6,long_chain,success,success,stable_win,False
+33f5c179-795e-49bf-9388-2b28a291fc1c,7,long_chain,wrong tool,success,gained_after_E2,True
+34549c3b-6a32-444a-8b7a-56b6f484baeb,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+34695a71-75a7-4f34-9c31-9e1fec14735c,3,linear_dependency,success,success,stable_win,False
+3475e2a0-0486-4e6f-8a45-367aec1840a6,2,linear_dependency,success,success,stable_win,False
+347c7db8-a17c-41d4-b273-6e48d58726c3,12,long_chain,success,success,stable_win,False
+3481e153-2b15-4af0-ab73-b7785bfd7d77,7,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+350061df-93df-43db-87e8-91a9f78dab00,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+35790603-7df1-491c-84e1-9a27f4fc5717,3,linear_dependency,success,success,stable_win,False
+35adf4ad-dada-47dd-8c92-1af9100d6a8a,5,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+35e5e6c5-b079-45ed-a693-0a5eadbbb9a6,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+35fc7be7-e78c-4c96-9cf6-a78a9b542ffe,4,linear_dependency,success,success,stable_win,False
+368861a1-8382-4f9e-8574-1f9d7ad05f3e,2,linear_dependency,wrong tool,no tool call,stable_loss,True
+368e77a6-d8f8-472b-bfc7-0265927738f4,4,fan_in,success,success,stable_win,False
+36ac0316-5e89-40e1-b85a-3dfc02daf78e,8,long_chain,success,parse/format error,lost_after_E2,True
+36ba10c3-3023-4b26-b449-84787b535d77,4,fan_in,wrong tool,wrong tool,stable_loss,False
+36ca2d63-b8cc-4a06-ad2b-4748ad224234,3,fan_in,success,success,stable_win,False
+370cba6c-f86f-4d80-a269-2c26578acd1a,4,fan_in,success,success,stable_win,False
+37adb916-6994-4e12-83d0-999ca1125b7b,2,linear_dependency,success,success,stable_win,False
+37f1e206-b1e1-43bd-a848-867f8d1031bd,3,linear_dependency,success,success,stable_win,False
+3822b257-b99e-47cd-8dca-51a8dee5f7a0,3,fan_in,success,success,stable_win,False
+3822da6f-8812-4ec2-bf79-951f31b9f73b,6,long_chain,success,success,stable_win,False
+383d4437-b8f5-42dc-b2f9-ccb05d1c595d,2,linear_dependency,no tool call,no tool call,stable_loss,False
+3852a507-9aaf-4a0d-ae62-4150024eeacd,2,linear_dependency,no tool call,no tool call,stable_loss,False
+38649301-8551-47e5-adbb-d4323b844d6f,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+38932f99-db04-4f81-bf1f-e9e0f7aaf01d,10,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+38965f67-20ba-4909-937a-757b25510a8a,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+38a3bea2-2d38-446f-a832-ee059daf9a1b,3,linear_dependency,success,"correct keys, wrong argument values",lost_after_E2,True
+38c424e0-0880-4e33-b18c-b363b98246a7,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+38e7c22f-c209-4f49-8bbd-08bc3cb08203,3,linear_dependency,success,no tool call,lost_after_E2,True
+39e1f5be-576f-403d-8f7b-ef01175e7ca8,4,fan_in,wrong tool,wrong tool,stable_loss,False
+3a0c7311-7422-4362-ada9-f84f98a583c5,8,long_chain,parse/format error,parse/format error,stable_loss,False
+3a2fdfbc-329b-4b04-b317-cda4487ec394,4,fan_in,wrong tool,wrong tool,stable_loss,False
+3a4b7b77-f0a1-4537-8623-432023f545bb,3,linear_dependency,"correct tool, wrong argument keys","correct keys, wrong argument values",stable_loss,True
+3aaa2cdc-81ad-454c-886c-8fb9438daa49,2,linear_dependency,success,success,stable_win,False
+3aed2d1c-fbad-4bc5-a58b-802574f2b82d,2,linear_dependency,success,success,stable_win,False
+3af4d6d6-e7a2-4297-bd51-4b85e5f54802,7,long_chain,success,success,stable_win,False
+3b447846-d4e4-44c7-b586-1b90517cd294,3,fan_in,wrong tool,wrong tool,stable_loss,False
+3b44e446-fc1b-4dc5-b4c4-afc518030d4d,2,linear_dependency,no tool call,no tool call,stable_loss,False
+3b98a2de-9a2c-46d8-8a0a-3bdb46a33559,4,linear_dependency,parse/format error,parse/format error,stable_loss,False
+3baf684d-f14a-4696-b90f-0191b1df884b,3,linear_dependency,success,success,stable_win,False
+3befaa8e-013b-4a4f-8f66-d8bbba8b3791,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+3bfe52e7-e20f-4637-93ed-e7473c8cd9df,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+3c1b98ef-460b-4994-ae8f-d3b788e6cfa1,9,long_chain,success,success,stable_win,False
+3ca6bc7f-564f-40d0-ac57-c818298f26d5,2,linear_dependency,success,success,stable_win,False
+3cb26c3f-a9f2-4d42-9642-6fca4ad38a7d,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3cc3e39a-2b49-46d2-b86b-0d6fbf619d6c,3,linear_dependency,no tool call,no tool call,stable_loss,False
+3cc89b1c-5cbd-45ca-a67f-1e724ad20220,8,long_chain,success,success,stable_win,False
+3ccace7a-6877-4cc6-8438-0bf44727d832,2,linear_dependency,success,success,stable_win,False
+3ccc5de6-a0ef-4ef2-90b5-bd9bbf562ec1,4,fan_in,wrong tool,wrong tool,stable_loss,False
+3ce5345e-4092-4319-9ace-4538e4c1d75c,2,linear_dependency,success,success,stable_win,False
+3cf3dbc8-516f-4a4b-b6f0-fe69ca806725,6,long_chain,success,success,stable_win,False
+3d10c865-7662-4964-bfe2-fd47e5b41273,12,long_chain,no tool call,too few calls,stable_loss,True
+3d2db0a1-2044-4033-97d0-3f82b93e55bd,7,long_chain,success,success,stable_win,False
+3d531a7b-f887-450f-8b00-a868e555e918,2,linear_dependency,success,success,stable_win,False
+3d68ecaf-034d-46a3-b9ca-c009d54cd936,2,linear_dependency,success,success,stable_win,False
+3d88feda-eeb4-4ef3-bd45-6f53bbffff11,9,long_chain,executable trajectory ending wrong result,wrong tool,stable_loss,True
+3db22c94-70c3-4b2a-8e73-6aec018e01bb,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3dc09ed5-bf3e-4aaf-827b-597690c8b7c5,4,fan_in,success,success,stable_win,False
+3df11343-0943-44cd-9caa-7191dea7d6be,4,fan_in,success,success,stable_win,False
+3e23d38f-95ac-4ec8-842e-f7ab9f1be7d0,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3e45d5f1-f141-4cec-b2a5-a53cd05ddb0c,4,fan_in,no tool call,no tool call,stable_loss,False
+3e68220d-7e85-44d1-bcce-37dab39ef1f2,4,fan_in,success,success,stable_win,False
+3e99b589-8cda-4a31-ab0c-a8040f86b649,6,long_chain,success,success,stable_win,False
+3ef15f18-9bfb-404e-9fca-fe7b88f5e633,8,long_chain,success,success,stable_win,False
+3f22f028-b78c-4127-9f68-09f4ec8a84e5,8,long_chain,parse/format error,success,gained_after_E2,True
+3f238e24-2a17-4621-8772-0576600c4b56,6,long_chain,success,success,stable_win,False
+3f2bc63d-be93-4575-8013-1eb180ddfbb5,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3f50ec13-757f-4270-80cd-1fd2b0b1b89d,3,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3f5153aa-ea03-4045-94b3-523fd229373f,2,linear_dependency,wrong tool,no tool call,stable_loss,True
+3f62db24-5089-4f1c-a461-837f1498207a,5,long_chain,success,success,stable_win,False
+3f65525e-d400-455f-b5b1-5139d3264086,3,linear_dependency,wrong tool,success,gained_after_E2,True
+3f6754e4-0a9d-405f-b3c9-925e9038ef5b,3,linear_dependency,success,success,stable_win,False
+3f8be461-f9fe-46b6-91b7-69d977c2dab5,4,linear_dependency,success,success,stable_win,False
+3fbf0c1d-ef09-4354-a9e0-207deb35c439,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+3fd76ece-fde3-4533-b1e5-be38b33f73ae,2,linear_dependency,success,success,stable_win,False
+3ff4841a-a7e0-4f6c-ba07-2e1071d2c500,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+406d0c79-b87a-4a04-885d-81ac834107e9,3,linear_dependency,success,success,stable_win,False
+4087a90d-d0f5-4bfb-9900-0995322dc02e,4,fan_in,success,success,stable_win,False
+4095817a-86ea-46e1-b67c-7e3570fd87a3,2,linear_dependency,success,success,stable_win,False
+4117385e-9a3b-4770-b562-279b65b0a135,3,fan_in,success,success,stable_win,False
+411ad462-eed5-410a-b379-32870510f7ba,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+411ee71f-c1d9-4047-b84e-9ecd98dec138,3,fan_in,no tool call,no tool call,stable_loss,False
+412f9435-86fc-4aaa-8005-a082caefbd69,3,linear_dependency,success,success,stable_win,False
+4156224c-b760-4b07-9ab2-2835fff4d77d,7,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+41740e14-4b60-4cae-b974-dcd08502b4a1,2,linear_dependency,success,success,stable_win,False
+4181facd-49ba-4f9d-8ced-f01adcdd8782,8,long_chain,no tool call,no tool call,stable_loss,False
+41854b4d-a155-4cef-815f-9b1ce7ce5c64,3,linear_dependency,success,success,stable_win,False
+41b60c1c-6d88-4a34-9242-2aacf2837738,3,fan_in,no tool call,no tool call,stable_loss,False
+41cbe4ff-49e3-47dc-8c87-9aeff22d569a,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+42143b4c-1a3d-4f30-a3a6-c5e10facc1fe,5,long_chain,wrong tool,no tool call,stable_loss,True
+4273b353-d413-41a4-8450-e0ddc619e324,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+42771979-8e49-4bd2-845b-231d4c8d9760,5,long_chain,success,success,stable_win,False
+42c97dd0-2684-4c6a-a6cb-91c85788531d,3,linear_dependency,success,success,stable_win,False
+432c71fe-ea44-4ff1-a575-b5fe6167ad0b,9,long_chain,success,success,stable_win,False
+43928d2f-402c-46bd-9e94-2994f3163b69,3,linear_dependency,success,success,stable_win,False
+444573c6-a01c-4694-bf09-c57a40cc3ae4,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+446e7dde-881f-46a6-ae6e-9991855892a4,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+449a8672-1f24-4e89-9e8d-70661d89a8eb,4,fan_in,success,success,stable_win,False
+44a128c6-b11c-4291-be1c-fe34f6b93ed8,3,linear_dependency,no tool call,success,gained_after_E2,True
+44abad5a-d269-475f-a7ff-4795e59aec39,2,linear_dependency,success,success,stable_win,False
+44ed2df4-0f98-4839-b8ab-c0aa5c03e8b2,3,fan_in,success,success,stable_win,False
+44fa9fda-8603-41e1-94ae-67ba830613cf,5,long_chain,success,success,stable_win,False
+450bfa63-6cc1-4d7e-89e1-2515196dc0ee,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+4511ccb4-e31c-4cc8-b585-04dda07d21cf,2,linear_dependency,success,success,stable_win,False
+453e02e3-d928-41c4-b059-9b6aee990044,3,linear_dependency,success,success,stable_win,False
+45940405-9fe6-4e9f-b953-a380c0a6dd8f,9,long_chain,"correct keys, wrong argument values",no tool call,stable_loss,True
+45b5167f-c781-402e-a8b4-313578d97b76,4,fan_in,success,success,stable_win,False
+45cfe968-1b10-4cc4-a187-4f5c3d30cb8b,2,linear_dependency,success,success,stable_win,False
+45ef0306-390e-477b-a5f9-86b5457a0b82,2,linear_dependency,executable trajectory ending wrong result,"correct tool, wrong argument keys",stable_loss,True
+45fb49e5-34cb-48f8-914a-1e49a5b69102,2,linear_dependency,success,success,stable_win,False
+4621c06b-197b-4738-b975-58a5af3be6b6,4,fan_in,success,success,stable_win,False
+46481c78-d947-4038-a945-c1dd635f3f7c,6,long_chain,parse/format error,no tool call,stable_loss,True
+466a901f-f700-4e5c-8b45-984e29b3e97f,4,fan_in,success,no tool call,lost_after_E2,True
+46ece392-be20-476d-83c2-7201a2d08b1a,11,long_chain,success,success,stable_win,False
+46f440b4-121a-4bde-b72f-44d8feff587d,8,long_chain,no tool call,no tool call,stable_loss,False
+47342c39-7c8d-4583-8135-cfd39372a0ff,2,linear_dependency,no tool call,no tool call,stable_loss,False
+476bc827-5ff7-4601-ae20-cca2ebb53362,2,linear_dependency,success,success,stable_win,False
+47951d60-637d-4723-a9b8-b8fab85af324,12,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+47c68fdc-38e9-492e-b5f2-118a3d68088b,4,fan_in,success,success,stable_win,False
+47da016f-4d89-4f59-bb1d-d801f241f2e4,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+47e99ea3-6afe-4fec-87ea-bbd2847d8f79,4,fan_in,success,success,stable_win,False
+47eb07e5-6b4e-4f92-a26d-77ae619ac030,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+47fbefed-c16e-4a5c-a88a-ac17e2d5c863,4,linear_dependency,success,success,stable_win,False
+4812e166-3663-4ebe-9671-daa88afb4e1d,5,long_chain,success,success,stable_win,False
+482277ec-7970-4461-8380-d62a911b3cc1,2,linear_dependency,success,success,stable_win,False
+4823f429-5401-41a3-ad61-259f7a85a7a1,6,long_chain,wrong tool,wrong tool,stable_loss,False
+486ef9ec-68c7-42e3-a9e6-b7167a0c888e,23,long_chain,success,wrong tool,lost_after_E2,True
+48e8440a-804d-425b-b8b9-0699d4b85788,2,linear_dependency,success,success,stable_win,False
+48fdeea6-6a06-4a60-8b8f-b0e425761d1a,2,linear_dependency,success,success,stable_win,False
+490308d0-6cc5-4616-a062-c3812a4e96fa,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+4938a049-5c5d-4c76-b320-d9f39060cb90,4,fan_in,no tool call,no tool call,stable_loss,False
+49425cf8-7391-4668-9cd1-62001d13b42e,3,fan_in,success,success,stable_win,False
+4963e069-c79f-4453-806f-2a4147a69be9,3,linear_dependency,no tool call,parse/format error,stable_loss,True
+49b9dec0-3ae5-4765-9d4d-10a32e377b77,7,long_chain,success,success,stable_win,False
+49c723a6-9995-4055-be20-60a97632d0d7,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+4a2b120f-efe7-493e-8e07-da7d93909b6e,4,fan_in,success,success,stable_win,False
+4a6b0fd5-d75b-47c0-8130-ff584963f6c4,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+4a6ee89a-2122-4e68-81d0-a52608c90f25,5,long_chain,success,success,stable_win,False
+4ab90654-95ad-45f9-9bbb-51fd79337015,3,linear_dependency,success,success,stable_win,False
+4af7a62d-58fd-431f-a11f-eff486e10987,4,fan_in,success,success,stable_win,False
+4aff8129-5db0-4e78-bc36-686146925301,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+4aff8dce-4260-4cd6-91fa-e6753a9da0d0,17,long_chain,no tool call,success,gained_after_E2,True
+4b17cac8-6e1c-479c-9f0c-541a50964d92,4,fan_in,wrong tool,success,gained_after_E2,True
+4b4a01b0-3d7a-4eb6-9f84-74d3c5e1a9af,7,long_chain,success,success,stable_win,False
+4b54ac08-7d24-4d16-b63d-c4d07aaccd80,4,fan_in,success,success,stable_win,False
+4b755960-987b-447a-a680-dbcd6c465ed5,20,long_chain,no tool call,no tool call,stable_loss,False
+4b9c599c-337e-4c65-8fc9-0d2cf7d4cfdb,6,long_chain,success,success,stable_win,False
+4bc7ddc6-f7ab-49e7-a8da-636d248cb629,2,linear_dependency,success,success,stable_win,False
+4bee0ea3-f79d-43ed-87a5-ddf33a0c3ee1,2,linear_dependency,success,success,stable_win,False
+4c457bfb-c6e5-48ce-890d-b6ac4b2f307b,8,long_chain,no tool call,no tool call,stable_loss,False
+4c5ac14a-91aa-41d6-8a28-4ce50ac14940,7,long_chain,wrong tool,success,gained_after_E2,True
+4c733cb3-3e30-46f4-9570-225aabee657f,3,linear_dependency,success,success,stable_win,False
+4c7479cb-c3d5-4568-abe4-4ecade2f3635,5,long_chain,success,success,stable_win,False
+4c78319c-4e5a-43bb-a7d9-3ccf7a536da7,2,linear_dependency,no tool call,no tool call,stable_loss,False
+4c7fbe56-cbcf-4c99-8d67-ac7b56b6f15c,8,long_chain,success,success,stable_win,False
+4cba337d-cf82-49fe-853b-1ac69d0f19ae,4,linear_dependency,parse/format error,success,gained_after_E2,True
+4cc627fc-ee97-4788-8d21-4a086b751148,9,long_chain,success,success,stable_win,False
+4ce918cf-d712-4995-a4e8-35bbe15ed6be,3,linear_dependency,no tool call,no tool call,stable_loss,False
+4d0b4a81-c432-45cd-a31d-7679303aee3f,2,linear_dependency,success,success,stable_win,False
+4d11a3f0-2fbb-4495-890e-1293f67a28fe,3,linear_dependency,success,success,stable_win,False
+4d555a7f-95ef-4c6f-8312-30039f8d5c82,2,linear_dependency,success,success,stable_win,False
+4d67d516-2b7b-4e50-81a5-9ddf5dd6e580,3,linear_dependency,wrong tool,wrong tool,stable_loss,False
+4dd7ccd1-9079-4514-9c99-803ef79edf46,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+4e256ede-649e-4d17-b992-fdafaac63743,3,linear_dependency,success,success,stable_win,False
+4e462942-5adc-44e4-9771-749e1759751a,13,long_chain,wrong tool,wrong tool,stable_loss,False
+4e7e03b3-f9c9-4cc8-986a-6b425aeeeec8,3,linear_dependency,success,success,stable_win,False
+4e94725b-4f6f-4660-8079-17f785076612,4,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+4ea10eb3-9137-4b2d-8313-974636aacb46,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+4ec99578-b421-4327-95f8-6abeb85d528d,7,long_chain,wrong tool,wrong tool,stable_loss,False
+4f5f22b6-44a0-435b-9924-9fdcbd928522,6,long_chain,success,success,stable_win,False
+4f7d0836-34fa-4d6d-8956-3bd8d62dc577,5,long_chain,"correct keys, wrong argument values",parse/format error,stable_loss,True
+4fb4f58e-c1dc-4b24-a035-d8f0b12c9b63,3,linear_dependency,no tool call,no tool call,stable_loss,False
+4ffa60d9-ae91-4982-935a-3aa819bb1f83,2,linear_dependency,success,success,stable_win,False
+5041571b-1226-4994-8be6-b1ac0d48473e,3,fan_in,success,success,stable_win,False
+504e3a02-c0df-4e39-9cf5-ee7ec9c80eb6,9,long_chain,success,success,stable_win,False
+506f0686-a27d-4bd6-92a3-c8431fb09caf,6,long_chain,too few calls,"correct keys, wrong argument values",stable_loss,True
+5091e71b-4f53-494c-b3b3-69be1dc6dfbf,2,linear_dependency,success,success,stable_win,False
+5099873f-cd8b-4b02-873a-8c77a8e76837,4,fan_in,success,success,stable_win,False
+50b9c98d-fcb8-43bb-ae56-e6b61d607f7c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+50bf739b-0f67-4b0e-9586-68baef74326a,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+50d43e40-a164-49e3-90a5-87a80bc55bfc,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+5139cd27-6d87-4130-994a-3cfe29c62cbd,4,fan_in,success,success,stable_win,False
+51852bfe-9190-4296-95d8-cc2433d469f3,10,long_chain,no tool call,no tool call,stable_loss,False
+5188d443-b4ce-4f3b-9e35-442c1af059be,7,long_chain,no tool call,no tool call,stable_loss,False
+518e3210-8d0c-4f76-8e39-e28aa2864444,2,linear_dependency,success,success,stable_win,False
+51a5caa9-0e61-4c8a-b7b0-b7f38397b8e7,2,linear_dependency,success,success,stable_win,False
+51cbe578-e2fa-447e-8352-3ee8990283f3,8,long_chain,success,success,stable_win,False
+51e2c1fb-f6cb-4c6d-a833-5deb9456784b,2,linear_dependency,wrong tool,success,gained_after_E2,True
+52136fd0-87d3-4086-968b-fa7b8523c333,4,fan_in,success,wrong tool,lost_after_E2,True
+522157eb-3858-46ea-9052-f0b2e73bf024,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+52271e64-fcdc-4461-9777-27ca3767e675,3,linear_dependency,success,success,stable_win,False
+52373c4f-e3e9-49cc-ada0-260f70efa0d3,2,linear_dependency,success,success,stable_win,False
+524b4aba-e540-42ce-aa1d-894d676534a1,2,linear_dependency,success,success,stable_win,False
+524fb88a-638f-4418-a344-405cbfbe4d0d,4,linear_dependency,no tool call,no tool call,stable_loss,False
+52651073-b22c-422b-b2dd-8bc64f894969,7,long_chain,too few calls,success,gained_after_E2,True
+527e54a6-fd36-4274-b93c-a57e88c04eb6,5,long_chain,success,success,stable_win,False
+52ed9713-d2d1-4981-a040-6203edb59fed,5,long_chain,no tool call,no tool call,stable_loss,False
+52f03f10-d69f-4d1b-bae6-961f4f39d975,4,fan_in,success,success,stable_win,False
+52f7e434-112e-47d0-872b-b038643a1fc7,2,linear_dependency,"correct tool, wrong argument keys",success,gained_after_E2,True
+5302ccca-989a-4421-8261-81cd8e3d7b61,2,linear_dependency,success,success,stable_win,False
+53276548-b18e-49cc-aac4-30ba51dfba76,5,long_chain,success,success,stable_win,False
+535072fe-c1ab-4eda-adbf-feeb2bf4d808,3,fan_in,no tool call,no tool call,stable_loss,False
+53578544-d84e-4378-8709-2253adbbf76b,6,long_chain,parse/format error,parse/format error,stable_loss,False
+537aefe1-0523-46ff-a08c-e6657a622fa5,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+53a4529b-b5be-4be5-9daf-fdb735bea3eb,2,linear_dependency,success,success,stable_win,False
+53b18529-b213-4293-ad9a-a4e94ddc0e20,2,linear_dependency,success,success,stable_win,False
+53be30fe-7e4c-4ff3-ac84-f26073bbe1d2,6,long_chain,no tool call,success,gained_after_E2,True
+53f77900-b797-4863-973f-57ff47eaac69,2,linear_dependency,success,success,stable_win,False
+5436377c-b285-4d60-b0f5-89742ae2a9d6,3,linear_dependency,success,success,stable_win,False
+543f9d68-dab7-4ced-ad34-62d724f9f877,2,linear_dependency,success,success,stable_win,False
+54668139-318f-499c-af6b-9992ce1423e0,2,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+5467bbb8-42c8-4997-b46f-5bf9bbc96f76,2,linear_dependency,no tool call,no tool call,stable_loss,False
+54bacfd4-1ac2-4e58-bb6e-8093d738af12,2,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+54c289de-094e-41c8-8927-e8e4654b7a81,3,linear_dependency,success,success,stable_win,False
+54d168da-6ccf-4602-8d10-8abc10ca88ad,4,fan_in,success,success,stable_win,False
+54dcea4e-ec58-4a97-a7c7-f7c5e7396145,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+54eddfbc-0891-47f7-a813-e245b1694dbb,3,fan_in,success,success,stable_win,False
+55382914-ba99-4d09-be43-e55b78d0fcfb,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+553d6d89-0ab0-4ff9-ae1c-58f3d9b12a14,8,long_chain,success,success,stable_win,False
+554ec008-a126-4908-8812-a4475923cdea,2,linear_dependency,success,success,stable_win,False
+55754e10-54f7-4798-8c97-c3db54fbb9b1,5,long_chain,success,success,stable_win,False
+55927c49-9d82-41ca-8402-4272bac69678,5,long_chain,success,success,stable_win,False
+559cf4fa-04a5-4752-b2d0-b3602c75c413,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+56003a13-f5c8-45f4-a4aa-20f822066df0,3,linear_dependency,success,success,stable_win,False
+56a1c574-6d93-4367-a3df-128fecbda809,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+56ae2af3-97e8-47a4-8510-7a3af9dd3177,4,fan_in,success,success,stable_win,False
+56d6ada5-9a0c-4482-aa20-df3cbc13ea67,2,linear_dependency,success,success,stable_win,False
+56eb03c3-57cd-457a-8589-09f1a5bb238f,3,fan_in,no tool call,no tool call,stable_loss,False
+56f1c35e-869f-43be-bcdc-76b5cb1059cf,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+56f201cf-8e18-48a4-8912-7b4c52d81e2f,2,linear_dependency,success,success,stable_win,False
+56f217f3-b20d-4f19-b8ed-23850bc2e6be,2,linear_dependency,wrong tool,success,gained_after_E2,True
+5700a4d5-8713-469f-966a-014f5b159aa5,4,linear_dependency,success,success,stable_win,False
+571d91ab-612a-4d2a-805f-7fb86c287214,2,linear_dependency,success,success,stable_win,False
+577a4547-9566-49d5-a1f9-8ec7720aa38a,2,linear_dependency,success,success,stable_win,False
+578b8277-919e-481b-8222-51205e8202c0,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+580bbed4-38a6-46f2-88f7-8be664884b70,3,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+5830f67e-aed1-4252-a279-f107ab8d15bb,4,linear_dependency,success,success,stable_win,False
+583c7eac-cd65-4c00-b313-966b05a18278,3,fan_in,success,success,stable_win,False
+58583a75-bf8f-45df-b52f-af8b25cc0044,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+585cce43-50e6-470b-aafb-9512e21625c8,3,fan_in,success,success,stable_win,False
+58f0da42-f029-4773-86a1-dc7548859054,3,fan_in,no tool call,no tool call,stable_loss,False
+59075a42-0879-42ef-ada9-56aeddf95fcf,7,long_chain,executable trajectory ending wrong result,wrong tool,stable_loss,True
+59212b7c-319b-47b5-b45c-2e375e846970,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+5925e5bb-64ed-4e1c-821a-e71a25e1c8a5,2,linear_dependency,success,success,stable_win,False
+5933132b-c700-47ca-8c44-9c84cbd0e2c2,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+595fb90c-c4a7-4ce5-8e8c-b9379a3f1edf,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+59c85014-c8c4-45df-956b-04dec99e0bc7,10,long_chain,success,no tool call,lost_after_E2,True
+59de44fb-7e19-49dc-a5ab-861c1d3a71a5,4,fan_in,success,success,stable_win,False
+5a0b4b07-f111-457d-ac9d-f765b3cd562f,4,fan_in,success,success,stable_win,False
+5af48126-ca2a-4eed-9dcc-50ae49894d6d,2,linear_dependency,success,success,stable_win,False
+5af7ea4f-13b0-48f4-adfa-5f5cc8c17b8c,5,long_chain,success,success,stable_win,False
+5afe9528-2b80-4d14-9537-fcb831d3ed08,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+5b0305d9-ae91-4986-8649-eb4253728f54,2,linear_dependency,success,success,stable_win,False
+5b46da8b-f8dd-48cf-9cb7-979ed11a7a9f,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+5b87106c-d308-477d-b1f3-80b8b7c0e151,3,linear_dependency,no tool call,no tool call,stable_loss,False
+5bbe0356-c4f3-40f1-ba56-bbf37156213a,3,independent_calls,success,success,stable_win,False
+5bcb8a30-e90f-47f4-bfe0-e628196a7a0f,6,long_chain,success,success,stable_win,False
+5be0bd9e-1cfa-4094-b9a3-11dd1fd2578e,6,long_chain,wrong tool,parse/format error,stable_loss,True
+5c1b3296-9e7c-4627-acb3-13704d18bd95,2,linear_dependency,success,success,stable_win,False
+5c1b7093-c446-4068-ab24-f6e5e45f9ac2,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+5c527bf4-d8a1-4acb-aaf4-7115c3ba398a,2,linear_dependency,wrong tool,executable trajectory ending wrong result,stable_loss,True
+5cc98b77-a129-4698-a461-45c61ee808cf,3,linear_dependency,success,success,stable_win,False
+5cca94f3-e9c1-41b2-8119-20c0ddbee477,4,linear_dependency,"correct keys, wrong argument values",executable trajectory ending wrong result,stable_loss,True
+5ccb1855-93e1-4276-884f-f3a035edac0a,6,long_chain,success,success,stable_win,False
+5cf668f3-f637-4201-9b94-dc20ba7c964f,3,linear_dependency,success,success,stable_win,False
+5d1294c5-301c-4313-950d-0c615b9e1de8,4,fan_in,no tool call,success,gained_after_E2,True
+5d3114f3-0558-4631-93f5-d1f121f4b1d7,4,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+5d5170f7-a5e0-45bd-b559-17f0c85cd566,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+5d986666-5dba-422b-9671-72c56dfc211e,3,linear_dependency,success,success,stable_win,False
+5da516a1-715a-4249-9f59-3b3d30e1b82d,6,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+5de9f4eb-c41b-442a-9e82-a33eb4933e0d,3,linear_dependency,success,success,stable_win,False
+5e2f6e96-e733-4775-9f34-0280296def96,4,linear_dependency,success,success,stable_win,False
+5e70ec6f-c975-4390-b92f-ef6d30d29f51,3,linear_dependency,success,success,stable_win,False
+5e9676ba-e7a5-4380-95d5-f9416def5243,4,linear_dependency,success,success,stable_win,False
+5ece6f80-a4fb-48a9-95cd-8c8c2a49ab08,4,linear_dependency,success,success,stable_win,False
+5f2689b9-c33d-4981-bb29-c52e7b2ce153,5,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+5f434520-5eb5-48f1-a5ba-e4b51c400976,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+5f4b5d64-bfac-4c3b-8c9f-e32bef0cf9c4,20,long_chain,success,success,stable_win,False
+5f553c92-d30b-44fc-9de0-34908fe55937,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+5f72334c-4a68-496d-a51c-e92c1b70affc,2,linear_dependency,success,success,stable_win,False
+5fa7ff50-c123-4abc-be8a-6113e3dfafa7,3,independent_calls,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+5fe54ca6-24eb-4961-a849-bf714666a36c,5,long_chain,success,success,stable_win,False
+5feaa2ee-6912-4726-991f-1a7344d1dd9b,9,long_chain,success,success,stable_win,False
+600a9f10-9c69-4fa2-803a-c43737d4e42d,3,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+6027b119-4ba1-4242-8b5b-ddae049f1898,6,long_chain,success,success,stable_win,False
+602de5a8-0653-4427-bcc5-3fe582cd714e,2,linear_dependency,success,success,stable_win,False
+603b4a8b-a4dc-4b16-bb35-ab167c6c45c7,7,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+609d22aa-b21a-4ed8-9ae0-7cbea4aa837e,3,linear_dependency,success,"correct keys, wrong argument values",lost_after_E2,True
+60b0664f-1f02-4484-9101-def1ca77fd1a,6,long_chain,no tool call,no tool call,stable_loss,False
+60beb7c6-f7fe-469f-834a-74e78e2c577a,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+60e78a4e-cf2f-4b05-bd0d-a693ecae9c11,2,linear_dependency,success,success,stable_win,False
+611a5b28-c4be-4e4d-948f-d0ecd9d02ac5,3,fan_in,success,success,stable_win,False
+613704cd-23e7-4c59-8668-b64bf99cd52b,4,fan_in,wrong tool,wrong tool,stable_loss,False
+61477e8d-b6e8-4157-919d-2efa6d39c1ae,2,linear_dependency,success,success,stable_win,False
+617cc38b-a66c-48fa-95f1-6b155ff4439c,2,linear_dependency,success,success,stable_win,False
+61cbd84c-a854-43b2-a962-3ed64fa2bea5,3,linear_dependency,success,success,stable_win,False
+61fc2914-10f0-405d-af90-8e5cbe65909a,2,linear_dependency,success,success,stable_win,False
+620e82cc-c653-4faf-953b-510000552cd0,2,linear_dependency,success,success,stable_win,False
+62110db0-54fa-4605-bf3c-79280daad658,10,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+622916b4-95b3-4a78-a1f1-54153ac0d69a,4,fan_in,success,success,stable_win,False
+623b1c5a-4ee6-4845-9f6f-d41129369bcc,5,long_chain,success,success,stable_win,False
+62536099-faac-465d-b921-b3912666d694,2,linear_dependency,success,success,stable_win,False
+62a3f26b-72e6-45c0-8793-0dba3042a51b,3,linear_dependency,success,success,stable_win,False
+62ab7c42-6aad-4d9c-9012-eb52fb01a82b,2,linear_dependency,success,parse/format error,lost_after_E2,True
+62c320d7-05fe-477a-af3e-575711d9d60a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+62d0404a-98bf-432c-aafd-1221695b98e5,6,long_chain,success,success,stable_win,False
+62ed0666-2e5a-4e7f-8707-fbc6f2a05d76,4,fan_in,success,success,stable_win,False
+63253fb5-5c4b-4d95-b1ab-64cd2019e5c5,18,long_chain,success,success,stable_win,False
+638256f8-fcd0-4835-8fd1-82526d716fb4,2,linear_dependency,success,success,stable_win,False
+63854dc5-cf6e-40bd-94e9-f4f930165cb7,2,linear_dependency,success,success,stable_win,False
+63a86d01-04f7-43e6-a8c9-e8ac53331b71,2,linear_dependency,executable trajectory ending wrong result,"correct tool, wrong argument keys",stable_loss,True
+63decc75-1337-4064-a0f1-abd398d5985e,6,long_chain,success,success,stable_win,False
+63f7e661-fbaa-4def-aed0-4eccd041b618,5,long_chain,success,success,stable_win,False
+64b222de-19e2-484f-88be-697560b8dd78,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+65148711-a63a-4d3f-98f7-192c73c15ac1,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+654ce42c-5be5-4e84-838a-38364d7ec723,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+659d2ad0-1689-4763-94b7-a87ec256880a,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+65cdbc7c-0e60-476b-92fb-fc7e9572fda2,5,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+660884b5-c6aa-4c3b-a428-822a9ac3bb13,3,fan_in,success,success,stable_win,False
+66312c55-87f2-4eb8-9ba2-f5158c1db300,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6638bda3-33a9-468b-a9cd-15db3a2e6cf3,2,linear_dependency,success,success,stable_win,False
+664a9ab5-d49e-4c80-9ce8-0b867ef97777,5,long_chain,success,success,stable_win,False
+665f96da-1bc5-4429-bc38-58046cdfd1c2,4,fan_in,success,success,stable_win,False
+6661b550-224b-4330-9109-59404e7b811a,3,linear_dependency,success,success,stable_win,False
+66740fb4-cef9-4102-8b17-c25c8c5908a2,2,linear_dependency,success,success,stable_win,False
+668c5b0d-fd2b-4ef0-aa39-06474240bba2,2,linear_dependency,success,success,stable_win,False
+66aa8046-f0a2-4214-8943-89e60048ca96,2,linear_dependency,success,too few calls,lost_after_E2,True
+66d08f5e-c50b-4e4a-b765-fbf9a8b14441,4,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+66f0851c-8f01-4557-879e-e7e453d043fc,6,long_chain,success,success,stable_win,False
+66fc3755-c796-4aec-a616-4d193460e181,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6720cbaf-0699-4e53-ab80-664c6a312778,4,fan_in,success,success,stable_win,False
+673ebc62-2709-4d21-8129-2f29302d9542,4,fan_in,success,executable trajectory ending wrong result,lost_after_E2,True
+677ac421-271d-49b9-8717-34cc39eb2dd7,2,linear_dependency,success,success,stable_win,False
+677dbc88-356e-42d7-ab61-dbfc4a0d2cdc,2,linear_dependency,no tool call,success,gained_after_E2,True
+67840173-0b24-408f-9039-b9c84f6bda62,3,linear_dependency,success,success,stable_win,False
+6789e917-6ea1-41cc-b38e-a29dd53b2bd3,4,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+679aad5a-6d71-4d4d-89a7-a83e40da756c,3,linear_dependency,success,success,stable_win,False
+680c7db5-488f-4216-8c9c-1e29e98be289,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+68756d94-c455-45cd-9b72-2f87ca9c9451,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+68955a63-d90c-4c1c-9d87-76afe70bd113,2,linear_dependency,success,success,stable_win,False
+6895651a-8731-47bc-bef3-42a4944392c9,5,long_chain,success,success,stable_win,False
+68bb325d-be6c-4a56-a70b-be023b8f068b,8,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+695f443d-6d2d-4aeb-a617-f9aca7032852,2,linear_dependency,success,success,stable_win,False
+69bacfb5-3461-450d-bee0-3311e75bf7aa,5,long_chain,no tool call,no tool call,stable_loss,False
+69e11fb4-5d0f-445b-8242-8f1c4587dd91,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6a001923-6ece-46ae-9e4e-ae2308bad269,3,linear_dependency,success,no tool call,lost_after_E2,True
+6a069715-af16-4353-b530-2c68b1045702,8,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+6a31b44a-a49f-40dc-950e-304fba1b7c46,2,linear_dependency,success,success,stable_win,False
+6a341e9d-c274-4fe6-b4fd-93d45ba74feb,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+6a42f278-ce39-4b47-ae02-60f80782c2c6,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6a4d898d-e218-4d86-b78a-cf8be42207ef,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+6a580394-2cd8-4a80-bac8-d81c88244059,25,long_chain,success,success,stable_win,False
+6a6f39c7-6f71-4fef-b09b-cebb8f602b19,5,long_chain,success,success,stable_win,False
+6a763e96-6acd-4bb1-9328-fae05d0199b7,3,linear_dependency,success,success,stable_win,False
+6a8f3121-3467-477e-9f28-26b4632178cc,2,linear_dependency,"correct keys, wrong argument values","correct tool, wrong argument keys",stable_loss,True
+6a9f6952-e49e-4cd1-94e3-122e9d453aa6,6,long_chain,success,success,stable_win,False
+6aa83311-7f37-4dcd-b0bb-981132a99240,6,long_chain,success,success,stable_win,False
+6accc733-a657-438c-97a2-d9b11b97edb8,4,fan_in,success,success,stable_win,False
+6ad80b87-8aa4-4102-818c-32966d393ddb,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+6ae58ffa-f086-4aa5-9bc9-e2beeec685cc,6,long_chain,parse/format error,parse/format error,stable_loss,False
+6b3f28d1-703c-4a21-b432-d84505bf42f1,20,long_chain,success,success,stable_win,False
+6b6884c6-f22a-4f7a-8fc4-73036ab9a0c3,5,long_chain,success,success,stable_win,False
+6b6c601e-23fc-49f8-ad28-e62718aa3852,2,linear_dependency,success,success,stable_win,False
+6b9ff3e6-2b08-4607-af55-f0131c843cf4,3,fan_in,success,no tool call,lost_after_E2,True
+6bcc90ed-8253-46d4-86a6-ebc1c8550f7a,5,long_chain,success,success,stable_win,False
+6bd1ae89-3118-401b-bda0-268c531d7aa9,5,long_chain,success,success,stable_win,False
+6bf76693-34be-494f-9a98-a2b80c2278c6,6,long_chain,wrong tool,wrong tool,stable_loss,False
+6c0d717a-af97-47db-ad9d-45255f829e0d,3,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+6c5bf32e-9b63-4950-a348-72e08943a6d5,4,fan_in,success,wrong tool,lost_after_E2,True
+6c668a48-30d8-46ba-a9ac-8e0c58f9d9f0,6,long_chain,success,success,stable_win,False
+6d012077-1b7e-433c-8a7c-3c4c91deccd7,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+6d15e4f0-bd08-46af-890f-a0d654e9e59e,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6d1ee05d-7fc2-44f3-8e93-fd91109f50d8,3,linear_dependency,success,success,stable_win,False
+6d2f1018-c5e2-4007-8aee-0a786879d6e6,7,long_chain,parse/format error,success,gained_after_E2,True
+6d2f296f-b21b-4c5d-9a0c-1a4bb82df7bc,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+6dc00645-b34d-4f6b-a00e-046b14a8ece5,2,linear_dependency,success,success,stable_win,False
+6dc648ed-30f9-431f-9617-670ea68e05e0,2,linear_dependency,success,success,stable_win,False
+6e091b41-13a2-4a4a-b4d9-105cf1b9ef85,2,linear_dependency,"correct trajectory, wrong final answer",wrong tool,stable_loss,True
+6e0c6b76-ff08-4f6a-b461-32ebd84804a3,3,linear_dependency,success,success,stable_win,False
+6e46d58b-4319-430e-b6ca-72689e56a189,10,long_chain,success,success,stable_win,False
+6e75caef-367c-4d50-aab6-6313ef2e7aec,3,linear_dependency,success,success,stable_win,False
+6e91a284-bb94-4086-85c0-179782989414,9,long_chain,success,success,stable_win,False
+6ea6a1a9-f0e3-43ea-925a-4c627fce8951,4,fan_in,success,wrong tool,lost_after_E2,True
+6ebdc2c3-1311-42b0-a856-b6a8093f98fe,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6ebf16fe-2308-40db-b218-c56eef25559f,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+6ef56a6c-2845-45d4-b29a-813bd92d4f94,6,long_chain,success,success,stable_win,False
+6f14fa2b-b8e5-4158-9a4c-02ea855fa97e,12,long_chain,success,success,stable_win,False
+6f343b2c-42bb-4d4d-956e-2628490d5350,3,fan_in,success,success,stable_win,False
+6f44c50b-e8a0-4e98-85f5-81f986170546,5,long_chain,executable trajectory ending wrong result,"correct keys, wrong argument values",stable_loss,True
+6f51c330-7ba6-435b-ad66-94130b557814,4,fan_in,parse/format error,parse/format error,stable_loss,False
+6fb9747f-205d-4057-98a9-bebfa690d3fe,5,long_chain,wrong tool,success,gained_after_E2,True
+6fbf42c1-b3e7-4b2c-9393-381eb8739073,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+6fdb1d62-8d95-4c71-9939-7d0fe00ab074,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+6feac68f-af55-4b99-bc46-49eacc07cb20,3,linear_dependency,success,success,stable_win,False
+7018bd43-df5c-4d95-a4c1-3120cee10172,12,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+701c0043-520b-4be2-91bd-1b24d200d437,5,long_chain,success,success,stable_win,False
+702881c1-d5ba-4b90-aa65-8a17d9a3a5a6,5,long_chain,success,success,stable_win,False
+70319bea-919a-418f-97d6-bb5fd2fa8e71,6,long_chain,wrong tool,wrong tool,stable_loss,False
+703dd394-715b-4adf-b2e7-7db671f6064a,2,linear_dependency,success,success,stable_win,False
+70666870-66fb-462b-96b1-2739e36a0f60,4,fan_in,success,success,stable_win,False
+7074418e-212d-4843-a933-d5c1b1aee103,2,linear_dependency,success,success,stable_win,False
+7093866b-394c-4a41-8798-a9b6db04bafc,3,linear_dependency,success,success,stable_win,False
+7097f5bc-0c2c-4d7c-821d-674e8b20e5a3,8,long_chain,success,success,stable_win,False
+710ddf0a-d8dc-4e7b-bbed-8620eb5eec9f,2,linear_dependency,parse/format error,no tool call,stable_loss,True
+71425aa1-18ff-4f04-a644-a91a2052e572,2,linear_dependency,success,success,stable_win,False
+714678eb-1672-42a9-ad0a-a1c61ab347aa,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+714d3faf-b9d9-42a7-95b5-610d47e43332,3,linear_dependency,success,success,stable_win,False
+71940af2-7c70-436f-9555-39b898074295,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+71974b33-a9a8-4685-b0b8-7bf4e8a4f74c,3,linear_dependency,success,success,stable_win,False
+71d06959-7b76-48fb-906f-16f634884bf2,6,long_chain,wrong tool,wrong tool,stable_loss,False
+72608d39-f051-4ec5-9384-4f4fd2fe1465,5,long_chain,no tool call,wrong tool,stable_loss,True
+728e5dc2-48d2-46a4-a58e-c62d03357507,3,fan_in,"correct keys, wrong argument values",wrong tool,stable_loss,True
+729b41ed-7a84-4209-bff1-b4e4045e4ad3,2,linear_dependency,success,success,stable_win,False
+729c6e87-1e07-469d-9df2-301abb1bb172,3,independent_calls,success,success,stable_win,False
+72ac400e-edc0-42ae-b09d-e4b2234ec234,3,linear_dependency,success,success,stable_win,False
+72c772c0-271f-4fb4-a4fd-5a1e8b57daed,10,long_chain,wrong tool,wrong tool,stable_loss,False
+72fa90ad-54d1-4c20-886b-739e52940ce5,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+73301ada-cb5a-4ee0-a8e6-d1f4a8d02a61,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+733cbfad-2d4c-4c73-b1da-fcfdbe0ef0ea,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+73456b3f-d04d-4746-ae18-622952722f11,4,fan_in,success,success,stable_win,False
+734fc7ad-f5f6-4e08-84aa-fe91445291d9,3,linear_dependency,success,success,stable_win,False
+7394c8af-324e-421a-89ad-dc29355fad02,2,linear_dependency,success,success,stable_win,False
+73d62322-04e8-4039-866f-787dc05fda19,4,fan_in,success,success,stable_win,False
+73d6a932-bcc1-47f9-8918-28a053d42577,5,long_chain,no tool call,no tool call,stable_loss,False
+741176f4-aabf-4833-b5c0-c4430f9d6559,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+741d992d-2955-45ca-81db-e0f8f62cf639,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+742617c9-72e1-4b68-b8dc-489d0c388229,3,linear_dependency,success,success,stable_win,False
+742a20eb-9287-47e0-8efb-778db68135a1,2,linear_dependency,success,success,stable_win,False
+7454a9a8-0e17-4110-bb90-1d3b541b66f6,3,linear_dependency,success,success,stable_win,False
+746c4d4f-e28a-483b-a0d7-b63e766dc071,5,long_chain,success,success,stable_win,False
+75339339-59b7-4e0d-8ac6-517db622a7b4,2,linear_dependency,success,success,stable_win,False
+7533eefe-b652-4afd-834a-3ee8c38ca14e,5,long_chain,success,success,stable_win,False
+75c4f0cb-304d-4292-83c4-453bb472e5ae,2,linear_dependency,too few calls,too few calls,stable_loss,False
+762f5d4c-162c-4066-b46e-ccbfe9b34711,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+76446ae7-0565-4df5-bff6-bddcaf386d0f,3,linear_dependency,parse/format error,success,gained_after_E2,True
+766a4d29-1adf-4c1b-ae0b-bda50257dfb3,2,linear_dependency,parse/format error,no tool call,stable_loss,True
+767452b7-f09a-4ccc-ab2d-674c207f7a5e,13,long_chain,wrong tool,wrong tool,stable_loss,False
+76d3080a-b9cc-4c5b-a532-0090423946be,3,linear_dependency,success,no tool call,lost_after_E2,True
+76de8525-048b-4209-8867-48bfb6ff6fa8,6,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+7727cd5b-d0a1-4779-bfee-60e255bd98fb,4,fan_in,wrong tool,success,gained_after_E2,True
+77693b0f-2148-4714-bcad-3eb83fc87b0c,3,fan_in,success,success,stable_win,False
+778944d1-9bb5-4f8a-a2a6-d119f50e456f,3,linear_dependency,success,success,stable_win,False
+77916eaf-36e1-43a3-a8c3-48451c3253fb,4,fan_in,success,success,stable_win,False
+77a0e4ff-a6e6-429f-a945-b82daa6852fb,3,linear_dependency,success,success,stable_win,False
+77a1ae43-b83e-4a6c-81a6-fa95a2cc6d1a,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+77bb5969-f300-4f68-99d4-179bcd9ba304,3,independent_calls,success,success,stable_win,False
+77c9bade-89a2-4200-9e4f-c0152a4496e7,2,linear_dependency,success,success,stable_win,False
+77e2dacb-21c1-4958-ad73-60de224ae7d2,4,fan_in,success,success,stable_win,False
+77fcfe00-023b-48f5-97d9-39dc1bf87c01,2,linear_dependency,success,success,stable_win,False
+78f95e6b-10e6-4adc-bc83-fadefcafae4b,9,long_chain,success,success,stable_win,False
+790c3f9b-0ecb-4a1a-b2ca-bc0bbf83335b,6,long_chain,success,success,stable_win,False
+793750b0-9ed1-46f1-980e-10c7d2db9041,3,linear_dependency,no tool call,no tool call,stable_loss,False
+79548961-64d6-432c-aac2-5846fd124032,5,long_chain,wrong tool,success,gained_after_E2,True
+796db797-533c-40ff-a33a-5566c3e4be51,4,fan_in,success,success,stable_win,False
+798efeda-1f6f-4bd3-9d04-1b56a48989d9,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+79d16f97-e67f-47c0-b478-5a7ee176c849,3,linear_dependency,success,success,stable_win,False
+79f31629-56a4-4e40-8a4d-c1619abcda9b,3,fan_in,success,success,stable_win,False
+7a149991-085e-42a3-9e38-38f314dc8512,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+7a4c25c4-4318-4b6e-97e2-7f0708daf97f,2,linear_dependency,success,success,stable_win,False
+7a7427eb-606c-410b-a092-0912e1ef0af8,2,linear_dependency,success,success,stable_win,False
+7a8717da-4b2a-4cc4-86a8-c03bfeab7c6c,5,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+7ae89399-384b-4cf4-9706-8a36bbb44197,3,linear_dependency,success,success,stable_win,False
+7b03ce5d-c7c8-40fd-b6c9-0650cf326193,2,linear_dependency,executable trajectory ending wrong result,"correct tool, wrong argument keys",stable_loss,True
+7b33b923-9d6c-4cd4-b1c4-83bbafea01b1,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+7b7f782d-2389-49ad-b393-3367a22a8bcd,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+7baf91da-a05b-42ae-b79f-6b0b5ef45fb7,2,linear_dependency,success,success,stable_win,False
+7bc2c3ba-414c-45dd-ada7-3badc087c46b,3,fan_in,wrong tool,wrong tool,stable_loss,False
+7bdd0e4f-6c99-4f49-b9e8-2afc9546891b,3,linear_dependency,parse/format error,"correct keys, wrong argument values",stable_loss,True
+7be0a27e-0563-4a23-b2ad-14d7a27ae3b9,5,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+7bf4ac87-7b82-4f93-bfa7-2eb1c39a8ffc,2,linear_dependency,success,success,stable_win,False
+7c94475e-6fad-4f56-9125-47c83d0d7555,3,linear_dependency,no tool call,no tool call,stable_loss,False
+7ca69b87-f482-4eba-94b6-3e841285fb2a,4,fan_in,success,success,stable_win,False
+7cd68cd8-cfda-45b9-95ba-c7776e6bc4f0,2,linear_dependency,success,success,stable_win,False
+7cdaf92f-5fc1-43ee-8ac7-9053012753a3,6,long_chain,success,success,stable_win,False
+7d0d1b23-f8ba-474b-84fd-e78eaaf967e2,4,fan_in,success,success,stable_win,False
+7d4b4520-d97a-4ff5-85ea-cc64be2f991c,8,long_chain,success,success,stable_win,False
+7d9122d9-7501-4b58-9f47-92dd20f6553d,6,long_chain,success,success,stable_win,False
+7da0f6e7-2a24-4fa8-b48d-cc84cae3e578,6,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+7da46475-4741-4505-8ed2-176a39147807,11,long_chain,success,success,stable_win,False
+7dd94bcd-e2b4-41cb-beda-0e050a274046,6,long_chain,wrong tool,success,gained_after_E2,True
+7e51f44b-d63b-40d7-a948-5ff0f45738f1,5,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+7f38a354-d596-4f17-b24b-028e4c29b99b,5,long_chain,success,success,stable_win,False
+7f651bd9-4bf0-42ee-9102-106f475f86ed,3,fan_in,success,success,stable_win,False
+7fcc0104-6846-46a6-a285-7aaacf5af013,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+7fda5df0-0577-4760-b0ca-3dd159112fc4,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+800b2e64-e7fb-43b5-a258-9e19828e1db1,4,linear_dependency,success,success,stable_win,False
+801d574a-fb51-4cc6-8367-d2dd352ff3ec,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+8058de8e-f182-431a-8228-1a8faa0c077c,3,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+8085b9e4-6568-46e5-982e-31ed022f63a0,4,fan_in,success,success,stable_win,False
+80906cae-8547-47ad-863b-9db070fd41ae,4,fan_in,success,success,stable_win,False
+80d3d81b-e6fd-4fa4-a690-b7214c4ef41c,7,long_chain,success,success,stable_win,False
+8145b752-733f-4448-890d-6fcc99f9f78a,4,fan_in,success,success,stable_win,False
+828f87fe-f7dc-4377-8bf2-407cd471f8a6,3,linear_dependency,success,success,stable_win,False
+8298a332-f803-4f19-97d3-b0b12607538f,3,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+82e82d17-1e64-4874-8005-67f32b410866,2,linear_dependency,success,success,stable_win,False
+82ef5917-35b1-4e7f-904d-a5a46e6004ab,11,long_chain,success,success,stable_win,False
+8332dd19-9141-4e8c-92c3-dd5a750cdfb7,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+836068a1-293e-4e7e-a93c-280e57593395,3,fan_in,success,success,stable_win,False
+836bb86e-9fee-4448-ab2b-f328c52dca9b,3,linear_dependency,success,parse/format error,lost_after_E2,True
+837f59f5-0d19-4246-993f-061525bd8d67,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+83e87247-0e5d-4f60-a88f-8aa6069ce66c,10,long_chain,success,success,stable_win,False
+8422932b-7a8e-4f84-bb7c-a3b944bd04f2,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+844ce8e2-be74-4db0-8541-132f5bebeb1b,4,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+84d4c1eb-d7c3-40c2-abda-780dded290ee,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+84ff4cc7-7312-4dea-a1e2-f0a156799c52,6,long_chain,no tool call,"correct keys, wrong argument values",stable_loss,True
+851c9620-a583-4e05-9f85-f61917a18a93,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+856f6b32-e3a3-42e7-adad-f6b3802a6772,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+85920a32-9f93-4c72-85e9-89a7659cf760,9,long_chain,success,success,stable_win,False
+85cb5da8-6a78-4be2-abc7-35280d59cf52,2,linear_dependency,success,success,stable_win,False
+85d50e47-7050-4efe-8021-9a15881ad2fb,2,linear_dependency,wrong tool,no tool call,stable_loss,True
+85deb9a0-ca7b-440c-a975-553cc92ff009,2,linear_dependency,success,success,stable_win,False
+85ee192d-9b18-47b8-8f8f-e99639042c19,5,long_chain,success,success,stable_win,False
+8600d21d-1949-4740-94d0-08fe0099137c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+86170171-8bcd-4736-88ff-4fd0dfdcc03a,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+86326e16-0769-4d0a-95f0-a811626ba616,8,long_chain,success,success,stable_win,False
+865c8b82-a81d-4612-851f-95e524eb597f,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+8684a05b-93d5-4083-b7de-74bb3985ed35,2,linear_dependency,success,success,stable_win,False
+86d9a90f-52a3-4e32-a038-c1aa90b5aa12,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+871cc889-08aa-4deb-a2c0-c3a64e164bc2,5,long_chain,parse/format error,parse/format error,stable_loss,False
+87282615-28ca-4fe6-bfd8-dc80f913307a,2,linear_dependency,success,success,stable_win,False
+87357303-b2c2-4c34-8a51-5c2755de4fe4,2,linear_dependency,success,success,stable_win,False
+87481cd4-e4d1-4eb7-ad02-0c29677ddb8c,13,long_chain,success,success,stable_win,False
+876f30f5-15cf-4907-9225-f056b20c80bb,4,fan_in,success,success,stable_win,False
+877968a0-4dc7-49d5-935e-9cb886461607,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+878a52a6-042d-47e2-ac35-c1e7c4b403a7,4,fan_in,success,success,stable_win,False
+87ae9647-7f06-45d3-9d93-d9ca6a528768,9,long_chain,parse/format error,parse/format error,stable_loss,False
+87b5d6f9-199e-4e83-8392-86f03e175ca6,11,long_chain,success,wrong tool,lost_after_E2,True
+87dbd684-dae2-424e-8237-c0395986e619,3,linear_dependency,success,success,stable_win,False
+88659452-fa94-4511-b6c2-f44d1d792cfe,4,fan_in,success,success,stable_win,False
+887b6d7e-5fb5-4523-9b28-f7ab29cf7636,5,long_chain,success,success,stable_win,False
+88b88263-a647-4da2-9c9a-329970a6aa3a,3,fan_in,success,success,stable_win,False
+88ebc0f8-ac16-4730-88cf-6e6204267ad6,8,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+8917020a-8354-4100-8b7a-6c06c6428b57,5,long_chain,success,success,stable_win,False
+894ae2ce-c653-4e07-9bc9-296ea3f12aef,4,fan_in,success,success,stable_win,False
+8954bf4e-0de5-4497-8b91-09e6e039d6b6,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+8956e144-c9f2-4154-8554-eb3de698456e,15,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+8970e530-cd57-4c00-9ef5-86970db06e6f,12,long_chain,success,success,stable_win,False
+8976f1a9-2da3-4385-8cfe-670086d7251b,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+8a0551a3-2753-402e-abab-b7e9ae86b455,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+8a18c351-91d3-498d-a956-618134ab65e4,3,fan_in,wrong tool,wrong tool,stable_loss,False
+8a74c126-ba35-450d-a992-1b2f69197bf4,2,linear_dependency,no tool call,success,gained_after_E2,True
+8ab8241e-cdd2-4743-b1f8-dcebf5614144,6,long_chain,wrong tool,success,gained_after_E2,True
+8ab9d4d5-0011-4e49-85cb-ee24f852f350,18,long_chain,success,success,stable_win,False
+8abb3f96-fd86-4948-b034-3a404caaf078,7,long_chain,wrong tool,wrong tool,stable_loss,False
+8ae16a12-7aaf-4751-aff7-4992871f2548,3,independent_calls,success,success,stable_win,False
+8b0679ff-9580-457b-a043-b11cb083f90f,3,linear_dependency,success,success,stable_win,False
+8b100b6c-1f47-45ed-ab13-a3e5abf49d7e,3,linear_dependency,wrong tool,"correct keys, wrong argument values",stable_loss,True
+8b135424-72ba-47d7-818e-5d13b21334db,3,linear_dependency,wrong tool,wrong tool,stable_loss,False
+8b3a28e9-ba64-44cd-bfe2-d7094471b5d7,6,long_chain,success,success,stable_win,False
+8b48a229-fcc8-4317-bda5-7e4271da24be,2,linear_dependency,success,success,stable_win,False
+8b764711-18c3-4f76-a613-0a46e42433ab,6,long_chain,wrong tool,wrong tool,stable_loss,False
+8b77968f-aa3b-443c-a226-7a628b611fb1,4,fan_in,success,success,stable_win,False
+8b89f671-e8ef-40e6-8d15-e6590b6fcae3,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+8be37a22-d312-4c3c-82e6-3050824a7084,2,linear_dependency,success,success,stable_win,False
+8c0ad8e1-0fe0-4aaf-a448-e617688a7c83,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+8c6e3438-0dcc-4afe-95b7-13b00fb18ef0,2,linear_dependency,success,success,stable_win,False
+8c8656c5-6b19-4613-af48-e6018b737159,8,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+8c8c222a-8812-480d-92e3-513d0d02a461,2,linear_dependency,too many calls,too many calls,stable_loss,False
+8cba812a-ff32-4309-a936-0e917c876d3d,2,linear_dependency,no tool call,no tool call,stable_loss,False
+8cc4f165-db60-44da-a7fd-6fb2d95e18c4,12,long_chain,wrong tool,wrong tool,stable_loss,False
+8ccda11f-fdd0-466b-abd0-a9c7c27a68b1,2,linear_dependency,no tool call,success,gained_after_E2,True
+8ce1315f-834f-423a-8b22-6d4abaab4a7a,3,linear_dependency,success,success,stable_win,False
+8ced92ec-afcf-4bae-8e56-6d4c5175f195,3,independent_calls,success,success,stable_win,False
+8d1720de-7659-4d54-9b95-160ef21cfc78,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+8d412bb5-0515-44df-ae04-2f6328ba0b4e,6,long_chain,success,success,stable_win,False
+8d50fe89-d76a-4b2d-8e61-b805e25170a5,5,long_chain,success,success,stable_win,False
+8d963cd2-0004-45db-9312-d295f0367c1c,5,long_chain,success,success,stable_win,False
+8dbc6c67-ac17-4407-8aef-c601592f562d,4,fan_in,wrong tool,wrong tool,stable_loss,False
+8de7580b-2f9f-4516-a3bd-4b5933ca1e2e,2,linear_dependency,success,success,stable_win,False
+8e557b55-c268-4566-9210-96b3dc488ea2,3,fan_in,success,success,stable_win,False
+8eb2bfe1-15e6-44d1-b542-b0885cc49a42,7,long_chain,success,success,stable_win,False
+8ebc079b-4585-41c6-b54d-4fffdaeff352,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+8ecad92c-4bed-41f6-9f33-928461657a5d,3,linear_dependency,wrong tool,wrong tool,stable_loss,False
+8ee1d3b2-4632-4455-b3b1-7a165383c55b,5,long_chain,wrong tool,executable trajectory ending wrong result,stable_loss,True
+8ee6619d-4344-417e-a2bb-dbbd84fa3396,2,linear_dependency,success,success,stable_win,False
+8f239e7b-b2e5-4165-8b67-9103c60d155b,5,long_chain,success,success,stable_win,False
+8f5235bc-6703-4af2-a441-ec906357889e,5,long_chain,success,success,stable_win,False
+8f70de5f-9164-497a-998a-468725b2e7a2,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+8f83e5f5-eaef-4976-80a7-d4545db027c0,3,linear_dependency,no tool call,no tool call,stable_loss,False
+8fb1f8ef-0a4d-4d34-bd1c-ded264db0151,2,linear_dependency,success,success,stable_win,False
+902255c7-cffa-4902-8398-b7e1d77e6541,3,linear_dependency,success,wrong tool,lost_after_E2,True
+905b4bc6-685a-499f-b939-c2cbb9196907,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9067667e-df63-441b-88c3-33f998ab3590,4,fan_in,success,success,stable_win,False
+90833d9c-8ace-4e01-be65-b92f432670de,3,fan_in,success,success,stable_win,False
+9084de0a-6c60-4f3c-878c-d983270e1e36,4,linear_dependency,success,success,stable_win,False
+90e73935-184b-4d4c-acb7-0612def49808,3,fan_in,success,success,stable_win,False
+90f4dec7-fd87-477c-b3a6-47d66f907be7,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+9169ba71-aeda-4b8f-99a4-c5772cf2efb8,4,fan_in,wrong tool,wrong tool,stable_loss,False
+916b2049-ac2d-4d32-b022-e9182f258024,10,long_chain,wrong tool,wrong tool,stable_loss,False
+917509f7-2a88-4645-8674-e01ae1268a8f,3,linear_dependency,success,success,stable_win,False
+91823839-c312-4f04-90f7-76c2a91a1a86,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+919b079d-db68-4c91-a411-603d68372271,2,linear_dependency,success,success,stable_win,False
+92366bd5-f065-4719-91a2-c44123746ce6,4,fan_in,parse/format error,success,gained_after_E2,True
+923ba1ac-2556-4623-8dc8-fbdff7cbb87e,8,long_chain,success,success,stable_win,False
+925e5a42-be49-45d0-ae48-9f76fbe1a0a2,2,linear_dependency,success,success,stable_win,False
+927a732c-c4df-4035-830a-e635368d29d7,3,linear_dependency,too few calls,too few calls,stable_loss,False
+929a1052-cd94-4fe0-af13-dc2e57ecfe70,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+92b6a1d2-d0d7-4915-a3ea-9361f588979a,3,linear_dependency,success,success,stable_win,False
+92b810d1-7866-4985-9f3e-765ffcdae3d1,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+92f18938-d5b2-439e-bd8a-4bcba9c26691,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+9305c8b4-aa65-4648-9332-329619fbbb48,4,fan_in,success,success,stable_win,False
+93422f39-6156-4846-af87-7915ebc115fe,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+9375cccb-6090-433f-ba69-c9f1029a90cf,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+93a99349-900a-4d49-8964-8e944e49ff25,2,linear_dependency,success,success,stable_win,False
+93d702d6-5124-4500-a02f-78d32c9c26c4,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+93dcf0b5-0d95-4bc6-be39-0eb316ee8721,6,long_chain,success,success,stable_win,False
+93e745d3-c539-4e45-8f05-1f7d0aa3db88,15,long_chain,success,success,stable_win,False
+93ebb74b-19e3-45a8-ad34-fa7c1a182505,4,fan_in,wrong tool,wrong tool,stable_loss,False
+94b00673-ac30-441e-88e9-ba5af54775cf,9,long_chain,success,success,stable_win,False
+94f60099-d297-4290-9628-565a3614bcd6,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+95242cc2-66c8-4658-ac59-3e3b3bc58de5,2,linear_dependency,success,success,stable_win,False
+9574e9c6-fbf8-42d7-bf2b-ca2b56451c76,4,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+957bf409-512c-4d43-bf9c-d4a6be101a32,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+959422a3-ea11-4974-9414-5dde05088d01,3,fan_in,success,success,stable_win,False
+9594dbf5-23d3-47ec-a07d-1c2ddafdb0a0,3,linear_dependency,no tool call,no tool call,stable_loss,False
+95ac7483-cd21-4572-bc0d-ff6a7c469b7c,2,linear_dependency,success,success,stable_win,False
+95ba5a83-de0c-4ec2-a53c-05c00643cb34,5,long_chain,success,success,stable_win,False
+95bd293e-87e9-4ed2-a868-36c419b29757,4,fan_in,wrong tool,wrong tool,stable_loss,False
+95f4c040-4bac-4c75-b790-8446b76e4609,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+96280ab6-9150-4822-bf3a-e3c8425821d5,9,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+96840a52-f348-4b7b-9606-5216c12dd852,2,linear_dependency,too few calls,too few calls,stable_loss,False
+96aae8cf-2667-455f-8b59-033ae86f88a1,4,linear_dependency,no tool call,success,gained_after_E2,True
+96b0ed5c-cf47-4b92-9cf5-0d69f7a864a9,4,linear_dependency,no tool call,no tool call,stable_loss,False
+96b854ff-3f52-4295-8a93-bfe204a4469b,11,long_chain,success,success,stable_win,False
+96de45bf-90d9-45c7-8aa6-5c919a773bf5,2,linear_dependency,success,success,stable_win,False
+96fe9e19-76ec-4063-aa87-1c3963fe9af5,2,linear_dependency,success,success,stable_win,False
+972471e0-e5ff-4c9a-9c16-2af8a09f88c7,3,linear_dependency,success,success,stable_win,False
+97300cf8-f572-478b-9c89-9900dd3a9eba,9,long_chain,wrong tool,success,gained_after_E2,True
+977fbbaf-c930-4292-9ed0-32c463dba794,4,linear_dependency,success,success,stable_win,False
+97dc3022-3ebc-4511-9f50-d22da3a73179,2,linear_dependency,success,success,stable_win,False
+983913b1-8105-453a-965a-ce5fbfd8916e,7,long_chain,success,success,stable_win,False
+9855f520-4ad7-4658-85fc-b66003e186bb,5,long_chain,success,success,stable_win,False
+98780c7e-93fa-496c-b2a4-5ed84b9cd8ee,2,linear_dependency,success,success,stable_win,False
+988c9c3a-9331-4da2-b131-b9da2c2926e6,3,linear_dependency,"correct keys, wrong argument values","correct tool, wrong argument keys",stable_loss,True
+98cad833-bb80-4583-9158-b9d1984eec6e,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+99215268-0540-45b1-944d-c070ad17dd2c,2,linear_dependency,success,success,stable_win,False
+99501e17-529b-42b7-ae83-e98b576c8019,9,long_chain,success,success,stable_win,False
+99a08e05-22a3-4651-8f30-ecfea802d469,5,long_chain,success,success,stable_win,False
+99f425b1-84c4-4a92-a916-12b847352319,11,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+9a10a5a0-8ece-4a88-be4b-8d88099d5266,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+9a23a3ec-0f70-4acf-867f-1a82c0ca5b17,13,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+9a24e4e9-3eda-4025-9e78-fc72c1cc799d,2,linear_dependency,success,success,stable_win,False
+9a752e1c-dffb-4c71-84d5-687970836ce7,3,linear_dependency,success,success,stable_win,False
+9a9b0995-0398-4308-82ee-73857eee8ff4,2,linear_dependency,success,success,stable_win,False
+9abbe8fb-bcc9-4ea6-91f9-e23c24cf0f60,2,linear_dependency,success,success,stable_win,False
+9adb7a75-2ecb-406d-8a46-542b79eb6e32,2,linear_dependency,success,success,stable_win,False
+9adc08bc-34e2-4c09-bbc8-e844e3af91bb,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+9b13070c-5369-4ee8-9e61-cdc01e0b3a9f,8,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+9b57a387-4d1f-4073-9599-691b46309965,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+9b96f723-a4ad-4d19-85fb-8e915efa82ac,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9b9bfa00-e678-4594-b109-b850227b7f2a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9bb2309e-1b69-4889-96a5-43c75d81891e,2,linear_dependency,success,success,stable_win,False
+9bb69164-80c4-4c4e-a9d2-fa3fa8bee4e3,3,fan_in,success,success,stable_win,False
+9bc76daa-ad6e-4000-aeb7-40609d4ce832,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9bf2526f-f248-4462-90dd-ad45468cdd01,3,fan_in,success,success,stable_win,False
+9c4c6a80-d210-46e3-bb30-8ab2ca8e8f3a,13,long_chain,success,success,stable_win,False
+9c8fd5d9-bd78-4274-80d9-d9d30c15eaa5,3,fan_in,no tool call,no tool call,stable_loss,False
+9caa7f9a-0e32-40a7-b99c-db485ca7fe5a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9cbda69c-2a36-4f07-87cb-e0fa23cebf60,14,long_chain,wrong tool,wrong tool,stable_loss,False
+9ce7a335-7071-4714-9f76-8cb1c34e432a,15,long_chain,success,success,stable_win,False
+9d075f7e-e679-4ca0-afdd-4ea851ef8f14,2,linear_dependency,no tool call,no tool call,stable_loss,False
+9d353b3b-7a8a-48c7-8d5d-2b4cae850ab7,6,long_chain,success,success,stable_win,False
+9d366ac3-2369-4d69-bf3c-a707c8ef9d1b,6,long_chain,success,success,stable_win,False
+9d3c996c-800a-4865-a309-fb732ed9fec7,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+9d3caec5-8796-40a3-a50e-6f1058435879,3,linear_dependency,success,wrong tool,lost_after_E2,True
+9d49b105-be31-44ff-bc30-f51eb3225f92,2,linear_dependency,success,success,stable_win,False
+9d5c413b-d8dc-4214-98e6-79daa6f02651,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+9d6d1fcc-912d-4543-ba01-900bc1bc60d2,5,long_chain,success,success,stable_win,False
+9da981a8-809f-49d8-b51d-bf8e1eb837ff,2,linear_dependency,success,success,stable_win,False
+9e370e34-2cac-4df3-80dd-7d8142fc7c88,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+9e40b9bd-b933-4aee-8e22-27ba8a148e21,2,linear_dependency,success,success,stable_win,False
+9e473074-b414-4c07-9d2b-8d2512055475,4,linear_dependency,success,success,stable_win,False
+9ece0a77-b13d-4410-8781-908e602fc7ce,2,linear_dependency,success,success,stable_win,False
+9ecefde1-85a5-4e50-948e-ee9c2bbf414f,4,fan_in,success,success,stable_win,False
+9ee13b1f-14b3-4e54-b629-7a77a03e4262,9,long_chain,success,success,stable_win,False
+9f02bfaf-4adb-40b5-837c-aac1bc3fac30,7,long_chain,success,success,stable_win,False
+9f1f0962-c3db-415a-960e-6fad0b7ed3ec,3,fan_in,success,success,stable_win,False
+9f216834-4bf6-4c2b-9c62-5ca9db276541,8,long_chain,wrong tool,parse/format error,stable_loss,True
+9f2b17cf-60ea-4172-88c0-469ca13ed8da,14,long_chain,wrong tool,wrong tool,stable_loss,False
+9f317fe5-7f9a-4979-a411-3241b6d4a05b,2,linear_dependency,success,success,stable_win,False
+9f63d6d5-7d1d-4852-8123-d3cd2e25da0e,3,linear_dependency,success,success,stable_win,False
+9f738043-e007-477f-8346-084c5ef7fc9a,2,linear_dependency,success,success,stable_win,False
+9f97f50f-b8c2-43a1-a1b4-49c0c0574107,8,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+9fa5c9a4-4c21-426d-8886-acbf08539139,4,fan_in,success,success,stable_win,False
+9fc37735-bac4-4294-bac9-b1e11ad473a5,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a04e9740-1ec9-45ab-8b7d-2f993840444b,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+a07bd6ce-e76b-4e9e-8e2c-8b3e2e7690ef,3,fan_out,executable trajectory ending wrong result,success,gained_after_E2,True
+a090dadc-191f-4557-87fb-ab16b9929bb0,2,linear_dependency,success,success,stable_win,False
+a09efe46-ecf4-4724-9da5-c7427086cee4,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a0f45aa7-6a20-4ebd-8118-fdf89c77eb38,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+a11c7bbc-4183-466c-9181-5f4a80adf444,6,long_chain,wrong tool,wrong tool,stable_loss,False
+a167ab92-e3b7-49a8-a7f4-3976d470153d,7,long_chain,executable trajectory ending wrong result,"correct keys, wrong argument values",stable_loss,True
+a1ad66f4-95ea-42dc-b7b4-7bf9ee883751,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a1d8cfc2-84b1-49dd-8ddc-6b51b110038a,3,linear_dependency,success,success,stable_win,False
+a1e4a6ce-cd48-49b5-9e4d-eea237b06d8d,14,long_chain,no tool call,no tool call,stable_loss,False
+a1fe3172-ee8a-463f-a08f-77aa8053d19a,4,fan_in,success,success,stable_win,False
+a2172da9-3fb2-4aca-b2d5-20a4579d2266,3,linear_dependency,success,success,stable_win,False
+a21b8cbf-3d9b-48b2-b0a0-c9611a33d84e,2,linear_dependency,no tool call,no tool call,stable_loss,False
+a238b25b-019f-4817-866a-07f08b0816cc,7,long_chain,wrong tool,wrong tool,stable_loss,False
+a25025bf-d957-471f-a37a-88b08502e3c9,2,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+a25494d8-199a-4226-b531-db7d99c7eabb,2,linear_dependency,success,success,stable_win,False
+a2d18d4f-e8d9-49a7-8b95-60fa4a0080d4,43,long_chain,success,success,stable_win,False
+a2e6afce-d23b-4971-959c-eb2ca88a5b5e,2,linear_dependency,success,success,stable_win,False
+a2f5fa83-70a3-4b60-93a9-591b1abbe5bb,27,long_chain,no tool call,no tool call,stable_loss,False
+a30048e8-000d-4e5a-addc-0e6c6e5c6fb8,5,long_chain,success,success,stable_win,False
+a330bb9e-a3eb-456a-87c3-63caf6822fad,3,linear_dependency,success,success,stable_win,False
+a335f79c-d1e2-4f67-a414-bf94fc53323b,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a347e1f0-12d7-432a-994a-f39f8bd30982,3,independent_calls,parse/format error,executable trajectory ending wrong result,stable_loss,True
+a44c74fd-b0bf-4f35-a8f0-b0a888135fee,4,fan_in,success,success,stable_win,False
+a44d9cb8-f686-46c1-bfed-b929b87defcb,2,linear_dependency,too few calls,too few calls,stable_loss,False
+a4638ff2-f88d-4791-9577-0ae12ddd098c,2,linear_dependency,success,success,stable_win,False
+a47a8f7e-9a4d-48cd-a078-80b13fa9e05d,2,linear_dependency,success,success,stable_win,False
+a47f04d6-63ea-4148-9f24-9cb80a591d58,4,linear_dependency,success,parse/format error,lost_after_E2,True
+a4feddce-3c03-43ae-bab7-513b55dae2a3,5,long_chain,success,success,stable_win,False
+a52b67c0-261b-4997-8d20-426b98b75dfd,3,fan_in,success,success,stable_win,False
+a5446ce3-edec-4898-b802-cc9b4c5864b6,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+a5562121-119c-4737-adbe-0ce66cab3f20,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+a576f58b-44b2-498e-b7d9-32bdbb48dd6c,6,long_chain,success,success,stable_win,False
+a58be90a-b73e-4d45-a4e2-2ba9db73e912,2,linear_dependency,success,success,stable_win,False
+a5ae1249-7f33-4d40-8ad1-914a0623e3bd,9,long_chain,success,success,stable_win,False
+a6488bf5-e7fd-478a-b36f-c056bf5cb881,2,linear_dependency,success,no tool call,lost_after_E2,True
+a65663e7-afb5-48af-ae7d-4a2611b93176,7,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+a69ba6fb-dda3-48c1-bbad-84c987131e59,2,linear_dependency,success,success,stable_win,False
+a6b1a38c-bda7-4b3a-b7e8-2431abc8af92,7,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+a6c7ce3c-6d2e-4dff-a6e7-cad6b9d07cee,3,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a6e76149-fc2b-43b8-8583-2ff1d4d1f72b,2,linear_dependency,success,success,stable_win,False
+a6f48536-ab4d-4812-ae9d-486c5e58ee17,2,linear_dependency,success,success,stable_win,False
+a700a340-f71a-4e94-a949-5d7594995fa9,3,linear_dependency,success,success,stable_win,False
+a7688b81-3977-4139-958f-dde7f2ad50ce,2,linear_dependency,success,success,stable_win,False
+a76ec66d-10a1-4b45-ad29-e63d67881a08,4,fan_in,success,"correct keys, wrong argument values",lost_after_E2,True
+a7d0c985-3d04-47c8-a063-8276616af274,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+a7f3e2d8-d639-488d-97c5-2e51f42ad83e,2,linear_dependency,no tool call,no tool call,stable_loss,False
+a81c19a7-1e23-462b-b83a-8b1c93dfdf15,6,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+a8243e66-0930-48be-8fb2-1310a953d625,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+a845fa23-f94d-436b-b550-86cb6f3da886,3,fan_in,success,success,stable_win,False
+a8590644-6607-4bbe-9592-2b0352bbd832,7,long_chain,wrong tool,wrong tool,stable_loss,False
+a86a1e7c-50d5-4b95-8406-ca3da90ca7a8,3,fan_in,wrong tool,success,gained_after_E2,True
+a86edde8-b088-4f4e-bf1c-3a31724c54d4,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a8f94eae-74a8-402d-af38-2fbcdf213171,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+a90adb78-71aa-4125-b7c4-6151ed659a80,11,long_chain,success,success,stable_win,False
+a97d7cd3-db1a-47df-b5bb-96dc80e5a241,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+aa008c03-bdd9-42df-9198-ea79e1698894,2,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+aa1ea1ba-bf16-4e55-a707-c3a3aa6ab0d6,3,linear_dependency,success,success,stable_win,False
+aa3a68ea-75e3-4713-a46f-0ba883eda4ac,2,linear_dependency,success,success,stable_win,False
+aa8adc5d-1f45-46ca-9c85-3819910c0296,6,long_chain,no tool call,no tool call,stable_loss,False
+aaad877c-5478-4983-bee1-f93038024945,5,long_chain,success,success,stable_win,False
+aac2c0b4-ef13-4f05-87f9-2ba5c4e572b2,18,long_chain,wrong tool,wrong tool,stable_loss,False
+aad91271-159f-4c51-ba65-b8a2db8e9521,7,long_chain,success,success,stable_win,False
+aaece8ba-0384-4d94-a479-fe00d0eb94e0,5,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+ab362b72-373b-46fa-b938-3c7e84d3966a,2,linear_dependency,success,success,stable_win,False
+ab4a4b92-0bd4-4e4a-95f6-c0ca1ec5572d,3,fan_in,success,success,stable_win,False
+ab58d045-03f9-4115-9aae-64bb069b3ca0,2,linear_dependency,success,success,stable_win,False
+ab670bba-52e2-4dc1-8d80-a381abbedbec,8,long_chain,success,success,stable_win,False
+ab8f54b9-2a31-47e0-8a28-0d636433d4fc,4,fan_in,parse/format error,parse/format error,stable_loss,False
+abb922e2-ecb4-444d-8602-41700a00639b,4,linear_dependency,parse/format error,executable trajectory ending wrong result,stable_loss,True
+abea50f9-c8fd-443f-ab85-6742921062a6,2,linear_dependency,no tool call,wrong tool,stable_loss,True
+ac08fef7-ffce-4d24-a90c-062790b30c01,3,fan_in,success,too few calls,lost_after_E2,True
+ac43d21d-8330-4f5d-9a90-85756af20656,8,long_chain,parse/format error,success,gained_after_E2,True
+ac5deae8-d199-4a05-b347-4bd78c52a84c,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+ac7f18f4-b4e7-424c-bb4e-b81a8a7e507c,6,long_chain,wrong tool,wrong tool,stable_loss,False
+ac7ff9ba-5f9b-45db-ac99-a27751c32a2f,7,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+ac9ac0c1-7f54-4210-8afa-f4d81299adf7,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+aca13c04-25c4-452c-8ce5-f9ac7668a980,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+acb996d1-a48e-47b8-b370-8cf14d0db3a7,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+ace2a45d-4588-4ddc-bfe9-f98c2cff0427,3,fan_in,wrong tool,wrong tool,stable_loss,False
+acfcc5ad-34b1-4843-8167-b154eb923866,4,fan_in,success,success,stable_win,False
+ad2fb4c5-665d-4eee-814d-2d5f591ca52c,4,fan_in,"correct trajectory, wrong final answer","correct keys, wrong argument values",stable_loss,True
+ad5084f8-5802-41e7-b033-4b68ea6ea1cf,6,long_chain,success,success,stable_win,False
+ad9bf421-40f5-4450-bd11-cd868ab815a3,3,linear_dependency,no tool call,no tool call,stable_loss,False
+ad9fe842-7db1-4922-a922-d011caecdb6f,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+ae2442dc-f285-4963-a108-fef08dffe49a,2,linear_dependency,"correct trajectory, wrong final answer",executable trajectory ending wrong result,stable_loss,True
+ae7cc681-a44c-4143-8bf2-a2a9680acf0d,11,long_chain,success,no tool call,lost_after_E2,True
+aea2a038-4419-4271-ab86-99b06272b673,10,long_chain,success,success,stable_win,False
+aed65d8f-b112-4cd6-ab82-07ae242a8947,7,long_chain,success,success,stable_win,False
+af09e0d9-1820-4a90-af30-ac41956f4410,2,linear_dependency,success,success,stable_win,False
+af2e5ab1-979e-48ac-af4f-d35487975b62,5,long_chain,success,success,stable_win,False
+af4f61c2-0303-401e-8a04-93fc44b8b31f,2,linear_dependency,success,success,stable_win,False
+af7310f7-40f0-4cb9-a597-8d3acfddd6e5,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+af90ec49-39dd-471c-a75b-2e1213ed7de7,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+afa4aad6-dd9f-4d98-b781-dc94f20a8fc9,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+afa68574-5967-449d-88ec-ad7dbf49524e,3,fan_in,wrong tool,wrong tool,stable_loss,False
+afdf6fd1-6ed0-46ed-b37c-b27b5ff09dcf,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+b0062a20-23f1-4af6-bdf3-6441af3aacca,3,linear_dependency,success,success,stable_win,False
+b0643ded-c098-4051-958b-db37c7b2aa00,2,linear_dependency,executable trajectory ending wrong result,success,gained_after_E2,True
+b064506c-cc2f-4c26-a03c-ce7611c67dcd,4,fan_in,wrong tool,wrong tool,stable_loss,False
+b09891fd-53c7-4daa-ba69-91b5aa002ca5,3,fan_in,success,success,stable_win,False
+b0a67986-970c-4373-9f9a-4be7903ce16f,3,linear_dependency,success,success,stable_win,False
+b0bc0070-cb02-4d46-9cee-cb74c5cb4c91,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+b0ec8b50-3b10-47e9-a151-fe2085d45c5d,3,linear_dependency,success,success,stable_win,False
+b12cd321-ed7b-4a24-aecf-39812b2759bc,3,linear_dependency,success,success,stable_win,False
+b169f0ea-3a25-4627-9795-9d390379e73f,5,long_chain,success,success,stable_win,False
+b1706900-e187-49c5-ace6-8cbfc5fbd566,7,long_chain,wrong tool,wrong tool,stable_loss,False
+b170ed97-4af8-4589-8a83-7509c597837c,3,fan_in,success,success,stable_win,False
+b174255f-9249-4dc5-a214-1bfed5112330,6,long_chain,success,success,stable_win,False
+b17fe079-7816-4882-98fd-ba692caae2e3,5,long_chain,wrong tool,wrong tool,stable_loss,False
+b197b395-59d0-4f51-94a5-ae3ff49f2fe1,9,long_chain,success,success,stable_win,False
+b19cf53c-de8d-45ec-a1f1-812364690f45,5,long_chain,success,success,stable_win,False
+b2746ff9-c346-435e-9dc1-28e629d01a1a,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+b2861b15-913e-4b89-a37e-16a3468170a6,3,linear_dependency,success,success,stable_win,False
+b2930682-44d7-4323-8916-134e74ba31fb,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+b2acbf2c-1d91-4770-a348-34bc3c8a7d07,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+b2bc3b35-5e35-4b6a-a868-996586962919,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+b3122f37-af9b-4fda-aecd-08c0d03f4811,10,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+b33d1976-3a2d-46a9-bf8b-2c72336683eb,3,linear_dependency,success,success,stable_win,False
+b3599e93-a922-4b50-b6bc-649ebf51f4f2,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+b370d25b-a241-486b-9630-7dbd523312c2,6,long_chain,success,success,stable_win,False
+b3753ea3-1d82-4f60-a28d-9c9f6defb315,4,fan_in,success,success,stable_win,False
+b3949023-22d5-4ae9-a913-e6f3a871a464,4,fan_in,no tool call,no tool call,stable_loss,False
+b39c0196-4991-47b9-b5b4-18d53615fd00,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+b3bc6c17-de42-43cf-8c68-4c0f8b5465f2,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+b3e268c9-2465-41d5-ba04-adfe860d791f,5,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+b3ec3724-bfb1-40be-b92e-9e28cabf8a68,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+b400ab0e-fa81-4958-b349-9fdcffb22b08,2,linear_dependency,success,success,stable_win,False
+b4bb577d-08f8-4f80-9502-1a65c664048a,10,long_chain,wrong tool,wrong tool,stable_loss,False
+b4e06271-5e3c-46fb-b28f-9c7f1adf861b,2,linear_dependency,success,success,stable_win,False
+b4edb02b-2784-43f9-9a5f-47d9605c2c32,4,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+b549c0e2-fcb5-48a5-93aa-13d60f58159d,3,fan_in,no tool call,no tool call,stable_loss,False
+b58c0d0c-24c1-4349-9442-913d8aa753b7,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+b5e08c7a-e09e-4302-a09d-be4395a38a3e,4,fan_in,success,success,stable_win,False
+b6014609-5bd3-4f6a-8f09-1df7d9477c98,5,long_chain,wrong tool,wrong tool,stable_loss,False
+b61977af-a7c0-4bc6-a60a-af3039c4ea5d,6,long_chain,wrong tool,wrong tool,stable_loss,False
+b6835357-8b9f-4f3b-ad07-1b79d2ed2b44,2,linear_dependency,too few calls,"correct tool, wrong argument keys",stable_loss,True
+b6d5414b-1f27-48c2-b8cb-375d529e5198,4,fan_in,success,success,stable_win,False
+b6d7340a-81dd-4fc3-b3b4-b5579f95a80a,3,linear_dependency,no tool call,parse/format error,stable_loss,True
+b6d97ba7-cdef-4fab-a0e4-25250e8072ef,9,long_chain,success,success,stable_win,False
+b6da2270-933d-4ddd-bf9c-cf206f4d95af,9,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+b7164cd9-1085-468d-ab1d-ced5b4cfb124,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+b7191e61-2bc0-4d0c-b0f8-0e259fa8ca76,6,long_chain,success,success,stable_win,False
+b77dd9f6-abca-48f5-8dcc-4cfbca6b87e1,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+b7a49346-8333-4c96-9ed8-9dca8f299089,3,linear_dependency,too few calls,success,gained_after_E2,True
+b7da19f4-c0e1-406b-9e71-ac01a07ff928,3,linear_dependency,success,no tool call,lost_after_E2,True
+b82bc79e-979f-4f33-87d5-d6f00a1c8ea9,2,linear_dependency,success,success,stable_win,False
+b840daf0-a3b9-4324-a06f-03c6b44595f4,5,long_chain,success,success,stable_win,False
+b85754cb-d1cc-4aba-b4fb-33cb12a5c26e,3,fan_in,no tool call,no tool call,stable_loss,False
+b85f618a-386d-4bbd-ba60-7f6ce29e52fe,2,linear_dependency,success,success,stable_win,False
+b89b5c12-ccc2-4109-bc87-24857dd99e40,2,linear_dependency,wrong tool,no tool call,stable_loss,True
+b930b196-c49a-4b90-9772-7b9b22f5d83a,2,linear_dependency,success,success,stable_win,False
+b989cc2b-de67-4667-8e44-5611c54d3dec,3,fan_in,success,success,stable_win,False
+b99a2841-3f85-49ff-8473-0fd81e6997ea,2,linear_dependency,too few calls,too few calls,stable_loss,False
+b9a91e98-e385-4cc8-ba87-9ce7f97d3fbb,2,linear_dependency,success,success,stable_win,False
+b9f83392-72a9-4aa7-9ebb-98f5c3ea5620,9,long_chain,success,success,stable_win,False
+ba2f29b4-2df5-448e-af7a-6ed3bf3a817a,3,linear_dependency,no tool call,no tool call,stable_loss,False
+ba82186b-a810-4fec-b77f-6b9e3f7b52af,11,long_chain,success,success,stable_win,False
+bb1b666b-9820-472a-87ab-7c03411de17b,3,linear_dependency,success,success,stable_win,False
+bb2765a0-4e62-47e8-b9e0-d1d305b48ee1,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+bb46cc44-30ae-4d51-9d6a-e9a7f1e3b205,6,long_chain,wrong tool,executable trajectory ending wrong result,stable_loss,True
+bbf22b6a-8419-4b15-9b2c-2c4e279cf8aa,9,long_chain,success,success,stable_win,False
+bc1eb21f-671b-48dd-ae67-0f427a695dc5,3,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+bc505617-32c8-45b4-be8f-bea1c988f537,3,fan_in,success,success,stable_win,False
+bc894a80-53b4-4831-a5c6-cf982a369283,3,linear_dependency,success,success,stable_win,False
+bca6e359-3534-418a-9c94-e0fc65bc6ac1,3,fan_in,success,success,stable_win,False
+bcac3758-2b32-436c-9335-41cb277e49c6,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+bcc25b6a-5c82-414a-9c40-80f86dac6061,2,linear_dependency,success,success,stable_win,False
+bcc26a14-3d93-49b2-a563-d7679d23f5a6,4,fan_in,success,success,stable_win,False
+bcee6031-8df8-477b-a70b-fe5dc4c82d46,5,long_chain,success,success,stable_win,False
+bd76f082-b36d-444c-becc-38bb40af6636,2,linear_dependency,success,success,stable_win,False
+bdbb16a0-ac1a-402a-994a-e8349c897bbf,6,long_chain,success,success,stable_win,False
+bdcc3e9a-8ba1-49d5-a60d-3a6567d62cbb,3,linear_dependency,success,success,stable_win,False
+be189cf7-f804-4a54-9260-8b2a2f7cc47e,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+be652dbe-51e4-4222-9c43-cc26deb441b8,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+be7b0778-1841-4471-9f80-613efe663bdd,2,linear_dependency,success,success,stable_win,False
+bede8469-8afe-4344-80cc-05e0bc7fc2b8,3,linear_dependency,success,success,stable_win,False
+bef72027-79fd-4e32-8407-b6fab9c37847,4,linear_dependency,success,success,stable_win,False
+bf3b7001-69c4-45e7-8727-b9fd79149527,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+bf63e869-1ed2-4bd3-9f1a-bfd48e7084db,3,linear_dependency,success,success,stable_win,False
+bf8dd361-47d8-4828-94c8-e1b3a3250090,3,fan_in,wrong tool,wrong tool,stable_loss,False
+bff28333-e7e5-483f-ae1b-2ad95bedc37d,4,fan_in,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+bff6dc13-33e2-4d72-bde1-5eaf38447c39,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c0060555-fe54-40b0-96c9-c6453ba15f54,6,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c0147c17-efc0-44df-abbf-d32e2f988f91,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+c034b3cd-f436-40e6-9aea-87b2e1f363f3,5,long_chain,wrong tool,executable trajectory ending wrong result,stable_loss,True
+c055b4f9-9003-4105-a477-fbac2ec4c8aa,8,long_chain,wrong tool,wrong tool,stable_loss,False
+c05709fb-667e-4fa6-b263-ec3a59cf1d37,2,linear_dependency,success,success,stable_win,False
+c06b2351-1ec1-41dd-ae1f-71b414299c08,6,long_chain,success,success,stable_win,False
+c08085fb-c92e-4add-9cff-3ad73a8061b8,2,linear_dependency,no tool call,no tool call,stable_loss,False
+c0aa6d66-e540-49d5-b7ef-89d6e5fd57df,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+c0ab62f4-2759-41d1-b6f9-62d17fc544ba,7,long_chain,success,success,stable_win,False
+c0d6a53d-874b-48fd-b352-d21a35f2ab58,5,long_chain,too many calls,"correct keys, wrong argument values",stable_loss,True
+c0f08f7e-dcbd-4623-94dc-2369d6a61521,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+c0f0dfa8-c4fe-43ab-b306-c06a803e3163,2,linear_dependency,success,success,stable_win,False
+c104721b-8371-4884-8662-cd699680ee3a,3,fan_in,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c11e6aea-0efa-4dc2-bdc3-442f65d538fb,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+c14bc7e1-7b1a-4141-8a85-8020ca6695e3,5,long_chain,parse/format error,parse/format error,stable_loss,False
+c1b1091c-7a56-4ed6-ba5b-073f9a52f589,2,linear_dependency,no tool call,no tool call,stable_loss,False
+c1e4dbf0-d977-421b-a4f6-cd56648af12d,4,linear_dependency,success,success,stable_win,False
+c2145e21-7a24-4dbb-a9b1-c8948147f0d9,6,long_chain,success,success,stable_win,False
+c228231e-87e4-47ab-8b32-cdef5083a80b,2,linear_dependency,success,success,stable_win,False
+c2394fb4-9b28-417e-ac11-36dd1b475e43,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c28f3807-67fa-4513-8fdc-7802409d49d9,4,linear_dependency,success,success,stable_win,False
+c2ac5591-c392-4be6-b394-77dea8c8c16f,3,linear_dependency,parse/format error,success,gained_after_E2,True
+c2c819a3-7498-4d6b-af7d-0dff4696470f,2,linear_dependency,success,success,stable_win,False
+c2ee51ea-1466-4aaa-aa16-629e9f047b43,3,linear_dependency,success,success,stable_win,False
+c2eeb53a-799e-49cc-af9e-71f90c3a9446,6,long_chain,success,success,stable_win,False
+c2fac0c6-f7a1-487c-8c52-d8be210cc007,6,long_chain,parse/format error,parse/format error,stable_loss,False
+c3388e09-ffd7-4590-b2be-1ec88dd92b2c,10,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+c35dfbfd-76ae-45d3-a7b2-7a46c10936df,5,long_chain,wrong tool,wrong tool,stable_loss,False
+c35e18ac-4a57-4227-a856-6b97623f55fa,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+c38329a3-eaab-4596-9096-47e80ad97843,2,linear_dependency,success,success,stable_win,False
+c3897a83-c732-4035-ba9e-558436c70b9a,3,linear_dependency,success,"correct keys, wrong argument values",lost_after_E2,True
+c3a4c2c9-0453-4b32-a1b1-440de236f8ce,7,long_chain,success,success,stable_win,False
+c3cbcd83-eeb9-4b3d-b9a8-a059a1eb1806,2,linear_dependency,success,success,stable_win,False
+c42a4acb-0c1f-4f34-9abf-bd8f673e9ac4,6,long_chain,success,success,stable_win,False
+c45bbf72-32c6-4281-927e-ad69291df73d,4,fan_in,executable trajectory ending wrong result,"correct keys, wrong argument values",stable_loss,True
+c48c671c-3759-4d22-9625-a53f947af6a4,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+c4b9e7cc-7c50-4f87-9d2e-4d6d3b8a20cb,7,long_chain,"correct keys, wrong argument values",no tool call,stable_loss,True
+c4cd0862-234b-459c-805c-14099acf49d8,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c50ddb07-43e3-4bc0-9132-7ddf1a637a9a,6,long_chain,wrong tool,wrong tool,stable_loss,False
+c52ad9a4-941f-4a9e-825d-2cee83c8c62f,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c549eed3-2aa2-4baf-ace6-9a250dbf4924,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c56b7af3-ffea-413b-b27a-131611ecc3dc,12,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+c5877c48-14f3-4ca5-a211-18e00054e484,7,long_chain,success,success,stable_win,False
+c5b3ca75-d50d-4e5a-aab1-6f95491f4538,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+c5dc2dbe-76c9-42a7-8d13-53beb2791b69,6,long_chain,success,success,stable_win,False
+c5f39bd0-95b9-4db8-b487-739ff47c120c,4,linear_dependency,success,success,stable_win,False
+c5fbeefb-86ff-46b9-adb3-c8f4cd4adba1,3,linear_dependency,"correct keys, wrong argument values",no tool call,stable_loss,True
+c635c81c-ef97-4c4b-9b8d-573fa3fbda50,6,long_chain,success,success,stable_win,False
+c641d5f3-909f-4a6b-b03b-8227ce77eeb0,8,long_chain,success,success,stable_win,False
+c67e3a5d-98b3-44f0-9545-6741a6698bcf,6,long_chain,success,success,stable_win,False
+c69d9e9a-9a23-4e9d-acc5-8b96e5f2cadb,8,long_chain,parse/format error,"correct keys, wrong argument values",stable_loss,True
+c69e19ec-73ad-4433-9c92-314841ac90ad,2,linear_dependency,success,success,stable_win,False
+c6a51f04-1d8a-4535-be6e-a628a04bd3b3,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+c70163d5-6b99-4a8e-8242-5558663eaa11,2,linear_dependency,success,success,stable_win,False
+c72bcda4-28d4-4f4c-ad5e-e29d5a3ab0e5,5,long_chain,success,success,stable_win,False
+c74a3ed2-40ab-4106-a64f-a221e039b517,4,fan_in,success,success,stable_win,False
+c74f7663-6aa1-4f96-8333-8a2a2129a547,5,long_chain,success,success,stable_win,False
+c757c445-2b37-4091-b6d7-7b4a00aa9ec5,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+c7819edd-f228-45b4-bb56-35839dfb7808,5,long_chain,success,success,stable_win,False
+c79f10d6-40f6-4050-930b-f4761891334a,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+c7a8ceb5-5e3c-4255-bb45-ef0be35f2ac4,4,fan_in,"correct keys, wrong argument values",wrong tool,stable_loss,True
+c7b272cc-11fe-4633-a9e2-de51f80b8451,3,fan_in,success,success,stable_win,False
+c812a0cf-f9a2-4f51-b1e2-1a9ee3652371,9,long_chain,no tool call,no tool call,stable_loss,False
+c8266f26-e536-4db5-b0d6-382bfd0a91d3,7,long_chain,success,success,stable_win,False
+c869fe14-c0ef-4c6e-89b1-b69f44f63b9d,5,long_chain,parse/format error,parse/format error,stable_loss,False
+c870a3f6-2c45-4bec-a40b-f74ecd268bec,3,fan_in,success,success,stable_win,False
+c87d3235-4fdc-43fd-8fd4-761f20bfd63d,2,linear_dependency,success,"correct trajectory, wrong final answer",lost_after_E2,True
+c8832b6f-c67b-4a49-8e7e-bfe4d6e8a8d8,10,long_chain,success,success,stable_win,False
+c895fd0a-3cb9-4ce8-867f-b19559a81304,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c89ea41f-51cc-44d0-a095-087c2d39285d,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+c8a52dc3-691c-46e4-b4f2-a1ab8097cc5a,6,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+c8ae8811-ce45-4165-afd2-65f9720e5c03,4,fan_in,success,success,stable_win,False
+c8d82893-19ba-40ae-bb44-fe06ff67cdcc,7,long_chain,success,wrong tool,lost_after_E2,True
+c8db5185-1fb5-45b8-a614-e4d803a50e50,9,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+c8fe1b79-5601-4660-a8ea-16c6fff9c744,4,fan_in,wrong tool,wrong tool,stable_loss,False
+c922d80c-b8ba-4680-9cbe-dc73c0f6eab3,4,fan_in,success,success,stable_win,False
+c9272332-07ac-4174-8ec7-310df3765ff3,7,long_chain,success,success,stable_win,False
+c9828beb-8c3c-4ecd-8fd4-0795eec10f73,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+c9bd9463-a78f-4d8f-83e9-7e5d14f6994b,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+c9c91357-dabd-4a00-b7b8-4583f7ee7ae0,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+c9cabae3-811e-4e9f-87d8-92cb861e3045,4,fan_in,executable trajectory ending wrong result,success,gained_after_E2,True
+c9e63d65-4dfa-4d0e-8357-d56a5ea67348,3,linear_dependency,success,success,stable_win,False
+c9ff1071-eb8a-49f7-9fb7-121503c30301,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+ca0c1664-722f-49d3-82b1-c8095f0e7d93,6,long_chain,success,success,stable_win,False
+ca17f7e7-b469-4d95-8a42-127f349da517,4,fan_in,success,success,stable_win,False
+ca30039f-334d-4462-8912-ff7996912bb9,4,fan_in,success,success,stable_win,False
+ca3cccf9-49de-45ed-88c4-31e844dc5449,2,linear_dependency,success,success,stable_win,False
+ca85531d-bc1d-40e8-8769-438c3e886fe2,2,linear_dependency,success,success,stable_win,False
+ca956b7b-9732-423a-81b7-274e801ec042,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cac2161e-9f20-4bde-87a8-569f04fd87de,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+cb292a5a-b3fa-4310-b4f8-7532f24792a6,12,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+cb34ebef-d546-4003-811c-dcbf73bc961c,4,linear_dependency,success,success,stable_win,False
+cb80eb9b-42fa-4436-a4b0-1664a61dce27,2,linear_dependency,success,success,stable_win,False
+cb88abdb-1bf1-402f-a81f-82176580418d,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+cb93a0c7-91d0-4866-b1d9-3afd76bd885e,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+cb993fec-f656-4b15-904b-084c311bd7e2,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cbc30b4f-03b3-47ff-a914-e801e5717d55,2,linear_dependency,success,success,stable_win,False
+cbf86830-fe0a-4c67-9ac5-b88acf6f5ce3,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cc2a8330-c94f-4949-a2d7-f4bc71c1138c,4,fan_in,success,success,stable_win,False
+cc77ba77-a0ee-4cfa-95b1-6b42d235acf7,5,long_chain,executable trajectory ending wrong result,wrong tool,stable_loss,True
+cc913e65-ef94-4fb4-a4b2-d420e02ab4be,5,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+cca5a451-da20-498d-9e78-e67ce4ba5535,2,linear_dependency,success,success,stable_win,False
+ccb458fa-d81d-49cc-a872-78e6f78891d2,4,linear_dependency,success,parse/format error,lost_after_E2,True
+ccd9077b-e15a-4d22-9bab-e2f0409f8f01,3,linear_dependency,success,success,stable_win,False
+ccf24406-7e65-4813-b8a4-64bd142b13e7,7,long_chain,success,success,stable_win,False
+cd09dbd1-2fdc-4eea-a3de-cbd3bacf596a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cd2c11f9-7d61-4b5b-8292-304878bc8f34,3,linear_dependency,success,success,stable_win,False
+cd302b81-2ce3-406f-a630-cdd5b88e10ff,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+cd504733-bb25-4995-9fcc-2c786689fd98,4,fan_in,"correct trajectory, wrong final answer",wrong tool,stable_loss,True
+cd6b81c1-5157-4920-93ec-3ed00b01621b,8,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+cd96c9ad-13d1-4596-b577-a295e45ba976,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cdadfe2d-be7f-4395-8d5c-765e99d0815d,6,long_chain,success,success,stable_win,False
+cdfc6ae1-e182-443e-b66e-1162b3d38a03,14,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+ce16cd43-3947-45b1-8dca-3946b69719e7,17,long_chain,parse/format error,parse/format error,stable_loss,False
+ce3eeb7f-c50f-4c53-9fe5-ddfb4a82f901,3,fan_in,success,success,stable_win,False
+ceaf3430-1283-48e5-b128-355f15d875f1,4,linear_dependency,success,success,stable_win,False
+ceb27547-113b-4706-bae5-ebada5a28c4a,6,long_chain,wrong tool,wrong tool,stable_loss,False
+ced97929-b113-413a-a5be-c01d4b59c073,3,linear_dependency,success,success,stable_win,False
+cf505b08-15c9-4e9f-9e0a-853ae9b4a5fc,10,long_chain,parse/format error,parse/format error,stable_loss,False
+cfc061e2-aac0-4a87-8352-85d43dd7880f,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+cffae660-6fc6-4c48-8bfc-51be4385eb41,3,linear_dependency,success,success,stable_win,False
+d010385a-4346-45ae-baaf-5eb5ff4a0071,6,long_chain,success,success,stable_win,False
+d032c638-4787-44d2-8ecf-3a7a07062074,2,linear_dependency,success,success,stable_win,False
+d07fd544-f4c4-4a86-a4bb-3f05a076c065,4,linear_dependency,success,success,stable_win,False
+d0a3fac9-1de9-4f4b-b0df-93bb965567f5,16,long_chain,executable trajectory ending wrong result,wrong tool,stable_loss,True
+d0b4d32f-a1cc-4e9a-b308-5a4ad7843845,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+d0b81e07-1120-4d16-bb30-210922380178,5,long_chain,success,success,stable_win,False
+d0e4ce58-0809-48bf-bc0f-af4904c1b6f7,5,long_chain,success,success,stable_win,False
+d13b28e8-59e7-4b1d-bcf8-efd26d9e8de3,5,long_chain,success,success,stable_win,False
+d14c6e83-c406-4556-9d7d-e5e45eacacfd,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+d156dd17-ea2e-45f8-bdae-e4f3a47015ed,2,linear_dependency,success,success,stable_win,False
+d15de72b-e688-459e-bf1d-fc9c79c5aab0,6,long_chain,success,success,stable_win,False
+d18f9bc5-6ac4-4201-91f5-b610abedb2af,3,linear_dependency,success,success,stable_win,False
+d1bb971a-eae2-4676-ac34-2f75c7e116c7,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+d1c052b8-7b8f-4276-b609-102af3933429,6,long_chain,success,success,stable_win,False
+d1f08f46-390b-49ea-9534-ee1639221aec,4,fan_in,success,success,stable_win,False
+d1f76894-c9d3-4419-bdf3-792935fe9214,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d20ca7bd-e433-45c0-baec-a66fed5e6d02,2,linear_dependency,"correct keys, wrong argument values",no tool call,stable_loss,True
+d20d683a-d14b-4108-8b0b-20d2dde2ad44,8,long_chain,success,wrong tool,lost_after_E2,True
+d22678f7-c04c-48a6-8556-fb2d314dfb3b,2,linear_dependency,success,success,stable_win,False
+d27d13fd-1d87-4878-bb12-c9910d53a134,3,linear_dependency,success,parse/format error,lost_after_E2,True
+d2d05565-b02a-45a2-b3fc-68171239efd1,6,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+d2e67678-78d8-4993-9559-62f23f64613c,3,linear_dependency,success,success,stable_win,False
+d2f60c36-a1dd-449c-820f-7ef26e8db0ce,4,fan_in,success,success,stable_win,False
+d329c120-85e6-49de-92aa-a54d18d26839,4,linear_dependency,success,success,stable_win,False
+d3445ddd-cbce-4fe4-ae09-cfa8c3f26d8d,3,fan_in,success,success,stable_win,False
+d35cd697-07ba-43bb-9035-05f045395df0,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+d36a7acb-7a01-4eb1-9d6c-1d7436854b25,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+d37c2776-4227-4967-aa8e-1efed8801bc5,9,long_chain,wrong tool,wrong tool,stable_loss,False
+d3a929e9-f6dd-4ab4-b8ea-0b69da6b2f5d,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+d3b2541d-f260-4cf7-bdb7-5d75178f80f3,7,long_chain,wrong tool,wrong tool,stable_loss,False
+d3b4384c-4b01-461a-a1a4-2aa313207f18,2,linear_dependency,success,success,stable_win,False
+d3e1f226-4779-4f12-b025-6d5d6bf65306,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d3e7ab97-f4de-4beb-9952-97af86fb05ef,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d403db6a-2392-4610-a152-575ce2782cdf,2,linear_dependency,success,success,stable_win,False
+d4346b01-3102-448b-a5c1-191cc401bd21,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+d448887d-7cc2-4ae2-90d4-a5b97f5dddc9,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d4827e1b-5bab-41b6-a8e1-6e8980f36860,2,linear_dependency,success,success,stable_win,False
+d48497b6-0b22-43d3-92ab-6ba500fcf021,4,linear_dependency,success,success,stable_win,False
+d4c761eb-50a5-40eb-802f-c27c23600ecb,5,long_chain,success,success,stable_win,False
+d53916b0-6795-4503-8f9b-c3878546bd5f,7,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d58f0d7f-a5a0-4b80-863e-8e05f7616f2c,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+d5aec711-273b-4a98-9789-02d7ac1a45be,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+d5c906a9-c4ea-40f8-be65-2f260b8929a7,3,linear_dependency,success,success,stable_win,False
+d5e3c63a-943f-4169-a2d5-69ec0433d3c5,4,fan_in,success,success,stable_win,False
+d64fbbb1-1d67-41b9-b54d-9790a3b0bd5d,6,long_chain,success,success,stable_win,False
+d66a6164-04f2-4687-b205-3b8e457cd7f5,2,linear_dependency,wrong tool,"correct tool, wrong argument keys",stable_loss,True
+d68e52a8-07cf-4054-baa2-857fe00e9e25,4,fan_in,success,success,stable_win,False
+d68f72eb-874c-4304-afe3-f7739de46e8f,2,linear_dependency,too few calls,success,gained_after_E2,True
+d6bd765f-9551-4099-8b2a-da154e0cf2aa,5,long_chain,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+d6c9c7eb-7a64-4007-a9c6-b475be17b9a4,3,linear_dependency,success,success,stable_win,False
+d6dc8f37-fe4a-42c0-a74e-ee45e5fff55e,13,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d71b01d8-d27c-4ea5-a532-f9d0a276099f,2,linear_dependency,success,success,stable_win,False
+d71ce103-fb88-4af0-a6a7-1ed85a639c57,8,long_chain,success,success,stable_win,False
+d72b1423-e392-4c7b-a151-66567a8af989,7,long_chain,success,wrong tool,lost_after_E2,True
+d733ab0b-195a-4bae-9a01-b5eb455b7e14,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d7626ffb-76e8-433f-8eff-2a9c81282049,5,long_chain,no tool call,no tool call,stable_loss,False
+d767e8d6-7766-4963-94ea-a8f47f1034b9,3,linear_dependency,success,success,stable_win,False
+d786dab7-ab0d-44f2-86b8-9fccfd57b393,15,long_chain,success,success,stable_win,False
+d7b21141-9c2a-4853-a4e7-cf34c1a1be48,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d7bbe6bf-3a69-44fb-bb99-5ce2f8b0da7b,2,linear_dependency,too few calls,too few calls,stable_loss,False
+d82754b3-e51c-4bae-814a-bc01aa7a527d,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+d849393c-70e8-47af-bd5c-0fc714ab655d,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+d849c5fb-b7db-456e-9aa1-d55dae6d8cb8,8,long_chain,"correct keys, wrong argument values",wrong tool,stable_loss,True
+d868deb0-3000-4177-a029-9a3b37e86e6c,13,long_chain,no tool call,no tool call,stable_loss,False
+d8793f83-4a7e-4435-b0d7-cff2b50ef373,2,linear_dependency,success,success,stable_win,False
+d87c8747-a626-4e8b-90e6-825cef31fb05,4,linear_dependency,success,success,stable_win,False
+d883f2ac-e3ea-456c-a7ff-9abdb91a8f16,5,long_chain,success,success,stable_win,False
+d8c03a22-0d48-4772-9774-21afb73e8770,2,linear_dependency,success,success,stable_win,False
+d8c2dc8d-ae54-468c-b029-cc5b36344814,2,linear_dependency,success,success,stable_win,False
+d8ea3b09-8263-4b35-b6eb-622ebca8cc09,4,fan_in,success,success,stable_win,False
+d8f260bf-f00a-46f5-819f-d9bf3507b728,3,linear_dependency,success,success,stable_win,False
+d8f8b942-c7da-4cab-a2c0-419f79e18431,3,linear_dependency,success,success,stable_win,False
+d9657b27-fc32-4b1b-8821-f408a3cf7940,2,linear_dependency,success,success,stable_win,False
+d9781e04-9dcb-442b-944b-b7a1bf9c5ab1,4,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+d992fe62-f424-41b5-a928-6caf230ab097,5,long_chain,success,success,stable_win,False
+d9b504d3-27de-4584-a98c-c606e5c6b4dd,2,linear_dependency,success,success,stable_win,False
+d9b8fd5b-10b0-4f54-8518-f1038ae2f000,2,linear_dependency,success,success,stable_win,False
+d9c487d8-e9cf-41b5-907e-f1e79f19de61,8,long_chain,success,success,stable_win,False
+da46227c-4bf7-4f1c-b22c-2d92cfb5d8ca,6,long_chain,success,success,stable_win,False
+da7d0843-1ecf-458a-bd44-f58956efbaf8,2,linear_dependency,success,success,stable_win,False
+db0f42d4-165c-4e31-bebd-9d6e5891c535,4,linear_dependency,success,success,stable_win,False
+db25d9a4-caa5-4657-b24e-545a5be6b981,6,long_chain,wrong tool,wrong tool,stable_loss,False
+db2a9924-0de1-44df-8d7d-9176b821122f,3,linear_dependency,success,success,stable_win,False
+db313ec1-ed61-454c-8a34-99ef6d7aca97,3,linear_dependency,success,success,stable_win,False
+db347cbd-e228-4284-a667-8f354809edf6,5,long_chain,no tool call,no tool call,stable_loss,False
+db3e64ef-ec07-491b-b84a-5310d5b4535f,2,linear_dependency,no tool call,no tool call,stable_loss,False
+db5d35a9-9a99-4854-ad29-d907ffc484b9,2,linear_dependency,"correct tool, wrong argument keys","correct keys, wrong argument values",stable_loss,True
+db663e22-21eb-424f-a826-af28045b196a,6,long_chain,no tool call,no tool call,stable_loss,False
+db6cd8b7-bbba-4166-8921-f68d469142e8,17,long_chain,"correct keys, wrong argument values",parse/format error,stable_loss,True
+db8d72af-7a1a-4201-a376-4b827b0162df,5,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+db8db406-1104-4f43-9e90-a3ebbf3689c9,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+dbdc8346-a48e-4ecd-adb1-11fe1879b7c5,6,long_chain,wrong tool,success,gained_after_E2,True
+dc009c32-925d-40ae-a4af-eea8ebf28cb2,4,linear_dependency,success,success,stable_win,False
+dc46e464-28c6-43a0-ad18-9c130fcf86e4,4,fan_in,success,success,stable_win,False
+dc5fc3b0-79a6-4aa9-8655-458ad1725bdf,3,linear_dependency,success,success,stable_win,False
+dc96276f-7680-42f4-8489-cfeca78d07c4,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+dcb7c7f4-5d2f-4f34-a055-84a91c7043de,2,linear_dependency,success,success,stable_win,False
+dcdfde18-0414-4435-bcec-b8aece7ccf43,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+dd1d9598-04c5-4abe-9520-6b6be4b916ae,2,linear_dependency,success,success,stable_win,False
+dd5ea114-9df1-4de5-b2d2-d992a900240f,7,long_chain,success,success,stable_win,False
+dd7a392f-d258-4192-941a-b487c575eabd,3,linear_dependency,success,success,stable_win,False
+ddb6fee2-7067-4b35-ba7c-4529966bfcf1,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+ddba5850-f7af-43ef-a5c0-81abaa662978,2,linear_dependency,success,success,stable_win,False
+de0b1345-6137-469d-a2b2-74c02fcc8cd3,7,long_chain,success,success,stable_win,False
+de227182-12fe-46cc-b6a6-f7e05ba028d1,2,linear_dependency,success,success,stable_win,False
+de4097f6-5ab5-41f3-a48b-468dfe5a47a2,2,linear_dependency,success,success,stable_win,False
+de437463-bbfe-4f72-8150-448d6469ba43,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+de604829-76b7-4b43-a295-db97827cb3c7,5,long_chain,success,success,stable_win,False
+de6eafb3-13f3-47ee-9bc1-5e333b3efbd6,5,long_chain,success,success,stable_win,False
+de7dd9d9-7675-40c2-9fa2-888e692fe7a2,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+deca0cfc-5c4b-42e7-8d89-6a4ca7d9c771,2,linear_dependency,success,success,stable_win,False
+df462a01-4b7e-4ad9-8bac-eff9f57fa588,18,long_chain,wrong tool,wrong tool,stable_loss,False
+df7d09de-9314-438c-a726-5189f82d3bd9,9,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+df9c2ac0-1aeb-442b-b27c-e42d9de2e7ea,3,fan_in,success,success,stable_win,False
+dfa40edb-fc81-4722-9aa7-817b0338988b,2,linear_dependency,success,success,stable_win,False
+dfe920f9-153a-4882-bbaf-23f998d52354,4,fan_in,success,success,stable_win,False
+dffcc85f-cd59-49b3-9d00-c78322445bce,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e089d36f-ab1f-48e9-b547-c525f2e5f214,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e0b0ca8e-c9e7-41b9-a58a-0623c28d90a0,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+e0bd90e4-6dcc-45e2-9dd4-44e97eadbff4,4,fan_in,no tool call,no tool call,stable_loss,False
+e0e9c1ca-3a57-4d55-9dee-8bc0e8746e50,18,long_chain,"correct keys, wrong argument values",executable trajectory ending wrong result,stable_loss,True
+e12393e3-a844-4a4d-86a4-f96487c61ca2,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e1693bff-e697-46a6-b57f-57b4484ce895,6,long_chain,too few calls,too few calls,stable_loss,False
+e17e578e-1768-421c-8e33-3fbc545735d6,9,long_chain,success,success,stable_win,False
+e18ff139-cd54-42da-8b29-bec8a162fc0e,3,linear_dependency,success,success,stable_win,False
+e1a005a4-216d-4486-a15b-d53ccb574e78,7,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+e1bf248f-7435-4613-9742-66d91dc59297,8,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+e1f26f6b-c1c4-45f7-a6db-e231feea75c0,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+e2034d3c-1af3-43cd-a0b9-38f5b1b8fda5,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+e20f2592-d532-4a07-940d-4b74ef0ba6f9,12,long_chain,success,success,stable_win,False
+e218fe94-0943-47ec-9f47-b7f716a1f410,7,long_chain,no tool call,no tool call,stable_loss,False
+e23c9a7f-fdf9-4b4c-9664-e109d9904957,3,linear_dependency,success,success,stable_win,False
+e292a1d2-f748-4b3e-988e-191d3e47fe8d,3,fan_in,success,success,stable_win,False
+e298e090-b25d-45f0-85c3-5ec7e8a1a89b,4,fan_in,success,success,stable_win,False
+e2bfe8dc-ca77-4c93-8759-4c0f343f8f71,2,linear_dependency,success,success,stable_win,False
+e2cf1726-9a4d-4cb1-a32f-5f5e9ba0d3c4,3,linear_dependency,success,no tool call,lost_after_E2,True
+e2d15e8e-2f65-4928-aa14-85edc07ff784,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e3146382-ad8d-4d85-82e1-f08127121657,3,fan_in,no tool call,no tool call,stable_loss,False
+e32edb32-9080-4e23-a097-2be14afce16d,2,linear_dependency,success,success,stable_win,False
+e39f250a-1359-4704-8e4b-767318fe1ef2,7,long_chain,success,success,stable_win,False
+e3a118fa-b77d-4f76-9dc6-66233a361aba,6,long_chain,success,success,stable_win,False
+e3a762e8-bb92-4b7c-b692-0340b379f66d,4,linear_dependency,no tool call,no tool call,stable_loss,False
+e3c7eb1a-dd01-45b2-9a48-bd0d4c44ad47,11,long_chain,success,success,stable_win,False
+e3da4472-ddf0-44b2-9f74-cf08eec18b35,2,linear_dependency,success,success,stable_win,False
+e3e68bf5-479b-450b-8c4f-c635b0f75604,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e3f3049a-021f-4f90-9c4e-640aaf4519c4,3,linear_dependency,success,success,stable_win,False
+e409ff80-64e3-43f1-aacb-2d552908e8ea,3,fan_in,success,success,stable_win,False
+e415b98a-78ec-4b97-b20c-9ae8ca78333d,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+e422f852-fe4a-4981-b899-25e6263b9a4a,6,long_chain,success,success,stable_win,False
+e43bbe8b-0429-473d-96c9-216905851bd6,3,linear_dependency,success,success,stable_win,False
+e43c9534-daf1-4367-a63d-d119a741a759,4,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+e46b5400-418c-4797-88ce-45678131341a,2,linear_dependency,success,success,stable_win,False
+e4bdc3e1-4c28-4050-a23a-ab74718caada,5,long_chain,success,success,stable_win,False
+e4f6281b-a0ef-4f2a-b968-3a96d5d63ded,2,linear_dependency,success,success,stable_win,False
+e53a50d4-dc11-4d47-81b5-14269953bf92,3,fan_in,executable trajectory ending wrong result,success,gained_after_E2,True
+e58f8af9-1bdb-42c7-8a0d-0094b1274f3c,6,long_chain,wrong tool,success,gained_after_E2,True
+e5907658-0492-404a-94c6-c1f705d9aeb9,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e5908a48-4f50-4df2-8ca0-c32ed32177fb,5,long_chain,success,wrong tool,lost_after_E2,True
+e59349c9-8c39-4d07-a1c6-0458a5c75cf0,3,linear_dependency,no tool call,no tool call,stable_loss,False
+e5d6677e-efbe-4085-ac8d-0257cecf1a58,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e5eb37ac-bd11-4a84-82a3-588c93ba7712,2,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+e62f347c-1502-4666-b559-4581eaa07709,13,long_chain,no tool call,no tool call,stable_loss,False
+e6417511-38b7-4738-9dc9-c5547ca43fca,2,linear_dependency,success,success,stable_win,False
+e648a1d4-4f0e-4d06-b7ea-23d89b412d65,5,long_chain,success,success,stable_win,False
+e6520066-98cf-4254-bed3-8cd7e8dfa2eb,6,long_chain,executable trajectory ending wrong result,parse/format error,stable_loss,True
+e652bee6-4121-4ca1-8dd0-653787184a80,5,long_chain,executable trajectory ending wrong result,success,gained_after_E2,True
+e665aa88-e0ac-4724-866a-44d2c84e97b0,3,linear_dependency,success,success,stable_win,False
+e66f9c86-4761-439e-9e3e-ae47178123b1,8,long_chain,success,success,stable_win,False
+e66fce41-6850-45a8-9db4-5cdf7fc5d81c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e6768b60-cc80-4e82-b9c8-c0d48df718fe,4,fan_in,success,success,stable_win,False
+e67ab11d-70f4-4d75-9cf4-dc77d18dda1f,3,linear_dependency,parse/format error,executable trajectory ending wrong result,stable_loss,True
+e69efd40-2edc-4d18-9384-387e6d49bacb,3,linear_dependency,success,success,stable_win,False
+e6a8c49d-577f-4a1e-a2d0-96ec051f83ac,3,independent_calls,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e6f87834-9065-4acb-b170-34e171f97465,7,long_chain,success,success,stable_win,False
+e70a9854-a413-497f-8abe-74b3b1a63bc7,10,long_chain,success,success,stable_win,False
+e70bd2c9-99af-410a-bc6d-61a65e00f7d8,5,long_chain,no tool call,success,gained_after_E2,True
+e74da2b0-ed5d-4a47-9011-3aa9357f21db,4,fan_in,no tool call,no tool call,stable_loss,False
+e7739078-35f2-48da-a734-cb4b077cf372,9,long_chain,success,success,stable_win,False
+e777b240-2ff0-4ec1-b9e1-eb656aaa8758,3,linear_dependency,no tool call,success,gained_after_E2,True
+e7cb149b-8c4c-409a-875a-023bb99f6039,2,linear_dependency,success,success,stable_win,False
+e7dc9f54-d564-4d82-ab36-60ca22bfb8e2,5,long_chain,wrong tool,wrong tool,stable_loss,False
+e7f6a43e-b1f7-4c00-9f38-46a53c6fa8a6,26,long_chain,success,success,stable_win,False
+e82737ff-a667-46b4-8b1d-1e16b1785911,5,long_chain,wrong tool,wrong tool,stable_loss,False
+e82f13d7-ecd9-4dc9-b31e-33503544893f,8,long_chain,"correct keys, wrong argument values",too few calls,stable_loss,True
+e83766eb-bbdf-432c-9947-cd9935a52fe9,2,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+e83e24b8-83e4-43dc-a666-682e39a344f1,2,linear_dependency,success,success,stable_win,False
+e840d623-72b9-4d5b-a77e-968604fad0a9,2,linear_dependency,success,success,stable_win,False
+e854fd67-4e08-483f-a4b2-a4c7c4f85d17,3,linear_dependency,"correct keys, wrong argument values",success,gained_after_E2,True
+e8605b92-ee9a-4265-9c3c-aa4bc3a691e9,6,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e871f942-9218-4994-b1f9-30a8ff91f9d2,7,long_chain,success,"correct keys, wrong argument values",lost_after_E2,True
+e91ac719-1883-4f0b-ae50-9d7a3a66ea4f,8,long_chain,success,success,stable_win,False
+e940f944-a864-4e44-8c9d-cf914b5c8d3e,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+e985f011-8fdb-4746-9c49-3a925df7a678,8,long_chain,wrong tool,wrong tool,stable_loss,False
+e9f8d52e-89c1-4fc9-9cb6-3b596cf18dd0,3,independent_calls,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+ea0f56e1-0e5e-4962-8345-e2f8bfb14a11,3,linear_dependency,success,success,stable_win,False
+eaf68218-8055-4028-a3f6-680f01370097,3,linear_dependency,success,success,stable_win,False
+eb041d6e-a44e-4b20-8062-80309decfeec,2,linear_dependency,success,success,stable_win,False
+eb1312ee-7059-4660-a43c-ecff8b71919d,3,linear_dependency,no tool call,no tool call,stable_loss,False
+eb2c642b-1c31-444f-92dc-fad34952a8c5,9,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+eb607580-8992-4e48-a363-bc1ad0568d8b,2,linear_dependency,wrong tool,wrong tool,stable_loss,False
+eb98f598-754c-4117-b630-dc58914f2a4d,8,long_chain,no tool call,success,gained_after_E2,True
+ebdb9ed1-c0cb-49a3-b99f-51a3abdf8b90,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+ec600a06-e26f-467a-900e-f02aa2588c2b,6,long_chain,success,success,stable_win,False
+ec654414-df15-4621-9b4d-3570a4ae6864,3,linear_dependency,success,success,stable_win,False
+ec6d298b-5e02-4b0d-8ecf-b8af044f8a4a,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+ecdc79e0-a18e-4581-bccd-ee0f2145f69a,3,linear_dependency,success,success,stable_win,False
+ed6fe969-2d74-4000-9d6d-a50a01662fd3,6,long_chain,success,wrong tool,lost_after_E2,True
+ed8bfd25-69ed-4d52-8e62-438e8258f812,2,linear_dependency,success,success,stable_win,False
+ed9416d7-f389-44e7-8a8c-3b7b7f7e9561,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+ed95f1e2-dbf9-48ff-bf72-de405356a89b,4,fan_in,"correct keys, wrong argument values",success,gained_after_E2,True
+ed9ab0bb-3c60-4bb1-acb9-c256773792db,7,long_chain,success,success,stable_win,False
+edd82218-9248-4478-ab29-c1a3091f7d53,4,linear_dependency,wrong tool,wrong tool,stable_loss,False
+ef0cde2a-17ca-4877-9713-01ea4d7af0b8,5,long_chain,success,success,stable_win,False
+ef15f0b2-b6d7-4f91-a6f6-fd54608c0e99,4,fan_in,success,no tool call,lost_after_E2,True
+ef29201e-ebf0-47cc-8228-3f68241ef6f5,5,long_chain,success,success,stable_win,False
+ef6fdd18-2874-4423-b3c9-de5fdff9e61a,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+efab9973-cf02-46ff-91ca-bcfc978f1060,2,linear_dependency,success,success,stable_win,False
+efb27a4c-8f60-4989-bece-ba7d16ef10ae,6,long_chain,no tool call,no tool call,stable_loss,False
+efb941f0-dcd7-4321-9536-7715c2c15518,2,linear_dependency,success,success,stable_win,False
+f018b1ec-6a4e-46d4-8115-dc6010db4952,5,long_chain,no tool call,no tool call,stable_loss,False
+f01d02d7-dacb-43b0-9dd5-0a3d8a2f4849,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+f04f024e-94b8-43e6-b8e7-050f890401a9,6,long_chain,success,success,stable_win,False
+f04fa61f-3156-4b3f-8bb4-21fd58d864ad,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f087b63b-923b-4adb-b031-dae59b78ceab,7,long_chain,parse/format error,success,gained_after_E2,True
+f09b536e-258e-4178-bfe9-df0703054b16,3,fan_in,success,success,stable_win,False
+f0a78d52-95c8-4ecd-9e7e-d6e28eddd4c8,10,long_chain,success,success,stable_win,False
+f10b5d07-9b66-4f24-9562-306a636865f2,8,long_chain,success,success,stable_win,False
+f189eaa1-503b-484e-9896-53a8b663204e,6,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+f22571c8-fb14-4746-b837-a702f7bc3b07,6,long_chain,wrong tool,wrong tool,stable_loss,False
+f233bac0-19b3-4c09-b8ae-ed847a9c7c1d,3,fan_in,parse/format error,parse/format error,stable_loss,False
+f23c3b8c-1ca9-42f3-a040-dce72b65aa28,3,fan_in,wrong tool,wrong tool,stable_loss,False
+f24b645f-c73b-45fd-89fa-8f841be37685,2,linear_dependency,too few calls,"correct tool, wrong argument keys",stable_loss,True
+f29d7031-a1cc-45f5-8bb1-6be4c4459be3,12,long_chain,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f2aede8e-145b-4b28-84d4-9fb63d8564d7,8,long_chain,wrong tool,wrong tool,stable_loss,False
+f2b677d4-4070-4676-a766-1a40f43bedeb,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+f2db7bd6-bda7-4bb1-8549-73231217662b,2,linear_dependency,success,success,stable_win,False
+f30354ca-bd02-4b0e-8cb7-fd170b0ed758,2,linear_dependency,success,success,stable_win,False
+f31d9fa2-3360-4409-8958-433cbcecf0d4,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f334ca41-2c0e-42d1-9ff1-afe48f56e9f8,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+f3587799-b9b3-4649-a2a3-fa4406df17c8,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f35d7635-07e6-41a2-992d-612f82be538c,4,fan_in,success,success,stable_win,False
+f3704c69-86b9-4389-a475-a36756980a8c,3,linear_dependency,wrong tool,wrong tool,stable_loss,False
+f373d250-2c9f-42f5-a12a-cbe17de52be1,11,long_chain,success,success,stable_win,False
+f39b094a-54f6-4915-8ede-44b3515fcceb,4,fan_in,success,success,stable_win,False
+f3bf492e-464a-4b3c-be74-26ece6059721,3,fan_in,success,success,stable_win,False
+f3fab4ce-10a5-4b8b-ad67-ed044aa33a64,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f3ff1bb8-0747-4453-afbb-a71cf3fd92d9,7,long_chain,success,success,stable_win,False
+f41b8815-1841-4a68-94c5-fbcaf1642a86,3,fan_in,success,success,stable_win,False
+f4551c2c-ab7f-4098-a400-bf6948a51780,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f4975ee4-ece2-46a8-bf54-39632f13bd6b,3,linear_dependency,success,success,stable_win,False
+f4d8b4ba-bee6-4c42-8b31-105d711e4a7f,2,linear_dependency,success,success,stable_win,False
+f50c13f6-5fd6-45b8-aae9-c29401e79ae4,4,linear_dependency,success,success,stable_win,False
+f50c216d-76ee-4609-8fd7-5e6efeb01927,5,long_chain,success,success,stable_win,False
+f5680211-f44c-44ee-8ae7-efd96c6886ff,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f5a81c81-73e3-4c94-87dd-44f400c5b843,3,fan_in,success,success,stable_win,False
+f5c72bd2-1b60-4d40-92b9-f021425237ce,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+f5de19a8-0cc9-435a-9845-6edc4ab1a33e,2,linear_dependency,success,success,stable_win,False
+f5f86953-11aa-47f5-92f5-607f7ba9fe00,3,linear_dependency,success,success,stable_win,False
+f61a997c-11ce-404c-a825-b25b933887eb,2,linear_dependency,success,success,stable_win,False
+f61f6ae5-83ab-4807-87f6-30f20df4c8ff,11,long_chain,success,success,stable_win,False
+f62eee65-6d86-4fab-a3ab-1ebb99222f65,3,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+f667a28d-2be7-41fc-94ed-118e8381a2c3,4,fan_in,no tool call,no tool call,stable_loss,False
+f66f39fa-83da-43b8-8f2c-bbbcb4661a5d,5,long_chain,no tool call,no tool call,stable_loss,False
+f6aa4233-451e-4e33-abe1-451a313b6fec,4,fan_in,wrong tool,wrong tool,stable_loss,False
+f719df94-7568-49fa-ad78-4892b67cf7c9,3,linear_dependency,no tool call,"correct keys, wrong argument values",stable_loss,True
+f729c101-7417-40e2-b01b-949705038240,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f75d1930-a5cb-40ab-abf5-370966ed9f67,3,fan_in,executable trajectory ending wrong result,wrong tool,stable_loss,True
+f76b1983-59a8-4264-9065-ef478e8f3944,2,linear_dependency,success,success,stable_win,False
+f78c26cb-d05d-4cfd-8be3-47b0b01d2e95,2,linear_dependency,success,success,stable_win,False
+f7d975ce-dcd5-46ba-bfbf-f18b79aa15bd,5,long_chain,success,success,stable_win,False
+f8223fdb-8c77-44dc-8e32-f039e0870600,6,long_chain,success,success,stable_win,False
+f835d116-65c1-4ab8-95d3-980506564ddd,5,long_chain,success,success,stable_win,False
+f838ed99-5ee3-4b09-b43d-81fe4c143b28,2,linear_dependency,success,success,stable_win,False
+f8392a35-50dc-44a0-bd97-d824c0b58c4f,5,long_chain,success,success,stable_win,False
+f84f5a69-cde5-4bda-a796-d64b8d4818d3,4,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+f882ddca-1f8b-40b6-b16b-71be9570276f,2,linear_dependency,success,success,stable_win,False
+f88cace8-b7e7-4985-a330-f2d39bc256ea,4,linear_dependency,success,success,stable_win,False
+f8afd4f1-7126-47da-b450-597af4273f1f,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+f8b1f336-f60c-4c9c-b5cd-f495f8b22d91,5,long_chain,parse/format error,parse/format error,stable_loss,False
+f8d3c4a4-aeb8-4efb-baa6-cf8a6d36b330,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+f8f104a2-d795-41c6-9f1e-778647f4d195,3,fan_in,success,success,stable_win,False
+f8fdce32-9e0f-4f9c-bd0d-15dfce117a71,8,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+f905138a-f657-4ab0-a9f9-b17fd5854b4f,3,linear_dependency,success,success,stable_win,False
+f90a883c-f05f-40b2-af89-f962d80f053f,7,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+f91e4730-e13f-4de5-8690-46ec34e6feb0,4,linear_dependency,success,success,stable_win,False
+f931b90f-061b-49a6-807e-c760811bcbbc,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+f95f91e2-fbee-4cb5-a955-722cb50b80f3,3,linear_dependency,parse/format error,parse/format error,stable_loss,False
+f9b0b929-0325-4b33-bfc5-d12c09ee0cdb,7,long_chain,success,success,stable_win,False
+f9e03c4f-d03c-499e-a903-c72fd94d5577,13,long_chain,wrong tool,success,gained_after_E2,True
+f9ebc5c7-fafb-4b4b-ae3f-8f4f10f5ca31,3,linear_dependency,success,success,stable_win,False
+f9f0b111-ddaa-4d2d-b12d-223f3252e574,2,linear_dependency,success,success,stable_win,False
+f9fc63e9-d3ce-4d05-8df7-3e4c19dca79c,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+fa213029-9dd3-4171-b9db-431d9a946996,9,long_chain,success,success,stable_win,False
+fa47c82a-60bf-4ff0-bcf7-d7b41fe795c4,18,long_chain,success,success,stable_win,False
+fa4f35fb-d6b9-4c69-a2a3-da65403de2cc,7,long_chain,success,success,stable_win,False
+fa57c28a-e9d8-44fb-a358-a9404a557d5b,2,linear_dependency,success,success,stable_win,False
+fa9c7f16-9ea7-4eb4-b3d4-efdb6492cf3d,5,long_chain,parse/format error,parse/format error,stable_loss,False
+fae89b03-abc5-4555-b58d-ac00771a8353,2,linear_dependency,"correct tool, wrong argument keys","correct tool, wrong argument keys",stable_loss,False
+fb08a631-0974-4e7c-8162-8f607f3fe9fe,2,linear_dependency,success,success,stable_win,False
+fb341674-da07-4323-b70a-7bb759f1e746,6,long_chain,success,success,stable_win,False
+fb483a5f-2291-49b0-b0d7-05c3144868d8,2,linear_dependency,success,success,stable_win,False
+fb9b11a9-ad10-43f4-932d-070b39d9d3c4,2,linear_dependency,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+fbf8555d-2ba9-4985-b41c-7e34c77b51ab,5,long_chain,success,success,stable_win,False
+fc0ea07a-cf46-4011-a262-df20234c75e6,3,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+fc2658f5-068a-4697-985d-3ca2a5ca10e5,3,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+fc47e3cd-d410-4517-9b20-9817fa2e8217,3,fan_in,success,success,stable_win,False
+fc5aff95-5674-4f4f-862b-982b19ab22c4,2,linear_dependency,too few calls,executable trajectory ending wrong result,stable_loss,True
+fc5b4e62-283d-47b5-9f2f-360d781bdef4,10,long_chain,no tool call,no tool call,stable_loss,False
+fc6100d1-accb-423a-a8c0-4f4a14ea3cd5,5,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+fc63256c-718c-4887-b314-a51216bd4760,3,fan_in,success,success,stable_win,False
+fc705fe9-0fa7-45c0-ab4c-93f47241b052,2,linear_dependency,executable trajectory ending wrong result,executable trajectory ending wrong result,stable_loss,False
+fc77d948-c941-4717-a841-d14823cd9e7b,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+fc783b3f-ceb7-4705-bfb8-04a9634bd5ba,13,long_chain,success,wrong tool,lost_after_E2,True
+fc7d9c59-0aad-43be-a2ef-6d5b00633f30,3,linear_dependency,success,executable trajectory ending wrong result,lost_after_E2,True
+fc8a9de4-dbbd-4a43-b86f-e331c5ab6199,3,linear_dependency,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+fc9581fb-8a20-4281-a42c-c2e211b4ed58,6,long_chain,success,success,stable_win,False
+fcd37845-2ba9-40ff-a086-35b92ba1ee19,8,long_chain,wrong tool,wrong tool,stable_loss,False
+fcd633f2-90eb-42fb-88db-1fbfb3382071,2,linear_dependency,parse/format error,parse/format error,stable_loss,False
+fd03dd17-e388-4fd6-ad21-fac7bfe0b176,6,long_chain,parse/format error,"correct keys, wrong argument values",stable_loss,True
+fd0cd926-352b-4b35-b616-a98e6a68b370,3,linear_dependency,success,success,stable_win,False
+fd42c8fe-5870-47ac-b647-d760d95961e8,3,fan_in,success,success,stable_win,False
+fd49d75b-907d-4ea8-8f20-b94ae88ba68d,8,long_chain,"correct keys, wrong argument values",success,gained_after_E2,True
+fd93d5e2-b364-47d3-95c6-b253545f19a9,3,fan_in,no tool call,no tool call,stable_loss,False
+fd974a69-367d-4ad0-ba69-509a91be9547,3,independent_calls,"correct trajectory, wrong final answer","correct trajectory, wrong final answer",stable_loss,False
+fdb9997f-23ee-4897-b6b5-cb8d56de2bb8,15,long_chain,"correct keys, wrong argument values",executable trajectory ending wrong result,stable_loss,True
+fde10026-a75e-44d5-ba81-adc9510c5c22,8,long_chain,"correct keys, wrong argument values","correct keys, wrong argument values",stable_loss,False
+fe3ebaf1-4861-425f-a681-3ed6815e4f24,8,long_chain,wrong tool,parse/format error,stable_loss,True
+fe437521-4035-48f6-842d-7dbbb3f778a9,4,fan_in,no tool call,no tool call,stable_loss,False
+fe72229a-2b0d-4eb4-8ba9-1e5179ff5029,5,long_chain,wrong tool,success,gained_after_E2,True
+fed1fe60-ded8-481f-bf6a-8918b655660a,7,long_chain,wrong tool,"correct keys, wrong argument values",stable_loss,True
+ff0029de-3456-487f-a569-301ff13b2a3b,3,linear_dependency,success,success,stable_win,False
+ff6f567d-265a-4ac1-9e31-35d964ed83d9,2,linear_dependency,success,success,stable_win,False
+ffc20e46-5975-4bc7-b0d5-23f712931223,5,long_chain,success,executable trajectory ending wrong result,lost_after_E2,True
+ffc78483-512b-4cac-82e9-6081425c2cd4,13,long_chain,wrong tool,wrong tool,stable_loss,False
