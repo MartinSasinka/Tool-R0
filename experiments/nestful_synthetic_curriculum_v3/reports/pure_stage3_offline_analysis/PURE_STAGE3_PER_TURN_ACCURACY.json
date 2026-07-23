@@ -1,0 +1,49 @@
+{
+  "generated_at": "2026-07-23T06:34:47.024043+00:00",
+  "n": 1661,
+  "arms": {
+    "C0": {
+      "first_tool_acc": 0.5147501505117399,
+      "turn2_tool_given_turn1": 0.7970430107526881,
+      "turn3_tool_given_prefix12": 0.772020725388601,
+      "turn2_arg_given_turn1": 0.5784610215053761,
+      "turn3_arg_given_prefix12": 0.6139896373056994,
+      "observation_ref_turn23": 0.25,
+      "terminal_outcome_given_executable": 0.6807228915662651,
+      "n_obs_ref_samples": 752,
+      "n_executable": 1328
+    },
+    "E1": {
+      "first_tool_acc": 0.5177603853100542,
+      "turn2_tool_given_turn1": 0.7783711615487316,
+      "turn3_tool_given_prefix12": 0.7526881720430108,
+      "turn2_arg_given_turn1": 0.5737093902981752,
+      "turn3_arg_given_prefix12": 0.6088709677419355,
+      "observation_ref_turn23": 0.27456258411843876,
+      "terminal_outcome_given_executable": 0.678082191780822,
+      "n_obs_ref_samples": 743,
+      "n_executable": 1314
+    },
+    "E2": {
+      "first_tool_acc": 0.5177603853100542,
+      "turn2_tool_given_turn1": 0.7675033025099075,
+      "turn3_tool_given_prefix12": 0.8021978021978022,
+      "turn2_arg_given_turn1": 0.5779942756494935,
+      "turn3_arg_given_prefix12": 0.6332417582417582,
+      "observation_ref_turn23": 0.2931726907630522,
+      "terminal_outcome_given_executable": 0.678680981595092,
+      "n_obs_ref_samples": 747,
+      "n_executable": 1304
+    }
+  },
+  "under_calling_metric_rate": {
+    "C0": 0.5972305839855508,
+    "E1": 0.6044551475015051,
+    "E2": 0.6068633353401566
+  },
+  "too_few_calls_taxonomy_rate": {
+    "C0": 0.007826610475617099,
+    "E1": 0.00963275135460566,
+    "E2": 0.008428657435279952
+  }
+}

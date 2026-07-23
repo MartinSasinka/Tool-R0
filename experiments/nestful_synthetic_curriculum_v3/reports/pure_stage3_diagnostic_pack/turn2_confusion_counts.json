@@ -1,0 +1,81 @@
+{
+  "n_rows": 115,
+  "E2_wrong": 60,
+  "confusion_type_counts": {
+    "different_tool": 28,
+    "E2_correct": 55,
+    "missing_second_call": 32
+  },
+  "top_tool_pairs": [
+    {
+      "gold": "add",
+      "E2": "divide",
+      "count": 4
+    },
+    {
+      "gold": "subtract",
+      "E2": "multiply",
+      "count": 4
+    },
+    {
+      "gold": "divide",
+      "E2": "multiply",
+      "count": 3
+    },
+    {
+      "gold": "multiply",
+      "E2": "divide",
+      "count": 3
+    },
+    {
+      "gold": "divide",
+      "E2": "add",
+      "count": 3
+    },
+    {
+      "gold": "subtract",
+      "E2": "divide",
+      "count": 2
+    },
+    {
+      "gold": "subtract",
+      "E2": "add",
+      "count": 2
+    },
+    {
+      "gold": "power",
+      "E2": "square_edge_by_perimeter",
+      "count": 1
+    },
+    {
+      "gold": "delete_value",
+      "E2": "parse_list_of_numbers",
+      "count": 1
+    },
+    {
+      "gold": "add",
+      "E2": "multiply",
+      "count": 1
+    },
+    {
+      "gold": "add",
+      "E2": "subtract",
+      "count": 1
+    },
+    {
+      "gold": "duration_to_string",
+      "E2": "divide",
+      "count": 1
+    },
+    {
+      "gold": "multiply",
+      "E2": "subtract",
+      "count": 1
+    },
+    {
+      "gold": "subtract",
+      "E2": "floor",
+      "count": 1
+    }
+  ]
+}

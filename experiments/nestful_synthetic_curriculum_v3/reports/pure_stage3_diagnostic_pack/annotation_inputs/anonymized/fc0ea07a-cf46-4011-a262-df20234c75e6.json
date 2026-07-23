@@ -1,0 +1,394 @@
+{
+  "task_id": "fc0ea07a-cf46-4011-a262-df20234c75e6",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- Trajectory A/B/C trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "fc0ea07a-cf46-4011-a262-df20234c75e6",
+    "question": "I have a directory at \"/path/to/directory\". I want to count the total number of files in this directory and all of its subdirectories. Then, I want to assign a color to this count based on the number of files. Finally, I want to escape the resulting string.",
+    "relevant_tools": [
+      {
+        "name": "count_files_in_directory",
+        "description": "Counts the total number of files in a directory and all of its subdirectories.",
+        "parameters": {
+          "directory_path": {
+            "description": "The path to the directory to count files in.",
+            "type": [
+              "object",
+              "string"
+            ]
+          }
+        }
+      },
+      {
+        "name": "assign_color",
+        "description": "Assigns a color to the count based on the number of items in the list.",
+        "parameters": {
+          "count": {
+            "description": "The number of items in the list.",
+            "type": "integer"
+          }
+        }
+      },
+      {
+        "name": "escape_html",
+        "description": "Escapes a given string by replacing HTML tags and special characters with the corresponding escape sequences.",
+        "parameters": {
+          "text": {
+            "description": "The input string to be escaped.",
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "expected_outcome": "The number of items in the list is out of range.",
+    "deterministic_flags": {
+      "first_divergence_turn": 2,
+      "shorter_than_gold": false,
+      "taxonomy_too_few": false,
+      "executable": false,
+      "reward_mismatch_R0": true,
+      "R0_class_C0": "correct_tool_wrong_args",
+      "R0_class_E2": "correct_tool_wrong_args",
+      "official_win_C0": true,
+      "official_win_E2": false
+    },
+    "trajectories": {
+      "Trajectory A": {
+        "calls": [
+          {
+            "name": "count_files_in_directory",
+            "arguments": {
+              "directory_path": "/path/to/directory"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "assign_color",
+            "arguments": {
+              "count": "$var1.result$"
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "escape_html",
+            "arguments": {
+              "text": "The number of items in the list is out of range."
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          0,
+          "The number of items in the list is out of range.",
+          "The number of items in the list is out of range."
+        ],
+        "final_outcome": "loss",
+        "official_win": false,
+        "failure_taxonomy": "executable trajectory ending wrong result",
+        "executable": false,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.841667,
+            "total_reward": 0.560417,
+            "terminal_reward": 0.560417,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.841667,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.833333,
+              "reference_score": 0.75,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 0.908333,
+            "total_reward": 0.15,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.8333333333333334,
+              "reference_score": 0.75,
+              "execution_score": 1.0,
+              "process_score": 0.908333,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 0.908333,
+            "total_reward": 0.195417,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.8333333333333334,
+              "reference_score": 0.75,
+              "execution_score": 1.0,
+              "process_score": 0.908333,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 0.908333,
+            "total_reward": 0.151333,
+            "terminal_reward": 0.115,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.8333333333333334,
+              "reference_score": 0.75,
+              "execution_score": 1.0,
+              "process_score": 0.908333,
+              "outcome_band": [
+                0.05,
+                0.18
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory B": {
+        "calls": [
+          {
+            "name": "count_files_in_directory",
+            "arguments": {
+              "directory_path": "/path/to/directory"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "assign_color",
+            "arguments": {
+              "count": 0
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "escape_html",
+            "arguments": {
+              "text": "The number of items in the list is out of range."
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          0,
+          "The number of items in the list is out of range.",
+          "The number of items in the list is out of range."
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.733333,
+            "total_reward": 0.533333,
+            "terminal_reward": 0.533333,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.733333,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.666667,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.995833,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.998667,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory C": {
+        "calls": [
+          {
+            "name": "count_files_in_directory",
+            "arguments": {
+              "directory_path": "/path/to/directory"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "assign_color",
+            "arguments": {
+              "count": 0
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "escape_html",
+            "arguments": {
+              "text": "The number of items in the list is out of range."
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          0,
+          "The number of items in the list is out of range.",
+          "The number of items in the list is out of range."
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.733333,
+            "total_reward": 0.533333,
+            "terminal_reward": 0.533333,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.733333,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.666667,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.995833,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.716667,
+            "total_reward": 0.998667,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.6666666666666666,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.716667,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "note": "Official labels hidden. Do not assume A=C0."
+  },
+  "annotation_variant": "anonymized_ABC",
+  "_label_map_for_evaluator_only": {
+    "Trajectory A": "E2",
+    "Trajectory B": "E1",
+    "Trajectory C": "C0"
+  }
+}

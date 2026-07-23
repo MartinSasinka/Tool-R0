@@ -1,0 +1,93 @@
+{
+  "manifest_version": 1,
+  "kind": "stage_probe",
+  "created_utc": "2026-07-23T13:00:15.500877+00:00",
+  "git": {
+    "commit": "c9fe58af7ae78a663eafb94a6646654d3de4b1fb",
+    "branch": "main",
+    "dirty": true
+  },
+  "command": [
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\scripts\\probe\\probe_stage.py",
+    "--dataset",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+    "--stage",
+    "3",
+    "--reward-policy",
+    "reward_ablation_A3_VERIFIABLE_PROCESS",
+    "--num-tasks",
+    "16",
+    "--num-generations",
+    "8",
+    "--temperature",
+    "1.0",
+    "--top-p",
+    "0.95",
+    "--seed",
+    "20260724",
+    "--backend",
+    "stub",
+    "--output-dir",
+    "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\probes\\reward_ablation_probe_stub_20260723_125924\\A3_VERIFIABLE_PROCESS",
+    "--allow-legacy-dataset"
+  ],
+  "config": {
+    "path": "experiments/nestful_mtgrpo_partial/config.yaml",
+    "sha256": "e4812dce72d65438b25b93516ef29e1fd27205736ebd2e4cd8781065455c8530",
+    "overrides": [
+      "reward.train_policy=reward_ablation_A3_VERIFIABLE_PROCESS",
+      "generation.temperature=1.0",
+      "generation.top_p=0.95",
+      "experiment.seed=20260724",
+      "experiment.output_dir=C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\probes\\reward_ablation_probe_stub_20260723_125924\\A3_VERIFIABLE_PROCESS",
+      "hardware.use_vllm=false",
+      "executor.mode=synthetic"
+    ]
+  },
+  "datasets": [
+    {
+      "name": "train_subset_160.jsonl",
+      "path": "experiments/nestful_synthetic_curriculum_v3/reports/reward_ablation/data/train_subset_160.jsonl",
+      "sha256": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "n_rows": 160
+    }
+  ],
+  "seed": 20260724,
+  "decoding": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "environment": {
+    "hostname": "YonduUdonta",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.3",
+    "torch": "2.2.2+cu121",
+    "vllm": "0.6.4",
+    "transformers": "4.57.6",
+    "peft": null,
+    "gpu": {
+      "count": 1,
+      "gpus": [
+        "NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB"
+      ],
+      "cuda_visible_devices": null
+    },
+    "wandb_run_id": null,
+    "wandb_mode": null
+  },
+  "extra": {
+    "reward": {
+      "configured_policy": "reward_ablation_A3_VERIFIABLE_PROCESS",
+      "resolved_policy": "reward_ablation_A3_VERIFIABLE_PROCESS",
+      "reward_fn_module": "lib.reward_ablation_registry",
+      "reward_fn_name": "episode_turn_reward_seq_A3_VERIFIABLE_PROCESS",
+      "fallback_used": false
+    },
+    "checkpoint": null,
+    "backend": "stub",
+    "num_tasks": 16,
+    "num_generations": 8,
+    "dead_group_rate": 0.0,
+    "proceed_recommendation": true
+  }
+}

@@ -340,9 +340,13 @@ class OpenRouterClient:
         temperature: float = 0.7,
         max_tokens: int = 1024,
         json_mode: bool = True,
+        json_schema: Optional[Dict[str, Any]] = None,
         seed: Optional[int] = None,
-    ) -> Dict[str, Any]:
-        """Returns {"text", "parsed" (or None), "cached", "cost_usd", "raw_path"}."""
+    reasoning_effort: Optional[str] = None,
+    extra_body: Optional[Dict[str, Any]] = None,
+    provider_slug: Optional[str] = None,
+) -> Dict[str, Any]:
+        """Returns completion metadata including text, usage, provider routing."""
         params = {"temperature": temperature, "max_tokens": max_tokens,
                   "json_mode": json_mode, "seed": seed}
         key = self._prompt_key(model, messages, params)
@@ -371,6 +375,14 @@ class OpenRouterClient:
                           and weak_solver_backend() == "local"
                           and self.backend != "mock")
 
+        resp_meta: Dict[str, Any] = {
+            "requested_model": model,
+            "response_model": model,
+            "provider": None,
+            "fallback_used": False,
+        }
+        json_fallback_used = False
+
         if not use_local_weak:
             self._check_budget()
 
@@ -394,7 +406,21 @@ class OpenRouterClient:
             }
             if seed is not None:
                 payload["seed"] = seed
-            if json_mode:
+            if reasoning_effort:
+                payload["reasoning"] = {"effort": reasoning_effort}
+            if provider_slug:
+                payload["provider"] = {
+                    "only": [provider_slug],
+                    "allow_fallbacks": False,
+                }
+            if extra_body:
+                payload.update(extra_body)
+            if json_schema is not None:
+                payload["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": json_schema,
+                }
+            elif json_mode:
                 payload["response_format"] = {"type": "json_object"}
 
             text: Optional[str] = None
@@ -402,6 +428,7 @@ class OpenRouterClient:
             cost = 0.0
             last_err: Optional[str] = None
             json_fallback_used = False
+            resp_meta = {}
 
             for attempt in range(self.max_retries + 1):
                 try:
@@ -413,6 +440,8 @@ class OpenRouterClient:
                         self.stats.n_json_fallbacks += 1
                         json_fallback_used = True
                         payload.pop("response_format", None)
+                        if json_mode:
+                            payload["response_format"] = {"type": "json_object"}
                         continue
                     if attempt >= self.max_retries:
                         raise OpenRouterError(
@@ -445,6 +474,12 @@ class OpenRouterClient:
                     continue
 
                 usage = resp.get("usage") or {}
+                resp_meta = {
+                    "requested_model": model,
+                    "response_model": resp.get("model"),
+                    "provider": resp.get("provider") or usage.get("provider"),
+                    "fallback_used": bool(resp.get("fallback_used")),
+                }
                 cost = usage.get("cost")
                 if cost is None:
                     cost = (usage.get("prompt_tokens", 0) / 1e6
@@ -481,8 +516,19 @@ class OpenRouterClient:
             with open(cache_path, "w", encoding="utf-8") as fh:
                 json.dump({"text": text, "parsed": parsed, "raw_path": raw_path},
                           fh, ensure_ascii=False)
-        return {"text": text, "parsed": parsed, "cached": False,
-                "cost_usd": cost, "raw_path": raw_path}
+        return {
+            "text": text, "parsed": parsed, "cached": False,
+            "cost_usd": cost, "raw_path": raw_path,
+            **resp_meta,
+            "prompt_tokens": usage.get("prompt_tokens", 0),
+            "completion_tokens": usage.get("completion_tokens", 0),
+            "reasoning_tokens": usage.get("reasoning_tokens", 0),
+            "total_tokens": usage.get("total_tokens") or (
+                usage.get("prompt_tokens", 0) + usage.get("completion_tokens", 0)
+            ),
+            "reported_cost": cost,
+            "json_fallback_used": json_fallback_used,
+        }
 
 
 def models_from_env() -> Dict[str, str]:

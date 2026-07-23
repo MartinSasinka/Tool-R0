@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-07-23T08:52:21.996804+00:00",
+  "run_id": "pure_stage3_2ep_20260719_221918",
+  "manifest_reward_policy": "execution_aware_v3_2_dense",
+  "reward_module_sha256": "10fa6536abe2d6c8ef75b6e995b7643591f5de87d778a170ee9fb77bda0ab7bc",
+  "train_log_stats": {
+    "n_groups": 652,
+    "raw_episode_match_rate": 1.0,
+    "mean_reward_match_rate": 1.0,
+    "max_abs_mean_error": 2.220446049250313e-16,
+    "policy_mismatch_groups": 0
+  },
+  "eval_recompute_sample": {
+    "n_eval_rows_sampled": 500,
+    "mean_abs_diff_vs_reward_train_strict": 0.26028890999999976,
+    "max_abs_diff_vs_reward_train_strict": 0.78,
+    "note": "eval stores reward_train_strict only; this is NOT training R0"
+  },
+  "gate_passed": true,
+  "reward_label_for_packets": "execution_aware_v3_2_dense_recomputed_eval",
+  "ideal_gate_not_met_reason": null
+}

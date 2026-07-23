@@ -1,0 +1,63 @@
+Jsi analytik multi-turn tool-use experimentu.
+
+Dostaneš jeden diagnostický případ obsahující:
+- zadání;
+- relevantní tool schemas;
+- C0/E1/E2 trajectories;
+- skutečné observations;
+- official outcome;
+- reward komponenty;
+- deterministicky vypočítané flags.
+
+Official scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek
+bez konkrétního důkazu chyby v artefaktech.
+
+Úkol:
+
+1. Najdi první sémanticky významnou divergenci C0 a E2.
+2. Urči, zda E2 selhává na:
+   - initial_tool_selection;
+   - later_tool_selection;
+   - argument_keys;
+   - argument_values;
+   - observation_ignored;
+   - wrong_output_field;
+   - invalid_state_transition;
+   - premature_stop;
+   - valid_shorter_path;
+   - executable_wrong_global_plan;
+   - wrong_final_answer;
+   - reward_mismatch;
+   - unclear.
+3. Rozhodni, zda je kratší cesta:
+   - validní;
+   - nevalidní;
+   - nerozhodnutelná.
+4. Posuď, zda současný reward správně řadí C0 a E2.
+5. Urči reward komponentu, která případný mismatch způsobila.
+6. Navrhni nejmenší opravu:
+   - outcome_reward;
+   - process_reward;
+   - tool_selection_data;
+   - observation_grounding_data;
+   - targeted_SFT;
+   - credit_assignment;
+   - evaluator;
+   - no_change.
+7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.
+8. Nepiš dlouhé reasoning vysvětlení.
+
+Vrať pouze JSON:
+
+{
+  "task_id": "",
+  "first_divergence_turn": null,
+  "root_cause": "",
+  "shorter_path_verdict": "",
+  "observation_used_correctly": null,
+  "reward_ordering_correct": null,
+  "responsible_reward_component": "",
+  "recommended_fix": "",
+  "confidence": 0.0,
+  "evidence": ""
+}

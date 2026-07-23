@@ -1,0 +1,394 @@
+{
+  "task_id": "80d3d81b-e6fd-4fa4-a690-b7214c4ef41c",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- C0/E1/E2 trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "80d3d81b-e6fd-4fa4-a690-b7214c4ef41c",
+    "cohort": "C0_win_E2_loss",
+    "question": "There are 4 people of different heights standing in order of increasing height. The difference is 2 inches between the first person and the second person, and also between the second person and the third person. The difference between the third person and the fourth person is 6 inches and the average height is 75. How tall is the fourth person?",
+    "relevant_tools": [
+      {
+        "name": "subtract",
+        "description": "subtract two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      },
+      {
+        "name": "multiply",
+        "description": "Multiplies two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      },
+      {
+        "name": "add",
+        "description": "adds two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      },
+      {
+        "name": "divide",
+        "description": "divides two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      }
+    ],
+    "expected_outcome": 81.0,
+    "gold_call_count": 7,
+    "gold_motif": "long_chain",
+    "C0": {
+      "calls": [
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 4,
+            "arg_1": 71
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "add",
+          "arguments": {
+            "arg_0": 284,
+            "arg_1": 16
+          },
+          "label": "$var2"
+        },
+        {
+          "name": "add",
+          "arguments": {
+            "arg_0": 71,
+            "arg_1": 10
+          },
+          "label": "$var3"
+        }
+      ],
+      "observations": [
+        284,
+        300,
+        81
+      ],
+      "final_outcome": "win",
+      "official_win": true,
+      "failure_taxonomy": "success",
+      "executable": true,
+      "num_calls": 3,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.378571,
+          "total_reward": 0.2325,
+          "terminal_reward": 0.2325,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.378571,
+            "format_score": 1.0,
+            "call_count_progress": 0.428571,
+            "per_call_tool_score": 0.428571,
+            "per_call_argument_score": 0.035714,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "official_success",
+          "process_score": 0.416071,
+          "total_reward": 0.96,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.42857142857142855,
+            "per_call_argument_score": 0.03571428571428571,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.416071,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "official_success",
+          "process_score": 0.416071,
+          "total_reward": 0.980804,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.42857142857142855,
+            "per_call_argument_score": 0.03571428571428571,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.416071,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "official_success",
+          "process_score": 0.416071,
+          "total_reward": 0.986643,
+          "terminal_reward": 0.97,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.42857142857142855,
+            "per_call_argument_score": 0.03571428571428571,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.416071,
+            "outcome_band": [
+              0.94,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "E1": {
+      "calls": [
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 4,
+            "arg_1": 71
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "add",
+          "arguments": {
+            "arg_0": 71,
+            "arg_1": 10
+          },
+          "label": "$var2"
+        }
+      ],
+      "observations": [
+        284,
+        81
+      ],
+      "final_outcome": "win",
+      "official_win": true,
+      "failure_taxonomy": "success",
+      "executable": true,
+      "num_calls": 2,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.314286,
+          "total_reward": 0.21,
+          "terminal_reward": 0.21,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.314286,
+            "format_score": 1.0,
+            "call_count_progress": 0.285714,
+            "per_call_tool_score": 0.285714,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "official_success",
+          "process_score": 0.371429,
+          "total_reward": 0.96,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.2857142857142857,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.371429,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "official_success",
+          "process_score": 0.371429,
+          "total_reward": 0.978571,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.2857142857142857,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.371429,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "official_success",
+          "process_score": 0.371429,
+          "total_reward": 0.984857,
+          "terminal_reward": 0.97,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.2857142857142857,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.371429,
+            "outcome_band": [
+              0.94,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "E2": {
+      "calls": [
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 4,
+            "arg_1": 71
+          },
+          "label": "$var1"
+        }
+      ],
+      "observations": [
+        284
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "parse/format error",
+      "executable": true,
+      "num_calls": 1,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "parse_error",
+          "process_score": 0.157143,
+          "total_reward": 0.0,
+          "terminal_reward": 0.0,
+          "components": {
+            "reward_class": "parse_error",
+            "quality_score": 0.157143,
+            "format_score": 0.0,
+            "call_count_progress": 0.142857,
+            "per_call_tool_score": 0.142857,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.185714,
+          "total_reward": 0.02,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 0.0,
+            "per_call_tool_score": 0.14285714285714285,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.185714,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.185714,
+          "total_reward": 0.029286,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 0.0,
+            "per_call_tool_score": 0.14285714285714285,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.185714,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.185714,
+          "total_reward": 0.027429,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 0.0,
+            "per_call_tool_score": 0.14285714285714285,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.185714,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        }
+      }
+    },
+    "deterministic_flags": {
+      "first_divergence_turn": 2,
+      "shorter_than_gold": true,
+      "taxonomy_too_few": false,
+      "executable": true,
+      "reward_mismatch_R0": false,
+      "R0_class_C0": "too_few_calls",
+      "R0_class_E2": "parse_error",
+      "official_win_C0": true,
+      "official_win_E2": false
+    }
+  },
+  "annotation_variant": "named_C0_E1_E2"
+}

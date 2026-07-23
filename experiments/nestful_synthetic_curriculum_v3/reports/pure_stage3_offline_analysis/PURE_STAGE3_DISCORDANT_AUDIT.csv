@@ -1,0 +1,168 @@
+task_id,transition,gold_motif,gold_call_count,C0_calls,E1_calls,E2_calls,longest_common_prefix,first_changed_turn,change_type,C0_failure,E2_failure,C0_final_outcome,E2_final_outcome,R_train_C0,R_train_E2,R_class_C0,R_class_E2
+01cb6e48-053d-4af1-a500-bb21f6ee84bb,lost,long_chain,6,2,1,3,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.193333,0.245833,too_few_calls,too_few_calls
+02294fa2-cc75-4e2e-8fb7-1cea86c7e1a6,gained,fan_in,4,1,1,4,1,1,"stejný tool, jiné values",executable trajectory ending wrong result,success,loss,win,0.1525,0.209375,too_few_calls,wrong_tool
+0335ed3e-e613-420b-a07a-9d481b2a791e,gained,long_chain,25,3,3,3,2,2,"jiná, ale validní cesta",wrong tool,success,loss,win,0.184,0.184,too_few_calls,too_few_calls
+037ab7a7-2503-4a04-9bde-f2d81c184790,gained,fan_in,4,2,2,1,0,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.253125,0.1875,too_few_calls,too_few_calls
+07421ac8-4030-4262-a84f-8f2ef84d6010,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+0a31a4fd-fc27-4339-80b7-9a07e32f60d0,gained,fan_in,3,3,4,4,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.241667,0.241667,wrong_tool,wrong_tool
+0af2696a-9970-4e55-ad31-57e14ca65f20,gained,fan_in,4,4,3,3,3,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.238542,0.253125,wrong_tool,too_few_calls
+0be783b8-30c8-4b6d-a8cd-100d6e4a999d,gained,linear_dependency,4,3,2,4,1,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.24,0.259375,too_few_calls,wrong_tool
+0c2bb42b-09bd-41c8-b1c3-a3e0aec4c077,lost,linear_dependency,3,1,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.193333,0.0,too_few_calls,clipped
+0c3f5a6d-1aec-4d52-9310-c0e0ab651fef,lost,linear_dependency,2,2,2,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.78,0.02,executable_wrong_final,no_tool_call
+0f0b7dac-2c2a-4919-8b62-41b964f06856,gained,long_chain,5,6,6,6,4,5,změněný pozdější tool,executable trajectory ending wrong result,success,loss,win,0.249583,0.259375,wrong_tool,wrong_tool
+11a47ffa-0eea-4162-9902-1bddc3740bec,gained,fan_in,3,0,0,3,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.275,no_tool_call,wrong_tool
+123ce206-69a4-4901-93c1-ec1089eb8660,gained,long_chain,6,1,3,3,1,2,"jiná, ale validní cesta",wrong tool,success,loss,win,0.205,0.245833,too_few_calls,too_few_calls
+12dc2f74-7b39-4722-a840-bca49488c27e,gained,long_chain,8,4,9,2,1,2,změněný pozdější tool,"correct keys, wrong argument values",parse/format error,loss,win,0.218125,0.0,too_few_calls,parse_error
+1486b674-af4e-4bd4-9a48-2bf0f4aa9995,lost,long_chain,7,2,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.2175,0.19,too_few_calls,too_few_calls
+1522c983-00c5-48b6-be88-8922f76c3dbe,gained,linear_dependency,2,0,2,2,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.25,parse_error,wrong_tool
+1765d48e-b1d2-4dd2-bdf5-cc49496ac350,lost,long_chain,24,16,15,15,15,16,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.245833,0.242188,too_few_calls,too_few_calls
+196be0c3-aed1-41dd-a972-31a5908720cc,gained,long_chain,5,2,4,3,2,2,"stejný tool, jiné values",parse/format error,success,loss,win,0.0,0.2155,parse_error,too_few_calls
+19a9aa68-70f0-4b34-9729-8fa8ed17ba46,gained,long_chain,8,1,1,1,0,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.14375,0.17875,too_few_calls,too_few_calls
+1a3dfe3d-d7c2-41f8-8b42-cc84a645c308,gained,linear_dependency,3,3,3,2,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.25,0.26625,wrong_tool,too_few_calls
+1ab63375-0be1-47c1-bc2f-64b9b6271391,lost,linear_dependency,2,3,3,1,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.23125,0.205,wrong_tool,too_few_calls
+1b79e333-e3fc-4292-9d59-987fc3b606f8,lost,long_chain,26,9,9,4,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.246165,0.190192,too_few_calls,too_few_calls
+1c15787f-a7d3-48be-a715-23befba14fe3,lost,long_chain,6,3,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.216667,0.0,too_few_calls,parse_error
+1ddeac74-83ee-4119-9100-83133001b0f5,gained,long_chain,5,6,4,5,0,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.25375,0.553125,wrong_tool,correct_tool_wrong_args
+236711c7-5a1c-4bf5-b578-6e965b98a085,lost,linear_dependency,3,3,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.547917,0.0,correct_tool_wrong_args,parse_error
+23fb2017-6788-4dc2-a28a-403c6b473adb,lost,fan_in,4,2,1,2,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.2225,0.2225,too_few_calls,too_few_calls
+24bb3a2d-ec01-49dd-8441-44f3134679b8,gained,long_chain,6,5,5,6,3,3,nesprávné použití observation,"correct keys, wrong argument values",success,loss,win,0.343833,0.269167,too_few_calls,wrong_tool
+2795c8df-921d-4311-b6d4-ece1204f2ef5,lost,long_chain,7,3,2,2,2,3,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.215,0.0,too_few_calls,parse_error
+2a028d50-5021-4cbd-9401-e9a949adc1fa,lost,linear_dependency,3,3,2,3,0,1,změněný první tool,success,"correct tool, wrong argument keys",win,loss,0.241667,0.516667,wrong_tool,correct_tool_wrong_args
+2a1226e5-e74e-4464-a887-213f4acefc82,gained,linear_dependency,3,3,3,3,3,3,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.241667,0.272917,wrong_tool,wrong_tool
+2a9516d7-fe85-49c4-9d22-d31f22721ded,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.54375,0.78,correct_tool_wrong_args,executable_wrong_final
+2b2c1931-a5c2-44a9-8283-08a4067256c2,lost,fan_in,4,5,4,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.234375,0.1525,wrong_tool,too_few_calls
+2efdd7cf-4643-427e-bcf3-7288f77d6a9d,lost,fan_in,4,1,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.1875,0.02,too_few_calls,no_tool_call
+3088e2b6-0018-431d-90f5-6b138ba676f2,lost,fan_in,4,2,2,1,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.23125,0.19625,too_few_calls,too_few_calls
+31362efe-b619-4718-9201-99cd47a8295f,lost,linear_dependency,3,1,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.193333,0.02,too_few_calls,no_tool_call
+337b5e4f-294a-41e2-af72-79dcbf1fccde,gained,long_chain,7,2,3,3,2,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.2025,0.2125,too_few_calls,too_few_calls
+3481e153-2b15-4af0-ab73-b7785bfd7d77,gained,long_chain,7,4,3,3,3,4,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.2375,0.21,too_few_calls,too_few_calls
+35790603-7df1-491c-84e1-9a27f4fc5717,gained,linear_dependency,3,2,3,3,0,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.205,0.225,too_few_calls,wrong_tool
+35adf4ad-dada-47dd-8c92-1af9100d6a8a,lost,long_chain,5,4,3,3,3,4,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.233,0.219,too_few_calls,too_few_calls
+35e5e6c5-b079-45ed-a693-0a5eadbbb9a6,lost,long_chain,9,3,4,5,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.220799,0.242188,too_few_calls,too_few_calls
+36ba10c3-3023-4b26-b449-84787b535d77,lost,fan_in,4,5,5,4,4,5,vykonatelná cesta se špatným výsledkem,success,wrong tool,win,loss,0.242708,0.242708,wrong_tool,wrong_tool
+38a3bea2-2d38-446f-a832-ee059daf9a1b,lost,linear_dependency,3,3,4,3,1,2,změněný pozdější tool,success,"correct tool, wrong argument keys",win,loss,0.208333,0.208333,wrong_tool,wrong_tool
+38e7c22f-c209-4f49-8bbd-08bc3cb08203,lost,linear_dependency,3,2,0,3,0,1,změněný první tool,success,wrong tool,win,loss,0.245833,0.225,too_few_calls,wrong_tool
+3f22f028-b78c-4127-9f68-09f4ec8a84e5,lost,long_chain,8,3,4,2,2,2,"kratší než gold trace (metrika, ne nutně chyba)",parse/format error,parse/format error,win,loss,0.0,0.0,parse_error,parse_error
+3f65525e-d400-455f-b5b1-5139d3264086,gained,linear_dependency,3,3,2,2,1,2,"jiná, ale validní cesta",wrong tool,success,loss,win,0.225,0.2225,wrong_tool,too_few_calls
+4181facd-49ba-4f9d-8ced-f01adcdd8782,gained,long_chain,8,2,0,1,0,1,"jiná, ale validní cesta","correct trajectory, wrong final answer",success,loss,win,0.205,0.183125,too_few_calls,too_few_calls
+4273b353-d413-41a4-8450-e0ddc619e324,gained,long_chain,6,4,3,3,1,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.234167,0.205,too_few_calls,too_few_calls
+4511ccb4-e31c-4cc8-b585-04dda07d21cf,lost,linear_dependency,2,2,2,2,2,2,nesprávné použití observation,success,"correct trajectory, wrong final answer",win,loss,0.5375,0.5375,correct_tool_wrong_args,correct_tool_wrong_args
+466a901f-f700-4e5c-8b45-984e29b3e97f,lost,fan_in,4,1,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.205,0.02,too_few_calls,no_tool_call
+4c5ac14a-91aa-41d6-8a28-4ce50ac14940,lost,long_chain,7,3,2,2,2,3,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.2175,0.2075,too_few_calls,too_few_calls
+4cba337d-cf82-49fe-853b-1ac69d0f19ae,gained,linear_dependency,4,1,1,3,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.23125,parse_error,too_few_calls
+4e7e03b3-f9c9-4cc8-986a-6b425aeeeec8,lost,linear_dependency,3,2,2,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.234167,0.0,too_few_calls,parse_error
+4e94725b-4f6f-4660-8079-17f785076612,lost,linear_dependency,4,2,1,1,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.237083,0.1525,too_few_calls,too_few_calls
+5099873f-cd8b-4b02-873a-8c77a8e76837,lost,fan_in,4,1,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.205,0.205,too_few_calls,too_few_calls
+50bf739b-0f67-4b0e-9586-68baef74326a,gained,linear_dependency,2,3,2,2,1,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.25625,0.51875,wrong_tool,correct_tool_wrong_args
+52136fd0-87d3-4086-968b-fa7b8523c333,lost,fan_in,4,4,4,5,0,1,změněný první tool,success,executable trajectory ending wrong result,win,loss,0.275,0.242917,wrong_tool,wrong_tool
+524b4aba-e540-42ce-aa1d-894d676534a1,gained,linear_dependency,2,1,2,2,1,2,"jiná, ale validní cesta",too few calls,success,loss,win,0.275,0.5375,too_few_calls,correct_tool_wrong_args
+52651073-b22c-422b-b2dd-8bc64f894969,lost,long_chain,7,7,7,6,4,5,předčasné ukončení,success,too few calls,win,loss,0.277976,0.30625,wrong_tool,too_few_calls
+54bacfd4-1ac2-4e58-bb6e-8093d738af12,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+56f217f3-b20d-4f19-b8ed-23850bc2e6be,lost,linear_dependency,2,1,2,2,1,2,vykonatelná cesta se špatným výsledkem,success,wrong tool,win,loss,0.275,0.2375,too_few_calls,wrong_tool
+5830f67e-aed1-4252-a279-f107ab8d15bb,gained,linear_dependency,4,3,2,4,1,1,"stejný tool, jiné values","correct keys, wrong argument values",success,loss,win,0.2925,0.265625,too_few_calls,wrong_tool
+58f0da42-f029-4773-86a1-dc7548859054,gained,fan_in,3,0,0,1,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.193333,no_tool_call,too_few_calls
+59c85014-c8c4-45df-956b-04dec99e0bc7,lost,long_chain,10,1,1,4,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.177,0.21025,too_few_calls,too_few_calls
+63253fb5-5c4b-4d95-b1ab-64cd2019e5c5,gained,long_chain,18,19,16,18,17,7,nesprávné použití observation,wrong tool,success,loss,win,0.229861,0.252328,wrong_tool,wrong_tool
+63854dc5-cf6e-40bd-94e9-f4f930165cb7,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.54375,0.78,correct_tool_wrong_args,executable_wrong_final
+66d08f5e-c50b-4e4a-b765-fbf9a8b14441,gained,fan_in,4,3,2,2,1,2,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.223958,0.218125,too_few_calls,too_few_calls
+6a001923-6ece-46ae-9e4e-ae2308bad269,gained,linear_dependency,3,0,0,1,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.205,no_tool_call,too_few_calls
+6a069715-af16-4353-b530-2c68b1045702,lost,long_chain,8,3,3,3,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.215938,0.198437,too_few_calls,too_few_calls
+6ae58ffa-f086-4aa5-9bc9-e2beeec685cc,gained,long_chain,6,0,0,2,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.193333,parse_error,too_few_calls
+6c0d717a-af97-47db-ad9d-45255f829e0d,gained,linear_dependency,3,2,2,2,0,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.277917,0.289583,too_few_calls,too_few_calls
+6c5bf32e-9b63-4950-a348-72e08943a6d5,gained,fan_in,4,2,3,3,1,2,změněný pozdější tool,wrong tool,success,loss,win,0.21375,0.226875,too_few_calls,too_few_calls
+6c668a48-30d8-46ba-a9ac-8e0c58f9d9f0,gained,long_chain,6,2,2,2,0,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.193333,0.2225,too_few_calls,too_few_calls
+701c0043-520b-4be2-91bd-1b24d200d437,gained,long_chain,5,3,2,2,1,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.226,0.2155,too_few_calls,too_few_calls
+702881c1-d5ba-4b90-aa65-8a17d9a3a5a6,gained,long_chain,5,4,3,3,2,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.26625,0.261,too_few_calls,too_few_calls
+70666870-66fb-462b-96b1-2739e36a0f60,lost,fan_in,4,5,5,2,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.247917,0.21375,wrong_tool,too_few_calls
+72fa90ad-54d1-4c20-886b-739e52940ce5,lost,linear_dependency,3,2,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.254583,0.0,too_few_calls,parse_error
+73301ada-cb5a-4ee0-a8e6-d1f4a8d02a61,lost,long_chain,5,4,3,3,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.36075,0.247,too_few_calls,too_few_calls
+7394c8af-324e-421a-89ad-dc29355fad02,gained,linear_dependency,2,2,2,2,0,1,"jiná, ale validní cesta","correct tool, wrong argument keys",success,loss,win,0.25,0.5375,wrong_tool,correct_tool_wrong_args
+76446ae7-0565-4df5-bff6-bddcaf386d0f,lost,linear_dependency,3,3,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.270833,0.0,wrong_tool,parse_error
+76de8525-048b-4209-8867-48bfb6ff6fa8,lost,long_chain,6,3,6,5,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.23125,0.289,too_few_calls,too_few_calls
+793750b0-9ed1-46f1-980e-10c7d2db9041,gained,linear_dependency,3,0,0,1,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.193333,no_tool_call,too_few_calls
+79548961-64d6-432c-aac2-5846fd124032,gained,long_chain,5,3,3,3,3,3,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.200333,0.212,too_few_calls,too_few_calls
+7b03ce5d-c7c8-40fd-b6c9-0650cf326193,gained,linear_dependency,2,2,3,3,1,1,"jiná, ale validní cesta","correct tool, wrong argument keys",success,loss,win,0.21875,0.24375,wrong_tool,wrong_tool
+7bdd0e4f-6c99-4f49-b9e8-2afc9546891b,lost,linear_dependency,3,2,1,1,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.245833,0.216667,too_few_calls,too_few_calls
+7cdaf92f-5fc1-43ee-8ac7-9053012753a3,lost,long_chain,6,4,3,3,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.252833,0.205,too_few_calls,too_few_calls
+7da0f6e7-2a24-4fa8-b48d-cc84cae3e578,lost,long_chain,6,4,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.23125,0.146667,too_few_calls,too_few_calls
+80d3d81b-e6fd-4fa4-a690-b7214c4ef41c,lost,long_chain,7,3,2,1,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.2325,0.0,too_few_calls,parse_error
+82e82d17-1e64-4874-8005-67f32b410866,lost,linear_dependency,2,2,2,2,1,2,změněný pozdější tool,success,executable trajectory ending wrong result,win,loss,0.5375,0.25,correct_tool_wrong_args,wrong_tool
+85920a32-9f93-4c72-85e9-89a7659cf760,gained,long_chain,9,3,3,4,2,3,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.214722,0.216667,too_few_calls,too_few_calls
+871cc889-08aa-4deb-a2c0-c3a64e164bc2,gained,long_chain,5,0,0,4,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.31175,parse_error,too_few_calls
+87b5d6f9-199e-4e83-8392-86f03e175ca6,lost,long_chain,11,1,2,2,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.176364,0.195455,too_few_calls,too_few_calls
+8956e144-c9f2-4154-8554-eb3de698456e,lost,long_chain,15,8,7,7,6,7,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.248417,0.233917,too_few_calls,too_few_calls
+8970e530-cd57-4c00-9ef5-86970db06e6f,gained,long_chain,12,2,4,4,2,3,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.197708,parse_error,too_few_calls
+8c8656c5-6b19-4613-af48-e6018b737159,gained,long_chain,8,2,3,5,2,3,"jiná, ale validní cesta",wrong tool,success,loss,win,0.205,0.253125,too_few_calls,too_few_calls
+8ccda11f-fdd0-466b-abd0-a9c7c27a68b1,gained,linear_dependency,2,1,3,2,0,1,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.2225,0.54375,too_few_calls,correct_tool_wrong_args
+8ecad92c-4bed-41f6-9f33-928461657a5d,lost,linear_dependency,3,4,4,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.208333,0.0,wrong_tool,parse_error
+8ee6619d-4344-417e-a2bb-dbbd84fa3396,gained,linear_dependency,2,3,3,3,2,3,"jiná, ale validní cesta","correct trajectory, wrong final answer",success,loss,win,0.529167,0.5375,correct_tool_wrong_args,correct_tool_wrong_args
+92366bd5-f065-4719-91a2-c44123746ce6,gained,fan_in,4,1,3,3,1,2,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.315833,parse_error,too_few_calls
+925e5a42-be49-45d0-ae48-9f76fbe1a0a2,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+96aae8cf-2667-455f-8b59-033ae86f88a1,lost,linear_dependency,4,1,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.21375,0.02,too_few_calls,no_tool_call
+97dc3022-3ebc-4511-9f50-d22da3a73179,lost,linear_dependency,2,1,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.24,0.02,too_few_calls,no_tool_call
+99501e17-529b-42b7-ae83-e98b576c8019,lost,long_chain,9,3,3,2,2,3,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.203056,0.189444,too_few_calls,too_few_calls
+99f425b1-84c4-4a92-a916-12b847352319,lost,long_chain,11,6,4,4,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.251136,0.232205,too_few_calls,too_few_calls
+9a752e1c-dffb-4c71-84d5-687970836ce7,lost,linear_dependency,3,3,3,3,3,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+9b13070c-5369-4ee8-9e61-cdc01e0b3a9f,gained,long_chain,8,1,1,2,1,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.14375,0.189688,too_few_calls,too_few_calls
+a07bd6ce-e76b-4e9e-8e2c-8b3e2e7690ef,lost,fan_out,3,3,3,3,3,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+a1fe3172-ee8a-463f-a08f-77aa8053d19a,lost,fan_in,4,4,4,1,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.2375,0.1525,wrong_tool,too_few_calls
+a25025bf-d957-471f-a37a-88b08502e3c9,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+a47f04d6-63ea-4148-9f24-9cb80a591d58,gained,linear_dependency,4,0,0,3,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.276458,no_tool_call,too_few_calls
+a576f58b-44b2-498e-b7d9-32bdbb48dd6c,lost,long_chain,6,5,5,4,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.2575,0.225417,too_few_calls,too_few_calls
+a65663e7-afb5-48af-ae7d-4a2611b93176,lost,long_chain,7,7,5,4,4,2,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.280655,0.0,wrong_tool,parse_error
+a76ec66d-10a1-4b45-ad29-e63d67881a08,lost,fan_in,4,4,3,3,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.78,0.311458,executable_wrong_final,too_few_calls
+ac7ff9ba-5f9b-45db-ac99-a27751c32a2f,lost,long_chain,7,4,4,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.2525,0.195,too_few_calls,too_few_calls
+b0643ded-c098-4051-958b-db37c7b2aa00,lost,linear_dependency,2,2,2,2,2,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+b17fe079-7816-4882-98fd-ba692caae2e3,lost,long_chain,5,2,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.233,0.198,too_few_calls,too_few_calls
+b197b395-59d0-4f51-94a5-ae3ff49f2fe1,gained,long_chain,9,2,2,3,2,3,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.208889,parse_error,too_few_calls
+b370d25b-a241-486b-9630-7dbd523312c2,gained,long_chain,6,4,4,4,2,3,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.272667,0.24875,too_few_calls,too_few_calls
+b3e268c9-2465-41d5-ba04-adfe860d791f,gained,long_chain,5,3,4,4,1,2,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.2575,0.30825,too_few_calls,too_few_calls
+b6d5414b-1f27-48c2-b8cb-375d529e5198,lost,fan_in,4,4,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.234375,0.0,wrong_tool,parse_error
+b6d97ba7-cdef-4fab-a0e4-25250e8072ef,lost,long_chain,9,2,2,2,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.193333,0.193333,too_few_calls,too_few_calls
+b7da19f4-c0e1-406b-9e71-ac01a07ff928,lost,linear_dependency,3,3,3,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.241667,0.02,wrong_tool,no_tool_call
+bcc26a14-3d93-49b2-a563-d7679d23f5a6,gained,fan_in,4,5,2,2,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.25625,0.23125,wrong_tool,too_few_calls
+c0ab62f4-2759-41d1-b6f9-62d17fc544ba,lost,long_chain,7,1,1,1,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.18,0.145,too_few_calls,too_few_calls
+c2fac0c6-f7a1-487c-8c52-d8be210cc007,gained,long_chain,6,3,2,4,3,4,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.2225,parse_error,too_few_calls
+c3897a83-c732-4035-ba9e-558436c70b9a,lost,linear_dependency,3,3,1,1,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.547917,0.24,correct_tool_wrong_args,too_few_calls
+c50ddb07-43e3-4bc0-9132-7ddf1a637a9a,gained,long_chain,6,7,1,1,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.21875,0.181667,wrong_tool,too_few_calls
+c56b7af3-ffea-413b-b27a-131611ecc3dc,lost,long_chain,12,7,8,2,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.237216,0.172917,too_few_calls,too_few_calls
+c5f39bd0-95b9-4db8-b487-739ff47c120c,lost,linear_dependency,4,3,3,3,3,3,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.24875,0.237083,too_few_calls,too_few_calls
+c641d5f3-909f-4a6b-b03b-8227ce77eeb0,lost,long_chain,8,2,2,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.205,0.02,too_few_calls,no_tool_call
+c869fe14-c0ef-4c6e-89b1-b69f44f63b9d,gained,long_chain,5,0,0,1,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.184,parse_error,too_few_calls
+c8a52dc3-691c-46e4-b4f2-a1ab8097cc5a,gained,long_chain,6,3,3,3,1,2,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.219583,0.242917,too_few_calls,too_few_calls
+c9cabae3-811e-4e9f-87d8-92cb861e3045,lost,fan_in,4,5,5,5,5,5,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.261458,0.256458,wrong_tool,wrong_tool
+cdfc6ae1-e182-443e-b66e-1162b3d38a03,lost,long_chain,14,9,9,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.255385,0.0,too_few_calls,parse_error
+d68f72eb-874c-4304-afe3-f7739de46e8f,lost,linear_dependency,2,2,2,1,1,2,předčasné ukončení,success,too few calls,win,loss,0.5375,0.275,correct_tool_wrong_args,too_few_calls
+d8f8b942-c7da-4cab-a2c0-419f79e18431,lost,linear_dependency,3,2,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.254583,0.02,too_few_calls,no_tool_call
+db347cbd-e228-4284-a667-8f354809edf6,gained,long_chain,5,0,0,3,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.247,no_tool_call,too_few_calls
+db663e22-21eb-424f-a826-af28045b196a,gained,long_chain,6,0,5,5,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.02,0.282,no_tool_call,too_few_calls
+db8d72af-7a1a-4201-a376-4b827b0162df,lost,long_chain,5,4,4,2,2,2,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.314375,0.233,too_few_calls,too_few_calls
+dbdc8346-a48e-4ecd-adb1-11fe1879b7c5,gained,long_chain,6,0,2,5,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.2995,parse_error,too_few_calls
+df7d09de-9314-438c-a726-5189f82d3bd9,gained,long_chain,9,4,6,3,2,3,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.214722,0.206944,too_few_calls,too_few_calls
+e1a005a4-216d-4486-a15b-d53ccb574e78,gained,long_chain,7,1,3,3,0,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.15,0.2025,too_few_calls,too_few_calls
+e3f3049a-021f-4f90-9c4e-640aaf4519c4,gained,linear_dependency,3,3,3,4,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.258333,0.220833,wrong_tool,wrong_tool
+e409ff80-64e3-43f1-aacb-2d552908e8ea,lost,fan_in,3,2,3,2,2,1,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.216667,0.234167,too_few_calls,too_few_calls
+e53a50d4-dc11-4d47-81b5-14269953bf92,gained,fan_in,3,2,3,3,0,1,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.234167,0.25625,too_few_calls,wrong_tool
+e5908a48-4f50-4df2-8ca0-c32ed32177fb,lost,long_chain,5,5,5,4,4,4,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.254375,0.279375,wrong_tool,too_few_calls
+e5eb37ac-bd11-4a84-82a3-588c93ba7712,lost,linear_dependency,2,1,1,2,0,1,změněný první tool,success,executable trajectory ending wrong result,win,loss,0.205,0.19375,too_few_calls,wrong_tool
+e6520066-98cf-4254-bed3-8cd7e8dfa2eb,gained,long_chain,6,5,3,5,2,3,změněný pozdější tool,"correct keys, wrong argument values",success,loss,win,0.2925,0.293083,too_few_calls,too_few_calls
+e6f87834-9065-4acb-b170-34e171f97465,lost,long_chain,7,5,0,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,parse/format error,win,loss,0.310833,0.0,too_few_calls,parse_error
+e70bd2c9-99af-410a-bc6d-61a65e00f7d8,gained,long_chain,5,0,1,3,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.0,0.2365,clipped,too_few_calls
+e777b240-2ff0-4ec1-b9e1-eb656aaa8758,gained,linear_dependency,3,0,0,3,0,1,"jiná, ale validní cesta",no tool call,success,loss,win,0.0,0.25,clipped,wrong_tool
+ec654414-df15-4621-9b4d-3570a4ae6864,lost,linear_dependency,3,3,3,3,3,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.5375,0.78,correct_tool_wrong_args,executable_wrong_final
+ed95f1e2-dbf9-48ff-bf72-de405356a89b,gained,fan_in,4,3,3,1,1,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.1875,parse_error,too_few_calls
+f3bf492e-464a-4b3c-be74-26ece6059721,gained,fan_in,3,2,2,3,2,3,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.31,0.541667,too_few_calls,correct_tool_wrong_args
+f5f86953-11aa-47f5-92f5-607f7ba9fe00,gained,linear_dependency,3,3,2,2,2,2,"jiná, ale validní cesta",executable trajectory ending wrong result,success,loss,win,0.225,0.254583,wrong_tool,too_few_calls
+f62eee65-6d86-4fab-a3ab-1ebb99222f65,lost,linear_dependency,3,3,2,2,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,wrong tool,win,loss,0.272917,0.269167,wrong_tool,too_few_calls
+f66f39fa-83da-43b8-8f2c-bbbcb4661a5d,lost,long_chain,5,1,2,0,0,1,"kratší než gold trace (metrika, ne nutně chyba)",success,no tool call,win,loss,0.184,0.02,too_few_calls,no_tool_call
+f8fdce32-9e0f-4f9c-bd0d-15dfce117a71,lost,long_chain,8,5,4,5,4,5,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.2775,0.265813,too_few_calls,too_few_calls
+f931b90f-061b-49a6-807e-c760811bcbbc,gained,linear_dependency,3,1,1,2,1,2,"jiná, ale validní cesta","correct keys, wrong argument values",success,loss,win,0.193333,0.254583,too_few_calls,too_few_calls
+f95f91e2-fbee-4cb5-a955-722cb50b80f3,gained,linear_dependency,3,0,0,2,0,1,"jiná, ale validní cesta",parse/format error,success,loss,win,0.0,0.234167,parse_error,too_few_calls
+fc0ea07a-cf46-4011-a262-df20234c75e6,lost,linear_dependency,3,3,3,3,3,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.533333,0.560417,correct_tool_wrong_args,correct_tool_wrong_args
+fc7d9c59-0aad-43be-a2ef-6d5b00633f30,lost,linear_dependency,3,3,3,3,3,2,"stejný tool, jiné values",success,executable trajectory ending wrong result,win,loss,0.533333,0.78,correct_tool_wrong_args,executable_wrong_final
+fd03dd17-e388-4fd6-ad21-fac7bfe0b176,lost,long_chain,6,2,0,3,1,1,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.210833,0.2575,too_few_calls,too_few_calls
+fdb9997f-23ee-4897-b6b5-cb8d56de2bb8,lost,long_chain,15,8,7,7,6,1,"kratší než gold trace (metrika, ne nutně chyba)",success,executable trajectory ending wrong result,win,loss,0.248417,0.238583,too_few_calls,too_few_calls
+fe3ebaf1-4861-425f-a681-3ed6815e4f24,gained,long_chain,8,2,1,2,0,1,"jiná, ale validní cesta",wrong tool,success,loss,win,0.19625,0.1875,too_few_calls,too_few_calls
+fe72229a-2b0d-4eb4-8ba9-1e5179ff5029,lost,long_chain,5,4,6,6,1,2,změněný pozdější tool,success,wrong tool,win,loss,0.289875,0.24,too_few_calls,wrong_tool
+ff6f567d-265a-4ac1-9e31-35d964ed83d9,lost,linear_dependency,2,3,3,3,0,1,změněný první tool,success,wrong tool,win,loss,0.50625,0.24375,correct_tool_wrong_args,wrong_tool
+ffc20e46-5975-4bc7-b0d5-23f712931223,lost,long_chain,5,4,2,2,1,2,"kratší než gold trace (metrika, ne nutně chyba)",success,"correct keys, wrong argument values",win,loss,0.282,0.2295,too_few_calls,too_few_calls

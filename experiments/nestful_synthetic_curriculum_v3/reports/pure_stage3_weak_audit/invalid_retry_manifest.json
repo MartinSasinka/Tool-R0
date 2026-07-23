@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-07-23T10:04:22.497068+00:00",
+  "n_invalid_pairs": 14,
+  "n_pass_a": 9,
+  "n_pass_b": 5,
+  "pairs": [
+    {
+      "task_id": "1ff34864-aaf4-45ad-9132-b96cc6de3c63",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "1ff34864-aaf4-45ad-9132-b96cc6de3c63",
+      "pass_label": "B"
+    },
+    {
+      "task_id": "215a654f-549a-47c1-b1ce-772fc2910045",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "63253fb5-5c4b-4d95-b1ab-64cd2019e5c5",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "6fb9747f-205d-4057-98a9-bebfa690d3fe",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "8c6e3438-0dcc-4afe-95b7-13b00fb18ef0",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "8c8656c5-6b19-4613-af48-e6018b737159",
+      "pass_label": "B"
+    },
+    {
+      "task_id": "a25025bf-d957-471f-a37a-88b08502e3c9",
+      "pass_label": "B"
+    },
+    {
+      "task_id": "c8a52dc3-691c-46e4-b4f2-a1ab8097cc5a",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "ec600a06-e26f-467a-900e-f02aa2588c2b",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "ec654414-df15-4621-9b4d-3570a4ae6864",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "ef29201e-ebf0-47cc-8228-3f68241ef6f5",
+      "pass_label": "B"
+    },
+    {
+      "task_id": "f8392a35-50dc-44a0-bd97-d824c0b58c4f",
+      "pass_label": "A"
+    },
+    {
+      "task_id": "f88cace8-b7e7-4985-a330-f2d39bc256ea",
+      "pass_label": "B"
+    }
+  ],
+  "failure_categories": {
+    "invalid_enum": 8,
+    "evidence_too_long": 6
+  },
+  "no_valid_in_retry": true,
+  "pass_b_mapping_unchanged": true
+}

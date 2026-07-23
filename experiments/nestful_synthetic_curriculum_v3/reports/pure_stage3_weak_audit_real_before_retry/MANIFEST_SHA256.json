@@ -1,0 +1,34 @@
+{
+  "source_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\pure_stage3_weak_audit",
+  "backup_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\pure_stage3_weak_audit_real_before_retry",
+  "files": [
+    "pass_a_annotations_raw.jsonl",
+    "pass_b_annotations_raw.jsonl",
+    "pass_a_annotations.jsonl",
+    "pass_b_annotations.jsonl",
+    "invalid_annotations.jsonl",
+    "annotation_agreement.csv",
+    "ANNOTATION_AGREEMENT.md",
+    "cluster_counts.csv",
+    "cluster_examples.json",
+    "WEAK_MODEL_SUMMARY.md",
+    "HIGH_PRIORITY_CASES.jsonl",
+    "HIGH_PRIORITY_CASES.md",
+    "REAL_RUN_STATUS.md"
+  ],
+  "sha256": {
+    "pass_a_annotations_raw.jsonl": "a584767e71381af3a8e1665b1c0ae6d4ca4146180f7ccc9ebbc7a8a4a6c60f2c",
+    "pass_b_annotations_raw.jsonl": "7ebf9c8ec613893c999f0ca4024350a8960d0219a4513653600eefe72ead6639",
+    "pass_a_annotations.jsonl": "454673e43249fac5b5621e660e5caffbb18273ba76c4865797fcd163135dd986",
+    "pass_b_annotations.jsonl": "4d825bcf6d1854057abe3aed9575611f58079653af030bf7118bd66db22457e8",
+    "invalid_annotations.jsonl": "beb70df4d10cac8581f139dc0d93f370f8ae4b404ce1484d7834adf21db888f7",
+    "annotation_agreement.csv": "4ad7c4d352967016b125f62991393ef7873d6f03a96dab39b8ba1f6a78acb4f6",
+    "ANNOTATION_AGREEMENT.md": "7eb6c68ea1595eba1f98d65e07b724436ff5965f7c5deda627bdd105ad30a9d9",
+    "cluster_counts.csv": "3c78acece1b7bbe52c95a1f19756d53862b569673e58724cd5cb4f61fa2d8492",
+    "cluster_examples.json": "99dc3b13a6a842a3000dc6261c195c72b4c4ed14e52f62fe66dc625b1ad82128",
+    "WEAK_MODEL_SUMMARY.md": "ac7ea3c3aaa766cc8d895b530010d3b7898b390b7f76ccb1fdb65f0ae761e6dc",
+    "HIGH_PRIORITY_CASES.jsonl": "2e9ad47688338f1e75a74116d70be601926fe47429978f8a8d502d49ec93bdf9",
+    "HIGH_PRIORITY_CASES.md": "92996cf7f501b7903c16bc083e40929c4ae302e15606686a5a05f3eda889de2f",
+    "REAL_RUN_STATUS.md": "911715c7f8ddb04278646b5f7a83ca7d2e91c45ebada535657070261015c33f0"
+  }
+}

@@ -1,0 +1,10 @@
+# Reward arm A2_R3_OUTCOME_FIRST — the ONLY key that legitimately differs
+# from the other four arm files is `reward.train_policy`. Everything else
+# comes from ../round1_base.yaml.
+reward_id: A2_R3_OUTCOME_FIRST
+description: "Outcome-first (= audited R3): wide official_success vs executable_wrong_result gap, small gold-aware process tie-break (epsilon=0.02, see lib/reward_ablation_registry.py for why this differs from R3's own DEFAULT_EPS_R3=0.04 in the 5-class unified taxonomy)."
+reward:
+  train_policy: reward_ablation_A2_R3_OUTCOME_FIRST
+wandb:
+  run_name: A2_R3_OUTCOME_FIRST_seed20260724
+  extra_tags: [reward_ablation_A2_R3_OUTCOME_FIRST]

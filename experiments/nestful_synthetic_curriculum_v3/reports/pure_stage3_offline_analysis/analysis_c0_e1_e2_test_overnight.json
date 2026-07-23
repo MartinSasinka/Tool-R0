@@ -1,0 +1,257 @@
+{
+  "generated_at": "2026-07-22T22:39:45.790219+00:00",
+  "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918",
+  "parity_ok": true,
+  "adapter_hash_E1": "7419b731256376dc4d9f6e4f7b15f0e958ae78abd3d8644a4d66f80ada250510",
+  "adapter_hash_E2": "92aca741689a4fa629fbd250e893becdc13faad2c7ba62a32b5609b24ad57691",
+  "summary": {
+    "C0": {
+      "n": 1661,
+      "win_rate": 0.5442504515352198,
+      "f1_func": 0.623374076625981,
+      "f1_param": 0.29862808655347445,
+      "first_tool_acc": 0.5692410119840213,
+      "executability": 0.7995183624322697,
+      "under_calling": 0.5972305839855508,
+      "avg_calls": 2.299217338952438,
+      "final_answer_pass": 0.5924142083082481,
+      "taxonomy": {
+        "wrong tool": 158,
+        "correct trajectory, wrong final answer": 43,
+        "success": 904,
+        "executable trajectory ending wrong result": 169,
+        "correct keys, wrong argument values": 149,
+        "parse/format error": 72,
+        "no tool call": 109,
+        "correct tool, wrong argument keys": 43,
+        "too few calls": 13,
+        "too many calls": 1
+      }
+    },
+    "E1": {
+      "n": 1661,
+      "win_rate": 0.5364238410596026,
+      "f1_func": 0.6234035636350008,
+      "f1_param": 0.2992956180738742,
+      "first_tool_acc": 0.5710491367861886,
+      "executability": 0.7910897049969897,
+      "under_calling": 0.6044551475015051,
+      "avg_calls": 2.2847682119205297,
+      "final_answer_pass": 0.5906080674292595,
+      "taxonomy": {
+        "parse/format error": 63,
+        "success": 891,
+        "executable trajectory ending wrong result": 188,
+        "correct trajectory, wrong final answer": 36,
+        "wrong tool": 162,
+        "correct keys, wrong argument values": 145,
+        "no tool call": 114,
+        "too few calls": 16,
+        "correct tool, wrong argument keys": 44,
+        "too many calls": 2
+      }
+    },
+    "E2": {
+      "n": 1661,
+      "win_rate": 0.5328115593016255,
+      "f1_func": 0.6206684953186214,
+      "f1_param": 0.3010142980444648,
+      "first_tool_acc": 0.5725699067909454,
+      "executability": 0.7850692354003612,
+      "under_calling": 0.6068633353401566,
+      "avg_calls": 2.254665863937387,
+      "final_answer_pass": 0.5912101143889223,
+      "taxonomy": {
+        "parse/format error": 67,
+        "correct trajectory, wrong final answer": 40,
+        "success": 885,
+        "executable trajectory ending wrong result": 194,
+        "wrong tool": 167,
+        "correct keys, wrong argument values": 143,
+        "too few calls": 14,
+        "no tool call": 108,
+        "correct tool, wrong argument keys": 42,
+        "too many calls": 1
+      }
+    }
+  },
+  "paired": {
+    "E1_vs_C0": {
+      "gained": 75,
+      "lost": 88,
+      "mcnemar": {
+        "n_discordant": 163,
+        "b01": 75,
+        "b10": 88,
+        "chi2": 0.8834355828220859,
+        "p_value": 0.3472624244875813
+      },
+      "bootstrap": {
+        "mean": -0.007826610475617099,
+        "ci95": [
+          -0.022877784467188442,
+          0.007224563515954244
+        ],
+        "iters": 10000,
+        "seed": 20260715
+      }
+    },
+    "E2_vs_C0": {
+      "gained": 74,
+      "lost": 93,
+      "mcnemar": {
+        "n_discordant": 167,
+        "b01": 74,
+        "b10": 93,
+        "chi2": 1.9401197604790419,
+        "p_value": 0.16365553128872506
+      },
+      "bootstrap": {
+        "mean": -0.011438892233594221,
+        "ci95": [
+          -0.026490066225165563,
+          0.003612281757977122
+        ],
+        "iters": 10000,
+        "seed": 20260715
+      }
+    },
+    "E2_vs_E1": {
+      "gained": 79,
+      "lost": 85,
+      "mcnemar": {
+        "n_discordant": 164,
+        "b01": 79,
+        "b10": 85,
+        "chi2": 0.1524390243902439,
+        "p_value": 0.6962153512437399
+      },
+      "bootstrap": {
+        "mean": -0.003612281757977122,
+        "ci95": [
+          -0.018663455749548464,
+          0.011438892233594221
+        ],
+        "iters": 10000,
+        "seed": 20260715
+      }
+    }
+  },
+  "transitions": {
+    "stable_win": 772,
+    "stable_loss": 642,
+    "lost_E1_regained_E2": 39,
+    "lost_after_E1": 49,
+    "gained_after_E1_lost_E2": 41,
+    "gained_after_E2_only": 40,
+    "gained_E1_kept_E2": 34,
+    "gained_E1_lost_E2": 44
+  },
+  "e1_gain_e2_loss": 41,
+  "e1_loss_e2_gain": 39,
+  "by_calls": {
+    "2": {
+      "n": 543,
+      "C0": 0.4585635359116022,
+      "E1": 0.4548802946593002,
+      "E2": 0.4419889502762431
+    },
+    "3": {
+      "n": 363,
+      "C0": 0.6005509641873278,
+      "E1": 0.5922865013774105,
+      "E2": 0.5895316804407713
+    },
+    "4": {
+      "n": 223,
+      "C0": 0.6098654708520179,
+      "E1": 0.6098654708520179,
+      "E2": 0.5919282511210763
+    },
+    "5": {
+      "n": 154,
+      "C0": 0.5974025974025974,
+      "E1": 0.5584415584415584,
+      "E2": 0.6168831168831169
+    },
+    "6+": {
+      "n": 378,
+      "C0": 0.5529100529100529,
+      "E1": 0.5476190476190477,
+      "E2": 0.5396825396825397
+    }
+  },
+  "by_motif": {
+    "fan_in": {
+      "n": 255,
+      "C0": 0.6274509803921569,
+      "E1": 0.6431372549019608,
+      "E2": 0.6235294117647059
+    },
+    "linear_dependency": {
+      "n": 850,
+      "C0": 0.5129411764705882,
+      "E1": 0.5035294117647059,
+      "E2": 0.49529411764705883
+    },
+    "long_chain": {
+      "n": 532,
+      "C0": 0.5657894736842105,
+      "E1": 0.5507518796992481,
+      "E2": 0.5620300751879699
+    },
+    "independent_calls": {
+      "n": 23,
+      "C0": 0.2608695652173913,
+      "E1": 0.2608695652173913,
+      "E2": 0.2608695652173913
+    },
+    "fan_out": {
+      "n": 1,
+      "C0": 1.0,
+      "E1": 0.0,
+      "E2": 0.0
+    }
+  },
+  "failure_shift": {
+    "by_failure": {
+      "correct keys, wrong argument values": {
+        "C0": 0.0897049969897652,
+        "E1": 0.08729680915111379,
+        "E2": 0.08609271523178808,
+        "E2_minus_C0_pp": -0.36122817579771205
+      },
+      "wrong tool": {
+        "C0": 0.09512341962673089,
+        "E1": 0.0975316074653823,
+        "E2": 0.10054184226369657,
+        "E2_minus_C0_pp": 0.5418422636965681
+      },
+      "executable trajectory ending wrong result": {
+        "C0": 0.10174593618302227,
+        "E1": 0.11318482841661649,
+        "E2": 0.11679711017459361,
+        "E2_minus_C0_pp": 1.505117399157134
+      },
+      "no tool call": {
+        "C0": 0.06562311860325105,
+        "E1": 0.06863335340156532,
+        "E2": 0.0650210716435882,
+        "E2_minus_C0_pp": -0.060204695966285804
+      },
+      "too few calls": {
+        "C0": 0.007826610475617099,
+        "E1": 0.00963275135460566,
+        "E2": 0.008428657435279952,
+        "E2_minus_C0_pp": 0.060204695966285283
+      },
+      "parse/format error": {
+        "C0": 0.04334738109572547,
+        "E1": 0.037928958458759786,
+        "E2": 0.0403371462974112,
+        "E2_minus_C0_pp": -0.30102347983142697
+      }
+    },
+    "pattern_values_down_tool_or_exec_up": true
+  }
+}

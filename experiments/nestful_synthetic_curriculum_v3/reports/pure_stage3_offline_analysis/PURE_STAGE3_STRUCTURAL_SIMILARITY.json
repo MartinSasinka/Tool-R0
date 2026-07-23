@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-07-23T06:34:59.133048+00:00",
+  "stage3_train_n": 326,
+  "mean_similarity": {
+    "gained_C0_to_E2": 0.21486486486486478,
+    "lost_C0_to_E2": 0.20537634408602146,
+    "stable_win": 0.197395191122072,
+    "stable_loss": 0.18784158125915174,
+    "all_test": 0.1946919325707392
+  },
+  "n": {
+    "gained": 74,
+    "lost": 93
+  },
+  "interpretation_hint": "If gained tasks have higher nearest-neighbor similarity to Stage-3 train than lost tasks, transfer gap is measurable (model improves on train-like tasks)."
+}

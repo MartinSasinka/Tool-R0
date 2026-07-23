@@ -1,0 +1,10 @@
+# Reward arm A4_GATED_VERIFIABLE — the ONLY key that legitimately differs
+# from the other four arm files is `reward.train_policy`. Everything else
+# comes from ../round1_base.yaml.
+reward_id: A4_GATED_VERIFIABLE
+description: "Same as A3, but the verifiable process tie-break is gated to 0 unless the trajectory is fully executable (no parse/no-call failure, no fully-failed execution)."
+reward:
+  train_policy: reward_ablation_A4_GATED_VERIFIABLE
+wandb:
+  run_name: A4_GATED_VERIFIABLE_seed20260724
+  extra_tags: [reward_ablation_A4_GATED_VERIFIABLE]

@@ -1,0 +1,154 @@
+{
+  "generated_at": "2026-07-23T13:30:34.947199+00:00",
+  "seed": 20260724,
+  "n_target": 500,
+  "n_selected": 500,
+  "target_per_call_count_bucket": 100,
+  "source_dataset_path": "experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl",
+  "source_dataset_rows": 1661,
+  "source_sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+  "ids_file_sha256": "628fe27b87cad9b8dcdcd805c042de073c69a8e63530a13605175998d44d096f",
+  "c0_baseline_used_for_stratification": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/pure_stage3_2ep_20260719_221918/eval/C0_test/final_eval_trajectories.jsonl",
+  "c0_baseline_sha256": "ca7f49a535d24cc76d924ca936f7e62de72a111b0f42e33cecfbd9c714ae8b3d",
+  "primary_stratification_axis": "gold_call_count_bucket",
+  "secondary_stratification_axis": [
+    "motif_type",
+    "c0_official_win"
+  ],
+  "reported_axes": [
+    "tool_family",
+    "c0_failure_primary",
+    "argument_complexity",
+    "dependency_depth"
+  ],
+  "per_bucket_allocation": {
+    "2": {
+      "available": 543,
+      "target": 100,
+      "selected": 100,
+      "cell_allocation": {
+        "linear_dependency|True": 46,
+        "linear_dependency|False": 54
+      }
+    },
+    "3": {
+      "available": 363,
+      "target": 100,
+      "selected": 100,
+      "cell_allocation": {
+        "fan_in|True": 17,
+        "linear_dependency|True": 41,
+        "fan_in|False": 11,
+        "linear_dependency|False": 25,
+        "independent_calls|False": 4,
+        "independent_calls|True": 2,
+        "fan_out|True": 0
+      }
+    },
+    "4": {
+      "available": 223,
+      "target": 100,
+      "selected": 100,
+      "cell_allocation": {
+        "fan_in|True": 44,
+        "fan_in|False": 26,
+        "linear_dependency|True": 17,
+        "linear_dependency|False": 13,
+        "independent_calls|False": 0
+      }
+    },
+    "5": {
+      "available": 154,
+      "target": 100,
+      "selected": 100,
+      "cell_allocation": {
+        "long_chain|False": 40,
+        "long_chain|True": 60
+      }
+    },
+    "6+": {
+      "available": 378,
+      "target": 100,
+      "selected": 100,
+      "cell_allocation": {
+        "long_chain|True": 55,
+        "long_chain|False": 45
+      }
+    }
+  },
+  "stratification_counts": {
+    "subset": {
+      "call_count_bucket": {
+        "3": 100,
+        "2": 100,
+        "5": 100,
+        "4": 100,
+        "6+": 100
+      },
+      "motif_type": {
+        "fan_in": 98,
+        "linear_dependency": 196,
+        "long_chain": 200,
+        "independent_calls": 6
+      },
+      "tool_family": {
+        "math": 404,
+        "other": 96
+      },
+      "c0_official_win": {
+        "True": 282,
+        "False": 218
+      },
+      "c0_failure_primary": {
+        "win": 282,
+        "executable trajectory ending wrong result": 37,
+        "no tool call": 36,
+        "correct keys, wrong argument values": 56,
+        "wrong tool": 55,
+        "correct trajectory, wrong final answer": 11,
+        "correct tool, wrong argument keys": 9,
+        "parse/format error": 13,
+        "too few calls": 1
+      }
+    },
+    "source_1661": {
+      "call_count_bucket": {
+        "3": 363,
+        "2": 543,
+        "5": 154,
+        "6+": 378,
+        "4": 223
+      },
+      "motif_type": {
+        "fan_in": 255,
+        "linear_dependency": 850,
+        "long_chain": 532,
+        "independent_calls": 23,
+        "fan_out": 1
+      },
+      "tool_family": {
+        "math": 1189,
+        "other": 472
+      },
+      "c0_official_win": {
+        "True": 904,
+        "False": 757
+      },
+      "c0_failure_primary": {
+        "win": 904,
+        "correct keys, wrong argument values": 149,
+        "executable trajectory ending wrong result": 169,
+        "correct trajectory, wrong final answer": 43,
+        "no tool call": 109,
+        "wrong tool": 158,
+        "parse/format error": 72,
+        "correct tool, wrong argument keys": 43,
+        "too few calls": 13,
+        "too many calls": 1
+      }
+    }
+  },
+  "selection_uses_only_dataset_metadata_and_c0": true,
+  "identical_ids_for_c0_and_all_arms": true,
+  "benchmark_reuse_disclosure": "This exact NESTFUL test split has already been used in prior diagnostics (pure_stage3_2ep_20260719_221918 C0/E1/E2 evals and the reward-variant audit). This 500-task subset is an INTERNAL ablation/development evaluation set for comparing reward arms under identical conditions — it is NOT a held-out/untouched final test. Round 3's final internal confirmation evaluates on the full untrimmed n=1661 NESTFUL test set."
+}

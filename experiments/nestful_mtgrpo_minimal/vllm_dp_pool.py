@@ -135,6 +135,21 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
         _ensure_v3_experiment_on_path()
         from lib import reward_v3_2_dense
         fn = reward_v3_2_dense.episode_turn_reward_seq
+    elif policy.startswith("reward_ablation_a"):
+        # Reward-only ablation (reports/reward_ablation/ABLATION_PLAN.md).
+        # `configured` carries the exact arm ID casing (e.g.
+        # "reward_ablation_A2_R3_OUTCOME_FIRST"); `policy` (lowercased) is
+        # only used to route into this branch.
+        _ensure_v3_experiment_on_path()
+        from lib import reward_ablation_registry
+        raw_arm = configured[len("reward_ablation_"):]
+        matches = [a for a in reward_ablation_registry.ARM_IDS if a.lower() == raw_arm.lower()]
+        if not matches:
+            raise ValueError(
+                f"[reward_dispatch] Unknown reward_ablation arm {configured!r}. "
+                f"Known: {[f'reward_ablation_{a}' for a in reward_ablation_registry.ARM_IDS]}"
+            )
+        fn = reward_ablation_registry.make_episode_turn_reward_seq(matches[0])
     elif policy in _STRICT_POLICY_ALIASES:
         from reward import episode_turn_reward_seq as strict_seq
         fn = strict_seq
@@ -151,7 +166,8 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
                 f"[reward_dispatch] Unknown reward policy '{configured}'. "
                 f"Known: partial_gold_trace, execution_aware_v2, partial_gold_trace_v2, "
                 f"execution_aware, execution_aware_v2_1_motif, "
-                f"execution_aware_v3_1_stepwise, execution_aware_v3_2_dense, strict. "
+                f"execution_aware_v3_1_stepwise, execution_aware_v3_2_dense, "
+                f"reward_ablation_<ARM_ID> (A0_R0_CURRENT..A4_GATED_VERIFIABLE), strict. "
                 f"Refusing to silently fall back to the strict binary reward "
                 f"(set ALLOW_STRICT_REWARD_FALLBACK=1 to override — NOT recommended)."
             )

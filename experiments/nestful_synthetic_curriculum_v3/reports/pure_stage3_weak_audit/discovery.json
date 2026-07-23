@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-07-23T07:53:26.885443+00:00",
+  "inputs": {
+    "nestful_test": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\splits\\nestful_test.jsonl",
+      "exists": true,
+      "sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+      "size_bytes": 7490938
+    },
+    "eval_C0": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918\\eval\\C0_test\\final_eval_trajectories.jsonl",
+      "exists": true,
+      "sha256": "ca7f49a535d24cc76d924ca936f7e62de72a111b0f42e33cecfbd9c714ae8b3d",
+      "size_bytes": 6316445
+    },
+    "eval_E1": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918\\eval\\S3_E1_test\\final_eval_trajectories.jsonl",
+      "exists": true,
+      "sha256": "c4a211fd10a0bedc0864d034dee15eaa6e718e41e56b58f74893c0379bd7cc9d",
+      "size_bytes": 6494622
+    },
+    "eval_E2": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918\\eval\\S3_E2_test\\final_eval_trajectories.jsonl",
+      "exists": true,
+      "sha256": "6a3e525fefc3997a35ebb4da19ca96f2907b47c2f9502c20a656ef16e8395ade",
+      "size_bytes": 6285329
+    },
+    "analysis_c0_e1_e2": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\pure_stage3_offline_analysis\\analysis_c0_e1_e2_test_overnight.json",
+      "exists": true,
+      "sha256": "75db0aa12682481d8d9bc8d0320b2a6b2aa15e29181948e5b4a7aa550640b0da",
+      "size_bytes": 7259
+    },
+    "discordant_audit": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\pure_stage3_offline_analysis\\PURE_STAGE3_DISCORDANT_AUDIT.jsonl",
+      "exists": true,
+      "sha256": "7aa03c2682dc60bd5658b9b32a37bf7345fc8ac0a36e6f4d9c1d4d4cab407a9d",
+      "size_bytes": 128497
+    },
+    "task_level_analysis": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\pure_stage3_offline_analysis\\pure_stage3_task_level_analysis.jsonl",
+      "exists": true,
+      "sha256": "fb12c958ffbed3ff228d11bd389979232ca9627cf54ada8dad7cd16281f2b665",
+      "size_bytes": 888406
+    },
+    "run_manifest": {
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918\\run_manifest.json",
+      "exists": true,
+      "sha256": "e95a9321baa4aa272b76e84e9631ed43f3d901c1899cedd29179421ef625a9c7",
+      "size_bytes": 2760
+    }
+  },
+  "provenance": {
+    "run_id": "pure_stage3_2ep_20260719_221918",
+    "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\pure_stage3_2ep_20260719_221918",
+    "model_id": "Qwen/Qwen3-4B-Instruct-2507",
+    "adapter_hash_E1": "7419b731256376dc4d9f6e4f7b15f0e958ae78abd3d8644a4d66f80ada250510",
+    "adapter_hash_E2": "92aca741689a4fa629fbd250e893becdc13faad2c7ba62a32b5609b24ad57691",
+    "parity_ok": true,
+    "paired_E2_vs_C0": {
+      "gained": 74,
+      "lost": 93,
+      "mcnemar": {
+        "n_discordant": 167,
+        "b01": 74,
+        "b10": 93,
+        "chi2": 1.9401197604790419,
+        "p_value": 0.16365553128872506
+      },
+      "bootstrap": {
+        "mean": -0.011438892233594221,
+        "ci95": [
+          -0.026490066225165563,
+          0.003612281757977122
+        ],
+        "iters": 10000,
+        "seed": 20260715
+      }
+    },
+    "summary_win_rates": {
+      "C0": 0.5442504515352198,
+      "E1": 0.5364238410596026,
+      "E2": 0.5328115593016255
+    }
+  },
+  "task_counts": {
+    "nestful_test": 1661,
+    "eval_C0": 1661,
+    "eval_E1": 1661,
+    "eval_E2": 1661
+  },
+  "field_map": {
+    "question": "nestful_test.jsonl: question | input | prompt",
+    "offered_tools": "nestful_test.jsonl: tools (JSON list)",
+    "gold_calls": "nestful_test.jsonl: gold_calls | output | gold_output",
+    "expected_outcome": "nestful_test.jsonl: gold_answer | answer | final_answer",
+    "predicted_calls": "eval _traj.turns[].parsed_call",
+    "observations": "eval _traj.turns[].observation (when fail_reason is null)",
+    "final_answer": "eval _traj.pred_answer",
+    "official_win": "eval row via _traj.official_win (also scorer on test)",
+    "failure_taxonomy": "derived: scripts.analysis.two_phase_root_cause_analysis.classify_failure",
+    "reward_R0": "computed offline: lib.reward_v3_2_dense on saved trajectory",
+    "reward_train_strict": "eval _traj.reward_train_strict (strict gold trace, NOT training R0)",
+    "first_divergence": "computed: compare C0 vs E2 predicted_calls",
+    "tool_call_count": "eval _traj.num_tool_calls"
+  },
+  "eval_schema_sample_C0": {
+    "row_keys": [
+      "_traj",
+      "alternative_valid_solution_pass",
+      "correct_answer_but_unsupported_trace",
+      "final_answer_pass",
+      "internal_f1_func",
+      "internal_f1_param",
+      "internal_full_sequence_accuracy",
+      "internal_partial_sequence_accuracy",
+      "internal_win_rate",
+      "num_eval_rollouts",
+      "num_gold_calls",
+      "sample_id",
+      "solution_equivalent_pass",
+      "strict_fail_but_solution_equivalent_pass",
+      "strict_gold_trace_pass"
+    ],
+    "traj_keys": [
+      "clipped_any",
+      "executable",
+      "execution_error",
+      "executor_mode",
+      "gold_num_turns",
+      "internal",
+      "internal_diagnostic_only",
+      "mismatch",
+      "mismatch_reason",
+      "num_tool_calls",
+      "official_full_match",
+      "official_partial_match",
+      "official_win",
+      "paper",
+      "parse_valid",
+      "pred_answer",
+      "prompt_overflow",
+      "reward_train_strict",
+      "stage",
+      "stop_reason",
+      "task_id",
+      "turns"
+    ],
+    "turn_keys": [
+      "clipped_completion",
+      "completion_tokens",
+      "fail_reason",
+      "is_terminal",
+      "model_text",
+      "observation",
+      "parsed_call",
+      "prompt_tokens",
+      "teacher_forced",
+      "turn_idx"
+    ],
+    "official_win_row": null,
+    "official_win_traj": 0.0,
+    "pred_answer": 9.0,
+    "reward_train_strict": 0.0
+  },
+  "missing_inputs": [],
+  "limitations": [
+    "Training reward R0 is recomputed offline; eval reward_train_strict is a different policy.",
+    "Pass-B anonymization hides checkpoint identity from the annotator model.",
+    "Token estimates use chars/4 heuristic unless tiktoken is installed.",
+    "Weak-model annotations are not ground truth; agreement measures annotator stability only."
+  ]
+}

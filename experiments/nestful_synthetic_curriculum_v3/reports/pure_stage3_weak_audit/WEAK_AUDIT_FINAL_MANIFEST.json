@@ -1,0 +1,53 @@
+{
+  "status": "weak_audit_finalized",
+  "finalized_at": "2026-07-23T10:23:00.824533+00:00",
+  "analyzed_run_id": "pure_stage3_2ep_20260719_221918",
+  "model_id": "deepseek/deepseek-v3.2",
+  "provider_retry": "DeepInfra",
+  "seed": 20260723,
+  "n_case_packets": 248,
+  "pass_a_final_valid": 248,
+  "pass_b_final_valid": 248,
+  "pass_a_final_invalid": 0,
+  "pass_b_final_invalid": 0,
+  "sha256": {
+    "case_packets": "c6db01c4a082dc52d8a762b7990df2058ae553b87ad1b6e75c4a71101ec43ce0",
+    "pass_a_inputs": "c4ef26dd7f56b68afdea4433b1895ca78923c25a0e6932e121011849a88e3475",
+    "pass_b_inputs": "865c053c0373e724e2d6414b38a8068f732b9f0e19368a589dcb3fc10ceb0227",
+    "pass_a_raw": "a584767e71381af3a8e1665b1c0ae6d4ca4146180f7ccc9ebbc7a8a4a6c60f2c",
+    "pass_b_raw": "7ebf9c8ec613893c999f0ca4024350a8960d0219a4513653600eefe72ead6639",
+    "pass_a_final": "322aff39002237b8deeb5525ed7a4c1f43cc84f5b8fa2518656a1acf5a048e09",
+    "pass_b_final": "04b4230cee226dcb81783e445976c775a12c48337d9185ac29e5a7203dd47810",
+    "agreement_final": "c3f90f372bcbc3e83a94835aba0b31d3c05931dd14d195e6517c8a1c389a81cf",
+    "high_priority_final": "d72004f18b52bbce5c0a66f93f09fff1d5cacc66deab3391654746ba97bc6fd5"
+  },
+  "git_commit": "c9fe58af7ae78a663eafb94a6646654d3de4b1fb",
+  "retry_stats": {
+    "requested": 14,
+    "todo": 14,
+    "ok": 14,
+    "error": 0,
+    "validated": 14,
+    "failed": 0,
+    "cost_usd": 0.008391979999999999,
+    "prompt_tokens": 30997,
+    "completion_tokens": 3306,
+    "model": "deepseek/deepseek-v3.2",
+    "provider": "DeepInfra",
+    "use_json_schema": true,
+    "reasoning_effort": "none"
+  },
+  "merge_stats": {
+    "pass_a_valid_original": 239,
+    "pass_b_valid_original": 243,
+    "pass_a_replaced": 9,
+    "pass_b_replaced": 5,
+    "pass_a_still_invalid": 0,
+    "pass_b_still_invalid": 0,
+    "pass_a_final_valid": 248,
+    "pass_a_final_invalid": 0,
+    "pass_b_final_valid": 248,
+    "pass_b_final_invalid": 0,
+    "both_pass_final_valid_plus_invalid_eq_248": true
+  }
+}

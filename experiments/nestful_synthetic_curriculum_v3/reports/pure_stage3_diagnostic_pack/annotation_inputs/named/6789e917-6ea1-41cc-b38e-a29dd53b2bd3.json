@@ -1,0 +1,603 @@
+{
+  "task_id": "6789e917-6ea1-41cc-b38e-a29dd53b2bd3",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- C0/E1/E2 trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "6789e917-6ea1-41cc-b38e-a29dd53b2bd3",
+    "cohort": "E2_executable_wrong_other",
+    "question": "Create a square tensor of size 5, calculate the mean of all the values in the tensor, remove all occurrences of the character 'a' from the string \"banana\", and then convert the time \"12:34:56\" to a list of integers representing the hours, minutes, and seconds.",
+    "relevant_tools": [
+      {
+        "name": "remove_character",
+        "description": "Removes all occurrences of the character `c` from the string `s`.\nIf the string `s` is empty, the function returns a string containing only a single space.",
+        "parameters": {
+          "c": {
+            "description": "The character to be removed.",
+            "type": "string"
+          },
+          "s": {
+            "description": "The input string.",
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "calculate_mean_of_array",
+        "description": "Calculates the mean of all the values in a NumPy array.",
+        "parameters": {
+          "array": {
+            "description": "A NumPy array with a shape of (N, M), where N and M are positive integers.",
+            "type": "object"
+          }
+        }
+      },
+      {
+        "name": "convert_time_to_list",
+        "description": "Converts a string containing a time in the format `\"HH:MM:SS\"` to the corresponding digital time in units of hours, minutes, and seconds (all integers).",
+        "parameters": {
+          "time": {
+            "description": "A string containing a time in the format `\"HH:MM:SS\"`.",
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "create_square_tensor",
+        "description": "Creates a square tensor of size `n` whose diagonal entries are 1 and all other entries are 0.",
+        "parameters": {
+          "n": {
+            "description": "The size of the tensor.",
+            "type": "integer"
+          }
+        }
+      }
+    ],
+    "expected_outcome": {
+      "type": "list",
+      "len": 3,
+      "preview": [
+        12,
+        34,
+        56
+      ]
+    },
+    "gold_call_count": 4,
+    "gold_motif": "independent_calls",
+    "C0": {
+      "calls": [
+        {
+          "name": "create_square_tensor",
+          "arguments": {
+            "n": 5
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "calculate_mean_of_array",
+          "arguments": {
+            "array": {
+              "shape": [
+                5,
+                5
+              ],
+              "data": [
+                [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              ]
+            }
+          },
+          "label": "$var2"
+        }
+      ],
+      "observations": [
+        {
+          "type": "list",
+          "len": 5,
+          "preview": [
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                1,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                0,
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "executable trajectory ending wrong result",
+      "executable": false,
+      "num_calls": 2,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.425,
+          "total_reward": 0.24875,
+          "terminal_reward": 0.24875,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.425,
+            "format_score": 1.0,
+            "call_count_progress": 0.5,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.15,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.172187,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.13275,
+          "terminal_reward": 0.115,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.05,
+              0.18
+            ]
+          }
+        }
+      }
+    },
+    "E1": {
+      "calls": [
+        {
+          "name": "create_square_tensor",
+          "arguments": {
+            "n": 5
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "calculate_mean_of_array",
+          "arguments": {
+            "array": {
+              "shape": [
+                5,
+                5
+              ],
+              "data": [
+                [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              ]
+            }
+          },
+          "label": "$var2"
+        }
+      ],
+      "observations": [
+        {
+          "type": "list",
+          "len": 5,
+          "preview": [
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                1,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                0,
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "executable trajectory ending wrong result",
+      "executable": false,
+      "num_calls": 2,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.425,
+          "total_reward": 0.24875,
+          "terminal_reward": 0.24875,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.425,
+            "format_score": 1.0,
+            "call_count_progress": 0.5,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.15,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.172187,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.13275,
+          "terminal_reward": 0.115,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.05,
+              0.18
+            ]
+          }
+        }
+      }
+    },
+    "E2": {
+      "calls": [
+        {
+          "name": "create_square_tensor",
+          "arguments": {
+            "n": 5
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "calculate_mean_of_array",
+          "arguments": {
+            "array": {
+              "shape": [
+                5,
+                5
+              ],
+              "data": [
+                [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1
+                ]
+              ]
+            }
+          },
+          "label": "$var2"
+        }
+      ],
+      "observations": [
+        {
+          "type": "list",
+          "len": 5,
+          "preview": [
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                1,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                1,
+                0
+              ]
+            },
+            {
+              "type": "list",
+              "len": 5,
+              "preview": [
+                0,
+                0,
+                1
+              ]
+            }
+          ]
+        }
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "executable trajectory ending wrong result",
+      "executable": false,
+      "num_calls": 2,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.425,
+          "total_reward": 0.24875,
+          "terminal_reward": 0.24875,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.425,
+            "format_score": 1.0,
+            "call_count_progress": 0.5,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.15,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.172187,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 0.44375,
+          "total_reward": 0.13275,
+          "terminal_reward": 0.115,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.5,
+            "per_call_argument_score": 0.375,
+            "reference_score": 0.0,
+            "execution_score": 0.5,
+            "process_score": 0.44375,
+            "outcome_band": [
+              0.05,
+              0.18
+            ]
+          }
+        }
+      }
+    },
+    "deterministic_flags": {
+      "first_divergence_turn": null,
+      "shorter_than_gold": true,
+      "taxonomy_too_few": false,
+      "executable": false,
+      "reward_mismatch_R0": false,
+      "R0_class_C0": "too_few_calls",
+      "R0_class_E2": "too_few_calls",
+      "official_win_C0": false,
+      "official_win_E2": false
+    }
+  },
+  "annotation_variant": "named_C0_E1_E2"
+}

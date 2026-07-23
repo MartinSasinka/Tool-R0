@@ -1,0 +1,112 @@
+# Reward ablation — Round 1 base configuration.
+#
+# This is the SINGLE SOURCE OF TRUTH for everything that must stay IDENTICAL
+# across A0-A4 (see reports/reward_ablation/ABLATION_PARITY.md, generated
+# from this file). Every value below is copied verbatim from the production
+# pure_stage3_2ep_20260719_221918 run's run_manifest.json / launcher
+# defaults, EXCEPT the three explicitly marked "ROUND 1 DELIBERATE CHANGE"
+# fields (train task count, epoch count, seed) which are Round-1-specific by
+# design (per the ablation spec, NOT a parity break).
+#
+# scripts/ablation/run_reward_ablation.py loads this file, overlays exactly
+# one configs/reward_ablation/arms/<ARM>.yaml on top, and drives
+# scripts/training/two_phase_train_session.py::TwoPhaseTrainSession directly
+# (the SAME trainer/rollout-pool/executor/credit-assignment class the
+# production pure_stage3_two_epoch orchestrator uses), calling
+# `train_phase(...)` exactly ONCE for a single epoch. It deliberately does
+# NOT shell out to scripts/training/run_pure_stage3_two_epoch.py, because
+# that script hardcodes 2 epochs + 326 rows + full dev/test eval sets, none
+# of which fit Round 1 (1 epoch, 160 tasks, fixed 500-task NESTFUL subset).
+# Reusing the class one level below that orchestrator keeps 100% of the
+# trainer/executor/checkpointing code identical without editing or
+# duplicating that production script.
+
+experiment_family: reward_ablation
+ablation_version: v1
+round: 1
+
+model:
+  base_model: Qwen/Qwen3-4B-Instruct-2507
+  base_model_revision: cdbee75f17c01a7cc42f958dc650907174af0554
+  start_from: base_model_C0            # identical C0 checkpoint for every arm
+
+data:
+  # ROUND 1 DELIBERATE CHANGE (spec §2): 160-task stratified subset, not the
+  # full 326. Frozen by scripts/ablation/prepare_train_subset_160.py.
+  train_dataset: reports/reward_ablation/data/train_subset_160.jsonl
+  train_dataset_sha256_lf_normalized: 7df704bff35c8f8fd0ffb2b50e3c7c4c1e8d7f9a0f3e0c02a43327ef820dd596
+  eval_dataset_ids: reports/reward_ablation/data/nestful_diagnostic_500_ids.json
+  eval_dataset_source: experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl
+  executor_mode: synthetic
+  no_stage2: true
+  no_gold_replay: true
+  mixed_replay: false
+
+training:
+  # ROUND 1 DELIBERATE CHANGE: 1 epoch (production run was 2 epochs; the
+  # ablation spec explicitly calls for a SHORT 1-epoch screening run).
+  epochs: 1
+  num_generations: 8                    # rollouts per task (identical every arm)
+  learning_rate: 3.0e-7
+  kl_beta: 0.15
+  gamma: 1.0
+  lambda_episode: 1.0
+  mt_grpo_mode: turn_level_minimal
+  max_grad_norm: 1.0
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4
+  save_every_epoch: true
+  checkpoint_interval: every_epoch
+
+generation:
+  temperature: 1.0                      # ROLLOUT decoding (train-time)
+  top_p: 0.95
+  max_new_tokens_train: 2048
+  max_prompt_tokens: 4096
+
+eval:
+  # ROUND 1 fixed decoding — identical for C0 and every arm's checkpoint.
+  temperature: 0.0
+  top_p: 1.0
+  num_eval_rollouts: 1
+  eval_paradigm: react
+  midpoint_checkpoint_minisubset: 100    # optional midpoint eval, n=100
+
+precision:
+  bf16: true
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+  finetuning_method: qlora
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+
+hardware:
+  gpu_topology: "GPU0=learner, GPU1-3=rollout_workers (vLLM DP)"
+  eval_gpu_topology: "4xTP eval AFTER learner/optimizer released (no concurrent TP4 eval while learner resident)"
+  rollout_data_parallel_gpus: [1, 2, 3]
+
+seeds:
+  # ROUND 1 DELIBERATE CHANGE vs production (SEED=42): Round 1 uses the
+  # ablation-specific seed from the spec. Round 2 re-runs with seed 20260725
+  # (see reports/reward_ablation/ROUND2_PLAN.json once produced).
+  SEED: 20260724
+  DATA_SEED: 20260724
+  ROLLOUT_SEED: 20260724
+
+wandb:
+  project: nestful-reward-ablation
+  group_template: "reward_ablation_round1_{timestamp}"
+  run_name_template: "{reward_id}_seed{seed}"
+  tags_base: [reward_ablation, pure_stage3, round1]
+
+reproducibility:
+  git_commit_at_freeze: null            # filled by freeze_reward_specs.py at freeze time
+  registry_version: "5.0.2"
+  registry_hash: f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d
+
+# The ONLY key that legitimately differs between arms (overlaid from
+# configs/reward_ablation/arms/<ARM>.yaml):
+#   reward.train_policy

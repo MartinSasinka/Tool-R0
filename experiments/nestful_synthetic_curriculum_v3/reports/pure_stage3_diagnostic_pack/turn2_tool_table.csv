@@ -1,0 +1,130 @@
+task_id,gold_tool_2,C0_tool_2,E1_tool_2,E2_tool_2,tool_1,observation_1_type,observation_1_value_shape,observation_1_preview,gold_tool_2_description,E2_tool_2_description,C0_tool_2_correct,E2_tool_2_correct
+00830acf-eda7-4310-8396-aff5f243860e,power,power,square_edge_by_perimeter,square_edge_by_perimeter,divide,scalar,scalar,4.0,Raise a number to a power,Calculate the edge length of a square given its perimeter,True,False
+00fd73c1-50e8-47a9-9d20-82a730c02de3,subtract,subtract,subtract,subtract,add,scalar,scalar,125,subtract two numbers,subtract two numbers,True,True
+037ab7a7-2503-4a04-9bde-f2d81c184790,add,add,divide,,multiply,scalar,scalar,1200,adds two numbers,,True,False
+038d6798-cb67-4083-8293-acf7a4719d36,multiply,multiply,multiply,multiply,multiply,scalar,scalar,24,Multiplies two numbers,Multiplies two numbers,True,True
+07421ac8-4030-4262-a84f-8f2ef84d6010,integer_part,integer_part,integer_part,integer_part,add_and_shift,scalar,scalar,15,Returns the integer part of a float number without using the built-in function math.floor.,Returns the integer part of a float number without using the built-in function math.floor.,True,True
+0c3f5a6d-1aec-4d52-9310-c0e0ab651fef,divide,divide,divide,,add,scalar,scalar,100,divides two numbers,,True,False
+0f1d3aca-4e40-45a9-b1e8-9ef76e1e1cd2,add,add,add,add,add,scalar,scalar,8772,adds two numbers,adds two numbers,True,True
+1163aa42-d931-4ae3-a9af-3800e1200319,multiply,multiply,multiply,multiply,divide,scalar,scalar,1.7151162790697674,Multiplies two numbers,Multiplies two numbers,True,True
+13d599b3-0a9f-4856-8fbf-2fd376400988,find_sum_of_squares,find_sum_of_squares,find_sum_of_squares,find_sum_of_squares,check_list_for_value,scalar,scalar,10,Calculates the sum of the squares of two numbers.,Calculates the sum of the squares of two numbers.,True,True
+1486b674-af4e-4bd4-9a48-2bf0f4aa9995,divide,divide,,,multiply,scalar,scalar,150.0,divides two numbers,,True,False
+1765d48e-b1d2-4dd2-bdf5-cc49496ac350,add,divide,divide,divide,subtract,scalar,scalar,101,adds two numbers,divides two numbers,False,False
+18f2119a-53e9-4e04-bd1a-2b88f2e68919,subtract,divide,divide,divide,multiply,scalar,scalar,7200,subtract two numbers,divides two numbers,False,False
+1b79e333-e3fc-4292-9d59-987fc3b606f8,add,add,add,add,add,scalar,scalar,35,adds two numbers,adds two numbers,True,True
+2140a918-5ea0-4afb-bf9c-a6eaf5f74a1e,search_min_max,search_min_max,search_min_max,search_min_max,pad_buffer,list[6],list[6],"{'type': 'list', 'len': 6, 'preview': [5, 4, 3]}",Finds the minimum and maximum values in a list without modifying the original list.,Finds the minimum and maximum values in a list without modifying the original list.,True,True
+22189646-8f33-479f-8c1c-9fa573072a25,subtract,subtract,subtract,multiply,multiply,scalar,scalar,3500,subtract two numbers,Multiplies two numbers,True,False
+236711c7-5a1c-4bf5-b578-6e965b98a085,divide,divide,divide,,multiply,scalar,scalar,300,divides two numbers,,True,False
+24288ec0-758f-48d2-8e76-ce42e70cbf8d,sum_consecutive_integers,sum_consecutive_integers,sum_consecutive_integers,sum_consecutive_integers,bitwise_lowest_set_bit_retrieval,scalar,scalar,2,"Calculates the sum of consecutive integers from 1 to a given number, inclusive.","Calculates the sum of consecutive integers from 1 to a given number, inclusive.",True,True
+25797860-12b0-49be-a53e-e8b0933e0900,multiply,multiply,multiply,multiply,rectangle_area,scalar,scalar,200,Multiplies two numbers,Multiplies two numbers,True,True
+2795c8df-921d-4311-b6d4-ece1204f2ef5,subtract,divide,divide,divide,divide,scalar,scalar,500.0,subtract two numbers,divides two numbers,False,False
+2a9516d7-fe85-49c4-9d22-d31f22721ded,matrix_multiply_scalar,matrix_multiply_scalar,matrix_multiply_scalar,matrix_multiply_scalar,matrix_multiply_2,list[2],list[2],"{'type': 'list', 'len': 2, 'preview': [{'type': 'list', 'len': 2, 'preview': [19, 22]}, {'type': 'list', 'len': 2, 'preview': [43, 50]}]}",Multiplies a matrix by a scalar without modifying the input matrix.,Multiplies a matrix by a scalar without modifying the input matrix.,True,True
+2ffc5104-b4b9-4442-9008-e750f89625ce,apply_camel_case,apply_camel_case,apply_camel_case,apply_camel_case,count_bits,scalar,scalar,2,Applies camel case formatting to a string of words.,Applies camel case formatting to a string of words.,True,True
+3171c089-3152-48db-90be-f576f555dfd6,zeroes_to_binary,zeroes_to_binary,zeroes_to_binary,zeroes_to_binary,find_nth_smallest,scalar,scalar,1,Converts a positive integer `n` to a binary string of `n` zeros.,Converts a positive integer `n` to a binary string of `n` zeros.,True,True
+32881593-1d74-40fd-9d4e-9ea812030a17,power,,,,divide,null,null,,Raise a number to a power,,False,False
+34549c3b-6a32-444a-8b7a-56b6f484baeb,subtract,,,,multiply,null,null,,subtract two numbers,,False,False
+3d2db0a1-2044-4033-97d0-3f82b93e55bd,multiply,,,,multiply,scalar,scalar,0.15,Multiplies two numbers,,False,False
+4181facd-49ba-4f9d-8ced-f01adcdd8782,divide,divide,,,multiply,scalar,scalar,0.2,divides two numbers,,True,False
+4511ccb4-e31c-4cc8-b585-04dda07d21cf,extract_first_value,extract_first_value,extract_first_value,extract_first_value,moving_average,list[3],list[3],"{'type': 'list', 'len': 3, 'preview': [2.0, 3.0, 4.0]}",Extracts the first non-null value from a list of strings or values.,Extracts the first non-null value from a list of strings or values.,True,True
+466a901f-f700-4e5c-8b45-984e29b3e97f,multiply,,,,divide,scalar,scalar,8.0,Multiplies two numbers,,False,False
+47fbefed-c16e-4a5c-a88a-ac17e2d5c863,divide,multiply,multiply,multiply,multiply,scalar,scalar,300.0,divides two numbers,Multiplies two numbers,False,False
+4cba337d-cf82-49fe-853b-1ac69d0f19ae,multiply,,,divide,subtract,scalar,scalar,345,Multiplies two numbers,divides two numbers,False,False
+5099873f-cd8b-4b02-873a-8c77a8e76837,divide,,,,divide,scalar,scalar,0.625,divides two numbers,,False,False
+52651073-b22c-422b-b2dd-8bc64f894969,subtract,multiply,multiply,multiply,multiply,scalar,scalar,96,subtract two numbers,Multiplies two numbers,False,False
+5436377c-b285-4d60-b0f5-89742ae2a9d6,divide,add,add,add,multiply,scalar,scalar,28.0,divides two numbers,adds two numbers,False,False
+54bacfd4-1ac2-4e58-bb6e-8093d738af12,hash_string_using_md5,hash_string_using_md5,hash_string_using_md5,hash_string_using_md5,image_filename,string,string,image_123.jpg,Hashes a string using the md5 algorithm and returns the hexadecimal representation of the hash value.,Hashes a string using the md5 algorithm and returns the hexadecimal representation of the hash value.,True,True
+55754e10-54f7-4798-8c97-c3db54fbb9b1,multiply,multiply,multiply,multiply,multiply,scalar,scalar,225,Multiplies two numbers,Multiplies two numbers,True,True
+56a1c574-6d93-4367-a3df-128fecbda809,subtract,subtract,subtract,subtract,divide,scalar,scalar,6.0,subtract two numbers,subtract two numbers,True,True
+56f217f3-b20d-4f19-b8ed-23850bc2e6be,delete_value,,parse_list_of_numbers,parse_list_of_numbers,extract_layer_numbers,list[6],list[6],"{'type': 'list', 'len': 6, 'preview': [None, None, None]}",Deletes all occurrences of a value from a list.,Parses a string representing a list of numbers (separated by commas) into a list of floats.,False,False
+5830f67e-aed1-4252-a279-f107ab8d15bb,divide,divide,multiply,multiply,multiply,scalar,scalar,1440,divides two numbers,Multiplies two numbers,True,False
+5b0305d9-ae91-4986-8649-eb4253728f54,custom_round,,,,count_common_elements,scalar,scalar,2,Rounds a given numeric value to the closest multiple of a specified factor.,,False,False
+5e9676ba-e7a5-4380-95d5-f9416def5243,divide,multiply,multiply,multiply,multiply,scalar,scalar,600.0,divides two numbers,Multiplies two numbers,False,False
+5ece6f80-a4fb-48a9-95cd-8c8c2a49ab08,add,multiply,multiply,multiply,divide,scalar,scalar,25.0,adds two numbers,Multiplies two numbers,False,False
+5f72334c-4a68-496d-a51c-e92c1b70affc,multiply,,,,divide,scalar,scalar,16.0,Multiplies two numbers,,False,False
+5fa7ff50-c123-4abc-be8a-6113e3dfafa7,beta_value,beta_value,beta_value,beta_value,polygon,scalar,scalar,12.566370614359172,Calculates the beta value for the specified range.,Calculates the beta value for the specified range.,True,True
+63854dc5-cf6e-40bd-94e9-f4f930165cb7,product_of_vectors,product_of_vectors,product_of_vectors,product_of_vectors,scale_to_zero_mean_and_unit_variance,list[5],list[5],"{'type': 'list', 'len': 5, 'preview': [-1.414213562373095, -0.7071067811865475, 0.0]}",Computes the product of two vectors.,Computes the product of two vectors.,True,True
+63decc75-1337-4064-a0f1-abd398d5985e,add,divide,divide,divide,divide,scalar,scalar,189.6,adds two numbers,divides two numbers,False,False
+6789e917-6ea1-41cc-b38e-a29dd53b2bd3,calculate_mean_of_array,calculate_mean_of_array,calculate_mean_of_array,calculate_mean_of_array,create_square_tensor,list[5],list[5],"{'type': 'list', 'len': 5, 'preview': [{'type': 'list', 'len': 5, 'preview': [1, 0, 0]}, {'type': 'list', 'len': 5, 'preview': [0, 1, 0]}, {'type': 'list', 'len': 5, 'preview': [0, 0, 1]}]}",Calculates the mean of all the values in a NumPy array.,Calculates the mean of all the values in a NumPy array.,True,True
+6a069715-af16-4353-b530-2c68b1045702,subtract,multiply,multiply,multiply,multiply,scalar,scalar,900,subtract two numbers,Multiplies two numbers,False,False
+6a9f6952-e49e-4cd1-94e3-122e9d453aa6,multiply,multiply,,multiply,multiply,scalar,scalar,3600,Multiplies two numbers,Multiplies two numbers,True,True
+6bcc90ed-8253-46d4-86a6-ebc1c8550f7a,multiply,multiply,multiply,multiply,multiply,scalar,scalar,645,Multiplies two numbers,Multiplies two numbers,True,True
+702881c1-d5ba-4b90-aa65-8a17d9a3a5a6,multiply,multiply,multiply,multiply,multiply,scalar,scalar,6900,Multiplies two numbers,Multiplies two numbers,True,True
+7097f5bc-0c2c-4d7c-821d-674e8b20e5a3,add,,,,divide,scalar,scalar,10800.0,adds two numbers,,False,False
+71974b33-a9a8-4685-b0b8-7bf4e8a4f74c,add,,,,divide,scalar,scalar,416.0,adds two numbers,,False,False
+73301ada-cb5a-4ee0-a8e6-d1f4a8d02a61,add,add,subtract,subtract,add,scalar,scalar,72,adds two numbers,subtract two numbers,True,False
+76446ae7-0565-4df5-bff6-bddcaf386d0f,divide,divide,divide,,multiply,scalar,scalar,54000,divides two numbers,,True,False
+76de8525-048b-4209-8867-48bfb6ff6fa8,multiply,multiply,multiply,multiply,multiply,scalar,scalar,180,Multiplies two numbers,Multiplies two numbers,True,True
+7d0d1b23-f8ba-474b-84fd-e78eaaf967e2,divide,divide,,,subtract,scalar,scalar,10,divides two numbers,,True,False
+80906cae-8547-47ad-863b-9db070fd41ae,divide,,,,divide,scalar,scalar,5.5,divides two numbers,,False,False
+80d3d81b-e6fd-4fa4-a690-b7214c4ef41c,add,add,add,,multiply,scalar,scalar,284,adds two numbers,,True,False
+82e82d17-1e64-4874-8005-67f32b410866,duration_to_string,duration_to_string,divide,divide,convert_nanosecond_to_microsecond,scalar,scalar,1000000,"Converts a time duration in seconds to a string of the form ""HH:MM:SS"".",,True,False
+8a0551a3-2753-402e-abab-b7e9ae86b455,string_equals,string_equals,string_equals,string_equals,to_pascal_case,string,string,Hello World,Checks if two strings are equal.,Checks if two strings are equal.,True,True
+8ced92ec-afcf-4bae-8e56-6d4c5175f195,remove_first,remove_first,remove_first,remove_first,longest_consecutive_sequence,scalar,scalar,10,Removes the first element from a list of integers.,Removes the first element from a list of integers.,True,True
+92366bd5-f065-4719-91a2-c44123746ce6,multiply,,divide,divide,add,scalar,scalar,550,Multiplies two numbers,divides two numbers,False,False
+925e5a42-be49-45d0-ae48-9f76fbe1a0a2,convert_seconds,convert_seconds,convert_seconds,convert_seconds,max_change,scalar,scalar,4,Converts an integer `sec` (representing the number of seconds) to a string in the format of 'HH:MM:SS'.,Converts an integer `sec` (representing the number of seconds) to a string in the format of 'HH:MM:SS'.,True,True
+96aae8cf-2667-455f-8b59-033ae86f88a1,divide,,,,subtract,scalar,scalar,190,divides two numbers,,False,False
+97dc3022-3ebc-4511-9f50-d22da3a73179,divide,,,,divide,scalar,scalar,40000.0,divides two numbers,,False,False
+99f425b1-84c4-4a92-a916-12b847352319,divide,multiply,add,add,multiply,scalar,scalar,40,divides two numbers,adds two numbers,False,False
+9a752e1c-dffb-4c71-84d5-687970836ce7,generate_random_integer,generate_random_integer,generate_random_integer,generate_random_integer,count_empty_strings,scalar,scalar,2,"Generates a random integer value between 0 and a specified upper bound.
+The function ensures that the generated value is not a multiple of 3 or 5.","Generates a random integer value between 0 and a specified upper bound.
+The function ensures that the generated value is not a multiple of 3 or 5.",True,True
+9bf2526f-f248-4462-90dd-ad45468cdd01,multiply,multiply,multiply,multiply,multiply,scalar,scalar,600,Multiplies two numbers,Multiplies two numbers,True,True
+9e370e34-2cac-4df3-80dd-7d8142fc7c88,pad_string_left,pad_string_left,pad_string_left,pad_string_left,get_euro_date,string,string,31.12.2022,Pads a string on the left with spaces until it becomes `n` characters long.,Pads a string on the left with spaces until it becomes `n` characters long.,True,True
+a07bd6ce-e76b-4e9e-8e2c-8b3e2e7690ef,percent_positive,percent_positive,percent_positive,percent_positive,convert_string_to_integers,list[13],list[13],"{'type': 'list', 'len': 13, 'preview': [8, 5, 12]}",Calculates the percentage of positive integers in a list.,Calculates the percentage of positive integers in a list.,True,True
+a25025bf-d957-471f-a37a-88b08502e3c9,sum_numbers_as_float,sum_numbers_as_float,sum_numbers_as_float,sum_numbers_as_float,filter_and_sort_integers,list[2],list[2],"{'type': 'list', 'len': 2, 'preview': [2, 4]}","Calculates the sum of all numbers in a sequence, dynamically casting each number to a float.","Calculates the sum of all numbers in a sequence, dynamically casting each number to a float.",True,True
+a335f79c-d1e2-4f67-a414-bf94fc53323b,format_camel_case,format_camel_case,format_camel_case,format_camel_case,generate_random_unique_string,string,string,2bbbffae12238991cae364d29afe5dc2,"Formats the given input string as a ""camelCase"" string.
+
+The first letter of each word is capitalized and spaces are removed.
+Built-in functions like `str.capitalize`, `str.join`, or `str.title` are not used.","Formats the given input string as a ""camelCase"" string.
+
+The first letter of each word is capitalized and spaces are removed.
+Built-in functions like `str.capitalize`, `str.join`, or `str.title` are not used.",True,True
+a52b67c0-261b-4997-8d20-426b98b75dfd,add,divide,divide,divide,add,scalar,scalar,88,adds two numbers,divides two numbers,False,False
+a65663e7-afb5-48af-ae7d-4a2611b93176,multiply,multiply,multiply,multiply,multiply,scalar,scalar,6,Multiplies two numbers,Multiplies two numbers,True,True
+a7688b81-3977-4139-958f-dde7f2ad50ce,wrap_text_with_tag,wrap_text_with_tag,wrap_text_with_tag,wrap_text_with_tag,merge_recursive,list[6],list[6],"{'type': 'list', 'len': 6, 'preview': [1, 2, 3]}",Wraps the text with an HTML tag.,Wraps the text with an HTML tag.,True,True
+a76ec66d-10a1-4b45-ad29-e63d67881a08,subtract,subtract,subtract,subtract,multiply,scalar,scalar,5310,subtract two numbers,subtract two numbers,True,True
+ac7ff9ba-5f9b-45db-ac99-a27751c32a2f,divide,divide,divide,,divide,scalar,scalar,0.1,divides two numbers,,True,False
+ac9ac0c1-7f54-4210-8afa-f4d81299adf7,reverse_line_by_word,reverse_line_by_word,reverse_line_by_word,reverse_line_by_word,format_directory,string,string,"/
+home/
+user/
+documents/
+",Reverses the words in a line without reversing the entire line.,Reverses the words in a line without reversing the entire line.,True,True
+acb996d1-a48e-47b8-b370-8cf14d0db3a7,multiply,subtract,multiply,subtract,multiply,scalar,scalar,8100,Multiplies two numbers,subtract two numbers,False,False
+b0643ded-c098-4051-958b-db37c7b2aa00,generate_slack_message,generate_slack_message,generate_slack_message,generate_slack_message,dict_to_list_of_dicts,list[3],list[3],"{'type': 'list', 'len': 3, 'preview': [{'type': 'object', 'keys': ['name'], 'preview': {'name': 'John'}}, {'type': 'object', 'keys': ['age'], 'preview': {'age': 30}}, {'type': 'object', 'keys': ['city'], 'preview': {'city': 'New York'}}]}",Generates a Slack message for each item in a list of events.,Generates a Slack message for each item in a list of events.,True,True
+b09891fd-53c7-4daa-ba69-91b5aa002ca5,divide,,,,multiply,scalar,scalar,361,divides two numbers,,False,False
+b17fe079-7816-4882-98fd-ba692caae2e3,subtract,multiply,,,divide,scalar,scalar,1.35,subtract two numbers,,False,False
+b370d25b-a241-486b-9630-7dbd523312c2,subtract,multiply,multiply,multiply,multiply,scalar,scalar,2760,subtract two numbers,Multiplies two numbers,False,False
+b4edb02b-2784-43f9-9a5f-47d9605c2c32,occurrences_fraction,occurrences_fraction,occurrences_fraction,occurrences_fraction,flatten_extend,list[9],list[9],"{'type': 'list', 'len': 9, 'preview': [1, 2, 3]}",Calculates the fraction of times each element appears in a list of integers.,Calculates the fraction of times each element appears in a list of integers.,True,True
+b6d97ba7-cdef-4fab-a0e4-25250e8072ef,subtract,add,add,add,divide,scalar,scalar,6.0,subtract two numbers,adds two numbers,False,False
+bff6dc13-33e2-4d72-bde1-5eaf38447c39,convert_list_to_string,convert_list_to_string,convert_list_to_string,convert_list_to_string,generate_fibonacci_numbers,list[10],list[10],"{'type': 'list', 'len': 10, 'preview': [0, 1, 1]}",Converts a list of numbers into a comma-separated string.,Converts a list of numbers into a comma-separated string.,True,True
+c28f3807-67fa-4513-8fdc-7802409d49d9,multiply,multiply,divide,multiply,divide,scalar,scalar,230.0,Multiplies two numbers,Multiplies two numbers,True,True
+c3897a83-c732-4035-ba9e-558436c70b9a,add,add,,,factorial,scalar,scalar,6,adds two numbers,,True,False
+c50ddb07-43e3-4bc0-9132-7ddf1a637a9a,divide,multiply,,,multiply,scalar,scalar,300,divides two numbers,,False,False
+c641d5f3-909f-4a6b-b03b-8227ce77eeb0,divide,subtract,subtract,,subtract,scalar,scalar,24,divides two numbers,,False,False
+c9cabae3-811e-4e9f-87d8-92cb861e3045,subtract,add,add,add,add,scalar,scalar,25,subtract two numbers,adds two numbers,False,False
+c9e63d65-4dfa-4d0e-8357-d56a5ea67348,subtract,,,,divide,scalar,scalar,33.333333333333336,subtract two numbers,,False,False
+cffae660-6fc6-4c48-8bfc-51be4385eb41,add,,,,divide,scalar,scalar,500.0,adds two numbers,,False,False
+d1f76894-c9d3-4419-bdf3-792935fe9214,replace_is_with_isnt,replace_is_with_isnt,replace_is_with_isnt,replace_is_with_isnt,generate_random_phrase,string,string,She ran quickly the big dog.,"Replaces all occurrences of the word ""is"" with ""isn't"" in the input string.","Replaces all occurrences of the word ""is"" with ""isn't"" in the input string.",True,True
+d68f72eb-874c-4304-afe3-f7739de46e8f,count_distinct_colors,count_distinct_colors,count_distinct_colors,,generate_hex_list,list[5],list[5],"{'type': 'list', 'len': 5, 'preview': ['001', '002', '003']}",Counts the number of distinct colors in a list of colors.,,True,False
+d733ab0b-195a-4bae-9a01-b5eb455b7e14,replace_double_curly_braces,replace_double_curly_braces,replace_double_curly_braces,replace_double_curly_braces,create_data_file_listing_command,string,string,ls -l /home/user/data > data_listing.txt,Replaces all occurrences of `{{` or `}}` with a single curly brace `{` or `}` respectively.,Replaces all occurrences of `{{` or `}}` with a single curly brace `{` or `}` respectively.,True,True
+db8d72af-7a1a-4201-a376-4b827b0162df,divide,divide,divide,divide,lcm,scalar,scalar,600,divides two numbers,divides two numbers,True,True
+e3f3049a-021f-4f90-9c4e-640aaf4519c4,subtract,subtract,subtract,floor,reminder,scalar,scalar,18,subtract two numbers,Return the largest integer less than or equal to x.,True,False
+e43c9534-daf1-4367-a63d-d119a741a759,add,add,add,add,add,scalar,scalar,8,adds two numbers,adds two numbers,True,True
+e6417511-38b7-4738-9dc9-c5547ca43fca,divide,,,,multiply,scalar,scalar,15000,divides two numbers,,False,False
+e6a8c49d-577f-4a1e-a2d0-96ec051f83ac,sanitize,sanitize,sanitize,sanitize,generate_subsets,list[8],list[8],"{'type': 'list', 'len': 8, 'preview': [{'type': 'list', 'len': 0, 'preview': []}, {'type': 'list', 'len': 1, 'preview': [1]}, {'type': 'list', 'len': 1, 'preview': [2]}]}","Sanitizes a string by replacing non-alphanumeric characters with a space,
+removing duplicate spaces, and checking if the string is empty after sanitization.","Sanitizes a string by replacing non-alphanumeric characters with a space,
+removing duplicate spaces, and checking if the string is empty after sanitization.",True,True
+e6f87834-9065-4acb-b170-34e171f97465,divide,divide,,,multiply,scalar,scalar,72000,divides two numbers,,True,False
+eb98f598-754c-4117-b630-dc58914f2a4d,divide,divide,divide,divide,multiply,scalar,scalar,0.2,divides two numbers,divides two numbers,True,True
+ec654414-df15-4621-9b4d-3570a4ae6864,smallest_x,smallest_x,smallest_x,smallest_x,bitwise_reorder,scalar,scalar,170,Returns the smallest x such that x * x > n for a given n.,Returns the smallest x such that x * x > n for a given n.,True,True
+f31d9fa2-3360-4409-8958-433cbcecf0d4,sum_if_int,sum_if_int,sum_if_int,sum_if_int,random_floats,list[10],list[10],"{'type': 'list', 'len': 10, 'preview': [2.1863797480360336, 5.053552881033624, 0.26535969683863625]}",Calculates the sum of all integers and floats in a collection.,Calculates the sum of all integers and floats in a collection.,True,True
+f3bf492e-464a-4b3c-be74-26ece6059721,string_to_num,string_to_num,string_to_num,string_to_num,sum_of_square_of_even_numbers,scalar,scalar,20,Calculates the sum of numbers in a string separated by 'x'.,Calculates the sum of numbers in a string separated by 'x'.,True,True
+f62eee65-6d86-4fab-a3ab-1ebb99222f65,divide,subtract,add,add,subtract,scalar,scalar,1,divides two numbers,adds two numbers,False,False
+f8fdce32-9e0f-4f9c-bd0d-15dfce117a71,multiply,multiply,multiply,multiply,multiply,scalar,scalar,28.5,Multiplies two numbers,Multiplies two numbers,True,True
+f9f0b111-ddaa-4d2d-b12d-223f3252e574,swap_tags,,,,filter_non_ascii_characters,string,string,"Hello, World!",Swaps the opening and closing tags in an HTML string.,,False,False
+fc0ea07a-cf46-4011-a262-df20234c75e6,assign_color,assign_color,assign_color,assign_color,count_files_in_directory,scalar,scalar,0,Assigns a color to the count based on the number of items in the list.,Assigns a color to the count based on the number of items in the list.,True,True
+fc63256c-718c-4887-b314-a51216bd4760,add,divide,divide,divide,multiply,scalar,scalar,3840,adds two numbers,divides two numbers,False,False
+fc7d9c59-0aad-43be-a2ef-6d5b00633f30,generate_sha256_hash,generate_sha256_hash,generate_sha256_hash,generate_sha256_hash,enclose,string,string,"""hello world""",Generates the SHA-256 hash of a string and encodes it as a hexadecimal string.,Generates the SHA-256 hash of a string and encodes it as a hexadecimal string.,True,True
+fe72229a-2b0d-4eb4-8ba9-1e5179ff5029,add,multiply,add,add,multiply,scalar,scalar,150,adds two numbers,adds two numbers,False,True
+ff6f567d-265a-4ac1-9e31-35d964ed83d9,multiply,multiply,multiply,multiply,multiply,scalar,scalar,96,Multiplies two numbers,Multiplies two numbers,True,True
+ffc20e46-5975-4bc7-b0d5-23f712931223,multiply,multiply,divide,divide,multiply,scalar,scalar,42000,Multiplies two numbers,divides two numbers,True,False

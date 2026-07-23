@@ -1,0 +1,36 @@
+{
+  "seed": 20260723,
+  "generated_at": "2026-07-23T07:59:13.271798+00:00",
+  "run_id": "pure_stage3_2ep_20260719_221918",
+  "input_hashes": {
+    "nestful_test": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
+    "eval_C0": "ca7f49a535d24cc76d924ca936f7e62de72a111b0f42e33cecfbd9c714ae8b3d",
+    "eval_E1": "c4a211fd10a0bedc0864d034dee15eaa6e718e41e56b58f74893c0379bd7cc9d",
+    "eval_E2": "6a3e525fefc3997a35ebb4da19ca96f2907b47c2f9502c20a656ef16e8395ade"
+  },
+  "cohort_limits": {
+    "c0_win_e2_loss": null,
+    "c0_loss_e2_win": 40,
+    "official_win_reward_too_few": 50,
+    "e2_executable_wrong_other": 35,
+    "stable_win_control": 15,
+    "stable_loss_control": 15
+  },
+  "cohort_counts": {
+    "c0_win_e2_loss": 93,
+    "c0_loss_e2_win": 40,
+    "official_win_reward_too_few": 50,
+    "e2_executable_wrong_other": 35,
+    "stable_win_control": 15,
+    "stable_loss_control": 15
+  },
+  "dedup_rule": "priority order A-F; each task one primary cohort",
+  "total_unique_tasks": 248,
+  "stratification_keys": [
+    "gold_call_bucket",
+    "motif",
+    "first_divergence_turn",
+    "c0_failure",
+    "reward_mismatch"
+  ]
+}

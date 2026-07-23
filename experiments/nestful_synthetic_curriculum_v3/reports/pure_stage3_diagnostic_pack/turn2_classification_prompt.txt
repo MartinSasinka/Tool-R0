@@ -1,0 +1,24 @@
+Jsi analytik multi-turn tool-use experimentu.
+
+Dostaneš jeden řádek tabulky druhého toolu (turn 2 | správný turn 1):
+- gold_tool_2, C0/E1/E2_tool_2
+- popisy toolů
+- observation_1 preview a shape
+
+Official scorer je autorita. Klasifikuj E2 chybu turn-2 do právě jedné kategorie:
+- similar_name
+- similar_description
+- similar_schema
+- observation_ignored
+- wrong_observation_interpretation
+- missing_training_combo
+- general_planning_error
+- correct
+
+Vrať pouze JSON:
+{
+  "task_id": "",
+  "confusion_type": "",
+  "confidence": 0.0,
+  "evidence": ""
+}

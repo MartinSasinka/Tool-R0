@@ -1,0 +1,14 @@
+{
+  "instruction": "Dostaneš tabulku anotací (root_cause, recommended_fix, confidence). Seskupte do clusterů. Počty ověř proti count_fields — nepočítej znovu z raw trajektorií.",
+  "clusters_to_fill": [
+    "later_tool_selection",
+    "observation_grounding",
+    "valid_shorter_path_penalized",
+    "wrong_global_plan",
+    "reward_terminal_mismatch",
+    "argument_grounding"
+  ],
+  "count_fields": {},
+  "annotation_rows": [],
+  "note": "Run weak-model annotation first; populate diagnostic_annotations.jsonl"
+}

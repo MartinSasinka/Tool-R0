@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-07-23T07:29:38.281925+00:00",
+  "epsilon_R2": 0.05,
+  "epsilon_R3": 0.04,
+  "pseudo_group_per_task_n": 1661,
+  "per_variant_pseudo_group": {
+    "R0": {
+      "dead_group_rate": 0.6297,
+      "dead_position_t0_rate": 0.6297,
+      "mean_reward_spread": 0.0438,
+      "C0_win_E2_loss_wrong_order": 22,
+      "C0_win_E2_loss_correct_order": 64,
+      "C0_win_E2_loss_tie": 7
+    },
+    "R1": {
+      "dead_group_rate": 0.7899,
+      "dead_position_t0_rate": 0.7899,
+      "mean_reward_spread": 0.1277,
+      "E2_adv_sign_flip_vs_R0": 198,
+      "C0_win_E2_loss_correct_order": 93
+    },
+    "R2": {
+      "dead_group_rate": 0.6261,
+      "dead_position_t0_rate": 0.6261,
+      "mean_reward_spread": 0.1305,
+      "E2_adv_sign_flip_vs_R0": 110,
+      "C0_win_E2_loss_correct_order": 93
+    },
+    "R3": {
+      "dead_group_rate": 0.6261,
+      "dead_position_t0_rate": 0.6261,
+      "mean_reward_spread": 0.1365,
+      "E2_adv_sign_flip_vs_R0": 117,
+      "C0_win_E2_loss_correct_order": 93
+    }
+  },
+  "global_trajectory_metrics": {
+    "R0": {
+      "official_win_labeled_failure": 1096,
+      "official_loss_reward_above_win": 55,
+      "valid_shorter_path_penalized_too_few": 1584,
+      "executable_wrong_high_reward": 367,
+      "n_trajectories": 4983
+    },
+    "R1": {
+      "official_win_labeled_failure": 0,
+      "official_loss_reward_above_win": 74,
+      "valid_shorter_path_penalized_too_few": 0,
+      "executable_wrong_high_reward": 1182,
+      "n_trajectories": 4983
+    },
+    "R2": {
+      "official_win_labeled_failure": 0,
+      "official_loss_reward_above_win": 74,
+      "valid_shorter_path_penalized_too_few": 0,
+      "executable_wrong_high_reward": 1182,
+      "n_trajectories": 4983
+    },
+    "R3": {
+      "official_win_labeled_failure": 0,
+      "official_loss_reward_above_win": 74,
+      "valid_shorter_path_penalized_too_few": 0,
+      "executable_wrong_high_reward": 0,
+      "n_trajectories": 4983
+    }
+  },
+  "case_subset_C0_win_E2_loss_ordering": {
+    "R0": 22,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0
+  }
+}

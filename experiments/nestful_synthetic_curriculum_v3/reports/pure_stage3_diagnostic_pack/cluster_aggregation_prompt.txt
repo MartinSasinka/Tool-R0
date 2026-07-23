@@ -1,0 +1,24 @@
+Dostaneš tabulku sloučených anotací (root_cause, recommended_fix, confidence, cohort).
+Počty v count_fields jsou vypočtené skriptem — nepočítej znovu.
+
+Seskupte do clusterů (může být více root_cause v jednom clusteru):
+- later_tool_selection
+- observation_grounding
+- valid_shorter_path_penalized
+- wrong_global_plan
+- reward_terminal_mismatch
+- argument_grounding
+
+Pro každý cluster vrať JSON objekt:
+{
+  "cluster": "",
+  "count": 0,
+  "typical_turn": null,
+  "typical_tool_confusions": [],
+  "relationship_to_reward": "",
+  "representative_task_ids": [],
+  "recommended_intervention": "",
+  "confidence": 0.0
+}
+
+Vrať JSON pole clusterů. Nepiš dlouhé vysvětlení.

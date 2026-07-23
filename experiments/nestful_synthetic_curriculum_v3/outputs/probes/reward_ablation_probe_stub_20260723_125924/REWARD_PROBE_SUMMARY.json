@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-07-23T13:00:24.708743+00:00",
+  "backend": "stub",
+  "checkpoint": null,
+  "task_ids_probed": [
+    "agentic_v5_stage3_000001",
+    "agentic_v5_stage3_000006",
+    "agentic_v5_stage3_000007",
+    "agentic_v5_stage3_000009",
+    "agentic_v5_stage3_000015",
+    "agentic_v5_stage3_000017",
+    "agentic_v5_stage3_000018",
+    "agentic_v5_stage3_000021",
+    "agentic_v5_stage3_000022",
+    "agentic_v5_stage3_000024",
+    "agentic_v5_stage3_000028",
+    "agentic_v5_stage3_000029",
+    "agentic_v5_stage3_000031",
+    "agentic_v5_stage3_000039",
+    "agentic_v5_stage3_000040",
+    "agentic_v5_stage3_000041"
+  ],
+  "n_tasks": 16,
+  "n_generations": 8,
+  "seed": 20260724,
+  "results_per_arm": {
+    "A0_R0_CURRENT": {
+      "reward_policy": "execution_aware_v3_2_dense",
+      "dead_group_rate": 0.0,
+      "mixed_group_rate": 1.0,
+      "reward_entropy_bits": 1.9613,
+      "invariants": {
+        "nan_or_inf_detected": false,
+        "terminal_inversions": 0,
+        "n_rewards_checked": 128,
+        "min_reward": 0.0,
+        "max_reward": 1.0,
+        "dead_group_rate": 0.0,
+        "mixed_group_rate": 1.0
+      }
+    },
+    "A1_OUTCOME_ONLY": {
+      "reward_policy": "reward_ablation_A1_OUTCOME_ONLY",
+      "dead_group_rate": 0.0,
+      "mixed_group_rate": 1.0,
+      "reward_entropy_bits": 1.9613,
+      "invariants": {
+        "nan_or_inf_detected": false,
+        "terminal_inversions": 0,
+        "n_rewards_checked": 128,
+        "min_reward": 0.02,
+        "max_reward": 0.96,
+        "dead_group_rate": 0.0,
+        "mixed_group_rate": 1.0
+      }
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "reward_policy": "reward_ablation_A2_R3_OUTCOME_FIRST",
+      "dead_group_rate": 0.0,
+      "mixed_group_rate": 1.0,
+      "reward_entropy_bits": 1.9613,
+      "invariants": {
+        "nan_or_inf_detected": false,
+        "terminal_inversions": 0,
+        "n_rewards_checked": 128,
+        "min_reward": 0.02,
+        "max_reward": 0.99,
+        "dead_group_rate": 0.0,
+        "mixed_group_rate": 1.0
+      }
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "reward_policy": "reward_ablation_A3_VERIFIABLE_PROCESS",
+      "dead_group_rate": 0.0,
+      "mixed_group_rate": 1.0,
+      "reward_entropy_bits": 2.3424,
+      "invariants": {
+        "nan_or_inf_detected": false,
+        "terminal_inversions": 0,
+        "n_rewards_checked": 128,
+        "min_reward": 0.023,
+        "max_reward": 0.989,
+        "dead_group_rate": 0.0,
+        "mixed_group_rate": 1.0
+      }
+    },
+    "A4_GATED_VERIFIABLE": {
+      "reward_policy": "reward_ablation_A4_GATED_VERIFIABLE",
+      "dead_group_rate": 0.0,
+      "mixed_group_rate": 1.0,
+      "reward_entropy_bits": 2.0077,
+      "invariants": {
+        "nan_or_inf_detected": false,
+        "terminal_inversions": 0,
+        "n_rewards_checked": 128,
+        "min_reward": 0.02,
+        "max_reward": 0.989,
+        "dead_group_rate": 0.0,
+        "mixed_group_rate": 1.0
+      }
+    }
+  },
+  "smoke_gate": {
+    "no_crash": true,
+    "no_nan_or_inf": true,
+    "reward_components_logged": true,
+    "terminal_inversions_zero_A1_A4": true,
+    "backend": "stub",
+    "is_real_calibration": false
+  },
+  "out_root": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\probes\\reward_ablation_probe_stub_20260723_125924"
+}

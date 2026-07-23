@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-07-23T07:29:37.892650+00:00",
+  "n_cases": 258,
+  "cohort_counts": {
+    "C0_win_E2_loss": 93,
+    "C0_loss_E2_win": 35,
+    "official_win_reward_too_few": 55,
+    "E2_executable_wrong_other": 35,
+    "stable_win_control": 20,
+    "stable_loss_control": 20
+  },
+  "targets": {
+    "C0_win_E2_loss": null,
+    "C0_loss_E2_win": 35,
+    "official_win_reward_too_few": 55,
+    "E2_executable_wrong_other": 35,
+    "stable_win_control": 20,
+    "stable_loss_control": 20
+  }
+}

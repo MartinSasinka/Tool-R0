@@ -1,0 +1,369 @@
+{
+  "task_id": "38e7c22f-c209-4f49-8bbd-08bc3cb08203",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- C0/E1/E2 trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "38e7c22f-c209-4f49-8bbd-08bc3cb08203",
+    "cohort": "C0_win_E2_loss",
+    "question": "If 2^2n + 2^2n + 2^2n + 2^2n = 4^20, then n =",
+    "relevant_tools": [
+      {
+        "name": "subtract",
+        "description": "subtract two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      },
+      {
+        "name": "multiply",
+        "description": "Multiplies two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      },
+      {
+        "name": "divide",
+        "description": "divides two numbers",
+        "parameters": {
+          "arg_0": {
+            "description": "The first number",
+            "type": "int or float"
+          },
+          "arg_1": {
+            "description": "The second number",
+            "type": "int or float"
+          }
+        }
+      }
+    ],
+    "expected_outcome": 19.0,
+    "gold_call_count": 3,
+    "gold_motif": "linear_dependency",
+    "C0": {
+      "calls": [
+        {
+          "name": "subtract",
+          "arguments": {
+            "arg_0": 40,
+            "arg_1": 2
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "divide",
+          "arguments": {
+            "arg_0": 38,
+            "arg_1": 2
+          },
+          "label": "$var2"
+        }
+      ],
+      "observations": [
+        38,
+        19.0
+      ],
+      "final_outcome": "win",
+      "official_win": true,
+      "failure_taxonomy": "success",
+      "executable": true,
+      "num_calls": 2,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "too_few_calls",
+          "process_score": 0.416667,
+          "total_reward": 0.245833,
+          "terminal_reward": 0.245833,
+          "components": {
+            "reward_class": "too_few_calls",
+            "quality_score": 0.416667,
+            "format_score": 1.0,
+            "call_count_progress": 0.666667,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.416667,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "official_success",
+          "process_score": 0.404167,
+          "total_reward": 0.96,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.4166666666666667,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.404167,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "official_success",
+          "process_score": 0.404167,
+          "total_reward": 0.980208,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.4166666666666667,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.404167,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "official_success",
+          "process_score": 0.404167,
+          "total_reward": 0.986167,
+          "terminal_reward": 0.97,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.4166666666666667,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.404167,
+            "outcome_band": [
+              0.94,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "E1": {
+      "calls": [],
+      "observations": [],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "no tool call",
+      "executable": false,
+      "num_calls": 0,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "no_tool_call",
+          "process_score": 0.1,
+          "total_reward": 0.02,
+          "terminal_reward": 0.02,
+          "components": {
+            "reward_class": "no_tool_call",
+            "quality_score": 0.1,
+            "format_score": 1.0,
+            "call_count_progress": 0.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 0.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": true,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.15,
+          "total_reward": 0.02,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 0.0,
+            "process_score": 0.15,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.15,
+          "total_reward": 0.0275,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 0.0,
+            "process_score": 0.15,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "parse_or_no_tool",
+          "process_score": 0.15,
+          "total_reward": 0.026,
+          "terminal_reward": 0.02,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.0,
+            "per_call_argument_score": 0.0,
+            "reference_score": 0.0,
+            "execution_score": 0.0,
+            "process_score": 0.15,
+            "outcome_band": [
+              0.0,
+              0.04
+            ]
+          }
+        }
+      }
+    },
+    "E2": {
+      "calls": [
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 262144,
+            "arg_1": 4
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 1048576,
+            "arg_1": 1048576
+          },
+          "label": "$var2"
+        },
+        {
+          "name": "multiply",
+          "arguments": {
+            "arg_0": 524288,
+            "arg_1": 524288
+          },
+          "label": "$var3"
+        }
+      ],
+      "observations": [
+        1048576,
+        1099511627776,
+        274877906944
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "wrong tool",
+      "executable": true,
+      "num_calls": 3,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "wrong_tool",
+          "process_score": 0.5,
+          "total_reward": 0.225,
+          "terminal_reward": 0.225,
+          "components": {
+            "reward_class": "wrong_tool",
+            "quality_score": 0.5,
+            "format_score": 1.0,
+            "call_count_progress": 1.0,
+            "per_call_tool_score": 0.333333,
+            "per_call_argument_score": 0.166667,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": false,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "executable_wrong_outcome",
+          "process_score": 0.425,
+          "total_reward": 0.53,
+          "terminal_reward": 0.53,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.3333333333333333,
+            "per_call_argument_score": 0.16666666666666666,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.425,
+            "outcome_band": [
+              0.48,
+              0.58
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "executable_wrong_outcome",
+          "process_score": 0.425,
+          "total_reward": 0.55125,
+          "terminal_reward": 0.53,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.3333333333333333,
+            "per_call_argument_score": 0.16666666666666666,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.425,
+            "outcome_band": [
+              0.48,
+              0.58
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "executable_wrong_outcome",
+          "process_score": 0.425,
+          "total_reward": 0.217,
+          "terminal_reward": 0.2,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 0.3333333333333333,
+            "per_call_argument_score": 0.16666666666666666,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.425,
+            "outcome_band": [
+              0.12,
+              0.28
+            ]
+          }
+        }
+      }
+    },
+    "deterministic_flags": {
+      "first_divergence_turn": 1,
+      "shorter_than_gold": false,
+      "taxonomy_too_few": false,
+      "executable": true,
+      "reward_mismatch_R0": false,
+      "R0_class_C0": "too_few_calls",
+      "R0_class_E2": "wrong_tool",
+      "official_win_C0": true,
+      "official_win_E2": false
+    }
+  },
+  "annotation_variant": "named_C0_E1_E2"
+}

@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-07-23T06:35:03.604081+00:00",
+  "note": "R²(G₀~R_ep) is correlation of first-turn return vs episode reward, NOT fraction of advantage variance from episode term. Per-turn table uses P_t (discounted future turn rewards) vs E_t (discounted terminal episode bonus) with trainer-normalized advantages.",
+  "r2_G0_vs_R_episode": 0.7562219032693419,
+  "by_turn": {
+    "1": {
+      "n": 5216,
+      "mean_abs_advantage": 0.6650042646575455,
+      "mean_abs_P_t": 2.6221354166666675,
+      "mean_abs_E_t": 0.629713392254604,
+      "var_P_share": 0.8228328694802294,
+      "sign_mismatch_rate": 0.4975076687116564,
+      "local_good_negative_adv": 1725,
+      "local_bad_positive_adv": 0
+    },
+    "2": {
+      "n": 5052,
+      "mean_abs_advantage": 0.6443511991358404,
+      "mean_abs_P_t": 1.709606756400099,
+      "mean_abs_E_t": 0.6442622313935114,
+      "var_P_share": 0.7037905893336955,
+      "sign_mismatch_rate": 0.4804038004750594,
+      "local_good_negative_adv": 1440,
+      "local_bad_positive_adv": 26
+    },
+    "3": {
+      "n": 4944,
+      "mean_abs_advantage": 0.6308269366296162,
+      "mean_abs_P_t": 0.8580476334951199,
+      "mean_abs_E_t": 0.6545836773867362,
+      "var_P_share": 0.48368912737550196,
+      "sign_mismatch_rate": 0.40493527508090615,
+      "local_good_negative_adv": 1404,
+      "local_bad_positive_adv": 36
+    }
+  },
+  "n_turn_rows": 15212
+}

@@ -1,0 +1,10 @@
+# Reward arm A3_VERIFIABLE_PROCESS — the ONLY key that legitimately differs
+# from the other four arm files is `reward.train_policy`. Everything else
+# comes from ../round1_base.yaml.
+reward_id: A3_VERIFIABLE_PROCESS
+description: "Same terminal bands as A2. Process tie-break is deterministically verifiable only (parse validity, tool existence, schema/type/range validity, reference resolvability, execution success/integrity) — NEVER gold-trace similarity."
+reward:
+  train_policy: reward_ablation_A3_VERIFIABLE_PROCESS
+wandb:
+  run_name: A3_VERIFIABLE_PROCESS_seed20260724
+  extra_tags: [reward_ablation_A3_VERIFIABLE_PROCESS]

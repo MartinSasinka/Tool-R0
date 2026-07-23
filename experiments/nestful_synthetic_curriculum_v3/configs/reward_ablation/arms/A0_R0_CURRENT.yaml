@@ -1,0 +1,10 @@
+# Reward arm A0_R0_CURRENT — the ONLY key that legitimately differs from the
+# other four arm files is `reward.train_policy`. Everything else comes from
+# ../round1_base.yaml.
+reward_id: A0_R0_CURRENT
+description: "Current production reward (execution_aware_v3_2_dense) — control baseline, UNCHANGED."
+reward:
+  train_policy: execution_aware_v3_2_dense
+wandb:
+  run_name: A0_R0_CURRENT_seed20260724
+  extra_tags: [reward_ablation_A0_R0_CURRENT]

@@ -1,0 +1,436 @@
+{
+  "task_id": "9a752e1c-dffb-4c71-84d5-687970836ce7",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- C0/E1/E2 trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "9a752e1c-dffb-4c71-84d5-687970836ce7",
+    "cohort": "C0_win_E2_loss",
+    "question": "I have a list of strings ['abc', '', 'def', 'ghi', '']. I want to count the number of empty strings in this list. Then, generate a random integer between 0 and the count of empty strings. Finally, I have a list of integers [1, 2, 3, 4, 5] and I want to calculate the sum of all elements that are strictly less than the random integer generated.",
+    "relevant_tools": [
+      {
+        "name": "count_empty_strings",
+        "description": "Counts the number of empty strings in a collection of strings.",
+        "parameters": {
+          "strings": {
+            "description": "A collection of strings.",
+            "items": {
+              "nullable": true,
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      },
+      {
+        "name": "generate_random_integer",
+        "description": "Generates a random integer value between 0 and a specified upper bound.\nThe function ensures that the generated value is not a multiple of 3 or 5.",
+        "parameters": {
+          "upper_bound": {
+            "description": "The upper bound for the random value.",
+            "type": "number"
+          }
+        }
+      },
+      {
+        "name": "sum_less_than_n",
+        "description": "Calculates the sum of all elements in nums that are strictly less than n.\nIf no such elements exist, returns -1.",
+        "parameters": {
+          "n": {
+            "description": "The integer to compare against.",
+            "type": "integer"
+          },
+          "nums": {
+            "description": "The list of integers to sum.",
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          }
+        }
+      }
+    ],
+    "expected_outcome": -1,
+    "gold_call_count": 3,
+    "gold_motif": "linear_dependency",
+    "C0": {
+      "calls": [
+        {
+          "name": "count_empty_strings",
+          "arguments": {
+            "strings": [
+              "abc",
+              "",
+              "def",
+              "ghi",
+              ""
+            ]
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "generate_random_integer",
+          "arguments": {
+            "upper_bound": 2
+          },
+          "label": "$var2"
+        },
+        {
+          "name": "sum_less_than_n",
+          "arguments": {
+            "n": 1,
+            "nums": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "label": "$var3"
+        }
+      ],
+      "observations": [
+        2,
+        1,
+        -1
+      ],
+      "final_outcome": "win",
+      "official_win": true,
+      "failure_taxonomy": "success",
+      "executable": true,
+      "num_calls": 3,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "correct_tool_wrong_args",
+          "process_score": 0.75,
+          "total_reward": 0.5375,
+          "terminal_reward": 0.5375,
+          "components": {
+            "reward_class": "correct_tool_wrong_args",
+            "quality_score": 0.75,
+            "format_score": 1.0,
+            "call_count_progress": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": false,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.96,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.996875,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.9995,
+          "terminal_reward": 0.97,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.94,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "E1": {
+      "calls": [
+        {
+          "name": "count_empty_strings",
+          "arguments": {
+            "strings": [
+              "abc",
+              "",
+              "def",
+              "ghi",
+              ""
+            ]
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "generate_random_integer",
+          "arguments": {
+            "upper_bound": 2
+          },
+          "label": "$var2"
+        },
+        {
+          "name": "sum_less_than_n",
+          "arguments": {
+            "n": 1,
+            "nums": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "label": "$var3"
+        }
+      ],
+      "observations": [
+        2,
+        1,
+        -1
+      ],
+      "final_outcome": "win",
+      "official_win": true,
+      "failure_taxonomy": "success",
+      "executable": true,
+      "num_calls": 3,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "correct_tool_wrong_args",
+          "process_score": 0.75,
+          "total_reward": 0.5375,
+          "terminal_reward": 0.5375,
+          "components": {
+            "reward_class": "correct_tool_wrong_args",
+            "quality_score": 0.75,
+            "format_score": 1.0,
+            "call_count_progress": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": false,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.96,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.996875,
+          "terminal_reward": 0.96,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.92,
+              1.0
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "official_success",
+          "process_score": 0.7375,
+          "total_reward": 0.9995,
+          "terminal_reward": 0.97,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 0.75,
+            "reference_score": 0.0,
+            "execution_score": 1.0,
+            "process_score": 0.7375,
+            "outcome_band": [
+              0.94,
+              1.0
+            ]
+          }
+        }
+      }
+    },
+    "E2": {
+      "calls": [
+        {
+          "name": "count_empty_strings",
+          "arguments": {
+            "strings": [
+              "abc",
+              "",
+              "def",
+              "ghi",
+              ""
+            ]
+          },
+          "label": "$var1"
+        },
+        {
+          "name": "generate_random_integer",
+          "arguments": {
+            "upper_bound": "$var1.result$"
+          },
+          "label": "$var2"
+        },
+        {
+          "name": "sum_less_than_n",
+          "arguments": {
+            "n": "$var2.result$",
+            "nums": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "label": "$var3"
+        }
+      ],
+      "observations": [
+        2,
+        1,
+        -1
+      ],
+      "final_outcome": "loss",
+      "official_win": false,
+      "failure_taxonomy": "executable trajectory ending wrong result",
+      "executable": false,
+      "num_calls": 3,
+      "reward_components": {
+        "R0": {
+          "terminal_class": "executable_wrong_final",
+          "process_score": 0.9,
+          "total_reward": 0.78,
+          "terminal_reward": 0.78,
+          "components": {
+            "reward_class": "executable_wrong_final",
+            "quality_score": 0.9,
+            "format_score": 1.0,
+            "call_count_progress": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 1.0,
+            "reference_score": 1.0,
+            "execution_score": 1.0,
+            "final_answer_score": 0.0,
+            "too_few_calls": false,
+            "fully_correct": false
+          }
+        },
+        "R1": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 1.0,
+          "total_reward": 0.15,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 1.0,
+            "reference_score": 1.0,
+            "execution_score": 1.0,
+            "process_score": 1.0,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R2": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 1.0,
+          "total_reward": 0.2,
+          "terminal_reward": 0.15,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 1.0,
+            "reference_score": 1.0,
+            "execution_score": 1.0,
+            "process_score": 1.0,
+            "outcome_band": [
+              0.08,
+              0.22
+            ]
+          }
+        },
+        "R3": {
+          "terminal_class": "non_executable_failure",
+          "process_score": 1.0,
+          "total_reward": 0.155,
+          "terminal_reward": 0.115,
+          "components": {
+            "format_score": 1.0,
+            "per_call_tool_score": 1.0,
+            "per_call_argument_score": 1.0,
+            "reference_score": 1.0,
+            "execution_score": 1.0,
+            "process_score": 1.0,
+            "outcome_band": [
+              0.05,
+              0.18
+            ]
+          }
+        }
+      }
+    },
+    "deterministic_flags": {
+      "first_divergence_turn": 2,
+      "shorter_than_gold": false,
+      "taxonomy_too_few": false,
+      "executable": false,
+      "reward_mismatch_R0": true,
+      "R0_class_C0": "correct_tool_wrong_args",
+      "R0_class_E2": "executable_wrong_final",
+      "official_win_C0": true,
+      "official_win_E2": false
+    }
+  },
+  "annotation_variant": "named_C0_E1_E2"
+}

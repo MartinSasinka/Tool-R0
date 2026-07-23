@@ -1,0 +1,488 @@
+{
+  "task_id": "a07bd6ce-e76b-4e9e-8e2c-8b3e2e7690ef",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- Trajectory A/B/C trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "a07bd6ce-e76b-4e9e-8e2c-8b3e2e7690ef",
+    "question": "I have a string \"Hello, World!\". I want to convert it to a list of integers, where each integer represents the position of the corresponding letter in the alphabet. Then, I want to calculate the percentage of positive integers in the list. Finally, I want to rotate the elements in the list by 2 positions in the right direction.",
+    "relevant_tools": [
+      {
+        "name": "percent_positive",
+        "description": "Calculates the percentage of positive integers in a list.",
+        "parameters": {
+          "numbers": {
+            "description": "A list of positive integers.",
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          }
+        }
+      },
+      {
+        "name": "angle_rotation",
+        "description": "Rotates the elements in the array by `k` positions in the right direction.",
+        "parameters": {
+          "arr": {
+            "description": "The array of numbers.",
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "k": {
+            "description": "The number of positions to rotate the elements in the array.",
+            "type": "integer"
+          }
+        }
+      },
+      {
+        "name": "convert_string_to_integers",
+        "description": "Converts an input string to a list of integers, where each integer represents the position of the corresponding letter in the alphabet.",
+        "parameters": {
+          "input_string": {
+            "description": "The input string to be converted.",
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "expected_outcome": {
+      "type": "list",
+      "len": 13,
+      "preview": [
+        4,
+        0,
+        8
+      ]
+    },
+    "deterministic_flags": {
+      "first_divergence_turn": 2,
+      "shorter_than_gold": false,
+      "taxonomy_too_few": false,
+      "executable": false,
+      "reward_mismatch_R0": true,
+      "R0_class_C0": "correct_tool_wrong_args",
+      "R0_class_E2": "executable_wrong_final",
+      "official_win_C0": true,
+      "official_win_E2": false
+    },
+    "trajectories": {
+      "Trajectory A": {
+        "calls": [
+          {
+            "name": "convert_string_to_integers",
+            "arguments": {
+              "input_string": "Hello, World!"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "percent_positive",
+            "arguments": {
+              "numbers": [
+                8,
+                5,
+                12,
+                12,
+                15,
+                0,
+                0,
+                23,
+                15,
+                18,
+                12,
+                4,
+                0
+              ]
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "angle_rotation",
+            "arguments": {
+              "arr": [
+                8,
+                5,
+                12,
+                12,
+                15,
+                0,
+                0,
+                23,
+                15,
+                18,
+                12,
+                4,
+                0
+              ],
+              "k": 2
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              8,
+              5,
+              12
+            ]
+          },
+          76.92307692307693,
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              4,
+              0,
+              8
+            ]
+          }
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.75,
+            "total_reward": 0.5375,
+            "terminal_reward": 0.5375,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.75,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.75,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.7375,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.75,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.7375,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.7375,
+            "total_reward": 0.996875,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.75,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.7375,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.7375,
+            "total_reward": 0.9995,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.75,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.7375,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory B": {
+        "calls": [
+          {
+            "name": "convert_string_to_integers",
+            "arguments": {
+              "input_string": "Hello, World!"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "percent_positive",
+            "arguments": {
+              "numbers": "$var1.result$"
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "angle_rotation",
+            "arguments": {
+              "arr": "$var1.result$",
+              "k": 2
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              8,
+              5,
+              12
+            ]
+          },
+          76.92307692307693,
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              4,
+              0,
+              8
+            ]
+          }
+        ],
+        "final_outcome": "loss",
+        "official_win": false,
+        "failure_taxonomy": "executable trajectory ending wrong result",
+        "executable": false,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "executable_wrong_final",
+            "process_score": 0.9,
+            "total_reward": 0.78,
+            "terminal_reward": 0.78,
+            "components": {
+              "reward_class": "executable_wrong_final",
+              "quality_score": 0.9,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.15,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.2,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.155,
+            "terminal_reward": 0.115,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.05,
+                0.18
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory C": {
+        "calls": [
+          {
+            "name": "convert_string_to_integers",
+            "arguments": {
+              "input_string": "Hello, World!"
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "percent_positive",
+            "arguments": {
+              "numbers": "$var1.result$"
+            },
+            "label": "$var2"
+          },
+          {
+            "name": "angle_rotation",
+            "arguments": {
+              "arr": "$var1.result$",
+              "k": 2
+            },
+            "label": "$var3"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              8,
+              5,
+              12
+            ]
+          },
+          76.92307692307693,
+          {
+            "type": "list",
+            "len": 13,
+            "preview": [
+              4,
+              0,
+              8
+            ]
+          }
+        ],
+        "final_outcome": "loss",
+        "official_win": false,
+        "failure_taxonomy": "executable trajectory ending wrong result",
+        "executable": false,
+        "num_calls": 3,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "executable_wrong_final",
+            "process_score": 0.9,
+            "total_reward": 0.78,
+            "terminal_reward": 0.78,
+            "components": {
+              "reward_class": "executable_wrong_final",
+              "quality_score": 0.9,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.15,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.2,
+            "terminal_reward": 0.15,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.08,
+                0.22
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "non_executable_failure",
+            "process_score": 1.0,
+            "total_reward": 0.155,
+            "terminal_reward": 0.115,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 1.0,
+              "reference_score": 1.0,
+              "execution_score": 1.0,
+              "process_score": 1.0,
+              "outcome_band": [
+                0.05,
+                0.18
+              ]
+            }
+          }
+        }
+      }
+    },
+    "note": "Official labels hidden. Do not assume A=C0."
+  },
+  "annotation_variant": "anonymized_ABC",
+  "_label_map_for_evaluator_only": {
+    "Trajectory A": "C0",
+    "Trajectory B": "E2",
+    "Trajectory C": "E1"
+  }
+}

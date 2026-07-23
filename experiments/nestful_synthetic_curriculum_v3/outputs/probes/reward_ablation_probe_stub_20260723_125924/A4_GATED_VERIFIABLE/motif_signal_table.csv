@@ -1,0 +1,6 @@
+motif_type,n_groups,dead_rate,mean_reward,mean_unique_rewards,too_few_rate,wrong_tool_rate
+argument_binding,3,0.0,0.231,3.6667,0.0,0.0
+distractor_heavy,4,0.0,0.2996,3.5,0.0,0.0
+fan_in,2,0.0,0.4088,4.0,0.0,0.0
+long_chain,6,0.0,0.2485,3.5,0.0,0.0
+reference_reuse,1,0.0,0.2635,3.0,0.0,0.0

@@ -1,0 +1,32 @@
+{
+  "later_tool_selection": {
+    "representative_task_ids": [
+      "02294fa2-cc75-4e2e-8fb7-1cea86c7e1a6",
+      "020f129c-336e-41a2-97a2-5f2dc6ddd3f4",
+      "00830acf-eda7-4310-8396-aff5f243860e"
+    ],
+    "high_confidence": [
+      "02294fa2-cc75-4e2e-8fb7-1cea86c7e1a6",
+      "020f129c-336e-41a2-97a2-5f2dc6ddd3f4",
+      "00830acf-eda7-4310-8396-aff5f243860e"
+    ],
+    "disagreement_pass_b": []
+  },
+  "reward_mismatch": {
+    "representative_task_ids": [
+      "01cb6e48-053d-4af1-a500-bb21f6ee84bb",
+      "07421ac8-4030-4262-a84f-8f2ef84d6010",
+      "2a028d50-5021-4cbd-9401-e9a949adc1fa"
+    ],
+    "high_confidence": [
+      "01cb6e48-053d-4af1-a500-bb21f6ee84bb",
+      "07421ac8-4030-4262-a84f-8f2ef84d6010",
+      "2a028d50-5021-4cbd-9401-e9a949adc1fa"
+    ],
+    "disagreement_pass_b": [
+      "01cb6e48-053d-4af1-a500-bb21f6ee84bb",
+      "07421ac8-4030-4262-a84f-8f2ef84d6010",
+      "2a028d50-5021-4cbd-9401-e9a949adc1fa"
+    ]
+  }
+}

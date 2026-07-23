@@ -1,0 +1,225 @@
+{
+  "frozen_at": "2026-07-23T13:02:27.106426+00:00",
+  "ablation_version": "v1",
+  "git_commit": "c9fe58af7ae78a663eafb94a6646654d3de4b1fb",
+  "git_dirty": true,
+  "unit_tests": {
+    "ok": true,
+    "returncode": 0,
+    "tail": ".....................                                                    [100%]\n============================== warnings summary ===============================\nexperiments\\nestful_synthetic_curriculum_v3\\tests\\test_reward_ablation.py:286\n  C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\tests\\test_reward_ablation.py:286: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.slow\n\nexperiments\\nestful_synthetic_curriculum_v3\\tests\\test_reward_ablation.py:296\n  C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\tests\\test_reward_ablation.py:296: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html\n    @pytest.mark.slow\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n21 passed, 2 warnings in 2.76s\n"
+  },
+  "probe": {
+    "backend": "stub",
+    "is_real_calibration": false,
+    "summary": {
+      "generated_at": "2026-07-23T13:02:26.977588+00:00",
+      "backend": "stub",
+      "checkpoint": null,
+      "task_ids_probed": [
+        "agentic_v5_stage3_000001",
+        "agentic_v5_stage3_000006",
+        "agentic_v5_stage3_000007",
+        "agentic_v5_stage3_000009",
+        "agentic_v5_stage3_000015",
+        "agentic_v5_stage3_000017",
+        "agentic_v5_stage3_000018",
+        "agentic_v5_stage3_000021",
+        "agentic_v5_stage3_000022",
+        "agentic_v5_stage3_000024",
+        "agentic_v5_stage3_000028",
+        "agentic_v5_stage3_000029",
+        "agentic_v5_stage3_000031",
+        "agentic_v5_stage3_000039",
+        "agentic_v5_stage3_000040",
+        "agentic_v5_stage3_000041"
+      ],
+      "n_tasks": 16,
+      "n_generations": 8,
+      "seed": 20260724,
+      "results_per_arm": {
+        "A0_R0_CURRENT": {
+          "reward_policy": "execution_aware_v3_2_dense",
+          "dead_group_rate": 0.0,
+          "mixed_group_rate": 1.0,
+          "reward_entropy_bits": 1.9613,
+          "invariants": {
+            "nan_or_inf_detected": false,
+            "terminal_inversions": 0,
+            "n_rewards_checked": 128,
+            "min_reward": 0.0,
+            "max_reward": 1.0,
+            "dead_group_rate": 0.0,
+            "mixed_group_rate": 1.0
+          }
+        },
+        "A1_OUTCOME_ONLY": {
+          "reward_policy": "reward_ablation_A1_OUTCOME_ONLY",
+          "dead_group_rate": 0.0,
+          "mixed_group_rate": 1.0,
+          "reward_entropy_bits": 1.9613,
+          "invariants": {
+            "nan_or_inf_detected": false,
+            "terminal_inversions": 0,
+            "n_rewards_checked": 128,
+            "min_reward": 0.02,
+            "max_reward": 0.96,
+            "dead_group_rate": 0.0,
+            "mixed_group_rate": 1.0
+          }
+        },
+        "A2_R3_OUTCOME_FIRST": {
+          "reward_policy": "reward_ablation_A2_R3_OUTCOME_FIRST",
+          "dead_group_rate": 0.0,
+          "mixed_group_rate": 1.0,
+          "reward_entropy_bits": 1.9613,
+          "invariants": {
+            "nan_or_inf_detected": false,
+            "terminal_inversions": 0,
+            "n_rewards_checked": 128,
+            "min_reward": 0.02,
+            "max_reward": 0.99,
+            "dead_group_rate": 0.0,
+            "mixed_group_rate": 1.0
+          }
+        },
+        "A3_VERIFIABLE_PROCESS": {
+          "reward_policy": "reward_ablation_A3_VERIFIABLE_PROCESS",
+          "dead_group_rate": 0.0,
+          "mixed_group_rate": 1.0,
+          "reward_entropy_bits": 2.3424,
+          "invariants": {
+            "nan_or_inf_detected": false,
+            "terminal_inversions": 0,
+            "n_rewards_checked": 128,
+            "min_reward": 0.023,
+            "max_reward": 0.989,
+            "dead_group_rate": 0.0,
+            "mixed_group_rate": 1.0
+          }
+        },
+        "A4_GATED_VERIFIABLE": {
+          "reward_policy": "reward_ablation_A4_GATED_VERIFIABLE",
+          "dead_group_rate": 0.0,
+          "mixed_group_rate": 1.0,
+          "reward_entropy_bits": 2.0077,
+          "invariants": {
+            "nan_or_inf_detected": false,
+            "terminal_inversions": 0,
+            "n_rewards_checked": 128,
+            "min_reward": 0.02,
+            "max_reward": 0.989,
+            "dead_group_rate": 0.0,
+            "mixed_group_rate": 1.0
+          }
+        }
+      },
+      "smoke_gate": {
+        "no_crash": true,
+        "no_nan_or_inf": true,
+        "reward_components_logged": true,
+        "terminal_inversions_zero_A1_A4": true,
+        "backend": "stub",
+        "is_real_calibration": false
+      },
+      "out_root": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\probes\\reward_ablation_probe_stub_20260723_130151"
+    }
+  },
+  "terminal_taxonomy": [
+    "official_success",
+    "executable_wrong_result",
+    "executable_partial",
+    "execution_failure",
+    "parse_or_no_call"
+  ],
+  "arms": {
+    "A0_R0_CURRENT": {
+      "label": "Current production reward (execution_aware_v3_2_dense) — control",
+      "terminal_scalars": null,
+      "epsilon": null,
+      "formula": "total_reward = execution_aware_v3_2_dense(trajectory, task) [UNCHANGED production reward]",
+      "process_score_source": null
+    },
+    "A1_OUTCOME_ONLY": {
+      "label": "Path-invariant terminal outcome only, no process tie-break",
+      "terminal_scalars": {
+        "official_success": 0.96,
+        "executable_wrong_result": 0.53,
+        "executable_partial": 0.34,
+        "execution_failure": 0.15,
+        "parse_or_no_call": 0.02
+      },
+      "epsilon": 0.0,
+      "formula": "total_reward = terminal_scalar[unified_terminal_class] + epsilon * process_score",
+      "process_score_source": "none (process_score := 0.0)"
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "label": "Outcome-first + epsilon gold-aware process tie-break (= R3, audited)",
+      "terminal_scalars": {
+        "official_success": 0.97,
+        "executable_wrong_result": 0.2,
+        "executable_partial": 0.1575,
+        "execution_failure": 0.115,
+        "parse_or_no_call": 0.02
+      },
+      "epsilon": 0.02,
+      "formula": "total_reward = terminal_scalar[unified_terminal_class] + epsilon * process_score",
+      "process_score_source": "lib.reward_variants_offline._process_score_no_length (gold-aware, audited R3 definition, reused verbatim)"
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "label": "Outcome-first + epsilon deterministically-verifiable process tie-break",
+      "terminal_scalars": {
+        "official_success": 0.97,
+        "executable_wrong_result": 0.2,
+        "executable_partial": 0.1575,
+        "execution_failure": 0.115,
+        "parse_or_no_call": 0.02
+      },
+      "epsilon": 0.02,
+      "formula": "total_reward = terminal_scalar[unified_terminal_class] + epsilon * process_score",
+      "process_score_source": "lib.verifiable_process_reward.verifiable_process_components (gold-FREE)"
+    },
+    "A4_GATED_VERIFIABLE": {
+      "label": "Same as A3, process tie-break gated to fully-executable trajectories only",
+      "terminal_scalars": {
+        "official_success": 0.97,
+        "executable_wrong_result": 0.2,
+        "executable_partial": 0.1575,
+        "execution_failure": 0.115,
+        "parse_or_no_call": 0.02
+      },
+      "epsilon": 0.02,
+      "formula": "total_reward = terminal_scalar[unified_terminal_class] + epsilon * process_score",
+      "process_score_source": "lib.verifiable_process_reward.verifiable_process_components, gated to 0.0 unless gate_open(pred) (gold-FREE)"
+    }
+  },
+  "invariants": {
+    "A1_OUTCOME_ONLY": {
+      "epsilon_band_safe": true,
+      "min_adjacent_gap": 0.13,
+      "epsilon": 0.0
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "epsilon_band_safe": true,
+      "min_adjacent_gap": 0.042499999999999996,
+      "epsilon": 0.02
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "epsilon_band_safe": true,
+      "min_adjacent_gap": 0.042499999999999996,
+      "epsilon": 0.02
+    },
+    "A4_GATED_VERIFIABLE": {
+      "epsilon_band_safe": true,
+      "min_adjacent_gap": 0.042499999999999996,
+      "epsilon": 0.02
+    }
+  },
+  "registry_file_sha256": {
+    "experiments/nestful_synthetic_curriculum_v3/lib/reward_ablation_registry.py": "0bb1596f495f28871b10cc0f0e06560ec029376825e841fd85b97c96e6024802",
+    "experiments/nestful_synthetic_curriculum_v3/lib/verifiable_process_reward.py": "082d64a977f7374df9b1fcaf5d121d9e68e1187002ef12ac2e4166110684de86",
+    "experiments/nestful_synthetic_curriculum_v3/lib/reward_variants_offline.py": "14a1cda54d8c97562c73d02d8d107332d1c85a9ecc0dc692d83af4a989bdabef",
+    "experiments/nestful_synthetic_curriculum_v3/lib/reward_v3_2_dense.py": "10fa6536abe2d6c8ef75b6e995b7643591f5de87d778a170ee9fb77bda0ab7bc",
+    "experiments/nestful_synthetic_curriculum_v3/lib/reward_v3_1.py": "7787aa5986adc5da5dffe9a1f1f3132bae504d4aa79957eb88c59a3073665d6d"
+  },
+  "post_freeze_policy": "terminal bands, epsilon, process weights, and hard gates MUST NOT change based on NESTFUL diagnostic-subset results after this freeze. Any change requires a new reward_id and a new ablation_version."
+}

@@ -1,0 +1,54 @@
+{
+  "n_tasks": 235,
+  "exact_agreement_rate": 0.1574468085106383,
+  "per_field_agreement": {
+    "first_divergence_turn": {
+      "agreement_rate": 0.902127659574468,
+      "n": 235
+    },
+    "root_cause": {
+      "agreement_rate": 0.5063829787234042,
+      "n": 235
+    },
+    "shorter_path_verdict": {
+      "agreement_rate": 0.7361702127659574,
+      "n": 235
+    },
+    "observation_used_correctly": {
+      "agreement_rate": 0.6851063829787234,
+      "n": 235
+    },
+    "reward_ordering_correct": {
+      "agreement_rate": 0.6936170212765957,
+      "n": 235
+    },
+    "responsible_reward_component": {
+      "agreement_rate": 0.5531914893617021,
+      "n": 235
+    },
+    "recommended_fix": {
+      "agreement_rate": 0.37872340425531914,
+      "n": 235
+    }
+  },
+  "root_cause_kappa": 0.4103906216204524,
+  "root_cause_changed_rate": 0.49361702127659574,
+  "reward_ordering_changed_rate": 0.30638297872340425,
+  "mean_confidence_abs_diff": 0.04680851063829782,
+  "provider_same_exact_rate": 0.2,
+  "provider_different_exact_rate": 0.1411764705882353,
+  "provider_same_n": 65,
+  "provider_different_n": 170,
+  "cohort_exact_agreement": {
+    "e2_executable_wrong_other": 0.11764705882352941,
+    "c0_win_e2_loss": 0.14285714285714285,
+    "official_win_reward_too_few": 0.21739130434782608,
+    "c0_loss_e2_win": 0.16216216216216217,
+    "stable_loss_control": 0.06666666666666667,
+    "stable_win_control": 0.25
+  },
+  "confidence_bucket_exact_agreement": {
+    "high": 0.15948275862068967,
+    "low": 0.0
+  }
+}

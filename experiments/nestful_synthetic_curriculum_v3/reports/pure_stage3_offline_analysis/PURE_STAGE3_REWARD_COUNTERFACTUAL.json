@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-07-23T06:34:46.623672+00:00",
+  "policy": "execution_aware_v3_2_dense",
+  "n_tasks": 1661,
+  "all_tasks": {
+    "C0": {
+      "mean_R_train": 0.31004287718241946,
+      "mean_R_when_official_win": 0.3362322876106197,
+      "mean_R_when_official_loss": 0.27876780845442584
+    },
+    "E1": {
+      "mean_R_train": 0.312913154124021,
+      "mean_R_when_official_win": 0.3357863625140292,
+      "mean_R_when_official_loss": 0.28644558441558504
+    },
+    "E2": {
+      "mean_R_train": 0.31470248705598947,
+      "mean_R_when_official_win": 0.33579961129943536,
+      "mean_R_when_official_loss": 0.29064197809278397
+    }
+  },
+  "C0_win_E2_loss_n": 93,
+  "C0_win_E2_loss_reward_ordering": {
+    "R_train(E2) > R_train(C0)": 22,
+    "R_train(E2) < R_train(C0)": 64,
+    "R_train(E2) = R_train(C0)": 7
+  },
+  "E2_loss_higher_than_C0_win_rate": 0.23655913978494625,
+  "executable_wrong_final_mean_reward": {
+    "C0": 0.5278199230769236,
+    "E1": 0.5322006542553198,
+    "E2": 0.5377616804123718
+  },
+  "fully_correct_mean_reward": {
+    "C0": 0.0,
+    "E1": 0.0,
+    "E2": 0.0
+  },
+  "official_win_vs_train_class_crosstab_E2": {
+    "official_win=True|class=executable_wrong_final": 41,
+    "official_win=True|class=correct_tool_wrong_args": 230,
+    "official_win=False|class=too_few_calls": 300,
+    "official_win=False|class=executable_wrong_final": 91,
+    "official_win=True|class=too_few_calls": 533,
+    "official_win=False|class=correct_tool_wrong_args": 119,
+    "official_win=False|class=no_tool_call": 97,
+    "official_win=True|class=wrong_tool": 79,
+    "official_win=False|class=wrong_tool": 88,
+    "official_win=False|class=parse_error": 67,
+    "official_win=False|class=clipped": 12,
+    "official_win=True|class=parse_error": 2,
+    "official_win=False|class=invalid_reference": 1,
+    "official_win=False|class=too_many_calls": 1
+  }
+}

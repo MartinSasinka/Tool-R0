@@ -1,0 +1,425 @@
+{
+  "task_id": "a7688b81-3977-4139-958f-dde7f2ad50ce",
+  "prompt_preamble": "Jsi analytik multi-turn tool-use experimentu.\n\nDostaneš jeden diagnostický případ obsahující:\n- zadání;\n- relevantní tool schemas;\n- Trajectory A/B/C trajectories;\n- skutečné observations;\n- official outcome;\n- reward komponenty;\n- deterministicky vypočítané flags.\n\nOfficial scorer a executor jsou autorita. Nepřehodnocuj jejich výsledek\nbez konkrétního důkazu chyby v artefaktech.\n\nÚkol:\n\n1. Najdi první sémanticky významnou divergenci C0 a E2.\n2. Urči, zda E2 selhává na:\n   - initial_tool_selection;\n   - later_tool_selection;\n   - argument_keys;\n   - argument_values;\n   - observation_ignored;\n   - wrong_output_field;\n   - invalid_state_transition;\n   - premature_stop;\n   - valid_shorter_path;\n   - executable_wrong_global_plan;\n   - wrong_final_answer;\n   - reward_mismatch;\n   - unclear.\n3. Rozhodni, zda je kratší cesta:\n   - validní;\n   - nevalidní;\n   - nerozhodnutelná.\n4. Posuď, zda současný reward správně řadí C0 a E2.\n5. Urči reward komponentu, která případný mismatch způsobila.\n6. Navrhni nejmenší opravu:\n   - outcome_reward;\n   - process_reward;\n   - tool_selection_data;\n   - observation_grounding_data;\n   - targeted_SFT;\n   - credit_assignment;\n   - evaluator;\n   - no_change.\n7. Uveď pouze krátký důkaz založený na konkrétním callu nebo observation.\n8. Nepiš dlouhé reasoning vysvětlení.\n\nVrať pouze JSON:\n\n{\n  \"task_id\": \"\",\n  \"first_divergence_turn\": null,\n  \"root_cause\": \"\",\n  \"shorter_path_verdict\": \"\",\n  \"observation_used_correctly\": null,\n  \"reward_ordering_correct\": null,\n  \"responsible_reward_component\": \"\",\n  \"recommended_fix\": \"\",\n  \"confidence\": 0.0,\n  \"evidence\": \"\"\n}\n",
+  "case": {
+    "task_id": "a7688b81-3977-4139-958f-dde7f2ad50ce",
+    "question": "I have a list of sorted integers [1, 2, 3] and another sorted list [4, 5, 6]. I want to merge them into a single sorted list using recursion. Then, I want to wrap the resulting list with an HTML tag 'ul'.",
+    "relevant_tools": [
+      {
+        "name": "wrap_text_with_tag",
+        "description": "Wraps the text with an HTML tag.",
+        "parameters": {
+          "tag": {
+            "description": "The HTML tag to wrap the text with.",
+            "type": "string"
+          },
+          "text": {
+            "description": "The text to be wrapped.",
+            "type": "string"
+          }
+        }
+      },
+      {
+        "name": "merge_recursive",
+        "description": "Merges two sorted lists into a single sorted list using recursion.",
+        "parameters": {
+          "sorted_list_1": {
+            "description": "The first sorted list.",
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "sorted_list_2": {
+            "description": "The second sorted list.",
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          }
+        }
+      }
+    ],
+    "expected_outcome": "<[1, 2, 3, 4, 5, 6]>ul</[1, 2, 3, 4, 5, 6]>",
+    "deterministic_flags": {
+      "first_divergence_turn": null,
+      "shorter_than_gold": false,
+      "taxonomy_too_few": false,
+      "executable": true,
+      "reward_mismatch_R0": false,
+      "R0_class_C0": "correct_tool_wrong_args",
+      "R0_class_E2": "correct_tool_wrong_args",
+      "official_win_C0": true,
+      "official_win_E2": true
+    },
+    "trajectories": {
+      "Trajectory A": {
+        "calls": [
+          {
+            "name": "merge_recursive",
+            "arguments": {
+              "sorted_list_1": [
+                1,
+                2,
+                3
+              ],
+              "sorted_list_2": [
+                4,
+                5,
+                6
+              ]
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "wrap_text_with_tag",
+            "arguments": {
+              "tag": "ul",
+              "text": "[1, 2, 3, 4, 5, 6]"
+            },
+            "label": "$var2"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 6,
+            "preview": [
+              1,
+              2,
+              3
+            ]
+          },
+          "<ul>[1, 2, 3, 4, 5, 6]</ul>"
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 2,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.775,
+            "total_reward": 0.54375,
+            "terminal_reward": 0.54375,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.775,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.998437,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 1.00075,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory B": {
+        "calls": [
+          {
+            "name": "merge_recursive",
+            "arguments": {
+              "sorted_list_1": [
+                1,
+                2,
+                3
+              ],
+              "sorted_list_2": [
+                4,
+                5,
+                6
+              ]
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "wrap_text_with_tag",
+            "arguments": {
+              "tag": "ul",
+              "text": "[1, 2, 3, 4, 5, 6]"
+            },
+            "label": "$var2"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 6,
+            "preview": [
+              1,
+              2,
+              3
+            ]
+          },
+          "<ul>[1, 2, 3, 4, 5, 6]</ul>"
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 2,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.775,
+            "total_reward": 0.54375,
+            "terminal_reward": 0.54375,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.775,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.998437,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 1.00075,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      },
+      "Trajectory C": {
+        "calls": [
+          {
+            "name": "merge_recursive",
+            "arguments": {
+              "sorted_list_1": [
+                1,
+                2,
+                3
+              ],
+              "sorted_list_2": [
+                4,
+                5,
+                6
+              ]
+            },
+            "label": "$var1"
+          },
+          {
+            "name": "wrap_text_with_tag",
+            "arguments": {
+              "tag": "ul",
+              "text": "[1, 2, 3, 4, 5, 6]"
+            },
+            "label": "$var2"
+          }
+        ],
+        "observations": [
+          {
+            "type": "list",
+            "len": 6,
+            "preview": [
+              1,
+              2,
+              3
+            ]
+          },
+          "<ul>[1, 2, 3, 4, 5, 6]</ul>"
+        ],
+        "final_outcome": "win",
+        "official_win": true,
+        "failure_taxonomy": "success",
+        "executable": true,
+        "num_calls": 2,
+        "reward_components": {
+          "R0": {
+            "terminal_class": "correct_tool_wrong_args",
+            "process_score": 0.775,
+            "total_reward": 0.54375,
+            "terminal_reward": 0.54375,
+            "components": {
+              "reward_class": "correct_tool_wrong_args",
+              "quality_score": 0.775,
+              "format_score": 1.0,
+              "call_count_progress": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "final_answer_score": 0.0,
+              "too_few_calls": false,
+              "fully_correct": false
+            }
+          },
+          "R1": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.96,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R2": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 0.998437,
+            "terminal_reward": 0.96,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.92,
+                1.0
+              ]
+            }
+          },
+          "R3": {
+            "terminal_class": "official_success",
+            "process_score": 0.76875,
+            "total_reward": 1.00075,
+            "terminal_reward": 0.97,
+            "components": {
+              "format_score": 1.0,
+              "per_call_tool_score": 1.0,
+              "per_call_argument_score": 0.875,
+              "reference_score": 0.0,
+              "execution_score": 1.0,
+              "process_score": 0.76875,
+              "outcome_band": [
+                0.94,
+                1.0
+              ]
+            }
+          }
+        }
+      }
+    },
+    "note": "Official labels hidden. Do not assume A=C0."
+  },
+  "annotation_variant": "anonymized_ABC",
+  "_label_map_for_evaluator_only": {
+    "Trajectory A": "C0",
+    "Trajectory B": "E2",
+    "Trajectory C": "E1"
+  }
+}
