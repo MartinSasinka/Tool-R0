@@ -62,6 +62,41 @@ def test_build_experiment_id_includes_arm_round_seed_when_auto():
     assert "A3_VERIFIABLE_PROCESS" in eid and "r1" in eid and "seed20260724" in eid
 
 
+def test_standard_run_id_matches_launcher():
+    assert RRA.standard_run_id(1, "A0_R0_CURRENT", 20260724) == (
+        "reward_ablation_r1_A0_R0_CURRENT_seed20260724"
+    )
+
+
+def test_prepare_run_dir_force_fresh_removes_incomplete(tmp_path):
+    run_dir = tmp_path / "reward_ablation_r1_A0_R0_CURRENT_seed20260724"
+    run_dir.mkdir()
+    (run_dir / "run_manifest.json").write_text("{}", encoding="utf-8")
+    RRA.prepare_run_dir(run_dir, resume=False, force_fresh=True, dry_run=False)
+    assert not run_dir.exists()
+
+
+def test_prepare_run_dir_blocks_without_resume_or_force_fresh(tmp_path):
+    run_dir = tmp_path / "reward_ablation_r1_1_A1_OUTCOME_ONLY_seed20260724"
+    run_dir.mkdir()
+    with pytest.raises(SystemExit, match="--force-fresh"):
+        RRA.prepare_run_dir(
+            run_dir,
+            resume=False,
+            force_fresh=False,
+            dry_run=False,
+            canonical_run_id="reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724",
+        )
+
+
+def test_prepare_run_dir_blocks_force_fresh_when_success(tmp_path):
+    run_dir = tmp_path / "done"
+    run_dir.mkdir()
+    (run_dir / "SUCCESS").write_text("ok\n", encoding="utf-8")
+    with pytest.raises(SystemExit, match="already finished"):
+        RRA.prepare_run_dir(run_dir, resume=False, force_fresh=True, dry_run=False)
+
+
 def test_sha256_file_matches_hashlib(tmp_path):
     p = tmp_path / "f.txt"
     p.write_text("hello world", encoding="utf-8")

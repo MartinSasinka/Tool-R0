@@ -23,6 +23,10 @@
 #   bash experiments/nestful_synthetic_curriculum_v3/scripts/ablation/run_reward_ablation_round1.sh \
 #     --arm A2_R3_OUTCOME_FIRST --seed 20260724 --resume
 #
+#   # restart after a failed attempt (deletes incomplete dir, keeps finished SUCCESS runs):
+#   bash experiments/nestful_synthetic_curriculum_v3/scripts/ablation/run_reward_ablation_round1.sh \
+#     --seed 20260724 --force-fresh
+#
 #   # smoke test (8 tasks x 8 rollouts, 20 eval tasks) before committing GPU time:
 #   bash experiments/nestful_synthetic_curriculum_v3/scripts/ablation/run_reward_ablation_round1.sh --smoke
 #
@@ -55,6 +59,7 @@ ALL_ARMS=(A0_R0_CURRENT A1_OUTCOME_ONLY A2_R3_OUTCOME_FIRST A3_VERIFIABLE_PROCES
 ARM=""
 SMOKE=0
 RESUME=0
+FORCE_FRESH=0
 ROUND=1
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -63,9 +68,15 @@ while [ $# -gt 0 ]; do
     --round) ROUND="$2"; shift 2 ;;
     --smoke) SMOKE=1; shift ;;
     --resume) RESUME=1; shift ;;
+    --force-fresh) FORCE_FRESH=1; shift ;;
     *) echo "[reward-ablation] ERROR: unknown arg $1" >&2; exit 1 ;;
   esac
 done
+
+if [ "$RESUME" = "1" ] && [ "$FORCE_FRESH" = "1" ]; then
+  echo "[reward-ablation] ERROR: --resume and --force-fresh are mutually exclusive" >&2
+  exit 1
+fi
 
 SEED="${SEED:-20260724}"
 WANDB_PROJECT="${WANDB_PROJECT:-nestful-reward-ablation}"
@@ -168,7 +179,7 @@ trap _cleanup EXIT
 
 RESULTS=()
 for arm in "${ARMS_TO_RUN[@]}"; do
-  banner "arm=$arm seed=$SEED round=$ROUND smoke=$SMOKE resume=$RESUME"
+  banner "arm=$arm seed=$SEED round=$ROUND smoke=$SMOKE resume=$RESUME force_fresh=$FORCE_FRESH"
   RUN_ID="reward_ablation_r${ROUND}_${arm}_seed${SEED}"
   RUN_DIR="$OUTPUT_ROOT/$RUN_ID"
   mkdir -p "$RUN_DIR/logs"
@@ -188,6 +199,13 @@ for arm in "${ARMS_TO_RUN[@]}"; do
   fi
   if [ "$RESUME" = "1" ]; then
     ARGS+=(--resume)
+  fi
+  if [ "$FORCE_FRESH" = "1" ]; then
+    ARGS+=(--force-fresh)
+  fi
+  # C0 baseline eval runs once on A0; other arms only eval their own checkpoint.
+  if [ "$arm" != "A0_R0_CURRENT" ]; then
+    ARGS+=(--skip-c0-eval)
   fi
 
   set +e

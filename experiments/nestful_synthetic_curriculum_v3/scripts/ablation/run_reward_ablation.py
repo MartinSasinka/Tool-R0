@@ -33,6 +33,7 @@ CLI:
   --wandb-group STR          (default: reward_ablation_round{round}_<timestamp>)
   --output-root PATH         (default: outputs/runs)
   --dry-run                  (resolve config + write manifest, execute nothing — no GPU needed)
+  --force-fresh              (delete an incomplete run dir — no SUCCESS marker — and restart)
   --skip-c0-eval             (reuse an existing shared C0-on-500-subset eval; C0 is evaluated
                               ONCE per (eval-subset, seed-for-decoding) across all arms, never
                               per-arm, per spec §11)
@@ -57,6 +58,7 @@ import copy
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -143,11 +145,53 @@ def load_effective_config(reward_arm: str) -> Dict[str, Any]:
     return _deep_merge(base, arm)
 
 
+def standard_run_id(round_: int, reward_arm: str, seed: int) -> str:
+    """Canonical run directory name (no timestamp). Must match run_reward_ablation_round1.sh."""
+    return f"reward_ablation_r{round_}_{reward_arm}_seed{seed}"
+
+
 def build_experiment_id(reward_arm: str, round_: int, seed: int, run_id: Optional[str]) -> str:
     if run_id:
         return run_id
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    return f"reward_ablation_r{round_}_{reward_arm}_seed{seed}_{ts}"
+    return f"{standard_run_id(round_, reward_arm, seed)}_{ts}"
+
+
+def prepare_run_dir(
+    run_dir: Path,
+    *,
+    resume: bool,
+    force_fresh: bool,
+    dry_run: bool,
+    canonical_run_id: Optional[str] = None,
+) -> None:
+    """Refuse to clobber an existing run unless --resume or --force-fresh."""
+    if not run_dir.is_dir() or dry_run:
+        return
+    if resume:
+        return
+    if (run_dir / "SUCCESS").is_file():
+        raise SystemExit(
+            f"[run_reward_ablation] ABORT: {run_dir} already finished (SUCCESS). "
+            "Use a new --run-id for a parallel experiment."
+        )
+    if force_fresh:
+        shutil.rmtree(run_dir)
+        print(f"[run_reward_ablation] --force-fresh: removed incomplete run dir {run_dir}")
+        return
+    hint = ""
+    if canonical_run_id and run_dir.name != canonical_run_id:
+        hint = (
+            f"\n  expected canonical --run-id: {canonical_run_id}\n"
+            "  (avoid patterns like reward_ablation_r1_1_<ARM> — use r{round}_<ARM> only once)"
+        )
+    raise SystemExit(
+        f"[run_reward_ablation] ABORT: {run_dir} exists (incomplete or failed prior attempt).\n"
+        "  --resume       continue where it left off\n"
+        "  --force-fresh  delete incomplete run and restart\n"
+        "  --run-id NEW   start a parallel experiment with a different id"
+        f"{hint}"
+    )
 
 
 def materialize_eval_subset(eval_subset_arg: Path, out_dir: Path) -> Path:
@@ -378,6 +422,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--train-subset", type=Path, default=DEFAULT_TRAIN_SUBSET)
     ap.add_argument("--eval-subset", type=Path, default=DEFAULT_EVAL_SUBSET_IDS)
     ap.add_argument("--resume", action="store_true")
+    ap.add_argument("--force-fresh", action="store_true",
+                    help="Delete incomplete run dir (no SUCCESS) and restart from scratch")
     ap.add_argument("--smoke", action="store_true")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--wandb-project", default="nestful-reward-ablation")
@@ -391,13 +437,25 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_arg_parser().parse_args()
 
+    if args.resume and args.force_fresh:
+        raise SystemExit("[run_reward_ablation] ABORT: --resume and --force-fresh are mutually exclusive")
+
+    canonical_run_id = standard_run_id(args.round, args.reward_arm, args.seed)
     experiment_id = build_experiment_id(args.reward_arm, args.round, args.seed, args.run_id)
+    if args.run_id and args.run_id != canonical_run_id:
+        print(f"[run_reward_ablation] NOTE: --run-id {args.run_id!r} differs from canonical "
+              f"{canonical_run_id!r} (launcher uses canonical id)")
     args.wandb_group = args.wandb_group or f"reward_ablation_round{args.round}_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
     args.wandb_run_name = f"{args.reward_arm}_seed{args.seed}"
 
     run_dir = args.output_root / experiment_id
-    if run_dir.is_dir() and not args.resume and not args.dry_run:
-        raise SystemExit(f"[run_reward_ablation] ABORT: {run_dir} exists; pass --resume or a new --run-id")
+    prepare_run_dir(
+        run_dir,
+        resume=args.resume,
+        force_fresh=args.force_fresh,
+        dry_run=args.dry_run,
+        canonical_run_id=canonical_run_id,
+    )
     if args.resume:
         assert_resume_compatible(run_dir, args, experiment_id)
 

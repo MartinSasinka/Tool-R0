@@ -1,6 +1,6 @@
 # NESTFUL_DIAGNOSTIC_SUBSET — 500-task fixed diagnostic eval subset
 
-Generated: 2026-07-23T14:07:39.765270+00:00
+Generated: 2026-07-23T16:37:16.136417+00:00
 
 ## Disclosure
 
