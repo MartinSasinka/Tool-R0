@@ -1,6 +1,6 @@
 # TRAIN_SUBSET_REPORT — 160-task deterministic stratified train subset
 
-Generated: 2026-07-23T16:37:15.561497+00:00
+Generated: 2026-07-23T19:53:56.143640+00:00
 
 ## Source dataset
 

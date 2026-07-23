@@ -49,6 +49,7 @@ hardware:
   use_vllm: false
   vllm_tensor_parallel_size: 1
   vllm_gpu_memory_utilization: 0.85  # eval-only default; overridden to 0.45 for train
+  vllm_max_num_seqs: null            # set via EVAL_VLLM_MAX_NUM_SEQS / --override (e.g. 64)
   vllm_enforce_eager: false
   vllm_weight_sync: after_epoch
 

@@ -375,6 +375,9 @@ def run_training(args, effective_config: Dict[str, Any], run_dir: Path, state: D
         save_state(run_dir, state)
     finally:
         session.close()  # release learner + rollout workers BEFORE any eval (spec §7)
+        del session
+        from scripts.training.two_phase_utils import scrub_parent_cuda_memory  # noqa: E402
+        scrub_parent_cuda_memory()
         print("[run_reward_ablation] training session closed; GPUs free for eval", flush=True)
     return dest
 
@@ -401,6 +404,12 @@ def run_eval(args, checkpoint: Optional[str], run_dir: Path, state: Dict[str, An
         cmd += ["--checkpoint", checkpoint]
     env = dict(os.environ)
     env["WANDB_RUN_NAME"] = f"{args.wandb_group}-{label}-eval"
+    # In-process training leaves a few GB on GPU0 (QLoRA CUDA context). Eval uses
+    # TP=4 across all GPUs — use a conservative vLLM budget unless overridden.
+    env.setdefault("VLLM_GPU_UTIL", os.environ.get("EVAL_VLLM_GPU_UTIL", "0.45"))
+    env.setdefault("VLLM_MAX_NUM_SEQS", os.environ.get("EVAL_VLLM_MAX_NUM_SEQS", "64"))
+    if os.environ.get("EVAL_VLLM_ENFORCE_EAGER", "1").strip().lower() in ("1", "true", "yes"):
+        env.setdefault("VLLM_ENFORCE_EAGER", "1")
     log_path = run_dir / "logs" / f"eval_{label}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with open(log_path, "a", encoding="utf-8") as lf:

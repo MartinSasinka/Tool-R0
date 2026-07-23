@@ -263,10 +263,29 @@ def wait_for_gpu_memory(
           flush=True)
 
 
-def prep_gpus_for_eval(*, min_free_mib: int = 15 * 1024) -> None:
+def scrub_parent_cuda_memory(*, rounds: int = 3) -> None:
+    """Release CUDA cache held by the current Python process (post-training learner)."""
+    try:
+        import gc
+        import torch
+        if not torch.cuda.is_available():
+            return
+        for _ in range(max(1, int(rounds))):
+            gc.collect()
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+        for i in range(torch.cuda.device_count()):
+            free, total = torch.cuda.mem_get_info(i)
+            print(f"[cuda-scrub] cuda:{i} {free/1e9:.1f}/{total/1e9:.1f} GB free",
+                  flush=True)
+    except Exception as exc:
+        print(f"[cuda-scrub] WARNING: cleanup skipped: {exc}", flush=True)
+
+
+def prep_gpus_for_eval(*, min_free_mib: int = 24 * 1024) -> None:
     """Best-effort cleanup before EVAL_TP subprocess (zombie EngineCore / CUDA cache)."""
     import subprocess
-    for pattern in ("VLLM::EngineCore", "VLLM::Worker"):
+    for pattern in ("VLLM::EngineCore", "VLLM::Worker", "VLLM::EngineCoreProc"):
         try:
             subprocess.run(
                 ["pkill", "-f", pattern],
@@ -276,19 +295,17 @@ def prep_gpus_for_eval(*, min_free_mib: int = 15 * 1024) -> None:
             )
         except Exception:
             pass
+    scrub_parent_cuda_memory()
     try:
-        import gc
         import torch
-        gc.collect()
         if torch.cuda.is_available():
-            torch.cuda.empty_cache()
             for i in range(torch.cuda.device_count()):
                 free, total = torch.cuda.mem_get_info(i)
                 print(f"[eval-prep] cuda:{i} {free/1e9:.1f}/{total/1e9:.1f} GB free",
                       flush=True)
     except Exception as exc:
-        print(f"[eval-prep] WARNING: cuda cleanup skipped: {exc}", flush=True)
-    wait_for_gpu_memory(None, timeout_s=90.0, min_free_mib=min_free_mib)
+        print(f"[eval-prep] WARNING: cuda status skipped: {exc}", flush=True)
+    wait_for_gpu_memory(None, timeout_s=120.0, min_free_mib=min_free_mib)
 
 
 def json_safe_summary(summary: Dict[str, Any]) -> Dict[str, Any]:

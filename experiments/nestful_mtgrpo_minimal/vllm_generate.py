@@ -183,6 +183,7 @@ class VLLMGenerator:
         max_lora_rank: int = 64,
         enforce_eager: bool = False,
         enable_lora: bool = False,
+        max_num_seqs: Optional[int] = None,
     ) -> None:
         # vLLM v1 creates a ZMQ IPC socket under VLLM_RPC_BASE_PATH. Unix domain socket
         # paths are limited to 107 chars; a long project path like
@@ -237,12 +238,15 @@ class VLLMGenerator:
         if self._enable_lora:
             kwargs["enable_lora"] = True
             kwargs["max_lora_rank"] = max_lora_rank
+        if max_num_seqs is not None:
+            kwargs["max_num_seqs"] = int(max_num_seqs)
 
         print(
             f"[vllm] initialising LLM: {model}"
             f"  tp={tensor_parallel_size}"
             f"  gpu_util={gpu_memory_utilization}"
             f"  max_len={max_model_len}"
+            f"  max_num_seqs={max_num_seqs if max_num_seqs is not None else 'default'}"
             f"  lora={'yes (' + str(adapter_path) + ')' if self._enable_lora else 'no'}",
             flush=True,
         )
@@ -530,6 +534,9 @@ def build_vllm_generator(
     # holds for data-parallel rollout workers, which receive sync_adapter() too.
     enable_lora = mode in ("train", "rollout_worker")
 
+    max_num_seqs_raw = hw.get("vllm_max_num_seqs")
+    max_num_seqs = int(max_num_seqs_raw) if max_num_seqs_raw not in (None, "", 0) else None
+
     # Tensor-parallel size must (a) not exceed the visible GPU count and (b) evenly
     # divide the model's KV/attention heads — vLLM hard-crashes otherwise (e.g.
     # TP=3 on Qwen3-4B whose 8 KV heads are not divisible by 3). Clamp to the
@@ -551,4 +558,5 @@ def build_vllm_generator(
         max_lora_rank=max_lora_rank,
         enforce_eager=bool(hw.get("vllm_enforce_eager", False)),
         enable_lora=enable_lora,
+        max_num_seqs=max_num_seqs,
     )
