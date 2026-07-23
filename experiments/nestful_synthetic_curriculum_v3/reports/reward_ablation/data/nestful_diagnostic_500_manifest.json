@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T13:30:34.947199+00:00",
+  "generated_at": "2026-07-23T14:07:39.765270+00:00",
   "seed": 20260724,
   "n_target": 500,
   "n_selected": 500,
@@ -7,7 +7,9 @@
   "source_dataset_path": "experiments/nestful_mtgrpo_minimal/data/splits/nestful_test.jsonl",
   "source_dataset_rows": 1661,
   "source_sha256": "917ce6ec8686c97f2c54da662b57438e584fa51eb5b7985d5aeb30160a2915a4",
-  "ids_file_sha256": "628fe27b87cad9b8dcdcd805c042de073c69a8e63530a13605175998d44d096f",
+  "ids_file_sha256": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+  "ids_file_sha256_raw_local_checkout": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+  "ids_file_hash_note": "ids_file_sha256 is LF-normalized (CRLF→LF) so Linux RunPod and Windows git checkouts agree on content identity. Raw local bytes may differ on Windows (core.autocrlf) without changing task IDs.",
   "c0_baseline_used_for_stratification": "experiments/nestful_synthetic_curriculum_v3/outputs/runs/pure_stage3_2ep_20260719_221918/eval/C0_test/final_eval_trajectories.jsonl",
   "c0_baseline_sha256": "ca7f49a535d24cc76d924ca936f7e62de72a111b0f42e33cecfbd9c714ae8b3d",
   "primary_stratification_axis": "gold_call_count_bucket",

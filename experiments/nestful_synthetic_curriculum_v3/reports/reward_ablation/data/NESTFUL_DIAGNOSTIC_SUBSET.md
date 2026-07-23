@@ -1,6 +1,6 @@
 # NESTFUL_DIAGNOSTIC_SUBSET — 500-task fixed diagnostic eval subset
 
-Generated: 2026-07-23T13:30:34.947199+00:00
+Generated: 2026-07-23T14:07:39.765270+00:00
 
 ## Disclosure
 
@@ -18,7 +18,7 @@ This exact NESTFUL test split has already been used in prior diagnostics (pure_s
 
 - Seed: 20260724
 - Selected: 500 / target 500
-- IDs file SHA-256: `628fe27b87cad9b8dcdcd805c042de073c69a8e63530a13605175998d44d096f`
+- IDs file SHA-256: `90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9`
 - Identical IDs frozen for C0 and every reward arm: True
 
 ## Primary axis — gold call-count bucket (target 100/bucket)

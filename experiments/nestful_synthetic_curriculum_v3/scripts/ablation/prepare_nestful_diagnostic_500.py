@@ -66,6 +66,13 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def _sha256_file_lf(path: Path) -> str:
+    """SHA-256 with CRLF normalized to LF — canonical cross-platform hash."""
+    with open(path, "rb") as fh:
+        data = fh.read()
+    return hashlib.sha256(data.replace(b"\r\n", b"\n")).hexdigest()
+
+
 def call_count_bucket(n: int) -> str:
     if n <= 1:
         return "2"  # nestful_test has no 1-call tasks; guard anyway
@@ -160,11 +167,13 @@ def main() -> int:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     ids_path = OUT_DIR / "nestful_diagnostic_500_ids.json"
-    with open(ids_path, "w", encoding="utf-8") as fh:
+    with open(ids_path, "w", encoding="utf-8", newline="\n") as fh:
         json.dump({"task_ids": selected_all, "count": len(selected_all)}, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
 
     source_sha256 = _sha256_file(SOURCE)
-    ids_sha256 = _sha256_file(ids_path)
+    ids_sha256_raw = _sha256_file(ids_path)
+    ids_sha256 = _sha256_file_lf(ids_path)
 
     subset_counts = {
         "call_count_bucket": Counter(meta[t]["call_count_bucket"] for t in selected_all),
@@ -191,6 +200,12 @@ def main() -> int:
         "source_dataset_rows": len(tasks),
         "source_sha256": source_sha256,
         "ids_file_sha256": ids_sha256,
+        "ids_file_sha256_raw_local_checkout": ids_sha256_raw,
+        "ids_file_hash_note": (
+            "ids_file_sha256 is LF-normalized (CRLF→LF) so Linux RunPod and "
+            "Windows git checkouts agree on content identity. Raw local bytes "
+            "may differ on Windows (core.autocrlf) without changing task IDs."
+        ),
         "c0_baseline_used_for_stratification": str(C0_TRAJ.relative_to(_REPO)).replace("\\", "/"),
         "c0_baseline_sha256": _sha256_file(C0_TRAJ),
         "primary_stratification_axis": "gold_call_count_bucket",

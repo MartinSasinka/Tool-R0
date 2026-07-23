@@ -269,6 +269,12 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def _sha256_file_lf(path: Path) -> str:
+    with open(path, "rb") as fh:
+        data = fh.read()
+    return hashlib.sha256(data.replace(b"\r\n", b"\n")).hexdigest()
+
+
 @pytest.mark.skipif(not (DATA_DIR / "train_subset_manifest.json").is_file(), reason="train subset not prepared yet")
 def test_train_subset_manifest_hash_matches_file():
     manifest = json.loads((DATA_DIR / "train_subset_manifest.json").read_text(encoding="utf-8"))
@@ -282,7 +288,7 @@ def test_train_subset_manifest_hash_matches_file():
 def test_eval_subset_manifest_hash_matches_file():
     manifest = json.loads((DATA_DIR / "nestful_diagnostic_500_manifest.json").read_text(encoding="utf-8"))
     ids_doc = json.loads((DATA_DIR / "nestful_diagnostic_500_ids.json").read_text(encoding="utf-8"))
-    actual = _sha256_file(DATA_DIR / "nestful_diagnostic_500_ids.json")
+    actual = _sha256_file_lf(DATA_DIR / "nestful_diagnostic_500_ids.json")
     assert actual == manifest["ids_file_sha256"]
     assert len(ids_doc["task_ids"]) == len(set(ids_doc["task_ids"])) == 500
 
