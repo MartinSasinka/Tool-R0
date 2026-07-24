@@ -187,16 +187,61 @@ def summarize_arm(arm: str, eval_dir: Path, out_dir: Optional[Path], c0_dir: Opt
     return metrics
 
 
-def round_summary(round_: int, arm_dirs: Dict[str, Path]) -> Dict[str, Any]:
+def _metrics_json_ready(eval_dir: Path) -> bool:
+    mp = eval_dir / "metrics.json"
+    if not mp.is_file():
+        return False
+    try:
+        data = json.loads(mp.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return False
+    return isinstance(data.get("official"), dict)
+
+
+def _ensure_per_arm_deliverables(
+    arm: str,
+    eval_dir: Path,
+    *,
+    c0_dir: Optional[Path],
+    a0_dir: Optional[Path],
+) -> None:
+    """Build metrics.json (+ paired files) from final_eval artifacts if missing."""
+    if _metrics_json_ready(eval_dir):
+        return
+    traj = eval_dir / "final_eval_trajectories.jsonl"
+    if not traj.is_file():
+        raise SystemExit(
+            f"[summarize_reward_ablation] ABORT: {eval_dir} has no metrics.json and no "
+            f"{traj.name} — run final_eval first or pass the correct --arm-dir path."
+        )
+    r0_dir = a0_dir if arm != "A0_R0_CURRENT" else None
+    print(f"[summarize_reward_ablation] materializing per-arm deliverables for {arm} from {eval_dir}")
+    summarize_arm(arm, eval_dir, eval_dir, c0_dir, r0_dir)
+
+
+def round_summary(
+    round_: int,
+    arm_dirs: Dict[str, Path],
+    *,
+    c0_dir: Optional[Path] = None,
+    a0_dir: Optional[Path] = None,
+) -> Dict[str, Any]:
     out_dir = REPORTS_DIR / f"round{round_}"
     out_dir.mkdir(parents=True, exist_ok=True)
+    a0_dir = a0_dir or arm_dirs.get("A0_R0_CURRENT")
     per_arm = {}
     for arm, d in arm_dirs.items():
+        _ensure_per_arm_deliverables(arm, d, c0_dir=c0_dir, a0_dir=a0_dir)
         mp = d / "metrics.json"
         if not mp.is_file():
-            print(f"[summarize_reward_ablation] WARNING: {mp} missing, skipping {arm}")
+            print(f"[summarize_reward_ablation] WARNING: {mp} still missing, skipping {arm}")
             continue
         entry: Dict[str, Any] = {"metrics": json.loads(mp.read_text(encoding="utf-8"))}
+        if not isinstance(entry["metrics"].get("official"), dict):
+            raise SystemExit(
+                f"[summarize_reward_ablation] ABORT: {mp} has no 'official' block — "
+                f"re-run: python ... summarize_reward_ablation.py arm --arm {arm} --eval-dir {d}"
+            )
         for extra in ("paired_vs_c0", "paired_vs_r0"):
             ep = d / f"{extra}.json"
             if ep.is_file():
@@ -234,6 +279,10 @@ def main() -> int:
     r.add_argument("--round", type=int, required=True)
     r.add_argument("--arm-dir", action="append", required=True,
                    help="ARM_ID=path/to/per-arm/out-dir, repeatable")
+    r.add_argument("--c0-dir", type=Path, default=None,
+                   help="Shared C0 baseline eval dir for paired_vs_c0 (optional)")
+    r.add_argument("--a0-dir", type=Path, default=None,
+                   help="A0_R0_CURRENT eval dir for paired_vs_r0 (default: A0 --arm-dir)")
 
     args = ap.parse_args()
     if args.cmd == "arm":
@@ -243,7 +292,7 @@ def main() -> int:
         for kv in args.arm_dir:
             k, _, v = kv.partition("=")
             arm_dirs[k] = Path(v)
-        round_summary(args.round, arm_dirs)
+        round_summary(args.round, arm_dirs, c0_dir=args.c0_dir, a0_dir=args.a0_dir)
     return 0
 
 

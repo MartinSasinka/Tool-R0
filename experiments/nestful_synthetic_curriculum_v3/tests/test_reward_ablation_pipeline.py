@@ -286,6 +286,28 @@ def test_round_summary_aggregates_all_arms(tmp_path, monkeypatch):
     assert (tmp_path / "reports" / "round1" / "ROUND1_SUMMARY.md").is_file()
 
 
+def test_round_summary_materializes_metrics_from_final_eval_fixtures(tmp_path, monkeypatch):
+    monkeypatch.setattr(SUM, "REPORTS_DIR", tmp_path / "reports")
+    c0 = tmp_path / "c0"
+    _write_eval_fixture(c0, {"t1": True, "t2": False})
+    a0 = tmp_path / "A0_R0_CURRENT"
+    _write_eval_fixture(a0, {"t1": True, "t2": False})
+    a2 = tmp_path / "A2_R3_OUTCOME_FIRST"
+    _write_eval_fixture(a2, {"t1": True, "t2": True})
+    assert not (a2 / "metrics.json").is_file()
+    summary = SUM.round_summary(
+        1,
+        {"A0_R0_CURRENT": a0, "A2_R3_OUTCOME_FIRST": a2},
+        c0_dir=c0,
+        a0_dir=a0,
+    )
+    assert (a2 / "metrics.json").is_file()
+    assert "A2_R3_OUTCOME_FIRST" in summary["arms"]
+    assert set(summary["arms"].keys()) == {"A0_R0_CURRENT", "A2_R3_OUTCOME_FIRST"}
+    assert (tmp_path / "reports" / "round1" / "ROUND1_SUMMARY.json").is_file()
+    assert (tmp_path / "reports" / "round1" / "ROUND1_SUMMARY.md").is_file()
+
+
 # ─────────────────────────────────────────────────────────────────────────
 # select_reward_arms.py: hard gates + lexicographic ranking
 # ─────────────────────────────────────────────────────────────────────────
