@@ -1,0 +1,270 @@
+{
+  "provenance": {
+    "A0_R0_CURRENT": {
+      "final_sha256": "4ee2dbd6eaf727df892146946b2b83e5531c788f7f934419d4b2ed8cf5961491",
+      "adapter_epoch_1_sha256": "4ee2dbd6eaf727df892146946b2b83e5531c788f7f934419d4b2ed8cf5961491",
+      "final_equals_epoch1": true,
+      "checkpoint_manifest": {
+        "label": "FINAL",
+        "published_at": "2026-07-23T19:16:18.481549+00:00",
+        "source": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/reward_ablation_r1_A0_R0_CURRENT_seed20260724/train/checkpoints/adapter_epoch_1",
+        "adapter_hash": "5dfe57afa6863e615ce110926936676cc395b55cd9812fe8f0c83c6d26cb7d2d",
+        "files": [
+          "README.md",
+          "adapter_config.json",
+          "adapter_model.safetensors",
+          "added_tokens.json",
+          "chat_template.jinja",
+          "config_used.json",
+          "config_used.yaml",
+          "merges.txt",
+          "special_tokens_map.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "trainer_state.json",
+          "vocab.json",
+          "wandb_run_id.txt"
+        ]
+      }
+    },
+    "A1_OUTCOME_ONLY": {
+      "final_sha256": "9cf1ef7b037b64c17efc40e267b6077c223d16ac9099765f5f2eb2a0c888e2cb",
+      "adapter_epoch_1_sha256": "9cf1ef7b037b64c17efc40e267b6077c223d16ac9099765f5f2eb2a0c888e2cb",
+      "final_equals_epoch1": true,
+      "checkpoint_manifest": {
+        "label": "FINAL",
+        "published_at": "2026-07-24T02:29:23.418220+00:00",
+        "source": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724/train/checkpoints/adapter_epoch_1",
+        "adapter_hash": "576f53faf9d51354167c9760bfa32578b217ade6ea57535a5e4531b6762c5cbe",
+        "files": [
+          "README.md",
+          "adapter_config.json",
+          "adapter_model.safetensors",
+          "added_tokens.json",
+          "chat_template.jinja",
+          "config_used.json",
+          "config_used.yaml",
+          "merges.txt",
+          "special_tokens_map.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "trainer_state.json",
+          "vocab.json",
+          "wandb_run_id.txt"
+        ]
+      }
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "final_sha256": "f6dac49a5b105eb52ab25c8fb82c7c3c60dccb44eb86ab51e6663d2c39b8ea85",
+      "adapter_epoch_1_sha256": "f6dac49a5b105eb52ab25c8fb82c7c3c60dccb44eb86ab51e6663d2c39b8ea85",
+      "final_equals_epoch1": true,
+      "checkpoint_manifest": {
+        "label": "FINAL",
+        "published_at": "2026-07-24T08:28:22.682042+00:00",
+        "source": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724/train/checkpoints/adapter_epoch_1",
+        "adapter_hash": "ba3932229f099e81992f16976f835745c5e1edc6f450e6846eba0ea007864ccc",
+        "files": [
+          "README.md",
+          "adapter_config.json",
+          "adapter_model.safetensors",
+          "added_tokens.json",
+          "chat_template.jinja",
+          "config_used.json",
+          "config_used.yaml",
+          "merges.txt",
+          "special_tokens_map.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "trainer_state.json",
+          "vocab.json",
+          "wandb_run_id.txt"
+        ]
+      }
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "final_sha256": "7c338398676108b91210d9604e8e907d5c071b2320175eab9abe3dac0b1d7fcb",
+      "adapter_epoch_1_sha256": "7c338398676108b91210d9604e8e907d5c071b2320175eab9abe3dac0b1d7fcb",
+      "final_equals_epoch1": true,
+      "checkpoint_manifest": {
+        "label": "FINAL",
+        "published_at": "2026-07-24T14:28:05.346687+00:00",
+        "source": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724/train/checkpoints/adapter_epoch_1",
+        "adapter_hash": "19cead6b422c075a821b78d824b5fd3c20d4f4f2c1c44bd3fa333eb092edef57",
+        "files": [
+          "README.md",
+          "adapter_config.json",
+          "adapter_model.safetensors",
+          "added_tokens.json",
+          "chat_template.jinja",
+          "config_used.json",
+          "config_used.yaml",
+          "merges.txt",
+          "special_tokens_map.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "trainer_state.json",
+          "vocab.json",
+          "wandb_run_id.txt"
+        ]
+      }
+    },
+    "A4_GATED_VERIFIABLE": {
+      "final_sha256": "a21b243019f0b806afacdbb20c53f1197081d7eda65949b1c6bf5c5bd9e1cb38",
+      "adapter_epoch_1_sha256": "a21b243019f0b806afacdbb20c53f1197081d7eda65949b1c6bf5c5bd9e1cb38",
+      "final_equals_epoch1": true,
+      "checkpoint_manifest": {
+        "label": "FINAL",
+        "published_at": "2026-07-24T20:18:43.583363+00:00",
+        "source": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724/train/checkpoints/adapter_epoch_1",
+        "adapter_hash": "ee78032719748243c7376be27bef3e143bd3184c33935aea10bb3f0e9b4ef1e5",
+        "files": [
+          "README.md",
+          "adapter_config.json",
+          "adapter_model.safetensors",
+          "added_tokens.json",
+          "chat_template.jinja",
+          "config_used.json",
+          "config_used.yaml",
+          "merges.txt",
+          "special_tokens_map.json",
+          "tokenizer.json",
+          "tokenizer_config.json",
+          "trainer_state.json",
+          "vocab.json",
+          "wandb_run_id.txt"
+        ]
+      }
+    }
+  },
+  "per_arm_norms": {
+    "A0_R0_CURRENT": {
+      "delta_BA_fro_norm": 0.008515998813650826,
+      "lora_A_fro_norm": 36.6593272869247,
+      "lora_B_fro_norm": 0.01470856733366444,
+      "n_delta_params": 3633315840
+    },
+    "A1_OUTCOME_ONLY": {
+      "delta_BA_fro_norm": 0.010175316914559111,
+      "lora_A_fro_norm": 36.659524093785805,
+      "lora_B_fro_norm": 0.017576856876630888,
+      "n_delta_params": 3633315840
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "delta_BA_fro_norm": 0.009534174989932514,
+      "lora_A_fro_norm": 36.65942330803078,
+      "lora_B_fro_norm": 0.016469535734700485,
+      "n_delta_params": 3633315840
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "delta_BA_fro_norm": 0.010353522547102032,
+      "lora_A_fro_norm": 36.6594790191932,
+      "lora_B_fro_norm": 0.01788300204433877,
+      "n_delta_params": 3633315840
+    },
+    "A4_GATED_VERIFIABLE": {
+      "delta_BA_fro_norm": 0.008751490059603472,
+      "lora_A_fro_norm": 36.65937208188409,
+      "lora_B_fro_norm": 0.015117893943625222,
+      "n_delta_params": 3633315840
+    }
+  },
+  "pairwise": [
+    {
+      "arm_a": "A0_R0_CURRENT",
+      "arm_b": "A1_OUTCOME_ONLY",
+      "cosine_raw_all_weights": 0.9999999372909586,
+      "cosine_lora_A_only": 0.9999999714032947,
+      "cosine_lora_B_only": 0.8385745965066167,
+      "cosine_delta_to_init_BA": 0.8388138802425897,
+      "rel_l2_delta": 0.5927524825518998
+    },
+    {
+      "arm_a": "A0_R0_CURRENT",
+      "arm_b": "A2_R3_OUTCOME_FIRST",
+      "cosine_raw_all_weights": 0.9999999570186877,
+      "cosine_lora_A_only": 0.9999999833231902,
+      "cosine_lora_B_only": 0.8604578309647241,
+      "cosine_delta_to_init_BA": 0.8606800171927061,
+      "rel_l2_delta": 0.5389627698630054
+    },
+    {
+      "arm_a": "A0_R0_CURRENT",
+      "arm_b": "A3_VERIFIABLE_PROCESS",
+      "cosine_raw_all_weights": 0.9999999447871238,
+      "cosine_lora_A_only": 0.999999975513753,
+      "cosine_lora_B_only": 0.8621536426453101,
+      "cosine_delta_to_init_BA": 0.8623589774030529,
+      "rel_l2_delta": 0.5573180555703898
+    },
+    {
+      "arm_a": "A0_R0_CURRENT",
+      "arm_b": "A4_GATED_VERIFIABLE",
+      "cosine_raw_all_weights": 0.9999999567819803,
+      "cosine_lora_A_only": 0.999999984170905,
+      "cosine_lora_B_only": 0.8348315904381276,
+      "cosine_delta_to_init_BA": 0.835053045345478,
+      "rel_l2_delta": 0.5749578374193427
+    },
+    {
+      "arm_a": "A1_OUTCOME_ONLY",
+      "arm_b": "A2_R3_OUTCOME_FIRST",
+      "cosine_raw_all_weights": 0.999999945825293,
+      "cosine_lora_A_only": 0.9999999781419051,
+      "cosine_lora_B_only": 0.8520800317719188,
+      "cosine_delta_to_init_BA": 0.8522752363436771,
+      "rel_l2_delta": 0.5471467718994151
+    },
+    {
+      "arm_a": "A1_OUTCOME_ONLY",
+      "arm_b": "A3_VERIFIABLE_PROCESS",
+      "cosine_raw_all_weights": 0.9999999474467844,
+      "cosine_lora_A_only": 0.9999999779046072,
+      "cosine_lora_B_only": 0.8699178349211018,
+      "cosine_delta_to_init_BA": 0.8700850393282786,
+      "rel_l2_delta": 0.5100115323657629
+    },
+    {
+      "arm_a": "A1_OUTCOME_ONLY",
+      "arm_b": "A4_GATED_VERIFIABLE",
+      "cosine_raw_all_weights": 0.9999999421316638,
+      "cosine_lora_A_only": 0.9999999725724213,
+      "cosine_lora_B_only": 0.8574116112758532,
+      "cosine_delta_to_init_BA": 0.8576044835074337,
+      "rel_l2_delta": 0.5530066607411215
+    },
+    {
+      "arm_a": "A2_R3_OUTCOME_FIRST",
+      "arm_b": "A3_VERIFIABLE_PROCESS",
+      "cosine_raw_all_weights": 0.9999999592864401,
+      "cosine_lora_A_only": 0.9999999851542302,
+      "cosine_lora_B_only": 0.8853487349661598,
+      "cosine_delta_to_init_BA": 0.8854901259351258,
+      "rel_l2_delta": 0.4852013614647588
+    },
+    {
+      "arm_a": "A2_R3_OUTCOME_FIRST",
+      "arm_b": "A4_GATED_VERIFIABLE",
+      "cosine_raw_all_weights": 0.999999957259052,
+      "cosine_lora_A_only": 0.9999999852318092,
+      "cosine_lora_B_only": 0.8526731538669403,
+      "cosine_delta_to_init_BA": 0.852839938702034,
+      "rel_l2_delta": 0.548734315938965
+    },
+    {
+      "arm_a": "A3_VERIFIABLE_PROCESS",
+      "arm_b": "A4_GATED_VERIFIABLE",
+      "cosine_raw_all_weights": 0.9999999479836202,
+      "cosine_lora_A_only": 0.9999999780143312,
+      "cosine_lora_B_only": 0.864849212934533,
+      "cosine_delta_to_init_BA": 0.8650256356426792,
+      "rel_l2_delta": 0.5442210802552351
+    }
+  ],
+  "verdict": {
+    "final_checkpoints_all_distinct": true,
+    "final_equals_trained_epoch1_everywhere": true,
+    "a0_vs_a4_cosine_raw": 0.9999999567819803,
+    "a0_vs_a4_cosine_delta_to_init": 0.835053045345478,
+    "raw_cosine_is_init_artifact": true
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "generated_at": "2026-07-25",
+  "audit": "root_cause_forensic",
+  "question": "Why does GRPO training change synthetic metrics but not increase NESTFUL Win Rate?",
+  "evidence_dir": "reports/root_cause_forensic/analysis",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "hypothesis": "Reward dispatch bug: all Round-1 arms trained with execution_aware_v3_2_dense; the reward ablation never varied the reward.",
+      "status": "CONFIRMED",
+      "confidence": 0.99,
+      "evidence_for": [
+        "train_log.jsonl header + all 160 group rows per arm: reward_policy_resolved=execution_aware_v3_2_dense",
+        "console.log: '[v3/run.py] training reward = execution_aware_v3_2_dense' right after '[override] reward.train_policy = reward_ablation_<ARM>'",
+        "hash-matched completions across all 10 arm pairs (14-35 matches each) received identical rewards, max_abs_diff=0.0",
+        "logged rewards explainable by intended terminal scalars in only 0-5% of rollouts",
+        "mechanism reproduced in code: two_phase_train_session setdefault(REWARD_POLICY) + run.py hook env preference"
+      ],
+      "evidence_against": [],
+      "artifacts": ["analysis/a02_reward_dispatch.json"]
+    },
+    {
+      "id": "H2",
+      "hypothesis": "Structural transfer gap between synthetic curriculum and NESTFUL prevents benchmark gains.",
+      "status": "STRONGLY_SUPPORTED",
+      "confidence": 0.9,
+      "evidence_for": [
+        "gold-tool Jaccard overlap 0.003-0.006 (1-2 shared tools of ~181)",
+        "reference-style args in 100% of train rows vs 15-24% of NESTFUL rows; NESTFUL uses str-encoded numbers",
+        "train fixed 3-call vs NESTFUL 2-6 calls; offered tools 163 vs 816-3850",
+        "pure_stage3_2ep improved train-side signal (loss 0.217->0.063, KL up) while official NESTFUL dropped 1.14pp on n=1661"
+      ],
+      "evidence_against": ["causality only provable by training on NESTFUL-like data"],
+      "artifacts": ["analysis/a06_data_transfer.json"]
+    },
+    {
+      "id": "H3",
+      "hypothesis": "Round-1 update strength too weak for any behavioral change.",
+      "status": "STRONGLY_SUPPORTED",
+      "confidence": 0.85,
+      "evidence_for": [
+        "27-31 optimizer steps at LR 3e-7; KL mean 2.5e-5 to 3.8e-5; clipping ~0; dead groups 21-31%",
+        "A0 predicted call sequences identical to C0 on 326/500 (65%); A0 vs A4 identical on 355/500 (71%)",
+        "delta_BA Frobenius norm ~0.009 vs lora_A norm 36.66"
+      ],
+      "evidence_against": [
+        "deltas are nonzero and mutually distinct (delta cosine 0.835-0.885)",
+        "stronger update (pure_stage3 2ep) still did not raise NESTFUL"
+      ],
+      "artifacts": ["analysis/a04_update_strength.json", "analysis/a03_adapter_audit.json", "analysis/a05_eval_audit.json"]
+    },
+    {
+      "id": "H4",
+      "hypothesis": "A3 verifiable-process reward causally hurts NESTFUL (53.0%).",
+      "status": "REJECTED",
+      "confidence": 0.95,
+      "evidence_for": [],
+      "evidence_against": [
+        "A3 trained with the identical reward as every other arm (H1)",
+        "53.0-57.4% spread is replicate noise of one config (same seed/data/reward; only rollout nondeterminism differs)"
+      ],
+      "artifacts": ["analysis/a01_config_parity.json", "analysis/a02_reward_dispatch.json"]
+    },
+    {
+      "id": "H5",
+      "hypothesis": "A0/A4 adapters nearly identical (raw LoRA cosine ~1) => no effective training difference.",
+      "status": "REJECTED",
+      "confidence": 0.98,
+      "evidence_for": [],
+      "evidence_against": [
+        "raw flat cosine dominated by shared seeded lora_A init; artifact",
+        "delta-to-init (B@A, float64) cosine A0 vs A4 = 0.835, rel_l2 = 0.575",
+        "all 5 FINAL checkpoints have distinct SHA256"
+      ],
+      "artifacts": ["analysis/a03_adapter_audit.json"]
+    },
+    {
+      "id": "H6",
+      "hypothesis": "Credit assignment bug (good turns punished, executable-wrong rewarded).",
+      "status": "UNLIKELY",
+      "confidence": 0.8,
+      "evidence_for": ["good-turn negative-advantage rate 27-33%"],
+      "evidence_against": [
+        "97-99% of good-turn-negative cases are in below-group-mean episodes (expected under outcome-based GRPO)",
+        "96-100% of execwrong-positive cases are in all-failure groups (GRPO must rank someone positive)",
+        "dead-group flags recompute exactly (parity 100%); no double counting (G0 episode share ~0.19)"
+      ],
+      "untestable_part": "matched-prefix / first-divergence audit UNTESTABLE_WITH_CURRENT_LOGS (train rollout trajectories not persisted)",
+      "artifacts": ["analysis/a08_credit_audit.json"]
+    },
+    {
+      "id": "H7",
+      "hypothesis": "Checkpoint/eval swap, C0 not base, resume/LoRA load-save corruption.",
+      "status": "REJECTED",
+      "confidence": 0.97,
+      "evidence_for": [],
+      "evidence_against": [
+        "all FINAL SHA256 distinct and equal to adapter_epoch_1",
+        "manifests point to correct source runs",
+        "C0 win rate reproduced from raw task_results"
+      ],
+      "artifacts": ["analysis/a03_adapter_audit.json", "analysis/a05_eval_audit.json"]
+    },
+    {
+      "id": "H8",
+      "hypothesis": "Evaluation pipeline error (parser/scorer/pairing/metric computation).",
+      "status": "REJECTED",
+      "confidence": 0.97,
+      "evidence_for": [],
+      "evidence_against": [
+        "500/500 paired IDs; win rates and gained/lost reproduce exactly from raw trajectories for every arm",
+        "official scorer accepts shorter valid paths (alternative_valid_solution_pass on 254/500 C0 tasks)"
+      ],
+      "known_issue": "shared_C0_eval_500 actually ran on 1861 rows (test+dev); its stored 0.5513 win rate is n=1861, not n=500; coverage of the 500 paired IDs is complete so paired analysis is unaffected",
+      "artifacts": ["analysis/a05_eval_audit.json"]
+    },
+    {
+      "id": "H9",
+      "hypothesis": "v3_2_dense reward is effectively a trace-imitation signal penalizing valid alternative paths.",
+      "status": "UNTESTABLE_WITH_CURRENT_LOGS",
+      "confidence": null,
+      "evidence_for": ["dense process components are gold-aware; the ablation designed to test this never ran (H1)"],
+      "evidence_against": [
+        "official eval scorer accepts alternative paths",
+        "counterfactual re-score shows intended policies would have produced substantially different signals (mean reward 0.62-0.76 on identical trajectories)"
+      ],
+      "artifacts": ["analysis/a07_counterfactual_rescore.json"]
+    },
+    {
+      "id": "H10",
+      "hypothesis": "A4 highest train-side success caused by gated verifiable reward.",
+      "status": "REJECTED",
+      "confidence": 0.95,
+      "evidence_for": [],
+      "evidence_against": [
+        "metric was a reward-threshold proxy with wrong threshold (0.92; v3_2_dense fully_correct band starts at 0.90)",
+        "rewards were identical across arms (H1); difference is rollout noise"
+      ],
+      "artifacts": ["analysis/a02_reward_dispatch.json", "lib/offline_audit/__init__.py"]
+    },
+    {
+      "id": "H11",
+      "hypothesis": "NESTFUL 2-call weakness caused by training.",
+      "status": "REJECTED",
+      "confidence": 0.9,
+      "evidence_for": [],
+      "evidence_against": ["2-call weakness pre-exists in C0 (45% vs 62% for 3-call); arms slightly improve it (0.46-0.49)"],
+      "artifacts": ["analysis/a05_eval_audit.json"]
+    }
+  ],
+  "top_causes_ranked": [
+    "H1 reward dispatch bug (CONFIRMED, 0.99) - Round-1 ablation invalid as an experiment",
+    "H2 synthetic->NESTFUL transfer gap (STRONGLY_SUPPORTED, 0.90)",
+    "H3 Round-1 update too weak for behavioral change (STRONGLY_SUPPORTED, 0.85)"
+  ],
+  "round1_reinterpretation": "Round-1 A0-A4 = five replicates of one training config (same seed, data, executor, reward). Win-rate spread 53.0-57.4% on n=500 estimates replicate noise (~±2-4.5pp), not reward-design effects.",
+  "fixes": "see FIXES_APPLIED.md",
+  "next_experiment": "see NEXT_DECISION.md"
+}

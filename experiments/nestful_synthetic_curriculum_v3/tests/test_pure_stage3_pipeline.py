@@ -63,8 +63,12 @@ class TestMaterializeAndAudit(unittest.TestCase):
                 [sys.executable, str(AUDIT),
                  "--input", str(out), "--report-dir", str(report_dir)],
                 capture_output=True, text=True,
+                # Child console encoding may be a Windows legacy codepage
+                # (e.g. cp1250 when the user path contains non-ASCII);
+                # decode robustly so the reader thread never crashes.
+                encoding="utf-8", errors="replace",
             )
-            self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+            self.assertEqual(r.returncode, 0, (r.stderr or "") + (r.stdout or ""))
             report = json.loads((report_dir / "stage3_nestful_syntax_audit.json").read_text(
                 encoding="utf-8"))
             self.assertEqual(report["verdict"], "NO_MISMATCH")

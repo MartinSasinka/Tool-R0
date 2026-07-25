@@ -1,0 +1,166 @@
+{
+  "policies_compared": [
+    "A0_proxy_v3_2_mid",
+    "A1_OUTCOME_ONLY",
+    "A2_R3_OUTCOME_FIRST",
+    "A3_VERIFIABLE_PROCESS",
+    "A4_GATED_VERIFIABLE"
+  ],
+  "per_source": {
+    "C0": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "official_success": 285,
+        "parse_or_no_call": 45,
+        "executable_wrong_result": 129,
+        "executable_partial": 32,
+        "execution_failure": 9
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7562999999999933,
+        "A1_OUTCOME_ONLY": 0.7101999999999955,
+        "A2_R3_OUTCOME_FIRST": 0.6184500000000012,
+        "A3_VERIFIABLE_PROCESS": 0.6184500000000012,
+        "A4_GATED_VERIFIABLE": 0.6184500000000012
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    },
+    "A0_R0_CURRENT": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "execution_failure": 7,
+        "official_success": 287,
+        "parse_or_no_call": 42,
+        "executable_wrong_result": 133,
+        "executable_partial": 31
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7637399999999933,
+        "A1_OUTCOME_ONLY": 0.7168799999999953,
+        "A2_R3_OUTCOME_FIRST": 0.6230350000000012,
+        "A3_VERIFIABLE_PROCESS": 0.6230350000000012,
+        "A4_GATED_VERIFIABLE": 0.6230350000000012
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    },
+    "A1_OUTCOME_ONLY": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "execution_failure": 4,
+        "official_success": 283,
+        "parse_or_no_call": 42,
+        "executable_wrong_result": 139,
+        "executable_partial": 32
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7639399999999934,
+        "A1_OUTCOME_ONLY": 0.7153399999999952,
+        "A2_R3_OUTCOME_FIRST": 0.6173000000000006,
+        "A3_VERIFIABLE_PROCESS": 0.6173000000000006,
+        "A4_GATED_VERIFIABLE": 0.6173000000000006
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "execution_failure": 5,
+        "official_success": 281,
+        "parse_or_no_call": 52,
+        "executable_wrong_result": 131,
+        "executable_partial": 31
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7487399999999934,
+        "A1_OUTCOME_ONLY": 0.7030399999999957,
+        "A2_R3_OUTCOME_FIRST": 0.6105350000000009,
+        "A3_VERIFIABLE_PROCESS": 0.6105350000000009,
+        "A4_GATED_VERIFIABLE": 0.6105350000000009
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "execution_failure": 9,
+        "official_success": 265,
+        "parse_or_no_call": 55,
+        "executable_wrong_result": 136,
+        "executable_partial": 35
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7309999999999935,
+        "A1_OUTCOME_ONLY": 0.6816599999999963,
+        "A2_R3_OUTCOME_FIRST": 0.5837950000000001,
+        "A3_VERIFIABLE_PROCESS": 0.5837950000000001,
+        "A4_GATED_VERIFIABLE": 0.5837950000000001
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    },
+    "A4_GATED_VERIFIABLE": {
+      "n_rescored": 500,
+      "skipped": 0,
+      "class_distribution": {
+        "execution_failure": 4,
+        "official_success": 287,
+        "parse_or_no_call": 50,
+        "executable_partial": 30,
+        "executable_wrong_result": 129
+      },
+      "mean_reward_by_policy": {
+        "A0_proxy_v3_2_mid": 0.7558999999999932,
+        "A1_OUTCOME_ONLY": 0.7113799999999956,
+        "A2_R3_OUTCOME_FIRST": 0.6207500000000011,
+        "A3_VERIFIABLE_PROCESS": 0.6207500000000011,
+        "A4_GATED_VERIFIABLE": 0.6207500000000011
+      },
+      "success_vs_execwrong_gap_by_policy": {
+        "A0_proxy_v3_2_mid": 0.25,
+        "A1_OUTCOME_ONLY": 0.42999999999999994,
+        "A2_R3_OUTCOME_FIRST": 0.77,
+        "A3_VERIFIABLE_PROCESS": 0.77,
+        "A4_GATED_VERIFIABLE": 0.77
+      }
+    }
+  },
+  "caveats": [
+    "NON-CAUSAL: eval trajectories are temp-0 single rollouts; no GRPO groups, no advantages can be derived.",
+    "Train-side counterfactual is UNTESTABLE_WITH_CURRENT_LOGS: rollout trajectories were not persisted during Round-1 training (only hashes).",
+    "Classes reconstructed from stored _traj predicates, not re-execution."
+  ]
+}

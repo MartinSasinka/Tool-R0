@@ -233,6 +233,8 @@ class Episode:
     # `n_forced_turns` entries before pairing per-turn returns with
     # `turn_tokens` (generated turns only — see train()).
     n_forced_turns: int = 0
+    # Optional worker-side trajectory dump (CANARY_TRAJ_LOG=1 only).
+    canary_traj: Optional[Dict[str, Any]] = None
 
 
 @dataclass
@@ -264,7 +266,12 @@ def _episode_from_pool_result(res) -> Episode:
                      zero_tool_calls=bool(res.zero_tool_calls),
                      num_tool_calls=int(getattr(res, "num_tool_calls", 0)),
                      stop_reason=getattr(res, "stop_reason", None))
-    return Episode(trajectory=traj, turn_tokens=tts, reward=float(res.episode_reward))
+    return Episode(
+        trajectory=traj,
+        turn_tokens=tts,
+        reward=float(res.episode_reward),
+        canary_traj=getattr(res, "canary_traj", None),
+    )
 
 
 def _generate_with_ids(model, tokenizer, messages, max_new_tokens, temperature, top_p,
@@ -671,12 +678,68 @@ def train(
 
     os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
     log_f = open(log_path, "a" if log_append else "w", encoding="utf-8")
+    canary_traj_log = os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in (
+        "1", "true", "yes"
+    )
+    canary_path = None
+    canary_f = None
+    if canary_traj_log:
+        canary_path = os.path.join(
+            os.path.dirname(log_path) or ".", "canary_rollouts.jsonl"
+        )
+        canary_f = open(canary_path, "a" if log_append else "w", encoding="utf-8")
+        print(f"[train] CANARY_TRAJ_LOG=1 -> {canary_path}", flush=True)
 
     def _log(rec: Dict[str, Any]) -> None:
         if phase_name:
             rec.setdefault("phase", phase_name)
         log_f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         log_f.flush()
+
+    def _log_canary_group(
+        *,
+        task: Dict[str, Any],
+        episodes: List[Episode],
+        ep_r_seqs: List[List[float]],
+        ep_returns: List[List[float]],
+        gstats: Any,
+        ep_diags: List[Dict[str, Any]],
+        rec: Dict[str, Any],
+        grad_norm: Optional[float] = None,
+    ) -> None:
+        if canary_f is None:
+            return
+        for ri, (ep, r_seq, g_t) in enumerate(zip(episodes, ep_r_seqs, ep_returns)):
+            adv = list(gstats.advantages[ri]) if gstats is not None else []
+            diag = ep_diags[ri] if ri < len(ep_diags) else {}
+            traj_payload = ep.canary_traj or {}
+            row = {
+                "task_id": task.get("task_id"),
+                "rollout_index": ri,
+                "raw_output": traj_payload.get("raw_outputs"),
+                "parsed_calls": traj_payload.get("parsed_calls"),
+                "observations": traj_payload.get("observations"),
+                "turns": traj_payload.get("turns"),
+                "executor_outcome": traj_payload.get("executor_outcome"),
+                "terminal_class": traj_payload.get("terminal_class") or diag.get("terminal_class"),
+                "failure_class": traj_payload.get("failure_class") or diag.get("failure_class")
+                                 or diag.get("reward_class"),
+                "episode_reward": float(ep.reward),
+                "turn_rewards": list(r_seq),
+                "G_t": list(g_t),
+                "normalized_advantage": adv,
+                "completion_hash": _completion_hash(ep),
+                "reward_policy_configured": rec.get("reward_policy_configured"),
+                "reward_policy_resolved": rec.get("reward_policy_resolved"),
+                "gradient_norm": grad_norm,
+                "kl": rec.get("kl"),
+                "dead_group": rec.get("dead_group"),
+                "optimizer_step_executed": rec.get("optimizer_step_executed"),
+                "epoch": rec.get("epoch"),
+                "task_idx": rec.get("task_idx"),
+            }
+            canary_f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        canary_f.flush()
 
     vllm_gen_fn = vllm_gen.generate_fn if vllm_gen is not None else None
 
@@ -987,8 +1050,14 @@ def train(
                     "after 100 groups — training is not learning anything.")
 
             if dead:
-                _log({**rec, "update": "skipped_dead_group",
-                      "optimizer_step_executed": False, "contributing_turns": 0})
+                dead_rec = {**rec, "update": "skipped_dead_group",
+                            "optimizer_step_executed": False, "contributing_turns": 0}
+                _log(dead_rec)
+                _log_canary_group(
+                    task=task, episodes=episodes, ep_r_seqs=ep_r_seqs,
+                    ep_returns=ep_returns, gstats=gstats, ep_diags=ep_diags,
+                    rec=dead_rec, grad_norm=None,
+                )
                 _wandb_log_task(
                     wandb_run, rec, stage=stage, num_tasks=num_tasks,
                     task_step=epoch * num_tasks + ti,
@@ -1065,16 +1134,23 @@ def train(
                 task_best_mean=task_best_mean.get(task_id),
             )
 
+            step_grad_norm: Optional[float] = None
             if accum % grad_accum == 0:
                 import torch as _t
                 gnorm = _t.nn.utils.clip_grad_norm_(trainable, max_grad_norm)
-                _log({"epoch": epoch, "task_idx": ti, "grad_norm": float(gnorm),
+                step_grad_norm = float(gnorm)
+                _log({"epoch": epoch, "task_idx": ti, "grad_norm": step_grad_norm,
                       "update": "optimizer_step", "global_step": global_step})
                 optimizer.step()
                 optimizer.zero_grad(set_to_none=True)
                 global_step += 1
                 _wandb_log_optimizer_step(
-                    wandb_run, optimizer_step=global_step, grad_norm=float(gnorm))
+                    wandb_run, optimizer_step=global_step, grad_norm=step_grad_norm)
+            _log_canary_group(
+                task=task, episodes=episodes, ep_r_seqs=ep_r_seqs,
+                ep_returns=ep_returns, gstats=gstats, ep_diags=ep_diags,
+                rec=rec, grad_norm=step_grad_norm,
+            )
 
         # Flush any remaining grads at epoch end.
         if accum % grad_accum != 0:
@@ -1215,6 +1291,8 @@ def train(
             "contributing_turns==0" if total_contributing == 0 else
             "dead_group_rate>=0.95")
     log_f.close()
+    if canary_f is not None:
+        canary_f.close()
     return summary
 
 

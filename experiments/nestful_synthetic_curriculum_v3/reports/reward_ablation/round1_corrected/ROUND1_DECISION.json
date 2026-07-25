@@ -1,0 +1,107 @@
+{
+  "round": 1,
+  "gate_results": {
+    "A0_R0_CURRENT": {
+      "verdict": "PASS",
+      "reasons": [],
+      "checks": {
+        "terminal_inversions": 0,
+        "nan_or_inf_detected": false,
+        "official_loss_beats_success_in_group": false,
+        "dead_group_rate": 0.28125,
+        "control_dead_group_rate": 0.28125,
+        "parse_rate": 0.5950694774711743,
+        "control_parse_rate": null,
+        "executable_rate": 0.84,
+        "control_executable_rate": 0.84,
+        "synthetic_terminal_success_drop": null,
+        "executable_wrong_positive_advantage_rate": null,
+        "reward_up_but_terminal_success_down": false,
+        "reward_hacking_suspected": false
+      }
+    },
+    "A1_OUTCOME_ONLY": {
+      "verdict": "PASS",
+      "reasons": [],
+      "checks": {
+        "terminal_inversions": 0,
+        "nan_or_inf_detected": false,
+        "official_loss_beats_success_in_group": false,
+        "dead_group_rate": 0.20625,
+        "control_dead_group_rate": 0.28125,
+        "parse_rate": 0.5938148504876526,
+        "control_parse_rate": null,
+        "executable_rate": 0.846,
+        "control_executable_rate": 0.84,
+        "synthetic_terminal_success_drop": null,
+        "executable_wrong_positive_advantage_rate": null,
+        "reward_up_but_terminal_success_down": false,
+        "reward_hacking_suspected": false
+      }
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "verdict": "PASS",
+      "reasons": [],
+      "checks": {
+        "terminal_inversions": 0,
+        "nan_or_inf_detected": false,
+        "official_loss_beats_success_in_group": false,
+        "dead_group_rate": 0.25,
+        "control_dead_group_rate": 0.28125,
+        "parse_rate": 0.5879301725610715,
+        "control_parse_rate": null,
+        "executable_rate": 0.824,
+        "control_executable_rate": 0.84,
+        "synthetic_terminal_success_drop": null,
+        "executable_wrong_positive_advantage_rate": null,
+        "reward_up_but_terminal_success_down": false,
+        "reward_hacking_suspected": false
+      }
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "verdict": "FAIL",
+      "reasons": [
+        "executable_rate 0.802 worse than control 0.84 by >2pp"
+      ],
+      "checks": {
+        "terminal_inversions": 0,
+        "nan_or_inf_detected": false,
+        "official_loss_beats_success_in_group": false,
+        "dead_group_rate": 0.225,
+        "control_dead_group_rate": 0.28125,
+        "parse_rate": 0.5853323688259424,
+        "control_parse_rate": null,
+        "executable_rate": 0.802,
+        "control_executable_rate": 0.84,
+        "synthetic_terminal_success_drop": null,
+        "executable_wrong_positive_advantage_rate": null,
+        "reward_up_but_terminal_success_down": false,
+        "reward_hacking_suspected": false
+      }
+    },
+    "A4_GATED_VERIFIABLE": {
+      "verdict": "PASS",
+      "reasons": [],
+      "checks": {
+        "terminal_inversions": 0,
+        "nan_or_inf_detected": false,
+        "official_loss_beats_success_in_group": false,
+        "dead_group_rate": 0.3125,
+        "control_dead_group_rate": 0.28125,
+        "parse_rate": 0.5985397642019872,
+        "control_parse_rate": null,
+        "executable_rate": 0.832,
+        "control_executable_rate": 0.84,
+        "synthetic_terminal_success_drop": null,
+        "executable_wrong_positive_advantage_rate": null,
+        "reward_up_but_terminal_success_down": false,
+        "reward_hacking_suspected": false
+      }
+    }
+  },
+  "lexicographic_ranking": [
+    "A0_R0_CURRENT",
+    "A4_GATED_VERIFIABLE",
+    "A2_R3_OUTCOME_FIRST"
+  ]
+}

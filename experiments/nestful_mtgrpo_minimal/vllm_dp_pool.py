@@ -70,6 +70,9 @@ class RolloutResult:
     error: Optional[str] = None  # set if the episode crashed in the worker
     # Scalar-only reward diagnostics (sanitized in the worker) for group logging.
     reward_diag: Dict[str, Any] = field(default_factory=dict)
+    # Optional full trajectory summary for dispatch-canary audits
+    # (set only when CANARY_TRAJ_LOG=1). Kept off the hot path otherwise.
+    canary_traj: Optional[Dict[str, Any]] = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -359,6 +362,10 @@ def run_episode_collect(
     from rollout import exec_failure_categories
     reward_diag.update(exec_failure_categories(traj))
 
+    canary_traj = None
+    if os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in ("1", "true", "yes"):
+        canary_traj = _build_canary_traj(traj, rinfo)
+
     return RolloutResult(
         turn_token_ids=turn_token_ids,
         episode_reward=float(rinfo["episode_reward"]),
@@ -370,6 +377,7 @@ def run_episode_collect(
         stop_reason=traj.stop_reason,
         first_error_turn=strict_diag.get("first_error_turn"),
         reward_diag=_sanitize_diag(reward_diag),
+        canary_traj=canary_traj,
     )
 
 
@@ -383,6 +391,52 @@ def _sanitize_diag(diag: Dict[str, Any]) -> Dict[str, Any]:
                 isinstance(x, (bool, int, float)) for x in v):
             out[k] = v
     return out
+
+
+def _jsonable(obj: Any, *, max_str: int = 4000) -> Any:
+    """Best-effort JSON-safe truncation for canary trajectory dumps."""
+    if obj is None or isinstance(obj, (bool, int, float)):
+        return obj
+    if isinstance(obj, str):
+        return obj if len(obj) <= max_str else obj[:max_str] + "…[truncated]"
+    if isinstance(obj, dict):
+        return {str(k): _jsonable(v, max_str=max_str) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_jsonable(x, max_str=max_str) for x in obj]
+    return _jsonable(str(obj), max_str=max_str)
+
+
+def _build_canary_traj(traj, rinfo: Dict[str, Any]) -> Dict[str, Any]:
+    """Compact per-rollout trajectory payload for credit / dispatch audits."""
+    diag = dict(rinfo.get("diagnostics") or {})
+    turns_out = []
+    for t in traj.turns:
+        turns_out.append({
+            "turn_idx": int(getattr(t, "turn_idx", 0) or 0),
+            "raw_output": _jsonable(getattr(t, "model_text", "") or ""),
+            "parsed_call": _jsonable(getattr(t, "parsed_call", None)),
+            "observation": _jsonable(getattr(t, "observation", None)),
+            "fail_reason": getattr(t, "fail_reason", None),
+            "is_terminal": bool(getattr(t, "is_terminal", False)),
+            "teacher_forced": bool(getattr(t, "teacher_forced", False)),
+        })
+    return {
+        "raw_outputs": [x["raw_output"] for x in turns_out],
+        "parsed_calls": [x["parsed_call"] for x in turns_out if x["parsed_call"] is not None],
+        "observations": [x["observation"] for x in turns_out],
+        "turns": turns_out,
+        "stop_reason": traj.stop_reason,
+        "executor_outcome": {
+            "num_tool_calls": int(traj.num_tool_calls),
+            "zero_tool_calls": bool(traj.zero_tool_calls),
+            "clipped_any": bool(traj.clipped_any),
+            "executor_error": bool(traj.executor_error),
+            "stop_reason": traj.stop_reason,
+        },
+        "terminal_class": diag.get("terminal_class"),
+        "failure_class": diag.get("failure_class") or diag.get("reward_class"),
+        "reward_diag": _sanitize_diag(diag),
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────

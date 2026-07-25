@@ -1,0 +1,186 @@
+{
+  "n_config_keys": 62,
+  "config_diff_keys": [
+    {
+      "key": "description",
+      "values": {
+        "A0_R0_CURRENT": "Current production reward (execution_aware_v3_2_dense) — control baseline, UNCHANGED.",
+        "A1_OUTCOME_ONLY": "Path-invariant terminal outcome only. No process tie-break (epsilon=0). Scientific control for the cost of a fully sparse reward.",
+        "A2_R3_OUTCOME_FIRST": "Outcome-first (= audited R3): wide official_success vs executable_wrong_result gap, small gold-aware process tie-break (epsilon=0.02, see lib/reward_ablation_registry.py for why this differs from R3's own DEFAULT_EPS_R3=0.04 in the 5-class unified taxonomy).",
+        "A3_VERIFIABLE_PROCESS": "Same terminal bands as A2. Process tie-break is deterministically verifiable only (parse validity, tool existence, schema/type/range validity, reference resolvability, execution success/integrity) — NEVER gold-trace similarity.",
+        "A4_GATED_VERIFIABLE": "Same as A3, but the verifiable process tie-break is gated to 0 unless the trajectory is fully executable (no parse/no-call failure, no fully-failed execution)."
+      },
+      "identity_field": true
+    },
+    {
+      "key": "reward.train_policy",
+      "values": {
+        "A0_R0_CURRENT": "execution_aware_v3_2_dense",
+        "A1_OUTCOME_ONLY": "reward_ablation_A1_OUTCOME_ONLY",
+        "A2_R3_OUTCOME_FIRST": "reward_ablation_A2_R3_OUTCOME_FIRST",
+        "A3_VERIFIABLE_PROCESS": "reward_ablation_A3_VERIFIABLE_PROCESS",
+        "A4_GATED_VERIFIABLE": "reward_ablation_A4_GATED_VERIFIABLE"
+      },
+      "identity_field": true
+    },
+    {
+      "key": "reward_id",
+      "values": {
+        "A0_R0_CURRENT": "A0_R0_CURRENT",
+        "A1_OUTCOME_ONLY": "A1_OUTCOME_ONLY",
+        "A2_R3_OUTCOME_FIRST": "A2_R3_OUTCOME_FIRST",
+        "A3_VERIFIABLE_PROCESS": "A3_VERIFIABLE_PROCESS",
+        "A4_GATED_VERIFIABLE": "A4_GATED_VERIFIABLE"
+      },
+      "identity_field": true
+    },
+    {
+      "key": "wandb.extra_tags",
+      "values": {
+        "A0_R0_CURRENT": [
+          "reward_ablation_A0_R0_CURRENT"
+        ],
+        "A1_OUTCOME_ONLY": [
+          "reward_ablation_A1_OUTCOME_ONLY"
+        ],
+        "A2_R3_OUTCOME_FIRST": [
+          "reward_ablation_A2_R3_OUTCOME_FIRST"
+        ],
+        "A3_VERIFIABLE_PROCESS": [
+          "reward_ablation_A3_VERIFIABLE_PROCESS"
+        ],
+        "A4_GATED_VERIFIABLE": [
+          "reward_ablation_A4_GATED_VERIFIABLE"
+        ]
+      },
+      "identity_field": true
+    },
+    {
+      "key": "wandb.run_name",
+      "values": {
+        "A0_R0_CURRENT": "A0_R0_CURRENT_seed20260724",
+        "A1_OUTCOME_ONLY": "A1_OUTCOME_ONLY_seed20260724",
+        "A2_R3_OUTCOME_FIRST": "A2_R3_OUTCOME_FIRST_seed20260724",
+        "A3_VERIFIABLE_PROCESS": "A3_VERIFIABLE_PROCESS_seed20260724",
+        "A4_GATED_VERIFIABLE": "A4_GATED_VERIFIABLE_seed20260724"
+      },
+      "identity_field": true
+    }
+  ],
+  "unexpected_config_diffs": [],
+  "unexpected_config_diff_count": 0,
+  "hash_parity": {
+    "dataset_hash": {
+      "values": {
+        "A0_R0_CURRENT": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+        "A1_OUTCOME_ONLY": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+        "A2_R3_OUTCOME_FIRST": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+        "A3_VERIFIABLE_PROCESS": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+        "A4_GATED_VERIFIABLE": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74"
+      },
+      "identical": true
+    },
+    "eval_subset_hash": {
+      "values": {
+        "A0_R0_CURRENT": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+        "A1_OUTCOME_ONLY": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+        "A2_R3_OUTCOME_FIRST": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+        "A3_VERIFIABLE_PROCESS": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+        "A4_GATED_VERIFIABLE": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9"
+      },
+      "identical": true
+    },
+    "reward_spec_hash": {
+      "values": {
+        "A0_R0_CURRENT": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+        "A1_OUTCOME_ONLY": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+        "A2_R3_OUTCOME_FIRST": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+        "A3_VERIFIABLE_PROCESS": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+        "A4_GATED_VERIFIABLE": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef"
+      },
+      "identical": true
+    },
+    "executor_hash": {
+      "values": {
+        "A0_R0_CURRENT": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+        "A1_OUTCOME_ONLY": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+        "A2_R3_OUTCOME_FIRST": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+        "A3_VERIFIABLE_PROCESS": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d",
+        "A4_GATED_VERIFIABLE": "f945b18ccdc260b1960e5fbb20e4d76312628af42fef0a65d4977af83dd6dc0d"
+      },
+      "identical": true
+    },
+    "registry_version": {
+      "values": {
+        "A0_R0_CURRENT": "5.0.2",
+        "A1_OUTCOME_ONLY": "5.0.2",
+        "A2_R3_OUTCOME_FIRST": "5.0.2",
+        "A3_VERIFIABLE_PROCESS": "5.0.2",
+        "A4_GATED_VERIFIABLE": "5.0.2"
+      },
+      "identical": true
+    }
+  },
+  "config_hash_per_arm": {
+    "A0_R0_CURRENT": "5aa6dd0de41df7715b7d26ebacfbc041203da6cf0676cd4dcb83a549f5e4dd11",
+    "A1_OUTCOME_ONLY": "c56efdeacfdd04f4c2bffe95a81550f9821b25462ab49dde7233b31e992c0830",
+    "A2_R3_OUTCOME_FIRST": "0b23d4a4dfd2b45291b62bcf816a34d7ca9afc06dde0dae4cf80a452395c3bd0",
+    "A3_VERIFIABLE_PROCESS": "1a58d39920eab50d13aa22990a4c4714198a9c4e63800ab65c97797e51ebae4b",
+    "A4_GATED_VERIFIABLE": "8f3b264c014ad286dfa6dfb6070c9e85c08272dd65758ec45a310a63ea423586"
+  },
+  "seeds": {
+    "A0_R0_CURRENT": 20260724,
+    "A1_OUTCOME_ONLY": 20260724,
+    "A2_R3_OUTCOME_FIRST": 20260724,
+    "A3_VERIFIABLE_PROCESS": 20260724,
+    "A4_GATED_VERIFIABLE": 20260724
+  },
+  "git_commits": {
+    "A0_R0_CURRENT": "fdf8e57978d261f941458035b723fa272141421d",
+    "A1_OUTCOME_ONLY": "fdf8e57978d261f941458035b723fa272141421d",
+    "A2_R3_OUTCOME_FIRST": "fdf8e57978d261f941458035b723fa272141421d",
+    "A3_VERIFIABLE_PROCESS": "fdf8e57978d261f941458035b723fa272141421d",
+    "A4_GATED_VERIFIABLE": "fdf8e57978d261f941458035b723fa272141421d"
+  },
+  "declared_reward_policy": {
+    "A0_R0_CURRENT": "execution_aware_v3_2_dense",
+    "A1_OUTCOME_ONLY": "reward_ablation_A1_OUTCOME_ONLY",
+    "A2_R3_OUTCOME_FIRST": "reward_ablation_A2_R3_OUTCOME_FIRST",
+    "A3_VERIFIABLE_PROCESS": "reward_ablation_A3_VERIFIABLE_PROCESS",
+    "A4_GATED_VERIFIABLE": "reward_ablation_A4_GATED_VERIFIABLE"
+  },
+  "run_state_steps": {
+    "A0_R0_CURRENT": [
+      "eval_C0",
+      "eval_arm",
+      "preflight",
+      "train"
+    ],
+    "A1_OUTCOME_ONLY": [
+      "eval_arm",
+      "preflight",
+      "train"
+    ],
+    "A2_R3_OUTCOME_FIRST": [
+      "eval_arm",
+      "preflight",
+      "train"
+    ],
+    "A3_VERIFIABLE_PROCESS": [
+      "eval_arm",
+      "preflight",
+      "train"
+    ],
+    "A4_GATED_VERIFIABLE": [
+      "eval_arm",
+      "preflight",
+      "train"
+    ]
+  },
+  "verdict": {
+    "configs_identical_up_to_identity": true,
+    "same_data_and_executor": true,
+    "same_seed": true,
+    "same_commit": true
+  }
+}

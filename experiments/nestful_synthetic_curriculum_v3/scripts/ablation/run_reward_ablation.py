@@ -28,6 +28,9 @@ CLI:
   --eval-subset PATH         (default: reports/reward_ablation/data/nestful_diagnostic_500_ids.json)
   --resume
   --smoke                    (8 train tasks, 8 rollouts, ~2 optimizer steps, 20 eval tasks)
+  --canary                   (dispatch canary: 24 train tasks, 8 rollouts, NO NESTFUL eval;
+                              enables CANARY_TRAJ_LOG per-rollout dumps; arms A1/A4 only)
+  --skip-eval                (train only; skip C0 + arm NESTFUL evaluation)
   --run-id STR               (default: auto-generated unique experiment ID)
   --wandb-project STR        (default: nestful-reward-ablation)
   --wandb-group STR          (default: reward_ablation_round{round}_<timestamp>)
@@ -83,8 +86,11 @@ sys.path.insert(0, str(_V3))
 CONFIGS_DIR = _V3 / "configs" / "reward_ablation"
 DATA_DIR = _V3 / "reports" / "reward_ablation" / "data"
 DEFAULT_TRAIN_SUBSET = DATA_DIR / "train_subset_160.jsonl"
+DEFAULT_CANARY_SUBSET = DATA_DIR / "canary_subset_24.jsonl"
 DEFAULT_EVAL_SUBSET_IDS = DATA_DIR / "nestful_diagnostic_500_ids.json"
 DEFAULT_OUTPUT_ROOT = _V3 / "outputs" / "runs"
+CANARY_ARMS = ("A1_OUTCOME_ONLY", "A4_GATED_VERIFIABLE")
+CANARY_MAX_TRAIN_TASKS = 24
 NESTFUL_TEST = _MINIMAL / "data" / "splits" / "nestful_test.jsonl"
 DEFAULT_TRAIN_CONFIG = _PARTIAL / "config.yaml"
 
@@ -150,9 +156,16 @@ def standard_run_id(round_: int, reward_arm: str, seed: int) -> str:
     return f"reward_ablation_r{round_}_{reward_arm}_seed{seed}"
 
 
-def build_experiment_id(reward_arm: str, round_: int, seed: int, run_id: Optional[str]) -> str:
+def canary_run_id(reward_arm: str, seed: int) -> str:
+    return f"dispatch_canary_{reward_arm}_seed{seed}"
+
+
+def build_experiment_id(reward_arm: str, round_: int, seed: int, run_id: Optional[str],
+                        *, canary: bool = False) -> str:
     if run_id:
         return run_id
+    if canary:
+        return canary_run_id(reward_arm, seed)
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     return f"{standard_run_id(round_, reward_arm, seed)}_{ts}"
 
@@ -235,6 +248,15 @@ def build_run_config(args) -> Dict[str, Any]:
             "max_train_tasks": 8,
             "num_generations": 8,
             "eval_max_tasks": 20,
+        })
+        effective["training"]["num_generations"] = 8
+    if getattr(args, "canary", False):
+        effective.setdefault("canary", {}).update({
+            "enabled": True,
+            "max_train_tasks": CANARY_MAX_TRAIN_TASKS,
+            "num_generations": 8,
+            "skip_eval": True,
+            "traj_log": True,
         })
         effective["training"]["num_generations"] = 8
     return effective
@@ -331,10 +353,32 @@ def _build_session_overrides(effective_config: Dict[str, Any], smoke: bool) -> L
     return ovs
 
 
+def assert_dispatched_policy(session_config: Dict[str, Any], expected: str) -> None:
+    """HARD guard against the Round-1 dispatch bug (2026-07-24): the reward
+    selection hook chain (v3 run.py / partial _select_train_reward) must NOT
+    have rewritten reward.train_policy after the session applied our override.
+    All five Round-1 arms silently trained with execution_aware_v3_2_dense
+    because a defaulted REWARD_POLICY env var won over the configured
+    reward_ablation_* policy (see reports/root_cause_forensic/)."""
+    actual = str((session_config.get("reward") or {}).get("train_policy") or "")
+    if actual != expected:
+        raise SystemExit(
+            f"[run_reward_ablation] ABORT: reward dispatch overridden after session "
+            f"init: config reward.train_policy={actual!r} != requested {expected!r}. "
+            f"Refusing to train with the wrong reward (Round-1 dispatch bug guard)."
+        )
+
+
 def run_training(args, effective_config: Dict[str, Any], run_dir: Path, state: Dict[str, Any]) -> str:
     """Runs exactly ONE epoch via TwoPhaseTrainSession.train_phase (the SAME
     trainer/rollout/credit-assignment code the production run uses).
     Returns the path to the published FINAL checkpoint."""
+    # Belt-and-braces vs two_phase_train_session.py's module-level
+    # os.environ.setdefault("REWARD_POLICY", "execution_aware_v3_2_dense"):
+    # make the env var agree with the arm BEFORE the session module imports.
+    os.environ["REWARD_POLICY"] = TRAIN_POLICY[args.reward_arm]
+    os.environ.pop("REWARD_NAME", None)
+
     from scripts.training.two_phase_train_session import TwoPhaseTrainSession  # noqa: E402
     from scripts.training.two_phase_utils import (  # noqa: E402
         atomic_publish_checkpoint,
@@ -346,21 +390,33 @@ def run_training(args, effective_config: Dict[str, Any], run_dir: Path, state: D
         print(f"[run_reward_ablation] train already done -> {dest}")
         return dest
 
-    overrides = _build_session_overrides(effective_config, args.smoke)
+    overrides = _build_session_overrides(effective_config, args.smoke or args.canary)
     seed = args.seed
+    if args.canary:
+        os.environ["CANARY_TRAJ_LOG"] = "1"
     session = TwoPhaseTrainSession(
         str(DEFAULT_TRAIN_CONFIG), overrides,
         seed=seed, data_seed=seed, rollout_seed=seed,
     )
+    assert_dispatched_policy(session.config, TRAIN_POLICY[args.reward_arm])
     try:
         session.load_learner(checkpoint=None)  # always start from C0 / base model
         session.start_rollout_workers(adapter_path=None)
-        max_train_tasks = 8 if args.smoke else 0
-        expected_rows = None if args.smoke else 160
+        if args.canary:
+            max_train_tasks = CANARY_MAX_TRAIN_TASKS
+            expected_rows = CANARY_MAX_TRAIN_TASKS
+        elif args.smoke:
+            max_train_tasks = 8
+            expected_rows = None
+        else:
+            max_train_tasks = 0
+            expected_rows = 160
+        phase = (f"dispatch_canary_{args.reward_arm}" if args.canary
+                 else f"reward_ablation_{args.reward_arm}_r{args.round}")
         adapter, summary = session.train_phase(
             dataset_path=str(args.train_subset),
             train_out=str(run_dir / "train"),
-            phase_name=f"reward_ablation_{args.reward_arm}_r{args.round}",
+            phase_name=phase,
             max_train_tasks=max_train_tasks,
             expected_rows=expected_rows,
             wandb_run_name=args.wandb_run_name,
@@ -434,6 +490,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--force-fresh", action="store_true",
                     help="Delete incomplete run dir (no SUCCESS) and restart from scratch")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--canary", action="store_true",
+                    help="Dispatch canary: 24 tasks x 8 rollouts, traj dump, no NESTFUL eval")
+    ap.add_argument("--skip-eval", action="store_true",
+                    help="Skip C0 + arm NESTFUL evaluation (implied by --canary)")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--wandb-project", default="nestful-reward-ablation")
     ap.add_argument("--wandb-group", default=None)
@@ -448,13 +508,35 @@ def main() -> int:
 
     if args.resume and args.force_fresh:
         raise SystemExit("[run_reward_ablation] ABORT: --resume and --force-fresh are mutually exclusive")
+    if args.canary and args.smoke:
+        raise SystemExit("[run_reward_ablation] ABORT: --canary and --smoke are mutually exclusive")
+    if args.canary and args.reward_arm not in CANARY_ARMS:
+        raise SystemExit(
+            f"[run_reward_ablation] ABORT: --canary only allows arms {CANARY_ARMS}, "
+            f"got {args.reward_arm}"
+        )
+    if args.canary:
+        args.skip_eval = True
+        args.skip_c0_eval = True
+        if args.train_subset == DEFAULT_TRAIN_SUBSET:
+            args.train_subset = DEFAULT_CANARY_SUBSET
+        if not args.train_subset.is_file():
+            raise SystemExit(
+                f"[run_reward_ablation] ABORT: canary subset missing: {args.train_subset}. "
+                "Run scripts/ablation/prepare_canary_subset_24.py first."
+            )
 
-    canonical_run_id = standard_run_id(args.round, args.reward_arm, args.seed)
-    experiment_id = build_experiment_id(args.reward_arm, args.round, args.seed, args.run_id)
+    canonical_run_id = (canary_run_id(args.reward_arm, args.seed) if args.canary
+                        else standard_run_id(args.round, args.reward_arm, args.seed))
+    experiment_id = build_experiment_id(
+        args.reward_arm, args.round, args.seed, args.run_id, canary=args.canary)
     if args.run_id and args.run_id != canonical_run_id:
         print(f"[run_reward_ablation] NOTE: --run-id {args.run_id!r} differs from canonical "
               f"{canonical_run_id!r} (launcher uses canonical id)")
-    args.wandb_group = args.wandb_group or f"reward_ablation_round{args.round}_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
+    args.wandb_group = args.wandb_group or (
+        f"dispatch_canary_{datetime.now(timezone.utc).strftime('%Y%m%d')}" if args.canary
+        else f"reward_ablation_round{args.round}_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
+    )
     args.wandb_run_name = f"{args.reward_arm}_seed{args.seed}"
 
     run_dir = args.output_root / experiment_id
@@ -484,6 +566,10 @@ def main() -> int:
         "train_subset": str(args.train_subset),
         "eval_subset": str(args.eval_subset),
         "smoke": args.smoke,
+        "canary": bool(args.canary),
+        "skip_eval": bool(args.skip_eval or args.canary),
+        "label": ("dispatch_canary" if args.canary
+                  else f"reward_ablation_round{args.round}"),
         "wandb": {"project": args.wandb_project, "group": args.wandb_group, "run_name": args.wandb_run_name},
         "hashes": hashes,
         "git_commit": _git_commit(),
@@ -516,15 +602,26 @@ def main() -> int:
 
     checkpoint = run_training(args, effective_config, run_dir, state)
 
-    if not args.skip_c0_eval:
-        run_eval(args, checkpoint=None, run_dir=run_dir, state=state, step_name="eval_C0", label="C0")
-    run_eval(args, checkpoint=checkpoint, run_dir=run_dir, state=state, step_name="eval_arm",
-             label=args.reward_arm)
+    if args.skip_eval or args.canary:
+        print("[run_reward_ablation] skip-eval: NESTFUL evaluation not run "
+              "(dispatch canary / train-only mode)", flush=True)
+        mark_step(state, "eval_skipped", reason="skip_eval" if args.skip_eval else "canary")
+        save_state(run_dir, state)
+    else:
+        if not args.skip_c0_eval:
+            run_eval(args, checkpoint=None, run_dir=run_dir, state=state,
+                     step_name="eval_C0", label="C0")
+        run_eval(args, checkpoint=checkpoint, run_dir=run_dir, state=state,
+                 step_name="eval_arm", label=args.reward_arm)
 
     manifest["experiment_end_at"] = _now()
     (run_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     (run_dir / "SUCCESS").write_text(_now() + "\n", encoding="utf-8")
     print(f"[run_reward_ablation] SUCCESS -> {run_dir / 'SUCCESS'}")
+    if args.canary:
+        traj = run_dir / "train" / "canary_rollouts.jsonl"
+        print(f"[run_reward_ablation] canary traj dump -> {traj} "
+              f"(exists={traj.is_file()})", flush=True)
     return 0
 
 

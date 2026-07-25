@@ -1,0 +1,169 @@
+{
+  "seed": "20260724",
+  "arms": {
+    "A0_R0_CURRENT": {
+      "arm": "A0_R0_CURRENT",
+      "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\reward_ablation_r1_A0_R0_CURRENT_seed20260724",
+      "seed": 20260724,
+      "reward_arm": "A0_R0_CURRENT",
+      "train_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+      "train_subset_hash_manifest": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "train_subset_hash_local": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "eval_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json",
+      "eval_subset_hash_manifest": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "eval_subset_hash_local": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+      "optimizer_steps": 29,
+      "num_tasks": 160,
+      "rollouts_per_group": 8,
+      "train_log": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\train\\train_log.jsonl",
+      "train_log_exists": true,
+      "train_summary_exists": true,
+      "final_checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\checkpoints\\FINAL\\adapter_model.safetensors",
+      "final_checkpoint_exists": true,
+      "eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\reward_ablation_r1_A0_R0_CURRENT_seed20260724\\eval\\A0_R0_CURRENT\\20260724",
+      "eval_trajectories_exists": true,
+      "reward_dispatch": {
+        "expected_policy": "execution_aware_v3_2_dense",
+        "logged_policies": [
+          "execution_aware_v3_2_dense"
+        ],
+        "dispatch_ok": true
+      }
+    },
+    "A1_OUTCOME_ONLY": {
+      "arm": "A1_OUTCOME_ONLY",
+      "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724",
+      "seed": 20260724,
+      "reward_arm": "A1_OUTCOME_ONLY",
+      "train_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+      "train_subset_hash_manifest": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "train_subset_hash_local": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "eval_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json",
+      "eval_subset_hash_manifest": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "eval_subset_hash_local": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+      "optimizer_steps": 32,
+      "num_tasks": 160,
+      "rollouts_per_group": 8,
+      "train_log": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\train\\train_log.jsonl",
+      "train_log_exists": true,
+      "train_summary_exists": true,
+      "final_checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\checkpoints\\FINAL\\adapter_model.safetensors",
+      "final_checkpoint_exists": true,
+      "eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\reward_ablation_r1_A1_OUTCOME_ONLY_seed20260724\\eval\\A1_OUTCOME_ONLY\\20260724",
+      "eval_trajectories_exists": true,
+      "reward_dispatch": {
+        "expected_policy": "reward_ablation_A1_OUTCOME_ONLY",
+        "logged_policies": [
+          "execution_aware_v3_2_dense"
+        ],
+        "dispatch_ok": false
+      }
+    },
+    "A2_R3_OUTCOME_FIRST": {
+      "arm": "A2_R3_OUTCOME_FIRST",
+      "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724",
+      "seed": 20260724,
+      "reward_arm": "A2_R3_OUTCOME_FIRST",
+      "train_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+      "train_subset_hash_manifest": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "train_subset_hash_local": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "eval_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json",
+      "eval_subset_hash_manifest": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "eval_subset_hash_local": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+      "optimizer_steps": 30,
+      "num_tasks": 160,
+      "rollouts_per_group": 8,
+      "train_log": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\train\\train_log.jsonl",
+      "train_log_exists": true,
+      "train_summary_exists": true,
+      "final_checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\checkpoints\\FINAL\\adapter_model.safetensors",
+      "final_checkpoint_exists": true,
+      "eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\reward_ablation_r1_A2_R3_OUTCOME_FIRST_seed20260724\\eval\\A2_R3_OUTCOME_FIRST\\20260724",
+      "eval_trajectories_exists": true,
+      "reward_dispatch": {
+        "expected_policy": "reward_ablation_A2_R3_OUTCOME_FIRST",
+        "logged_policies": [
+          "execution_aware_v3_2_dense"
+        ],
+        "dispatch_ok": false
+      }
+    },
+    "A3_VERIFIABLE_PROCESS": {
+      "arm": "A3_VERIFIABLE_PROCESS",
+      "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724",
+      "seed": 20260724,
+      "reward_arm": "A3_VERIFIABLE_PROCESS",
+      "train_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+      "train_subset_hash_manifest": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "train_subset_hash_local": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "eval_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json",
+      "eval_subset_hash_manifest": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "eval_subset_hash_local": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+      "optimizer_steps": 31,
+      "num_tasks": 160,
+      "rollouts_per_group": 8,
+      "train_log": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\train\\train_log.jsonl",
+      "train_log_exists": true,
+      "train_summary_exists": true,
+      "final_checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\checkpoints\\FINAL\\adapter_model.safetensors",
+      "final_checkpoint_exists": true,
+      "eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\reward_ablation_r1_A3_VERIFIABLE_PROCESS_seed20260724\\eval\\A3_VERIFIABLE_PROCESS\\20260724",
+      "eval_trajectories_exists": true,
+      "reward_dispatch": {
+        "expected_policy": "reward_ablation_A3_VERIFIABLE_PROCESS",
+        "logged_policies": [
+          "execution_aware_v3_2_dense"
+        ],
+        "dispatch_ok": false
+      }
+    },
+    "A4_GATED_VERIFIABLE": {
+      "arm": "A4_GATED_VERIFIABLE",
+      "run_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724",
+      "seed": 20260724,
+      "reward_arm": "A4_GATED_VERIFIABLE",
+      "train_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+      "train_subset_hash_manifest": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "train_subset_hash_local": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "eval_subset_local": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json",
+      "eval_subset_hash_manifest": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "eval_subset_hash_local": "90e018f2b7ce106ddc4f9654bcd982b4c87e714f320d95c215d7ede1fa35c8e9",
+      "reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+      "optimizer_steps": 28,
+      "num_tasks": 160,
+      "rollouts_per_group": 8,
+      "train_log": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\train\\train_log.jsonl",
+      "train_log_exists": true,
+      "train_summary_exists": true,
+      "final_checkpoint": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\checkpoints\\FINAL\\adapter_model.safetensors",
+      "final_checkpoint_exists": true,
+      "eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\reward_ablation_r1_A4_GATED_VERIFIABLE_seed20260724\\eval\\A4_GATED_VERIFIABLE\\20260724",
+      "eval_trajectories_exists": true,
+      "reward_dispatch": {
+        "expected_policy": "reward_ablation_A4_GATED_VERIFIABLE",
+        "logged_policies": [
+          "execution_aware_v3_2_dense"
+        ],
+        "dispatch_ok": false
+      }
+    }
+  },
+  "shared_baseline": {
+    "c0_eval_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis\\shared_C0_eval_500\\shared_C0_eval_500\\eval\\C0\\20260724",
+    "c0_trajectories_exists": true,
+    "v3_root": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3",
+    "runs_root": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\outputs\\runs\\_local_round1_analysis"
+  },
+  "reference_reward_spec_hash": "4ee7dcbebe44dc06a2b81fd5eaf7779686c1a767eb16edd842d59df7e29ad1ef",
+  "errors": [
+    "A1_OUTCOME_ONLY: REWARD DISPATCH MISMATCH — declared 'reward_ablation_A1_OUTCOME_ONLY' but train log shows ['execution_aware_v3_2_dense']",
+    "A2_R3_OUTCOME_FIRST: REWARD DISPATCH MISMATCH — declared 'reward_ablation_A2_R3_OUTCOME_FIRST' but train log shows ['execution_aware_v3_2_dense']",
+    "A3_VERIFIABLE_PROCESS: REWARD DISPATCH MISMATCH — declared 'reward_ablation_A3_VERIFIABLE_PROCESS' but train log shows ['execution_aware_v3_2_dense']",
+    "A4_GATED_VERIFIABLE: REWARD DISPATCH MISMATCH — declared 'reward_ablation_A4_GATED_VERIFIABLE' but train log shows ['execution_aware_v3_2_dense']"
+  ],
+  "n_arms_found": 5
+}

@@ -66,6 +66,16 @@ def _patch_v3_2_reward():
           flush=True)
 
 
+def _patch_reward_ablation(arm_id: str) -> None:
+    import grpo_train
+    from lib import reward_ablation_registry
+
+    fn = reward_ablation_registry.make_episode_turn_reward_seq(arm_id)
+    grpo_train.episode_turn_reward_seq = fn
+    print("[v3/run.py] patched grpo_train.episode_turn_reward_seq = "
+          f"lib.reward_ablation_registry (reward_ablation_{arm_id})", flush=True)
+
+
 def _hook_select_train_reward():
     orig = _partial._select_train_reward
 
@@ -73,7 +83,38 @@ def _hook_select_train_reward():
         explicit = str(os.environ.get("REWARD_NAME", "")
                        or os.environ.get("REWARD_POLICY", "")).lower()
         default_policy = _default_reward_policy()
-        policy = str((config.get("reward", {}) or {}).get("train_policy", default_policy)).lower()
+        raw_policy = str((config.get("reward", {}) or {}).get("train_policy",
+                                                              default_policy))
+        policy = raw_policy.lower()
+
+        # ── Reward-only ablation arms (reports/reward_ablation) ─────────────
+        # MUST be matched FIRST and from the explicit CONFIG policy: a stale /
+        # defaulted REWARD_POLICY env var (two_phase_train_session.py sets
+        # REWARD_POLICY=execution_aware_v3_2_dense via os.environ.setdefault at
+        # import time) previously fell through to the v3.2 branch below and
+        # silently overwrote every A1-A4 arm's reward with A0's — Round-1
+        # reward ablation 2026-07-24 trained all five arms with
+        # execution_aware_v3_2_dense (see
+        # reports/root_cause_forensic/IMPLEMENTATION_BUG_AUDIT.md).
+        # An explicitly configured reward_ablation_* policy always wins here.
+        if policy.startswith("reward_ablation_"):
+            from lib import reward_ablation_registry
+            raw_arm = raw_policy[len("reward_ablation_"):]
+            matches = [a for a in reward_ablation_registry.ARM_IDS
+                       if a.lower() == raw_arm.lower()]
+            if not matches:
+                raise ValueError(
+                    f"[v3/run.py] Unknown reward_ablation arm {raw_policy!r}. "
+                    f"Known: {list(reward_ablation_registry.ARM_IDS)}")
+            arm_id = matches[0]
+            _patch_reward_ablation(arm_id)
+            config.setdefault("reward", {})["train_policy"] = f"reward_ablation_{arm_id}"
+            if explicit and not explicit.startswith("reward_ablation_"):
+                print(f"[v3/run.py] NOTE: ignoring REWARD_NAME/REWARD_POLICY env "
+                      f"({explicit!r}) — config reward.train_policy="
+                      f"reward_ablation_{arm_id} takes precedence", flush=True)
+            print(f"[v3/run.py] training reward = reward_ablation_{arm_id}", flush=True)
+            return
 
         if explicit == "execution_aware_v2_1_motif" or policy in (
             "execution_aware_v2_1_motif", "motif", "v2_1_motif",

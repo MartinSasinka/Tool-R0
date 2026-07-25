@@ -1,0 +1,5 @@
+{
+  "mode": "PARTIAL",
+  "reason": "Stored training artifacts do not include parsed trajectories required for frozen registry re-scoring. Cross-arm comparison uses hash-matched rollouts and per-group logged episode_rewards with recomputed GRPO advantages.",
+  "canonical_arm": "A0_R0_CURRENT"
+}

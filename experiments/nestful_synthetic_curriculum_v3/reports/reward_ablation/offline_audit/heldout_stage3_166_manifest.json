@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\data\\training_ready_v5\\filtered\\stage3_train_ready.jsonl",
+  "train_subset": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl",
+  "heldout_count": 166,
+  "expected_count": 166,
+  "disjoint": true,
+  "heldout_sha256": "b74662a9f0adf879aa42ed0a293f797aa2c37236ae92107486486bb6091da287",
+  "motif_distribution": {
+    "long_chain": 33,
+    "reference_reuse": 31,
+    "distractor_heavy": 33,
+    "argument_binding": 33,
+    "fan_in": 36
+  }
+}
