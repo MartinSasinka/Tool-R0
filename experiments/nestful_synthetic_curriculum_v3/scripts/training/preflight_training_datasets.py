@@ -27,14 +27,99 @@ from typing import Any, Dict, List, Optional, Tuple
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _V3 = os.path.normpath(os.path.join(_HERE, "..", ".."))
+_MINIMAL = os.path.normpath(os.path.join(_V3, "..", "nestful_mtgrpo_minimal"))
+
+
+def _load_live_registry():
+    """Load TOOLS from the same directory the trainer executor will use.
+
+    ``SYNTHETIC_TOOLS_DIR`` (a directory containing ``lib/synthetic_tools.py``)
+    is the trainer's registry override. The preflight MUST validate against
+    that registry; otherwise a factory/pilot2 dataset is rejected as
+    ``unknown tool`` while the subsequent training run would have executed
+    those tools correctly.
+
+    Loading goes through ``load_synthetic_tools_module`` (importlib by file
+    path). A plain ``import lib.synthetic_tools`` is unsafe once package
+    ``lib`` has been imported from a different tree — ``lib.__path__`` pins
+    submodule discovery and silently keeps the Stage-3 registry.
+    """
+    tools_dir = os.path.abspath(os.environ.get("SYNTHETIC_TOOLS_DIR") or _V3)
+    if _MINIMAL not in sys.path:
+        sys.path.insert(0, _MINIMAL)
+    if _V3 not in sys.path:
+        sys.path.append(_V3)
+    from synthetic_tool_registry import (  # noqa: E402
+        load_synthetic_tools_module,
+        reset_synthetic_registry,
+    )
+    reset_synthetic_registry()
+    mod = load_synthetic_tools_module(tools_dir)
+    return (
+        tools_dir,
+        mod.REGISTRY_VERSION,
+        mod.TOOLS,
+        mod.registry_hash,
+        mod.tool_schema,
+        mod,
+    )
+
+
+(_TOOLS_DIR, REGISTRY_VERSION, TOOLS, registry_hash, tool_schema,
+ _REGISTRY_MOD) = _load_live_registry()
+_IS_FACTORY_REGISTRY = (
+    getattr(_REGISTRY_MOD, "REGISTRY_SOURCE", "") == "targeted_tool_data_factory"
+    or hasattr(_REGISTRY_MOD, "factory_hashes")
+)
+
 if _V3 not in sys.path:
     sys.path.insert(0, _V3)
-
-from lib.agentic_data.exec_bridge import (  # noqa: E402
-    REGISTRY_VERSION, TOOLS, execute_gold_trace, registry_hash,
-)
+# Import only the structural validator. Do NOT import exec_bridge here:
+# it pulls synthetic_gen_v5, which indexes Stage-3 TOOLS (`chain_in`) at
+# import time and breaks when SYNTHETIC_TOOLS_DIR points at the factory
+# adapter. Gold replay goes through ToolExecutor directly instead.
 from lib.agentic_data.trace_validation import hard_trace_errors  # noqa: E402
-from lib.synthetic_tools import tool_schema  # noqa: E402
+from executor import ToolExecutor  # noqa: E402
+from synthetic_tool_registry import get_synthetic_registry  # noqa: E402
+
+
+def _acceptable_registry_hashes() -> set:
+    """Dataset provenance may stamp the factory registry hash or the combined
+    adapter hash; accept either so a correct export is not rejected."""
+    out = {registry_hash()}
+    try:
+        if hasattr(_REGISTRY_MOD, "factory_hashes"):
+            fh = _REGISTRY_MOD.factory_hashes()
+            for k in ("registry_hash", "adapter_registry_hash"):
+                if fh.get(k):
+                    out.add(fh[k])
+    except Exception:  # noqa: BLE001
+        pass
+    return out
+
+
+def execute_gold_trace(gold_calls: List[Dict[str, Any]]
+                       ) -> Tuple[Optional[List[Any]], Optional[str]]:
+    """Replay gold calls through the REAL trainer executor (mode=synthetic).
+
+    Uses the registry already bound by ``SYNTHETIC_TOOLS_DIR`` / the loader
+    above — same path training uses for factory pilot2 canaries.
+    """
+    names = sorted({c.get("name") for c in gold_calls if isinstance(c, dict)})
+    unknown = [n for n in names if n not in TOOLS]
+    if unknown:
+        return None, f"unknown tool '{unknown[0]}'"
+    # Ensure ToolExecutor sees the same registry we validated against.
+    _ = get_synthetic_registry()
+    task = {"tools": [tool_schema(n) for n in names], "gold_calls": []}
+    ex = ToolExecutor(task, mode="synthetic")
+    observations: List[Any] = []
+    for i, call in enumerate(gold_calls):
+        res = ex.execute(call)
+        if res.error is not None:
+            return None, f"call {i + 1} ({call.get('name')}): {res.error}"
+        observations.append(res.observation)
+    return observations, None
 
 
 def _sha256(path: str) -> str:
@@ -82,9 +167,19 @@ def _validate_row(row: Dict[str, Any], *, path: str, line_no: int) -> Optional[s
     else:
         bounds = (len(gold_calls), len(gold_calls))
 
-    trace_errs = hard_trace_errors(row, TOOLS, bounds)
-    if trace_errs:
-        return f"{path}:{line_no} {sid}: trace: {trace_errs[0]}"
+    # Stage-3 hard_trace_errors require sequential `$var1`, `$var2`, …
+    # Factory pilot data also emits `$var_1` (underscore) — legal for the
+    # trainer executor. Skip the Stage-3 label convention when the live
+    # registry is the factory adapter; gold replay still catches bad refs.
+    if not _IS_FACTORY_REGISTRY:
+        trace_errs = hard_trace_errors(row, TOOLS, bounds)
+        if trace_errs:
+            return f"{path}:{line_no} {sid}: trace: {trace_errs[0]}"
+    else:
+        n = len(gold_calls)
+        if not (bounds[0] <= n <= bounds[1]):
+            return (f"{path}:{line_no} {sid}: call count {n} outside "
+                    f"expected range {bounds}")
 
     tools = row.get("tools") or []
     if not isinstance(tools, list):
@@ -113,10 +208,11 @@ def _validate_row(row: Dict[str, Any], *, path: str, line_no: int) -> Optional[s
         return f"{path}:{line_no} {sid}: gold_answer mismatch vs replay final obs"
 
     rh, rv = _row_registry(row)
-    cur_hash = registry_hash()
-    if rh and rh != cur_hash:
+    accepted = _acceptable_registry_hashes()
+    if rh and rh not in accepted:
         return (f"{path}:{line_no} {sid}: registry_hash {rh[:16]}… != "
-                f"trainer {cur_hash[:16]}…")
+                f"trainer {registry_hash()[:16]}… "
+                f"(registry_dir={_TOOLS_DIR})")
     if rv and rv != REGISTRY_VERSION:
         return (f"{path}:{line_no} {sid}: registry_version {rv} != "
                 f"trainer {REGISTRY_VERSION}")
@@ -130,6 +226,7 @@ def validate_file(path: str) -> Dict[str, Any]:
         raise SystemExit(f"[preflight] ABORT: missing file: {path}")
 
     cur_hash = registry_hash()
+    accepted = _acceptable_registry_hashes()
     rows = 0
     reg_hashes: set = set()
     reg_versions: set = set()
@@ -153,11 +250,11 @@ def validate_file(path: str) -> Dict[str, Any]:
 
     if len(reg_hashes) > 1:
         raise SystemExit(f"[preflight] ABORT: {path} mixes registry hashes")
-    if reg_hashes and next(iter(reg_hashes)) != cur_hash:
+    if reg_hashes and not (reg_hashes <= accepted):
         raise SystemExit(
             f"[preflight] ABORT: {path} registry_hash "
             f"{next(iter(reg_hashes))[:16]}… != trainer {cur_hash[:16]}… "
-            f"(v{REGISTRY_VERSION})")
+            f"(v{REGISTRY_VERSION}, registry_dir={_TOOLS_DIR})")
 
     id_audit = {"path": path}
     ids = []
@@ -199,7 +296,8 @@ def main() -> int:
     args = ap.parse_args()
 
     print(f"[preflight] trainer registry v{REGISTRY_VERSION} "
-          f"hash={registry_hash()[:16]}…")
+          f"hash={registry_hash()[:16]}… dir={_TOOLS_DIR} "
+          f"n_tools={len(TOOLS)}")
     reports = [validate_file(p) for p in args.datasets]
     combined = {
         "registry_version": REGISTRY_VERSION,
