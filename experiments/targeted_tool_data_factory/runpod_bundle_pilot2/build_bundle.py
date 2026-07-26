@@ -42,11 +42,19 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
 
 
 def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    """Content hash with CRLF normalized to LF (matches verify_hashes.py)."""
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
+
+
+def write_text_lf(path: Path, text: str) -> None:
+    """Write UTF-8 text with Unix newlines only — never CRLF."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = text.replace("\r\n", "\n").replace("\r", "\n")
+    if not data.endswith("\n"):
+        data += "\n"
+    with path.open("wb") as fh:
+        fh.write(data.encode("utf-8"))
 
 
 def stratified_canary(train_grpo: list[dict], canonical: dict[str, dict],
@@ -206,16 +214,16 @@ def main() -> int:
     cfg_dir.mkdir(exist_ok=True)
     d0_path = data / "d0_stage3_train_160.jsonl"
     d1_path = data / f"train_grpo_{v}.jsonl"
-    (cfg_dir / "d0_stage3_old.json").write_text(
-        json.dumps(run_config("D0", d0_path, sha256_file(d0_path),
-                              "old Stage-3 curriculum (the data that did not transfer)",
-                              "../../nestful_synthetic_curriculum_v3"),
-                   indent=2) + "\n", encoding="utf-8")
-    (cfg_dir / "d1_pilot2.json").write_text(
-        json.dumps(run_config("D1", d1_path, sha256_file(d1_path),
-                              "targeted_tool_data_factory pilot2 (program-first, executor-verified)",
-                              "../trainer_adapter"),
-                   indent=2) + "\n", encoding="utf-8")
+    write_text_lf(cfg_dir / "d0_stage3_old.json",
+                  json.dumps(run_config(
+                      "D0", d0_path, sha256_file(d0_path),
+                      "old Stage-3 curriculum (the data that did not transfer)",
+                      "../../nestful_synthetic_curriculum_v3"), indent=2))
+    write_text_lf(cfg_dir / "d1_pilot2.json",
+                  json.dumps(run_config(
+                      "D1", d1_path, sha256_file(d1_path),
+                      "targeted_tool_data_factory pilot2 (program-first, executor-verified)",
+                      "../trainer_adapter"), indent=2))
     print("[build] configs/d0_stage3_old.json, configs/d1_pilot2.json")
 
     # ── manifest over every frozen artefact ─────────────────────────────────
@@ -240,8 +248,8 @@ def main() -> int:
         "factory_hashes": _factory_hashes(),
         "files": files,
     }
-    (BUNDLE / "MANIFEST.sha256.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    write_text_lf(BUNDLE / "MANIFEST.sha256.json",
+                  json.dumps(manifest, indent=2, sort_keys=True))
     print(f"[build] MANIFEST.sha256.json: {len(files)} artefacts")
     for name in (f"train_grpo_{v}.jsonl", f"heldout_grpo_{v}.jsonl",
                  f"reserve_grpo_{v}.jsonl", f"canary_{v}_24.jsonl",

@@ -11,8 +11,8 @@
   },
   "files": {
     "build_bundle.py": {
-      "bytes": 12210,
-      "sha256": "424575d87917cebb012cc5e7a8e44a5d6cd862e7cbd4420ef74b68cf2d780c4d"
+      "bytes": 12525,
+      "sha256": "4c45142957e69fc1d52ec3fd1ff6b4f26fc334b8021321c9c03fd1dd81518591"
     },
     "check_canary_gates.py": {
       "bytes": 5448,
@@ -23,12 +23,12 @@
       "sha256": "aa83d8cdd175470f4d27ce6e6e349a3d556435b1b34360b22f24f08dd29c76f7"
     },
     "configs/d0_stage3_old.json": {
-      "bytes": 1705,
-      "sha256": "a25d8ae587f7544aa74e6310396628a59351ea7065c513428cd6c854f8cc575f"
+      "bytes": 1640,
+      "sha256": "608e2658a280928987c3336766d1614ccb21f1a9cd07256f67cdc1e31b67241a"
     },
     "configs/d1_pilot2.json": {
-      "bytes": 1710,
-      "sha256": "f777902c5383846f4f1cb427673bf3ab7e5c46064f6007a117ff59fe81c8de71"
+      "bytes": 1645,
+      "sha256": "98a2432b50c1dfd2e385184ac375e733c379621d5b029f20dfd25928514a46df"
     },
     "data/canary_pilot2_24.jsonl": {
       "bytes": 147616,
@@ -137,10 +137,10 @@
       "sha256": "bf623185bb592c9a151e95e2498d2e49dfb235d68843949f2818d4be645426f1"
     },
     "verify_hashes.py": {
-      "bytes": 1765,
-      "sha256": "ff57d37bd2c1515808c731464feb039da441e8b31f0157b47271d520acd4f6ea"
+      "bytes": 2115,
+      "sha256": "877ee2c08faa135942e1ada0987c3c7f53a4b2424049d7d5c7834069aa4e682c"
     }
   },
-  "frozen_at": "2026-07-26T12:48:04.058725+00:00",
+  "frozen_at": "2026-07-26T12:58:45.016461+00:00",
   "seed": 20260726
 }

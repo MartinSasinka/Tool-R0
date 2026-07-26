@@ -15,11 +15,16 @@ BUNDLE = Path(__file__).resolve().parent
 
 
 def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    """Content hash with CRLF normalized to LF.
+
+    The bundle is frozen on a Windows workstation and verified on Linux RunPod.
+    Git checks out text files as LF on Linux; a Windows editor may leave CRLF
+    in the working tree. Hashing the raw bytes would then reject a byte-identical
+    artefact solely because of line endings. Normalizing makes the MANIFEST
+    platform-independent.
+    """
+    data = path.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def main() -> int:
