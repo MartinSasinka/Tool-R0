@@ -22,6 +22,10 @@
       "bytes": 3251,
       "sha256": "aa83d8cdd175470f4d27ce6e6e349a3d556435b1b34360b22f24f08dd29c76f7"
     },
+    "collect_canary_diagnostics.py": {
+      "bytes": 6176,
+      "sha256": "9de0fbb7a4321d23fe4a1f8d096e7abfe5ca0923295337a8336387d5866c90af"
+    },
     "configs/d0_stage3_old.json": {
       "bytes": 1640,
       "sha256": "608e2658a280928987c3336766d1614ccb21f1a9cd07256f67cdc1e31b67241a"
@@ -109,8 +113,16 @@
       "sha256": "ce9c851cefea5db3334c0c5e06df4484af4c2a87447ffbb829d372bf4a12358f"
     },
     "make_paired_report.py": {
-      "bytes": 13722,
-      "sha256": "535302837d9cf60cd9f08109a54c1fdf4bc29e2f36ede72384cb305e94d8744e"
+      "bytes": 14164,
+      "sha256": "a1f5f9216ba4e1a56656d93bdd82f50683d21f2f7fe927ba7fab336791e4ea68"
+    },
+    "offline_reward_audit.py": {
+      "bytes": 23863,
+      "sha256": "206e1b345e840cc93b62afa622ff2f1d9137e7ddcf4900abf015643f026b0832"
+    },
+    "phase1_reward_patch.py": {
+      "bytes": 5265,
+      "sha256": "9632e341400de2b8db9989b75df73d87dfa3a975856fec9c6f1c8e52c073c1da"
     },
     "requirements.txt": {
       "bytes": 201,
@@ -120,13 +132,41 @@
       "bytes": 11339,
       "sha256": "4e35a715683f6b40642dae2b24cfd9d1be2a3d733d72c46f33d053d0d0005738"
     },
+    "run_deferred_reprobe_4gpu.sh": {
+      "bytes": 3521,
+      "sha256": "c104927449f5c65aad823a7fc36c7bf2edc2d65e0c749845974a9b49c95acd16"
+    },
     "run_eval_all.py": {
-      "bytes": 7418,
-      "sha256": "449b37d5bfd10b9e19b1131f77f07ed6761af514f88c5f3fceb58bc2d0d01076"
+      "bytes": 7793,
+      "sha256": "456593eba2a120339cef2857ab1fd5f70ba9f4639de33d48214421ad1b37b334"
     },
     "run_full_nestful_test.sh": {
       "bytes": 2489,
       "sha256": "c2cdb19c94790de843529f2beeba5dbbf48b29a60451b0d71772016dea408c41"
+    },
+    "run_phase1_canary_4gpu.sh": {
+      "bytes": 10539,
+      "sha256": "731dbee2a6f27e2580bffce44031de7d937ad73fff36b115cd3b934857d10534"
+    },
+    "run_phase1_train.py": {
+      "bytes": 4803,
+      "sha256": "ca1c982a0fa89a33290832b5e7415baf7fb3a37cf7982fd813d215ff82fd01a0"
+    },
+    "run_signal_probe_4gpu.sh": {
+      "bytes": 10582,
+      "sha256": "615e51afd4383ea75ba8626a7ee22afae9330e4814c1569a599e036d6a33d4e5"
+    },
+    "signal_probe_analyze.py": {
+      "bytes": 10564,
+      "sha256": "ac149ccf5bdb9513df9c26ebe1f46002675197a060d31bf32a59040117e45c4a"
+    },
+    "signal_probe_lib.py": {
+      "bytes": 50931,
+      "sha256": "a712048b186ae03e72092a04ab93d2c5c1d2877381489d7a3afacae96d6edc74"
+    },
+    "signal_probe_worker.py": {
+      "bytes": 22559,
+      "sha256": "efea15d39945c3a1a0aa88be718f3588d1a434d5e9d5db1efe21f7ae1df4f8e3"
     },
     "test_c0_vs_d1_mode.sh": {
       "bytes": 2560,
@@ -136,11 +176,27 @@
       "bytes": 4064,
       "sha256": "bf623185bb592c9a151e95e2498d2e49dfb235d68843949f2818d4be645426f1"
     },
+    "test_phase1_next.py": {
+      "bytes": 16904,
+      "sha256": "fcf4e8431c7b34da2e0ffbc3d67efd6379904f3ad928028b6e4b5de918b55f04"
+    },
+    "test_signal_probe.py": {
+      "bytes": 40692,
+      "sha256": "d9994c71730f335c611ca28bda6a7e29d54a9434f57878b18b824ad8950ac8bc"
+    },
+    "verify_factory_registry.py": {
+      "bytes": 1111,
+      "sha256": "baeed8f9927ef8a263322fb66359019752f5fb86027d59444f6d306ee704eaf2"
+    },
     "verify_hashes.py": {
       "bytes": 2115,
       "sha256": "877ee2c08faa135942e1ada0987c3c7f53a4b2424049d7d5c7834069aa4e682c"
+    },
+    "verify_phase1_subset.py": {
+      "bytes": 15869,
+      "sha256": "68d24355af4cb39b0c85d6509a5bb9ec654073963366ab87eb7f34100e7fd8f7"
     }
   },
-  "frozen_at": "2026-07-26T12:58:45.016461+00:00",
+  "frozen_at": "2026-07-26T15:26:08.928215+00:00",
   "seed": 20260726
 }

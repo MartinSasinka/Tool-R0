@@ -256,7 +256,7 @@ def main() -> int:
     # Load every arm that has trajectories on disk; the contrast itself only
     # requires baseline + treatment. Extra arms (e.g. D0 leftover dirs) are
     # shown as additional columns when present.
-    all_arms = ("C0", "D0", "D1")
+    all_arms = ("C0", "D0", "D1", "C1")
 
     meta: dict[str, dict] = {}
     default_meta = Path(__file__).resolve().parent / "data" / "heldout_canonical_pilot2.jsonl"
@@ -274,7 +274,15 @@ def main() -> int:
                         }
             break
 
-    if baseline == "C0" and treatment == "D1":
+    if baseline == "C0" and treatment == "C1":
+        blurb = (
+            "`C0` = base checkpoint (no adapter). `C1` = Phase-1 canary on the "
+            "80-task `recommended_phase1_train.jsonl` subset with the "
+            "offline-selected reward variant, 8 rollouts, ~20 optimizer steps, "
+            "GPU0 learner / GPU1-3 rollout workers. Full D1 on 160 tasks and "
+            "full NESTFUL-1661 were NOT run."
+        )
+    elif baseline == "C0" and treatment == "D1":
         blurb = (
             "`C0` = base checkpoint (no adapter). `D1` = 160 pilot2 factory "
             "tasks trained with A4_GATED_VERIFIABLE, 8 rollouts, GPU0 learner / "

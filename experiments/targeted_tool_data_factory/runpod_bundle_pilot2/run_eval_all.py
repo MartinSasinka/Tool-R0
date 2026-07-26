@@ -114,13 +114,15 @@ def main() -> int:
     ap.add_argument("--results", type=Path, required=True)
     ap.add_argument("--config", type=Path, default=PARTIAL / "config.yaml")
     ap.add_argument("--arms", default="C0,D0,D1",
-                    help="comma-separated arms to evaluate (subset of C0,D0,D1)")
+                    help="comma-separated arms to evaluate (subset of C0,D0,D1,C1)")
+    ap.add_argument("--c1-run", default=None,
+                    help="run id of the Phase-1 C1 canary checkpoint")
     ap.add_argument("--gpus", default="0,1,2,3")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     arms = [a.strip() for a in args.arms.split(",") if a.strip()]
-    unknown = [a for a in arms if a not in ("C0", "D0", "D1")]
+    unknown = [a for a in arms if a not in ("C0", "D0", "D1", "C1")]
     if unknown:
         print(f"[eval] ABORT: unknown arms {unknown}", file=sys.stderr)
         return 2
@@ -130,6 +132,9 @@ def main() -> int:
     if "D1" in arms and not args.d1_run:
         print("[eval] ABORT: --d1-run required when D1 is in --arms", file=sys.stderr)
         return 2
+    if "C1" in arms and not args.c1_run:
+        print("[eval] ABORT: --c1-run required when C1 is in --arms", file=sys.stderr)
+        return 2
 
     ckpts: dict[str, Path | None] = {}
     for label in arms:
@@ -137,7 +142,12 @@ def main() -> int:
             ckpts["C0"] = None
             print("[eval] C0 checkpoint: base model (no adapter)")
             continue
-        run_id = args.d0_run if label == "D0" else args.d1_run
+        if label == "D0":
+            run_id = args.d0_run
+        elif label == "D1":
+            run_id = args.d1_run
+        else:
+            run_id = args.c1_run
         run_dir = args.output_root / run_id
         ck = find_checkpoint(run_dir)
         if ck is None and not args.dry_run:
