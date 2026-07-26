@@ -410,7 +410,11 @@ def run_training(args, effective_config: Dict[str, Any], run_dir: Path, state: D
             expected_rows = None
         else:
             max_train_tasks = 0
-            expected_rows = 160
+            # Full Round-3 ablation is pinned to 160. Phase-1 / custom
+            # subsets pass --expected-rows (e.g. 80) so the gate matches
+            # the file instead of aborting after vLLM warmup.
+            expected_rows = (int(args.expected_rows)
+                             if args.expected_rows is not None else 160)
         phase = (f"dispatch_canary_{args.reward_arm}" if args.canary
                  else f"reward_ablation_{args.reward_arm}_r{args.round}")
         adapter, summary = session.train_phase(
@@ -485,6 +489,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     ap.add_argument("--reward-arm", required=True, choices=ARM_IDS)
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--train-subset", type=Path, default=DEFAULT_TRAIN_SUBSET)
+    ap.add_argument(
+        "--expected-rows", type=int, default=None,
+        help="Override the train-subset size gate (default: 160 for full "
+             "ablation, 24 for --canary). Use 80 for Phase-1 canary subsets.",
+    )
     ap.add_argument("--eval-subset", type=Path, default=DEFAULT_EVAL_SUBSET_IDS)
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--force-fresh", action="store_true",

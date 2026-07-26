@@ -93,6 +93,7 @@ def main() -> int:
         "--reward-arm", reward_arm,
         "--seed", str(args.seed),
         "--train-subset", str(args.train_subset),
+        "--expected-rows", str(PHASE1_N_TASKS),
         "--skip-eval", "--skip-c0-eval",
         "--output-root", str(args.output_root),
         "--run-id", run_id,
