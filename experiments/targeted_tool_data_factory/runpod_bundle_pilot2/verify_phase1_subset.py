@@ -157,16 +157,6 @@ def leakage_check(phase1_ids: Sequence[str],
     (signal-split, not a structural hold-out), so sharing a graph_template_id
     with deferred is expected and must not fail the gate.
     """
-    if not selected_path.is_file():
-        return {"leaked": False, "skipped": True,
-                "note": f"selected records missing at {selected_path}"}
-
-    sys.path.insert(0, str(SRC))
-    from targeted_tool_data.selection import leakage_audit  # noqa: WPS433
-
-    selected = {str(r["task_id"]): r for r in read_jsonl(selected_path)
-                if "task_id" in r}
-    phase1_recs = [selected[i] for i in phase1_ids if i in selected]
     heldout_ids = set()
     if heldout_path.is_file():
         for r in read_jsonl(heldout_path):
@@ -176,6 +166,38 @@ def leakage_check(phase1_ids: Sequence[str],
         for r in read_jsonl(reserve_path):
             reserve_ids.add(str(r.get("task_id") or r.get("sample_id")))
 
+    # Raw id overlap with held-out/reserve is a hard fail. Overlap with
+    # deferred is reported for transparency but does not fail the gate.
+    id_overlap_heldout = sorted(set(phase1_ids) & heldout_ids)
+    id_overlap_reserve = sorted(set(phase1_ids) & reserve_ids)
+    id_overlap_deferred = sorted(set(phase1_ids) & set(deferred_ids))
+
+    if not selected_path.is_file():
+        leaked = bool(id_overlap_heldout) or bool(id_overlap_reserve)
+        return {
+            "leaked": leaked,
+            "skipped": True,
+            "leakage_audit": {"leaked": False, "leakage_collisions": [],
+                              "note": "template audit skipped — selected missing"},
+            "id_overlap_heldout": id_overlap_heldout,
+            "id_overlap_reserve": id_overlap_reserve,
+            "id_overlap_deferred_expected": id_overlap_deferred,
+            "phase1_mapped": 0,
+            "missing_from_selected": [],
+            "pass": not leaked,
+            "note": f"selected records missing at {selected_path}; "
+                    "id-overlap gate only",
+        }
+
+    sys.path.insert(0, str(SRC))
+    from targeted_tool_data.selection import leakage_audit  # noqa: WPS433
+
+    selected = {}
+    for r in read_jsonl(selected_path):
+        tid = str(r.get("task_id") or r.get("sample_id") or "")
+        if tid:
+            selected[tid] = r
+    phase1_recs = [selected[i] for i in phase1_ids if i in selected]
     heldout_recs = [selected[i] for i in heldout_ids if i in selected]
     reserve_recs = [selected[i] for i in reserve_ids if i in selected]
 
@@ -186,11 +208,6 @@ def leakage_check(phase1_ids: Sequence[str],
         "reserve": reserve_recs,
     }
     audit = leakage_audit(splits)
-    # Raw id overlap with held-out/reserve is a hard fail. Overlap with
-    # deferred is reported for transparency but does not fail the gate.
-    id_overlap_heldout = sorted(set(phase1_ids) & heldout_ids)
-    id_overlap_reserve = sorted(set(phase1_ids) & reserve_ids)
-    id_overlap_deferred = sorted(set(phase1_ids) & set(deferred_ids))
     leaked = bool(audit.get("leaked")) or bool(id_overlap_heldout) or bool(id_overlap_reserve)
     return {
         "leaked": leaked,
@@ -302,10 +319,10 @@ def render_md(report: Dict[str, Any]) -> str:
         f"({g['n_tasks']['n']}) |",
         f"| gold replay 100 % | {'PASS' if g['gold_replay']['pass'] else 'FAIL'} "
         f"({g['gold_replay']['rate']}) |",
-        f"| leakage 0 | {'PASS' if g['leakage']['pass'] else 'FAIL'} |",
+        f"| leakage 0 | {'PASS' if g['leakage'].get('pass') else 'FAIL'} |",
         f"| major-feature JSD < 0.10 | "
-        f"{'PASS' if g['nestful_jsd']['pass'] else 'FAIL'} "
-        f"(max={g['nestful_jsd']['max_major_jsd']}) |",
+        f"{'PASS' if g['nestful_jsd'].get('pass') else 'FAIL'} "
+        f"(max={g['nestful_jsd'].get('max_major_jsd')}) |",
         "",
         "## Distributions",
         "",
@@ -347,11 +364,13 @@ def main() -> int:
     ap.add_argument("--heldout", type=Path,
                     default=BUNDLE / "data" / "heldout_grpo_pilot2.jsonl")
     ap.add_argument("--reserve", type=Path,
-                    default=FACTORY / "outputs" / "splits" / "reserve_pilot2.jsonl")
+                    default=BUNDLE / "data" / "reserve_canonical_pilot2.jsonl")
     ap.add_argument("--selected", type=Path,
-                    default=FACTORY / "outputs" / "selected" / "selected_pilot2.jsonl")
+                    default=BUNDLE / "data" / "canonical_pilot2.jsonl",
+                    help="full selected catalogue used for template leakage "
+                         "(frozen canonical_pilot2 on RunPod)")
     ap.add_argument("--nestful-profile", type=Path,
-                    default=FACTORY / "outputs" / "profiles" / "nestful_profile.json")
+                    default=BUNDLE / "data" / "nestful_profile.json")
     ap.add_argument("--out-dir", type=Path, default=None)
     ap.add_argument("--expect-n", type=int, default=EXPECTED_N)
     ap.add_argument("--dry-run", action="store_true")
@@ -384,9 +403,11 @@ def main() -> int:
     leakage = leakage_check(ids, args.selected, args.heldout, args.reserve,
                             deferred_ids)
 
-    nestful_profile = {}
-    if args.nestful_profile.is_file():
-        nestful_profile = json.loads(args.nestful_profile.read_text(encoding="utf-8"))
+    if not args.nestful_profile.is_file():
+        print(f"[phase1] ABORT: missing NESTFUL profile {args.nestful_profile}",
+              file=sys.stderr)
+        return 2
+    nestful_profile = json.loads(args.nestful_profile.read_text(encoding="utf-8"))
     nest = nestful_jsd(feats, nestful_profile)
 
     dist = distribution_report(feats)

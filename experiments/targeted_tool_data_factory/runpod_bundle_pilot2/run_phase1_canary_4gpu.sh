@@ -193,6 +193,9 @@ run "$PY" "$BUNDLE/verify_phase1_subset.py" \
   --phase1 "$PHASE1_JSONL" \
   --deferred "$DEFERRED_JSONL" \
   --heldout "$DATA/heldout_grpo_pilot2.jsonl" \
+  --reserve "$DATA/reserve_canonical_pilot2.jsonl" \
+  --selected "$DATA/canonical_pilot2.jsonl" \
+  --nestful-profile "$DATA/nestful_profile.json" \
   --out-dir "$RESULTS/phase1_verification" \
   $([ "$DRY_RUN" = "1" ] && echo --dry-run)
 # Fail-fast: also gold-replay via the stock preflight for the 80-row file.

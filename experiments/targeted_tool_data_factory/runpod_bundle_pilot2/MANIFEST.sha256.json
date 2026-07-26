@@ -74,6 +74,10 @@
       "sha256": "db1525560b20b47ea5567bc52a64f6134655908e96a7b972d2b9bb555045086c",
       "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\splits\\nestful_test.jsonl filtered by C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json"
     },
+    "data/nestful_profile.json": {
+      "bytes": 2611,
+      "sha256": "8ea95facf1ff6d2ca781b71917079a85832c4266787097b3a2c586bc06e86420"
+    },
     "data/reserve_canonical_pilot2.jsonl": {
       "bytes": 885184,
       "lines": 80,
@@ -145,8 +149,8 @@
       "sha256": "c2cdb19c94790de843529f2beeba5dbbf48b29a60451b0d71772016dea408c41"
     },
     "run_phase1_canary_4gpu.sh": {
-      "bytes": 10539,
-      "sha256": "731dbee2a6f27e2580bffce44031de7d937ad73fff36b115cd3b934857d10534"
+      "bytes": 10689,
+      "sha256": "71c49a4c924ddd8739f7935be85fb03b132eff57fb3c715f3bdbb5f339d6ff48"
     },
     "run_phase1_train.py": {
       "bytes": 4803,
@@ -193,10 +197,10 @@
       "sha256": "877ee2c08faa135942e1ada0987c3c7f53a4b2424049d7d5c7834069aa4e682c"
     },
     "verify_phase1_subset.py": {
-      "bytes": 15869,
-      "sha256": "68d24355af4cb39b0c85d6509a5bb9ec654073963366ab87eb7f34100e7fd8f7"
+      "bytes": 16735,
+      "sha256": "9265b203a555da018dd9baf6b11830ab0a6711f7d01969c33f61d6554d548145"
     }
   },
-  "frozen_at": "2026-07-26T15:26:08.928215+00:00",
+  "frozen_at": "2026-07-26T15:32:58.240855+00:00",
   "seed": 20260726
 }
