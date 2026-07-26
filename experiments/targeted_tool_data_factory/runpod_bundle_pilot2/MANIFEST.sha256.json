@@ -125,8 +125,8 @@
       "sha256": "206e1b345e840cc93b62afa622ff2f1d9137e7ddcf4900abf015643f026b0832"
     },
     "phase1_reward_patch.py": {
-      "bytes": 5265,
-      "sha256": "9632e341400de2b8db9989b75df73d87dfa3a975856fec9c6f1c8e52c073c1da"
+      "bytes": 5710,
+      "sha256": "90921ed7e1d0d606fd1ff5808c1b22ddd580a6d5e65e62e7e8cec69598eb0ae6"
     },
     "requirements.txt": {
       "bytes": 201,
@@ -201,6 +201,6 @@
       "sha256": "9265b203a555da018dd9baf6b11830ab0a6711f7d01969c33f61d6554d548145"
     }
   },
-  "frozen_at": "2026-07-26T15:32:58.240855+00:00",
+  "frozen_at": "2026-07-26T15:34:35.119958+00:00",
   "seed": 20260726
 }

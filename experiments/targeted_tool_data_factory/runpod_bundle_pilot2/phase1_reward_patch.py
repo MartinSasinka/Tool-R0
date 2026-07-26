@@ -17,8 +17,24 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+BUNDLE = Path(__file__).resolve().parent
+V3 = BUNDLE.parent.parent / "nestful_synthetic_curriculum_v3"
+
+
+def _ensure_v3_on_path() -> None:
+    """``lib.reward_ablation_registry`` lives under nestful_synthetic_curriculum_v3.
+
+    ``run_phase1_train`` patches the registry *before* ``run_reward_ablation``
+    inserts ``_V3`` on ``sys.path``, so we must do it here.
+    """
+    v3 = str(V3.resolve())
+    if v3 in sys.path:
+        sys.path.remove(v3)
+    sys.path.insert(0, v3)
 
 
 def _load_selection() -> Dict[str, Any]:
@@ -60,7 +76,7 @@ def apply_phase1_reward_variant(selection: Optional[Dict[str, Any]] = None
               flush=True)
         return sel
 
-    # Import AFTER sys.path has been set by the trainer entry point.
+    _ensure_v3_on_path()
     from lib import reward_ablation_registry as R  # noqa: WPS433
 
     vid = str(sel["selected"])
