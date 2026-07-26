@@ -1,0 +1,65 @@
+{
+  "label": "D1",
+  "run_id": "pilot2_D1_seed20260726",
+  "notes": "targeted_tool_data_factory pilot2 (program-first, executor-verified)",
+  "train_subset": "data/train_grpo_pilot2.jsonl",
+  "train_subset_sha256": "51481495a3f27deb4ea20e9ab4a4c8313f22667413758eeff1c7501e11879bbb",
+  "train_subset_source": "targeted_tool_data_factory pilot2 (program-first, executor-verified)",
+  "base_checkpoint": "C0",
+  "seed": 20260726,
+  "reward": {
+    "arm": "A4_GATED_VERIFIABLE",
+    "policy": "reward_ablation_A4_GATED_VERIFIABLE",
+    "binary_only": false,
+    "format_as_gate": true
+  },
+  "optimizer": {
+    "learning_rate": 1e-06,
+    "kl_beta": 0.1,
+    "max_grad_norm": 1.0,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "epochs": 1,
+    "mask_clipped_from_update": true
+  },
+  "lora": {
+    "method": "qlora",
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": "auto",
+    "load_in_4bit": true,
+    "bnb_4bit_quant_type": "nf4",
+    "bnb_4bit_compute_dtype": "bfloat16"
+  },
+  "rollouts": {
+    "num_generations": 8,
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "paradigm": "react",
+    "max_new_tokens_train": 2048
+  },
+  "credit_assignment": "turn_level_discounted_group_normalized",
+  "hardware": {
+    "learner_gpu": 0,
+    "rollout_dp_gpus": [
+      1,
+      2,
+      3
+    ],
+    "use_vllm": true,
+    "bf16": true,
+    "gradient_checkpointing": true
+  },
+  "executor": {
+    "mode": "synthetic",
+    "synthetic_tools_dir": "../trainer_adapter"
+  },
+  "eval": {
+    "during_training": false,
+    "after_training": [
+      "heldout80",
+      "nestful_diagnostic_500"
+    ]
+  }
+}

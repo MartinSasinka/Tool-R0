@@ -1,0 +1,13 @@
+# Local pilot — CPU only, no LLM, no remote API.
+extends: base.yaml
+
+provider:
+  kind: template_only
+
+generation:
+  candidates: 1500
+  rng_seed: 20260726
+
+probe:
+  enabled: true          # P0 structural always; P1+ only if a student provider is reachable
+  require_local_model: true

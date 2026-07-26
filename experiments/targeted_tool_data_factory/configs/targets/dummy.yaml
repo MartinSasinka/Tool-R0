@@ -1,0 +1,7 @@
+# Dummy target — used by tests to prove target-genericity (§20).
+name: dummy
+adapter: tests.dummy_target
+
+profile:
+  call_count_buckets: ["2", "3", "4", "5", "6+"]
+  offered_tools_buckets: {small: [8, 9], medium: [10, 12], large: [13, 18]}

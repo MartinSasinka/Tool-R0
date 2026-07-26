@@ -1,0 +1,146 @@
+{
+  "bundle": "runpod_bundle_pilot2",
+  "dataset_version": "pilot2",
+  "factory_hashes": {
+    "adapter_registry_hash": "55cd6806a0da4603c69ab8856adee646a56b810910bae036025d5488df8a1141",
+    "adapter_version": "ttdf-adapter-1.0.0",
+    "executor_hash": "42d2696bf584cdd1f5c2c95ce0b281dc9de0a1598741256dc7bbe7a531a176e4",
+    "generator_version": "ttdf-0.1.0",
+    "n_tools": "132",
+    "registry_hash": "f5210beb12d4a33af42de6c8bf1c2b8c3acb3cdd8cef7f0b030e09ee7d2ac562"
+  },
+  "files": {
+    "build_bundle.py": {
+      "bytes": 12210,
+      "sha256": "424575d87917cebb012cc5e7a8e44a5d6cd862e7cbd4420ef74b68cf2d780c4d"
+    },
+    "check_canary_gates.py": {
+      "bytes": 5448,
+      "sha256": "1618e294c790795d8b5aef979f15052f422a42ddb3d8ea6a9e2bd0705251448f"
+    },
+    "check_config_parity.py": {
+      "bytes": 3251,
+      "sha256": "aa83d8cdd175470f4d27ce6e6e349a3d556435b1b34360b22f24f08dd29c76f7"
+    },
+    "configs/d0_stage3_old.json": {
+      "bytes": 1705,
+      "sha256": "a25d8ae587f7544aa74e6310396628a59351ea7065c513428cd6c854f8cc575f"
+    },
+    "configs/d1_pilot2.json": {
+      "bytes": 1710,
+      "sha256": "f777902c5383846f4f1cb427673bf3ab7e5c46064f6007a117ff59fe81c8de71"
+    },
+    "data/canary_pilot2_24.jsonl": {
+      "bytes": 147616,
+      "lines": 24,
+      "sha256": "0efbddce1a10d293a4f8df7881ef5c96205e35e0122f99b17c632c30731a62e0"
+    },
+    "data/canonical_pilot2.jsonl": {
+      "bytes": 3528947,
+      "lines": 320,
+      "sha256": "e066f6becf2bc3c4e30352d6ffb959cd03e7328dad28d35a1dea098eada5ef00",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\canonical_pilot2.jsonl"
+    },
+    "data/d0_stage3_train_160.jsonl": {
+      "bytes": 1264456,
+      "lines": 160,
+      "sha256": "b64d3ec2477319f67ac20128b974055c539e203c0cd185630b63decf07673b74",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\train_subset_160.jsonl"
+    },
+    "data/heldout_canonical_pilot2.jsonl": {
+      "bytes": 859359,
+      "lines": 80,
+      "sha256": "dcf436685ac939e6a9b839bd34496072990d8d61f825bae8bf060481b88e4092"
+    },
+    "data/heldout_grpo_pilot2.jsonl": {
+      "bytes": 445884,
+      "lines": 80,
+      "sha256": "8d77581eeaa152936de5d443394893815140265e19be9792760cc61a969254b2",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\heldout_grpo_pilot2.jsonl"
+    },
+    "data/heldout_nestful_pilot2.jsonl": {
+      "bytes": 329827,
+      "lines": 80,
+      "sha256": "4da21e55921970149ebadcc9b8534a9d165e5cc17c5ceb61042fe7d82f86573b",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\heldout_nestful_pilot2.jsonl"
+    },
+    "data/nestful_diagnostic_500.jsonl": {
+      "bytes": 2095145,
+      "lines": 500,
+      "sha256": "db1525560b20b47ea5567bc52a64f6134655908e96a7b972d2b9bb555045086c",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_mtgrpo_minimal\\data\\splits\\nestful_test.jsonl filtered by C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\nestful_synthetic_curriculum_v3\\reports\\reward_ablation\\data\\nestful_diagnostic_500_ids.json"
+    },
+    "data/reserve_canonical_pilot2.jsonl": {
+      "bytes": 885184,
+      "lines": 80,
+      "sha256": "6c899a442521643b234dd3ca8905820861d1248863b48fd64f9e79ae0d193d3b"
+    },
+    "data/reserve_grpo_pilot2.jsonl": {
+      "bytes": 466753,
+      "lines": 80,
+      "sha256": "ee40fac8860ad91c3c8d7f1168a45e227195787264813d923afd4b114f9a7b7b",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\reserve_grpo_pilot2.jsonl"
+    },
+    "data/reserve_nestful_pilot2.jsonl": {
+      "bytes": 346988,
+      "lines": 80,
+      "sha256": "ee2e72bc9f4b6251b8a7fc5ee8f5a6377050feaf93b4534e7e0dbb757026ab24",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\reserve_nestful_pilot2.jsonl"
+    },
+    "data/train_canonical_pilot2.jsonl": {
+      "bytes": 1784404,
+      "lines": 160,
+      "sha256": "dc02bac875128571b759d25d35606967a2f74f58ad9ac6d734b5bd9567e77b86"
+    },
+    "data/train_grpo_pilot2.jsonl": {
+      "bytes": 932023,
+      "lines": 160,
+      "sha256": "51481495a3f27deb4ea20e9ab4a4c8313f22667413758eeff1c7501e11879bbb",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\train_grpo_pilot2.jsonl"
+    },
+    "data/train_nestful_pilot2.jsonl": {
+      "bytes": 692998,
+      "lines": 160,
+      "sha256": "32a9c99e292ae1fe571f4966a007e60103b4acb88aaab3ebdb608ef994e448a4",
+      "source": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\train_nestful_pilot2.jsonl"
+    },
+    "install.sh": {
+      "bytes": 1131,
+      "sha256": "ce9c851cefea5db3334c0c5e06df4484af4c2a87447ffbb829d372bf4a12358f"
+    },
+    "make_paired_report.py": {
+      "bytes": 13722,
+      "sha256": "535302837d9cf60cd9f08109a54c1fdf4bc29e2f36ede72384cb305e94d8744e"
+    },
+    "requirements.txt": {
+      "bytes": 201,
+      "sha256": "d38f812e73bb5e3d659db3060f53e97ee98eee948dcc460b55e1603e9806388d"
+    },
+    "run_all_4gpu.sh": {
+      "bytes": 11339,
+      "sha256": "4e35a715683f6b40642dae2b24cfd9d1be2a3d733d72c46f33d053d0d0005738"
+    },
+    "run_eval_all.py": {
+      "bytes": 7418,
+      "sha256": "449b37d5bfd10b9e19b1131f77f07ed6761af514f88c5f3fceb58bc2d0d01076"
+    },
+    "run_full_nestful_test.sh": {
+      "bytes": 2489,
+      "sha256": "c2cdb19c94790de843529f2beeba5dbbf48b29a60451b0d71772016dea408c41"
+    },
+    "test_c0_vs_d1_mode.sh": {
+      "bytes": 2560,
+      "sha256": "2e47d1a8524f2d8c9dbe37126edf45395006fb6c06c1746abd28a4cce426ca4b"
+    },
+    "test_c0_vs_d1_unit.py": {
+      "bytes": 4064,
+      "sha256": "bf623185bb592c9a151e95e2498d2e49dfb235d68843949f2818d4be645426f1"
+    },
+    "verify_hashes.py": {
+      "bytes": 1765,
+      "sha256": "ff57d37bd2c1515808c731464feb039da441e8b31f0157b47271d520acd4f6ea"
+    }
+  },
+  "frozen_at": "2026-07-26T12:48:04.058725+00:00",
+  "seed": 20260726
+}
