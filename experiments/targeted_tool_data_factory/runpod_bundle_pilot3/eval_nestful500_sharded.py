@@ -17,7 +17,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+# nestful_mtgrpo_partial/config.yaml defaults hardware.use_vllm=false.
+# USE_VLLM=1 in the shell env is NOT read by final_eval — must override here.
 DECODING = [
+    "--override", "hardware.use_vllm=true",
     "--override", "generation.temperature=0.0",
     "--override", "generation.top_p=1.0",
     "--override", "data.num_eval_rollouts=1",
@@ -144,6 +147,10 @@ def main() -> int:
             continue
         env = dict(os.environ)
         env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+        env["USE_VLLM"] = "1"
+        # Blackwell / sm_120 sampler warmup workaround (same as run_final_eval_v2_parallel.sh)
+        env.setdefault("VLLM_USE_FLASHINFER_SAMPLER", "0")
+        env.setdefault("VLLM_ATTENTION_BACKEND", "FLASH_ATTN")
         env.pop("SYNTHETIC_TOOLS_DIR", None)
         log_f = (shard_dir / "eval.log").open("w", encoding="utf-8")
         procs.append(subprocess.Popen(cmd, env=env, stdout=log_f, stderr=subprocess.STDOUT))

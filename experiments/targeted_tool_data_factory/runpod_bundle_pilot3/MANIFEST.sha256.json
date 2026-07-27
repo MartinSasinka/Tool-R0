@@ -50,8 +50,8 @@
       "sha256": "d8b3960e7460218d39b6b8db99bf773b7ddc25274697cd5c996855dbbb906972"
     },
     "eval_nestful500_sharded.py": {
-      "bytes": 8201,
-      "sha256": "4993a75424f06abb9702dcc5911135281313b824bf15b31a0b619c08b71897dd"
+      "bytes": 8643,
+      "sha256": "ae687e0ebad091fd76ce77bcc28eeca3dd3cc917d57a6641ea92b9c1dea9bcd3"
     },
     "run_signal_probe_4gpu.sh": {
       "bytes": 6403,
@@ -66,7 +66,7 @@
       "sha256": "2e568d34dd36386a7c9754b0d952c0974e08915086c377c8fea67fad6ed7cea2"
     }
   },
-  "frozen_at": "2026-07-27T06:50:34.585623+00:00",
+  "frozen_at": "2026-07-27T06:55:37.141431+00:00",
   "note": "Signal-probe bundle for pilot3. Pilot2 artefacts are untouched.",
   "seed": 20260727
 }
