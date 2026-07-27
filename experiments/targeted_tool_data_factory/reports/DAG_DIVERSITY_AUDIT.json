@@ -1,0 +1,264 @@
+{
+  "train_n": 300,
+  "train_source": "first 300 rows of experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl (matches run_train_nestful500_4gpu.sh)",
+  "topology_id": {
+    "n_tasks": 300,
+    "n_unique": 40,
+    "top1_share": 0.2966666666666667,
+    "top10_share": 0.74,
+    "shannon_bits": 4.0148140663287615,
+    "mean_tasks_per_family": 7.5,
+    "top10": [
+      {
+        "id": "topo_fdeb50f24873",
+        "n": 89,
+        "share": 0.2966666666666667
+      },
+      {
+        "id": "topo_911586a55488",
+        "n": 43,
+        "share": 0.14333333333333334
+      },
+      {
+        "id": "topo_bd3dd51ec1a9",
+        "n": 21,
+        "share": 0.07
+      },
+      {
+        "id": "topo_02b29308ce2b",
+        "n": 16,
+        "share": 0.05333333333333334
+      },
+      {
+        "id": "topo_1c8dbe1830b2",
+        "n": 15,
+        "share": 0.05
+      },
+      {
+        "id": "topo_5296967693d8",
+        "n": 10,
+        "share": 0.03333333333333333
+      },
+      {
+        "id": "topo_926c72bac680",
+        "n": 7,
+        "share": 0.023333333333333334
+      },
+      {
+        "id": "topo_ff8ead63c33b",
+        "n": 7,
+        "share": 0.023333333333333334
+      },
+      {
+        "id": "topo_0c51481d8aeb",
+        "n": 7,
+        "share": 0.023333333333333334
+      },
+      {
+        "id": "topo_d228dd6db98a",
+        "n": 7,
+        "share": 0.023333333333333334
+      }
+    ]
+  },
+  "primitive_program_id": {
+    "n_tasks": 300,
+    "n_unique": 295,
+    "top1_share": 0.006666666666666667,
+    "top10_share": 0.05,
+    "shannon_bits": 8.195485357162601,
+    "mean_tasks_per_family": 1.0169491525423728,
+    "top10": [
+      {
+        "id": "prim_d45c19b58375",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "prim_72f085b6b3b5",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "prim_66dc5d6a8319",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "prim_8c06ea1494b7",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "prim_26be69ef3d7b",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "prim_80fb7a045b14",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "prim_2f7aee542af7",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "prim_168cbbc96c9d",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "prim_606d63f7dbca",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "prim_dc0e8ea424c8",
+        "n": 1,
+        "share": 0.0033333333333333335
+      }
+    ]
+  },
+  "surface_program_id": {
+    "n_tasks": 300,
+    "n_unique": 298,
+    "top1_share": 0.006666666666666667,
+    "top10_share": 0.04,
+    "shannon_bits": 8.215485357162605,
+    "mean_tasks_per_family": 1.0067114093959733,
+    "top10": [
+      {
+        "id": "surf_45571be68722",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "surf_f9fe67b5274b",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "surf_2ff77ecbfaed",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_dc002f0d3c50",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_982976a06f33",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_fe8879b984b5",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_f3dd650dfba9",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_24718c9f43a6",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_58f7a56c53c1",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "surf_d949f340325c",
+        "n": 1,
+        "share": 0.0033333333333333335
+      }
+    ]
+  },
+  "semantic_program_family": {
+    "n_tasks": 300,
+    "n_unique": 294,
+    "top1_share": 0.006666666666666667,
+    "top10_share": 0.05333333333333334,
+    "shannon_bits": 8.188818690495937,
+    "mean_tasks_per_family": 1.0204081632653061,
+    "top10": [
+      {
+        "id": "pf_c218401edf38",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_f2f1f9deb112",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_e21c7ecec690",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_5cf8fa30504f",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_4f6a2062a24b",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_b8b72ab43a11",
+        "n": 2,
+        "share": 0.006666666666666667
+      },
+      {
+        "id": "pf_5240c3db5eff",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "pf_44698d2d849b",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "pf_b68927c61851",
+        "n": 1,
+        "share": 0.0033333333333333335
+      },
+      {
+        "id": "pf_b4e1f57c175e",
+        "n": 1,
+        "share": 0.0033333333333333335
+      }
+    ]
+  },
+  "topology_unique_by_call_count": {
+    "2": 1,
+    "3": 2,
+    "4": 5,
+    "5": 7,
+    "6": 10,
+    "7": 9,
+    "8": 6
+  },
+  "topology_unique_by_motif": {
+    "branch_aggregate": 6,
+    "fan_in": 27,
+    "linear": 7
+  },
+  "definitions": {
+    "topology_id": "n + dependency edges only (no tools/constants)",
+    "primitive_program_id": "topology + mapped primitive sids + arg ref/type pattern (no constants/surfaces)",
+    "surface_program_id": "tool names + param schemas + labels",
+    "semantic_program_family": "factory provenance field when present; else primitive_program_id"
+  }
+}

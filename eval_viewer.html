@@ -1,1695 +1,1748 @@
+<!--python -m http.server 8765-->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Tool-R0 Eval Trajectory Viewer</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tool-R0 Eval Viewer — C0 / D1</title>
 <style>
-:root{
-  --bg:#0f172a;--panel:#1e293b;--panel2:#334155;--border:#475569;
-  --text:#e2e8f0;--muted:#94a3b8;--accent:#60a5fa;--accent2:#818cf8;
-  --green:#34d399;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
-  --cyan:#22d3ee;--purple:#a78bfa;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3348;
+    --text: #e8eaf0;
+    --muted: #8b90a5;
+    --accent: #6c8cff;
+    --green: #3dd68c;
+    --red: #f07178;
+    --amber: #e6c07b;
+    --cyan: #56b6c2;
+    --purple: #c678dd;
+    --mono: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-.container{max-width:1600px;margin:0 auto;padding:16px}
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  header h1 span { color: var(--accent); }
 
-header{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:16px;flex-wrap:wrap}
-header h1{font-size:22px;font-weight:700;color:var(--accent)}
-header .subtitle{color:var(--muted);font-size:13px}
+  .drop-zone {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 160px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(108,140,255,0.08);
+    color: var(--text);
+  }
+  .drop-zone.loaded {
+    border-style: solid;
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .drop-zone input { display: none; }
+  .drop-zone .fname {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-.drop-zone{
-  border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;
-  background:var(--panel);cursor:pointer;transition:all .2s;margin-bottom:16px
-}
-.drop-zone:hover,.drop-zone.over{border-color:var(--accent);background:#1e293b80}
-.drop-zone h3{font-size:16px;margin-bottom:6px}
-.drop-zone p{color:var(--muted);font-size:13px}
-.drop-zone input{display:none}
+  .btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn.primary:hover { filter: brightness(1.1); color: #fff; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.loaded-files{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center}
-.file-tag{
-  display:inline-flex;align-items:center;gap:4px;background:var(--panel2);
-  border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px
-}
-.file-tag .x{cursor:pointer;color:var(--red);font-weight:700;margin-left:4px}
-.file-tag .mode{color:var(--purple);font-weight:700;margin-right:4px;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+  .search-wrap { position: relative; flex: 1; min-width: 160px; max-width: 280px; }
+  .search-wrap input {
+    width: 100%;
+    padding: 6px 10px 6px 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap::before {
+    content: "⌕";
+    position: absolute;
+    left: 9px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 13px;
+  }
 
-.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
-.stat-card .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.stat-card .value{font-size:28px;font-weight:700;margin-top:2px}
-.stat-card .sub{font-size:12px;color:var(--muted);margin-top:2px}
-.stat-card.green .value{color:var(--green)}
-.stat-card.red .value{color:var(--red)}
-.stat-card.blue .value{color:var(--accent)}
-.stat-card.yellow .value{color:var(--yellow)}
-.stat-card.cyan .value{color:var(--cyan)}
-.stat-card.purple .value{color:var(--purple)}
+  select.filter-sel {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
 
-.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:var(--panel);border-radius:10px;border:1px solid var(--border)}
-.controls label{font-size:12px;color:var(--muted);margin-right:4px}
-.controls select,.controls input[type=text]{
-  background:var(--panel2);color:var(--text);border:1px solid var(--border);
-  border-radius:6px;padding:5px 10px;font-size:13px;min-width:120px
-}
-.controls input[type=text]{min-width:200px}
-.controls .sep{width:1px;height:24px;background:var(--border)}
-.btn{
-  background:var(--accent);color:#0f172a;border:none;border-radius:6px;
-  padding:5px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s
-}
-.btn:hover{filter:brightness(1.15)}
-.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-.btn.secondary:hover{background:var(--border)}
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+  }
+  .stat { display: flex; gap: 5px; align-items: baseline; }
+  .stat .label { color: var(--muted); }
+  .stat .val { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stat .val.green { color: var(--green); }
+  .stat .val.red { color: var(--red); }
+  .stat .val.amber { color: var(--amber); }
+  .stat .val.accent { color: var(--accent); }
+  .stat-sep { width: 1px; height: 16px; background: var(--border); }
 
-.task-table-wrap{overflow-x:auto;margin-bottom:16px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{
-  position:sticky;top:0;background:var(--panel);color:var(--muted);font-size:11px;
-  text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;text-align:left;
-  border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap
-}
-thead th:hover{color:var(--accent)}
-thead th .arrow{margin-left:4px;font-size:10px}
-tbody tr{border-bottom:1px solid #1e293b;cursor:pointer;transition:.15s}
-tbody tr:hover{background:var(--panel2)}
-tbody tr.selected{background:#1e40af30;border-left:3px solid var(--accent)}
-tbody tr.group-start td{border-top:2px solid var(--border)}
-td .rollout-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700;background:var(--panel2);border:1px solid var(--border);color:var(--accent2);font-family:'Cascadia Code',Consolas,monospace}
-td .group-cont{color:var(--muted);opacity:.55;font-style:italic}
-td{padding:8px 10px;vertical-align:top;max-width:400px}
-td.mono{font-family:'Cascadia Code',Consolas,monospace;font-size:12px}
-td .q-text{max-height:48px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.badge{
-  display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600
-}
-.badge.ok{background:#065f4620;color:var(--green);border:1px solid #065f4660}
-.badge.fail{background:#7f1d1d20;color:var(--red);border:1px solid #7f1d1d60}
-.badge.warn{background:#78350f20;color:var(--yellow);border:1px solid #78350f60}
-.badge.info{background:#1e3a5f30;color:var(--accent);border:1px solid #1e3a5f60}
-.badge.purple{background:#4c1d9530;color:var(--purple);border:1px solid #4c1d9560}
-.score-bar{width:60px;height:6px;background:var(--panel2);border-radius:3px;display:inline-block;vertical-align:middle;margin-left:6px}
-.score-bar .fill{height:100%;border-radius:3px;transition:.3s}
+  .main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    flex: 1;
+    overflow: hidden;
+  }
 
-.detail-panel{
-  background:var(--panel);border:1px solid var(--border);border-radius:12px;
-  padding:20px;margin-bottom:16px;display:none
-}
-.detail-panel.show{display:block}
-.detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.detail-header h2{font-size:18px;font-weight:600}
-.detail-close{cursor:pointer;font-size:20px;color:var(--muted);padding:4px 8px}
-.detail-close:hover{color:var(--red)}
+  .sidebar {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .sidebar-hdr {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .task-list { overflow-y: auto; flex: 1; }
 
-.cross-mode-bar{
-  display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px 10px;
-  background:var(--bg);border-radius:8px;border:1px solid var(--border);font-size:12px;
-  align-items:center
-}
-.cross-mode-bar .label{color:var(--muted);font-weight:600;margin-right:4px}
-.cross-mode-bar .pill{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;
-  background:var(--panel2);border:1px solid var(--border);cursor:pointer;transition:.15s
-}
-.cross-mode-bar .pill:hover{border-color:var(--accent)}
-.cross-mode-bar .pill.active{background:var(--accent);color:#0f172a;border-color:var(--accent)}
-.cross-mode-bar .pill.pass{border-left:3px solid var(--green)}
-.cross-mode-bar .pill.fail{border-left:3px solid var(--red)}
-.cross-mode-bar .pill.partial{border-left:3px solid var(--yellow)}
-.cross-mode-bar .pill .icon{font-size:10px}
+  .task-item {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .task-item:hover { background: var(--surface2); }
+  .task-item.active { background: rgba(108,140,255,0.12); border-left: 3px solid var(--accent); }
+  .task-item .tid {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 3px;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .task-item .tid .short { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .task-item .q {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+    max-height: 4.2em;
+  }
+  .badges { display: flex; gap: 4px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+  .badge.pass { background: rgba(61,214,140,0.15); color: var(--green); }
+  .badge.fail { background: rgba(240,113,120,0.15); color: var(--red); }
+  .badge.diff { background: rgba(230,192,123,0.15); color: var(--amber); }
+  .badge.same { background: rgba(139,144,165,0.12); color: var(--muted); }
+  .badge.gain { background: rgba(61,214,140,0.25); color: var(--green); }
+  .badge.loss { background: rgba(240,113,120,0.25); color: var(--red); }
+  .badge.meta { background: rgba(108,140,255,0.12); color: var(--accent); }
 
-.side-by-side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:900px){.side-by-side{grid-template-columns:1fr}}
-.side{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;overflow:hidden}
-.side h3{font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.side h3 .tag{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
-.side h3 .tag.baseline{background:#374151;color:#9ca3af}
-.side h3 .tag.finetuned{background:#1e3a5f;color:var(--accent)}
+  .detail {
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--muted);
+    gap: 12px;
+    text-align: center;
+    padding: 40px;
+  }
+  .empty-state .icon { font-size: 40px; opacity: 0.3; }
+  .empty-state p { font-size: 13px; line-height: 1.6; max-width: 520px; }
+  .empty-state code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
 
-.resp-block{
-  background:#0b1120;border:1px solid #1e293b;border-radius:8px;padding:12px;
-  font-family:'Cascadia Code',Consolas,monospace;font-size:12.5px;line-height:1.6;
-  white-space:pre-wrap;word-break:break-word;max-height:500px;overflow:auto;color:#cbd5e1
-}
-.resp-block.compact{max-height:240px;font-size:12px}
-.resp-block .think{color:#8b5cf6;opacity:.7}
-.resp-block .tool-call{color:var(--green)}
-.resp-block .error{color:var(--red);font-weight:600}
+  .detail-hdr h2 {
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--accent);
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+  .detail-hdr .task-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .detail-hdr .question {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+  }
 
-.section-label{
-  font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);
-  margin:14px 0 6px;font-weight:600
-}
+  .ntool-wrap {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .ntool-wrap.visible { display: block; }
+  .ntool-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 7px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ntool-toggle:hover { color: var(--text); background: var(--surface2); }
+  .ntool-toggle .chev { transition: transform 0.15s; }
+  .ntool-wrap:not(.collapsed) .ntool-toggle .chev { transform: rotate(90deg); }
+  .ntool-body {
+    padding: 10px 16px 12px;
+    max-height: min(28vh, 260px);
+    overflow-y: auto;
+  }
+  .ntool-wrap.collapsed .ntool-body { display: none; }
+  .ntool-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 16px 24px;
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    .ntool-grid { grid-template-columns: 1fr; }
+    .ntool-body { max-height: min(36vh, 320px); }
+  }
+  .ntool-col h3 {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .ntool-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ntool-table th, .ntool-table td {
+    padding: 3px 8px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .ntool-table th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .ntool-table th:first-child, .ntool-table td:first-child { text-align: left; }
+  .ntool-table tr.bucket-row { cursor: pointer; }
+  .ntool-table tr.bucket-row:hover td { background: var(--surface2); }
+  .ntool-table tr.bucket-row.active td {
+    background: rgba(108,140,255,0.12);
+  }
+  .ntool-table .delta-pos { color: var(--green); font-weight: 600; }
+  .ntool-table .delta-neg { color: var(--red); font-weight: 600; }
+  .ntool-note {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin-top: 8px;
+  }
+  .ntool-note strong { color: var(--text); font-weight: 600; }
 
-.answer-compare{
-  display:grid;grid-template-columns:1fr 24px 1fr;gap:8px;align-items:stretch;
-  margin-top:8px;background:#0b1120;border:1px solid var(--border);border-radius:8px;padding:10px
-}
-.answer-compare.pass{border-color:var(--green);background:#065f4610}
-.answer-compare.fail{border-color:var(--red);background:#7f1d1d10}
-.answer-compare .ac-side{padding:6px 10px;display:flex;flex-direction:column;justify-content:center}
-.answer-compare .ac-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.answer-compare .ac-value{font-family:'Cascadia Code',Consolas,monospace;font-size:14px;font-weight:600;word-break:break-all;margin-top:2px}
-.answer-compare .ac-arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px}
-.verdict-row{
-  margin-top:8px;padding:8px 10px;border-radius:8px;font-size:13px;
-  background:var(--panel2);border:1px solid var(--border)
-}
-.verdict-row.pass{background:#065f4620;border-color:#065f4660;color:var(--green)}
-.verdict-row.fail{background:#7f1d1d20;border-color:#7f1d1d60;color:var(--red)}
-.verdict-row .vr-reason{display:block;font-size:12px;margin-top:2px;color:inherit;opacity:.85;word-break:break-word}
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .meta-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .meta-card .k {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
+  }
+  .meta-card .v {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--mono);
+  }
+  .meta-card .v.pass { color: var(--green); }
+  .meta-card .v.fail { color: var(--red); }
+  .meta-card .v.amber { color: var(--amber); }
 
-.trajectory{display:flex;flex-direction:column;gap:10px;margin-top:8px}
-.step-card{
-  background:#0b1120;border:1px solid var(--border);border-radius:8px;
-  border-left:3px solid var(--accent);overflow:hidden
-}
-.step-card.ok{border-left-color:var(--green)}
-.step-card.err{border-left-color:var(--red)}
-.step-card.thinking{border-left-color:var(--purple);opacity:.85}
-.step-card .sc-head{
-  display:flex;align-items:center;gap:8px;padding:6px 12px;background:#1e293b80;
-  font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)
-}
-.step-card .sc-head .sc-name{color:var(--accent);font-weight:700;text-transform:none;letter-spacing:0}
-.step-card .sc-head .sc-status{margin-left:auto}
-.step-card .sc-body{padding:8px 12px;font-size:12px}
-.step-card .sc-row{display:flex;gap:10px;padding:3px 0;align-items:flex-start}
-.step-card .sc-row .sc-key{color:var(--muted);min-width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-.step-card .sc-row .sc-val{flex:1;font-family:'Cascadia Code',Consolas,monospace;color:#cbd5e1;word-break:break-all;white-space:pre-wrap}
-.step-card .sc-row .sc-val.error{color:var(--red)}
-.step-card details{margin-top:6px}
-.step-card details summary{cursor:pointer;color:var(--muted);font-size:11px;padding:4px 0}
-.step-card details summary:hover{color:var(--accent)}
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { max-height: 40vh; }
+    .compare-row { grid-template-columns: 1fr; }
+  }
 
-.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
-.meta-item{background:var(--panel2);border-radius:6px;padding:8px 10px}
-.meta-item .mk{font-size:11px;color:var(--muted)}
-.meta-item .mv{font-size:14px;font-weight:600;margin-top:2px}
+  .arm-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .arm-panel.missing { opacity: 0.45; }
+  .arm-hdr {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .arm-hdr .name { font-size: 13px; font-weight: 600; }
+  .arm-hdr .name.c0 { color: var(--cyan); }
+  .arm-hdr .name.d1 { color: var(--purple); }
+  .arm-hdr .name.generic { color: var(--accent); }
 
-.pagination{display:flex;gap:8px;align-items:center;justify-content:center;padding:12px}
-.pagination .info{font-size:13px;color:var(--muted)}
+  .arm-meta {
+    padding: 8px 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .arm-meta b { color: var(--text); font-weight: 600; }
+  .arm-meta .pass { color: var(--green); }
+  .arm-meta .fail { color: var(--red); }
 
-.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty-state h3{font-size:18px;margin-bottom:8px;color:var(--text)}
+  .answer-box {
+    margin: 10px 14px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .answer-box .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .answer-box .val {
+    font-family: var(--mono);
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 80px;
+    overflow-y: auto;
+  }
 
-#app{min-height:80vh}
+  .turns { padding: 8px 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .turn {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .turn-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    background: var(--surface2);
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .turn-bar:hover { color: var(--text); }
+  .turn-bar .tn { font-weight: 600; color: var(--accent); min-width: 28px; }
+  .turn-bar .tool-name {
+    font-family: var(--mono);
+    color: var(--amber);
+    background: rgba(230,192,123,0.1);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .turn-bar .fail-tag {
+    margin-left: auto;
+    color: var(--red);
+    font-size: 10px;
+  }
+  .turn-bar .chev { margin-left: auto; transition: transform 0.15s; font-size: 10px; }
+  .turn.open .turn-bar .chev { transform: rotate(90deg); }
+  .turn-body { display: none; padding: 8px 10px; }
+  .turn.open .turn-body { display: block; }
 
-.tab-bar{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
-.tab-bar .tab{
-  padding:6px 16px;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;
-  cursor:pointer;background:var(--panel);border:1px solid var(--border);border-bottom:none;
-  color:var(--muted);transition:.2s
-}
-.tab-bar .tab.active{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
-.tab-bar .tab:hover{color:var(--text)}
+  .blk { margin-bottom: 8px; }
+  .blk:last-child { margin-bottom: 0; }
+  .blk-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+  }
+  .blk-lbl.model { color: var(--accent); }
+  .blk-lbl.call { color: var(--amber); }
+  .blk-lbl.obs { color: var(--cyan); }
+  .blk-lbl.err { color: var(--red); }
+  .blk pre {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 5px;
+    max-height: 220px;
+    overflow-y: auto;
+    color: #c8ccd8;
+  }
 
-.mode-bar{
-  display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;padding:8px 10px;
-  background:var(--panel);border:1px solid var(--border);border-radius:8px;align-items:center
-}
-.mode-bar .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-right:8px;font-weight:600}
-.mode-bar .mode-pill{
-  padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;
-  background:var(--panel2);border:1px solid var(--border);color:var(--muted);transition:.15s
-}
-.mode-bar .mode-pill:hover{color:var(--text);border-color:var(--accent)}
-.mode-bar .mode-pill.active{background:var(--purple);color:#0f172a;border-color:var(--purple)}
+  .gold-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .gold-box h3 {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .gold-box pre {
+    font-family: var(--mono);
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #c8ccd8;
+    max-height: 160px;
+    overflow-y: auto;
+  }
 
-.hidden{display:none!important}
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--text);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 100;
+    max-width: 360px;
+  }
+  .toast.show { opacity: 1; }
 
-.summary-report{
-  background:var(--panel);border:1px solid var(--border);border-radius:12px;
-  padding:18px 20px;margin-bottom:16px
-}
-.summary-report h2{font-size:17px;font-weight:700;margin-bottom:4px;color:var(--text)}
-.summary-report .summary-lead{color:var(--muted);font-size:13px;margin-bottom:14px;line-height:1.5}
-.summary-report .summary-headline{
-  display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px;
-  padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px
-}
-.summary-report .summary-headline .sh-main{font-size:24px;font-weight:700;color:var(--green)}
-.summary-report .summary-headline .sh-sub{font-size:13px;color:var(--muted)}
-.summary-report .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
-.summary-block{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;overflow:hidden}
-.summary-block h3{font-size:13px;font-weight:700;margin-bottom:4px;color:var(--accent)}
-.summary-block p{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.45}
-.summary-table{width:100%;border-collapse:collapse;font-size:12px}
-.summary-table th,.summary-table td{padding:7px 8px;text-align:left;border-bottom:1px solid #1e293b;vertical-align:top}
-.summary-table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
-.summary-table td.num{text-align:right;font-family:'Cascadia Code',Consolas,monospace;font-size:12px}
-.summary-table tr:last-child td{border-bottom:none}
-.delta-pos{color:var(--green);font-weight:700}
-.delta-neg{color:var(--red);font-weight:700}
-.delta-zero{color:var(--muted)}
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 </style>
 </head>
 <body>
-<div class="container" id="app">
-  <header>
-    <h1>Tool-R0 Eval Trajectory Viewer</h1>
-    <span class="subtitle">Load JSONL prediction files to inspect, compare, and debug benchmark results across modes</span>
-  </header>
 
-  <div class="drop-zone" id="dropZone">
-    <h3>Drop JSONL / JSON files here</h3>
-    <p>Or click to browse. Pair <code>baseline</code> + <code>stage3</code>/<code>finetuned</code> JSONL for side-by-side compare.</p>
-    <input type="file" id="fileInput" multiple accept=".jsonl,.json"/>
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-      <button type="button" class="btn secondary" id="loadToolr0Preset">Load Tool-R0: baseline vs stage3</button>
-    </div>
-    <div class="loaded-files" id="loadedFiles"></div>
+<header>
+  <h1>Tool-R0 <span>Eval Viewer</span></h1>
+
+  <label class="drop-zone" id="dropA" title="Baseline / C0 trajectories JSONL">
+    <span>C0 / A</span>
+    <span class="fname" id="fnameA">drop or click</span>
+    <input type="file" id="fileA" accept=".jsonl,.json,.txt" />
+  </label>
+
+  <label class="drop-zone" id="dropB" title="Finetuned / D1 trajectories JSONL">
+    <span>D1 / B</span>
+    <span class="fname" id="fnameB">drop or click</span>
+    <input type="file" id="fileB" accept=".jsonl,.json,.txt" />
+  </label>
+
+  <label class="drop-zone" id="dropD" title="NESTFUL otázky: nestful_diagnostic_500.jsonl nebo eval_viewer_nestful500_tasks.json">
+    <span>Q</span>
+    <span class="fname" id="fnameD">NESTFUL otázky</span>
+    <input type="file" id="fileD" accept=".jsonl,.json,.txt" />
+  </label>
+
+  <button class="btn primary" id="btnPreset" title="Load C0 + D1 + diagnostic from local repo paths (needs HTTP server)">Load C0↔D1</button>
+  <button class="btn" id="btnClear">Clear</button>
+
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="sample_id / question…" />
   </div>
 
-  <div id="dashboardSection" class="hidden">
-    <div class="tab-bar" id="benchmarkTabs"></div>
-    <div class="mode-bar hidden" id="modeBar"></div>
-    <div class="dashboard" id="dashboard"></div>
-    <div id="compareSummarySection" class="summary-report hidden"></div>
-  </div>
+  <select class="filter-sel" id="filter">
+    <option value="all">All paired</option>
+    <option value="gained">Gained (C0✗ → D1✓)</option>
+    <option value="lost">Lost (C0✓ → D1✗)</option>
+    <option value="both_pass">Both PASS</option>
+    <option value="both_fail">Both FAIL</option>
+    <option value="disagree">Win disagree</option>
+    <option value="a_only">C0/A only</option>
+    <option value="b_only">D1/B only</option>
+  </select>
 
-  <div id="mainSection" class="hidden">
-    <div class="controls" id="controls">
-      <label>Status:</label>
-      <select id="filterStatus"><option value="all">All</option><option value="completed">Completed</option><option value="failed">Failed</option><option value="error">Error</option></select>
-      <div class="sep"></div>
-      <label>Verdict:</label>
-      <select id="filterVerdict"><option value="all">All</option></select>
-      <div class="sep"></div>
-      <label>Stopped:</label>
-      <select id="filterStopped"><option value="all">All</option></select>
-      <div class="sep"></div>
-      <label>Error:</label>
-      <select id="filterError"><option value="all">All</option></select>
-      <div class="sep"></div>
-      <label>Search:</label>
-      <input type="text" id="filterSearch" placeholder="task_id, question text..."/>
-      <div class="sep"></div>
-      <label>Show:</label>
-      <select id="filterView">
-        <option value="paired">Paired (B vs F)</option>
-        <option value="baseline">Baseline only</option>
-        <option value="finetuned">Finetuned only</option>
-        <option value="improved">Improved (F > B)</option>
-        <option value="regressed">Regressed (F < B)</option>
-        <option value="both_fail">Both fail</option>
-        <option value="both_pass">Both pass</option>
-      </select>
-      <div class="sep"></div>
-      <span class="pagination info" id="resultCount"></span>
-    </div>
+  <select class="filter-sel" id="filterN" title="Filter by gold tool-call bucket">
+    <option value="all">n tools: all</option>
+    <option value="2">2 cally</option>
+    <option value="3">3 cally</option>
+    <option value="4">4 cally</option>
+    <option value="5">5 callů</option>
+    <option value="6plus">6+ callů</option>
+  </select>
+</header>
 
-    <div class="detail-panel" id="detailPanel">
-      <div class="detail-header">
-        <h2 id="detailTitle">Task Detail</h2>
-        <span class="detail-close" id="detailClose">&times;</span>
+<div class="stats-bar" id="statsBar" style="display:none">
+  <div class="stat"><span class="label">Paired</span><span class="val accent" id="sPaired">—</span></div>
+  <div class="stat-sep"></div>
+  <div class="stat"><span class="label" id="sLabelA">C0 win</span><span class="val" id="sWinA">—</span></div>
+  <div class="stat"><span class="label" id="sLabelB">D1 win</span><span class="val" id="sWinB">—</span></div>
+  <div class="stat"><span class="label">Δ</span><span class="val" id="sDelta">—</span></div>
+  <div class="stat-sep"></div>
+  <div class="stat"><span class="label">Gained</span><span class="val green" id="sGained">—</span></div>
+  <div class="stat"><span class="label">Lost</span><span class="val red" id="sLost">—</span></div>
+  <div class="stat-sep"></div>
+  <div class="stat"><span class="label">C0 F1</span><span class="val" id="sF1A">—</span></div>
+  <div class="stat"><span class="label">D1 F1</span><span class="val" id="sF1B">—</span></div>
+  <div class="stat-sep"></div>
+  <div class="stat"><span class="label">Showing</span><span class="val" id="sShowing">—</span></div>
       </div>
-      <div id="crossModeBar"></div>
-      <div id="detailQuestion" style="margin-bottom:14px;padding:10px;background:var(--bg);border-radius:8px;border:1px solid var(--border)"></div>
-      <div class="side-by-side" id="detailSides"></div>
-      <div class="meta-grid" id="detailMeta"></div>
+
+<div class="ntool-wrap collapsed" id="nToolWrap">
+  <button type="button" class="ntool-toggle" id="nToolToggle" title="Zobrazit / skrýt shrnutí">
+    <span>Shrnutí C0↔D1 — kde se model zlepšil</span>
+    <span class="chev">▶</span>
+  </button>
+  <div class="ntool-body">
+    <div class="ntool-grid">
+      <div class="ntool-col">
+        <h3>Kde se model zlepšil</h3>
+        <table class="ntool-table">
+          <thead>
+            <tr>
+              <th>Počet gold callů</th>
+              <th>n</th>
+              <th id="nthA">C0</th>
+              <th id="nthB">D1</th>
+              <th>Změna</th>
+            </tr>
+          </thead>
+          <tbody id="nToolBody"></tbody>
+        </table>
+        <div class="ntool-note" id="nToolNoteImprove"></div>
+      </div>
+      <div class="ntool-col">
+        <h3>Co se změnilo v chování modelu</h3>
+        <table class="ntool-table">
+          <thead>
+            <tr>
+              <th>Diagnostická metrika</th>
+              <th id="nthDiagA">C0</th>
+              <th id="nthDiagB">D1</th>
+              <th>Změna</th>
+            </tr>
+          </thead>
+          <tbody id="nDiagBody"></tbody>
+        </table>
+        <div class="ntool-note" id="nToolNoteDiag">Interní trajectory diagnostika — ne headline <code>official_win</code>. Klik na bucket filtruje seznam úloh.</div>
+      </div>
+      </div>
+      </div>
     </div>
 
-    <div class="task-table-wrap">
-      <table id="taskTable">
-        <thead><tr id="tableHead"></tr></thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-hdr">
+      <span>Tasks</span>
+      <span id="listCount">0</span>
     </div>
-    <div class="pagination" id="pagination"></div>
-  </div>
-
-  <div class="empty-state" id="emptyState">
-    <h3>No data loaded</h3>
-    <p>Drop your JSONL prediction files above to start exploring trajectories.</p>
-  </div>
+    <div class="task-list" id="taskList"></div>
+  </aside>
+  <section class="detail" id="detail">
+    <div class="empty-state">
+      <div class="icon">◈</div>
+      <p>
+        Načti <strong>C0</strong> a <strong>D1</strong> <code>final_eval_trajectories.jsonl</code>
+        (drag &amp; drop nebo <strong>Load C0↔D1</strong> přes lokální server).<br /><br />
+        Otázky (NESTFUL <code>input</code>) se berou z
+        <code>eval_viewer_nestful500_tasks.json</code> / diagnostic JSONL — při HTTP se načtou samy.<br /><br />
+        <code>python -m http.server 8765</code> v rootu repo → otevři
+        <code>http://localhost:8765/eval_viewer.html</code>
+      </p>
+    </div>
+  </section>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const $ = s => document.querySelector(s);
+"use strict";
 
+/* ── State ─────────────────────────────────────────────────────────── */
 const state = {
-  files: [],
-  benchmarks: {},
-  activeBenchmark: null,
-  activeMode: null,
-  sortCol: null,
-  sortDir: 1,
-  page: 0,
-  selectedKey: null,
+  armA: new Map(),   // id -> normalized
+  armB: new Map(),
+  diag: new Map(),   // sample_id -> {question, gold_answer, output}
+  labelA: "C0 / A",
+  labelB: "D1 / B",
+  profileA: "generic",
+  profileB: "generic",
+  paired: [],
+  filtered: [],
+  activeId: null,
 };
 
-const PAGE_SIZE = 50;
-const DEFAULT_MODE = '_default';
-const MODE_ORDER = ['structural', 'execute', 'multiturn', '_default'];
-const MODE_LABELS = {
-  structural: 'Structural',
-  execute: 'Execute',
-  multiturn: 'Multiturn',
-  _default: 'Default',
-};
-const COMPARE_LEFT = 'baseline';
-const COMPARE_RIGHT = 'finetuned';
-const PROFILE_LABELS = {
-  baseline: 'Baseline',
-  finetuned: 'Finetuned',
-};
-const TOOLR0_PRESET = {
-  label: 'Tool-R0 synthetic curriculum (multiturn)',
-  files: [
-    {
-      path: 'curricullum/evaluation/results_toolr0/curriculum_baseline_multiturn_predictions.jsonl',
-      summary: 'curricullum/evaluation/results_toolr0/curriculum_baseline_multiturn_summary.json',
-    },
-    {
-      path: 'curricullum/evaluation/results_toolr0/curriculum_stage3_3call_multiturn_predictions.jsonl',
-      summary: 'curricullum/evaluation/results_toolr0/curriculum_stage3_3call_multiturn_summary.json',
-    },
-  ],
+const PRESET = {
+  a: "experiments/targeted_tool_data_factory/outputs/runpod_pilot2/phase1_canary_from_zip/eval/C0_nestful500/final_eval_trajectories.jsonl",
+  b: "experiments/targeted_tool_data_factory/outputs/runpod_pilot3/train_nestful500_from_zip/train_nestful500/eval/D1_nestful500/final_eval_trajectories.jsonl",
+  d: "experiments/targeted_tool_data_factory/runpod_bundle_pilot2/data/nestful_diagnostic_500.jsonl",
+  /** compact sample_id → {q, gold, n} from NESTFUL diagnostic-500 inputs */
+  tasks: "eval_viewer_nestful500_tasks.json",
 };
 
-/* ─── File loading ──────────────────────────────────────── */
-const dropZone = $('#dropZone');
-const fileInput = $('#fileInput');
-
-dropZone.addEventListener('click', () => fileInput.click());
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); handleFiles(e.dataTransfer.files); });
-fileInput.addEventListener('change', () => handleFiles(fileInput.files));
-
-function handleFiles(fileList) {
-  for (const f of fileList) {
-    if (state.files.find(x => x.name === f.name)) continue;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const entry = { name: f.name, content: reader.result };
-      state.files.push(entry);
-      const meta = parseFile(entry.name, entry.content);
-      entry.meta = meta;
-      renderLoadedFiles();
-      renderAll();
-    };
-    reader.readAsText(f, 'utf-8');
-  }
-}
-
-function removeFile(name) {
-  state.files = state.files.filter(f => f.name !== name);
-  rebuildBenchmarks();
-  renderLoadedFiles();
-  renderAll();
-}
-window.removeFile = removeFile;
-
-function renderLoadedFiles() {
-  const el = $('#loadedFiles');
-  el.innerHTML = state.files.map(f => {
-    const m = f.meta || {};
-    const modeLabel = m.mode && m.mode !== DEFAULT_MODE ? `<span class="mode">${MODE_LABELS[m.mode] || m.mode}</span>` : '';
-    const profileLabel = m.profile ? `<span class="mode">${esc(m.profile)}</span>` : '';
-    return `<span class="file-tag">${modeLabel}${profileLabel}${esc(f.name)}<span class="x" onclick="removeFile('${esc(f.name).replace(/'/g, "&#39;")}')">&times;</span></span>`;
-  }).join('');
-}
-
-/* ─── Detection ─────────────────────────────────────────── */
-function detectBenchmark(obj) {
-  if (obj.benchmark) return obj.benchmark;
-  if (obj.full_match !== undefined || obj.name_f1 !== undefined || obj.execution_trace !== undefined) return 'nestful';
-  if (obj.ast_match !== undefined && obj.api_name !== undefined) return 'toolalpaca';
-  if (obj.ast_match !== undefined && obj.gt_name !== undefined) return 'apibank';
-  if (obj.conversation_id !== undefined || obj.turn_index !== undefined) return 'tooltalk';
-  if (obj.task_success !== undefined || obj.gt_num_api_calls !== undefined) return 'appworld';
-  if (obj.category && /simple|multiple|parallel|irrelevance|exec_/.test(obj.category)) return 'bfcl';
-  if (obj.valid !== undefined && obj.category) return 'bfcl';
-  return 'unknown';
-}
-
-function rawProfile(filename, obj) {
-  const fn = filename.toLowerCase();
-  if (obj && obj.model_profile) {
-    return String(obj.model_profile).replace(/_exec$/, '');
-  }
-  if (fn.includes('curriculum_baseline') || fn.includes('baseline')) return 'curriculum_baseline';
-  if (fn.includes('stage3') || fn.includes('3call')) return 'curriculum_stage3_3call';
-  if (fn.includes('stage2') || fn.includes('2call')) return 'curriculum_stage2_2call';
-  if (fn.includes('stage1') || fn.includes('1call')) return 'curriculum_stage1_1call';
-  if (fn.includes('finetuned') || fn.includes('trained')) return 'finetuned';
-  if (fn.includes('smoke')) return 'smoke';
-  return filename.replace(/\.(jsonl|json)$/i, '');
-}
-
-function canonicalProfile(raw, filename) {
-  const p = String(raw || '').toLowerCase();
-  const fn = String(filename || '').toLowerCase();
-  const hay = `${p} ${fn}`;
-  if (hay.includes('baseline') || /\bbase_model\b/.test(hay)) return COMPARE_LEFT;
-  if (
-    hay.includes('finetuned') ||
-    hay.includes('trained') ||
-    hay.includes('stage3') ||
-    hay.includes('stage2') ||
-    hay.includes('stage1') ||
-    hay.includes('3call') ||
-    hay.includes('2call') ||
-    hay.includes('1call') ||
-    hay.includes('curriculum_stage')
-  ) return COMPARE_RIGHT;
-  if (p === 'smoke') return 'smoke';
-  return COMPARE_LEFT;
-}
-
-function detectProfile(filename, obj) {
-  return canonicalProfile(rawProfile(filename, obj), filename);
-}
-
-function displayProfileLabel(canonical, raw) {
-  if (raw && raw !== canonical) {
-    return raw.replace(/^curriculum_/, '').replace(/_/g, ' ');
-  }
-  return PROFILE_LABELS[canonical] || canonical;
-}
-
-function detectMode(filename, obj, bench) {
-  if (obj && obj.mode) return obj.mode;
-  const fn = filename.toLowerCase();
-  if (fn.includes('multiturn')) return 'multiturn';
-  if (fn.includes('execute') || fn.includes('_exec')) return 'execute';
-  if (bench === 'nestful') {
-    if (obj && (obj.execution_trace !== undefined || obj.predicted_calls !== undefined || obj.raw_completions !== undefined)) return 'multiturn';
-    if (obj && (obj.verdict !== undefined || obj.predicted_final !== undefined || obj.execution_class !== undefined)) return 'execute';
-    return 'structural';
-  }
-  return DEFAULT_MODE;
-}
-
-function ensureBucket(bench, mode) {
-  if (!state.benchmarks[bench]) state.benchmarks[bench] = { modes: {} };
-  if (!state.benchmarks[bench].modes[mode]) {
-    state.benchmarks[bench].modes[mode] = { summaries: {}, predictions: {}, profileLabels: {} };
-  }
-  return state.benchmarks[bench].modes[mode];
-}
-
-function rememberProfileLabel(bucket, canonical, raw) {
-  if (!bucket || !canonical) return;
-  bucket.profileLabels = bucket.profileLabels || {};
-  const label = displayProfileLabel(canonical, raw);
-  if (!bucket.profileLabels[canonical] || label.length > bucket.profileLabels[canonical].length) {
-    bucket.profileLabels[canonical] = label;
-  }
-}
-
-function profileLabel(bucket, canonical) {
-  return bucket?.profileLabels?.[canonical] || PROFILE_LABELS[canonical] || canonical;
-}
-
-function parseFile(filename, content) {
-  const fn = filename.toLowerCase();
-  const isJsonOnly = fn.endsWith('.json') && !fn.endsWith('.jsonl');
-  if (isJsonOnly) {
-    try {
-      const obj = JSON.parse(content);
-      const bench = detectBenchmark(obj);
-      const raw = rawProfile(filename, obj);
-      const profile = canonicalProfile(raw, filename);
-      const mode = detectMode(filename, obj, bench);
-      const bucket = ensureBucket(bench, mode);
-      bucket.summaries[profile] = obj;
-      rememberProfileLabel(bucket, profile, raw);
-      return { bench, profile, mode, raw };
-    } catch(e) { console.warn('JSON parse error', filename, e); return {}; }
-  }
-  const lines = content.trim().split('\n').filter(l => l.trim());
-  if (!lines.length) return {};
-  let first;
-  try { first = JSON.parse(lines[0]); } catch { return {}; }
-  const bench = detectBenchmark(first);
-  const raw = rawProfile(filename, first);
-  const profile = canonicalProfile(raw, filename);
-  const mode = detectMode(filename, first, bench);
-  const tasks = lines.map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-  const bucket = ensureBucket(bench, mode);
-  bucket.predictions[profile] = tasks;
-  rememberProfileLabel(bucket, profile, raw);
-  return { bench, profile, mode, raw };
-}
-
-function rebuildBenchmarks() {
-  state.benchmarks = {};
-  state.activeBenchmark = null;
-  state.activeMode = null;
-  for (const f of state.files) {
-    f.meta = parseFile(f.name, f.content);
-  }
-}
-
-/* ─── Bucket helpers ────────────────────────────────────── */
-function getModesForBench(bench) {
-  const b = state.benchmarks[bench];
-  if (!b) return [];
-  const modes = Object.keys(b.modes);
-  modes.sort((a, b) => MODE_ORDER.indexOf(a) - MODE_ORDER.indexOf(b));
-  return modes;
-}
-
-function getCurrentBucket() {
-  const b = state.benchmarks[state.activeBenchmark];
-  if (!b) return null;
-  return b.modes[state.activeMode] || null;
-}
-
-function bucketTaskCount(bucket) {
-  if (!bucket) return 0;
-  return Object.values(bucket.predictions).reduce((s, arr) => s + arr.length, 0);
-}
-
-/* ─── Rendering ─────────────────────────────────────────── */
-function renderAll() {
-  const benchNames = Object.keys(state.benchmarks);
-  if (!benchNames.length) {
-    $('#dashboardSection').classList.add('hidden');
-    $('#mainSection').classList.add('hidden');
-    $('#emptyState').classList.remove('hidden');
-    return;
-  }
-  $('#emptyState').classList.add('hidden');
-  $('#dashboardSection').classList.remove('hidden');
-  $('#mainSection').classList.remove('hidden');
-
-  if (!state.activeBenchmark || !state.benchmarks[state.activeBenchmark]) {
-    state.activeBenchmark = benchNames[0];
-    state.activeMode = null;
-  }
-  const modes = getModesForBench(state.activeBenchmark);
-  if (!state.activeMode || !modes.includes(state.activeMode)) {
-    state.activeMode = modes[0] || null;
-  }
-
-  renderBenchmarkTabs(benchNames);
-  renderModeTabs(modes);
-  renderDashboard();
-  renderCompareSummary();
-  renderTable();
-  if (state.selectedKey) renderDetail();
-}
-
-function renderBenchmarkTabs(benchNames) {
-  const el = $('#benchmarkTabs');
-  el.innerHTML = benchNames.map(b => {
-    const cls = b === state.activeBenchmark ? 'tab active' : 'tab';
-    const total = Object.values(state.benchmarks[b].modes).reduce((s, m) => s + bucketTaskCount(m), 0);
-    return `<div class="${cls}" data-bench="${esc(b)}">${b.toUpperCase()} <span style="font-weight:400;color:var(--muted)">(${total})</span></div>`;
-  }).join('');
-  el.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-    state.activeBenchmark = t.dataset.bench;
-    state.activeMode = null;
-    state.page = 0;
-    state.selectedKey = null;
-    state.sortCol = null;
-    $('#detailPanel').classList.remove('show');
-    renderAll();
-  }));
-}
-
-function renderModeTabs(modes) {
-  const el = $('#modeBar');
-  if (modes.length <= 1 && modes[0] === DEFAULT_MODE) {
-    el.classList.add('hidden');
-    el.innerHTML = '';
-    return;
-  }
-  el.classList.remove('hidden');
-  el.innerHTML = '<span class="label">Mode:</span>' + modes.map(m => {
-    const cls = m === state.activeMode ? 'mode-pill active' : 'mode-pill';
-    const bucket = state.benchmarks[state.activeBenchmark].modes[m];
-    const n = bucketTaskCount(bucket);
-    return `<div class="${cls}" data-mode="${esc(m)}">${MODE_LABELS[m] || m} <span style="opacity:.7;font-weight:400;margin-left:4px">(${n})</span></div>`;
-  }).join('');
-  el.querySelectorAll('.mode-pill').forEach(p => p.addEventListener('click', () => {
-    state.activeMode = p.dataset.mode;
-    state.page = 0;
-    state.selectedKey = null;
-    state.sortCol = null;
-    $('#detailPanel').classList.remove('show');
-    renderAll();
-  }));
-}
-
-function renderDashboard() {
-  const bucket = getCurrentBucket();
-  if (!bucket) { $('#dashboard').innerHTML = ''; return; }
-  const cards = [];
-  const profiles = Object.keys(bucket.summaries);
-  const predProfiles = Object.keys(bucket.predictions);
-  const mode = state.activeMode;
-
-  const dashProfiles = profiles.length ? profiles : predProfiles;
-  for (const p of dashProfiles) {
-    const s = bucket.summaries[p];
-    const tasks = bucket.predictions[p] || [];
-    const label = profileLabel(bucket, p);
-    let mainScore;
-    if (s) {
-      mainScore = s.partial_match_accuracy_percent ?? s.final_answer_accuracy_percent ?? s.mean_score_percent ?? s.overall_accuracy_percent ?? s.ast_accuracy_percent ?? s.turn_accuracy_percent ?? s.task_success_rate_percent;
-    }
-    if (mainScore == null && tasks.length) {
-      mainScore = tasks.reduce((sum, t) => sum + (t.score || 0), 0) / tasks.length * 100;
-    }
-    mainScore = mainScore || 0;
-    const totalTasks = s?.total_tasks ?? tasks.length;
-    cards.push(card(`${label} Score`, `${mainScore.toFixed(1)}%`, `${totalTasks} tasks`, mainScore > 30 ? 'green' : mainScore > 10 ? 'yellow' : 'red'));
-
-    if (s) {
-      if (mode === 'multiturn' && s.step_limit_hit_rate_percent != null) {
-        cards.push(card(`${label} Step-Limit`, `${s.step_limit_hit_rate_percent.toFixed(1)}%`, 'hit step cap', 'yellow'));
-      } else if (s.parse_success_rate_percent != null) {
-        cards.push(card(`${label} Parse`, `${s.parse_success_rate_percent.toFixed(1)}%`, 'success rate', 'cyan'));
-      } else if (s.parse_reasons) {
-        const parsed = Object.entries(s.parse_reasons).filter(([k]) => k !== 'unparseable_prediction').reduce((acc, [, v]) => acc + v, 0);
-        const total = Object.values(s.parse_reasons).reduce((acc, v) => acc + v, 0);
-        cards.push(card(`${label} Parse`, `${(total ? parsed / total * 100 : 0).toFixed(1)}%`, 'success rate', 'cyan'));
-      }
-      if (mode === 'multiturn' && s.context_limit_hit_rate_percent != null) {
-        cards.push(card(`${label} Ctx-Limit`, `${s.context_limit_hit_rate_percent.toFixed(1)}%`, 'context overflow', 'purple'));
-      }
-      if ((mode === 'execute' || mode === 'multiturn') && s.judge_used_rate_percent != null) {
-        cards.push(card(`${label} Judge`, `${s.judge_used_rate_percent.toFixed(1)}%`, 'judge fallback', 'purple'));
-      }
-    }
-  }
-
-  const bp = bucket.predictions[COMPARE_LEFT] || [];
-  const fp = bucket.predictions[COMPARE_RIGHT] || [];
-  if (bp.length && fp.length) {
-    const rightLabel = profileLabel(bucket, COMPARE_RIGHT);
-    const bMap = new Map();
-    bp.forEach(t => bMap.set(rowKeyFor(t.task_id, rolloutOf(t)), t));
-    let improved = 0, regressed = 0, same = 0;
-    for (const ft of fp) {
-      const bt = bMap.get(rowKeyFor(ft.task_id, rolloutOf(ft)));
-      if (!bt) continue;
-      if ((ft.score || 0) > (bt.score || 0)) improved++;
-      else if ((ft.score || 0) < (bt.score || 0)) regressed++;
-      else same++;
-    }
-    cards.push(card('Improved', `${improved}`, `${rightLabel} > baseline`, 'green'));
-    cards.push(card('Regressed', `${regressed}`, `${rightLabel} < baseline`, 'red'));
-    cards.push(card('Unchanged', `${same}`, 'same score', 'blue'));
-  }
-
-  $('#dashboard').innerHTML = cards.join('');
-}
-
-function card(label, value, sub, cls) {
-  return `<div class="stat-card ${cls}"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
-}
-
-function isPassRow(r) {
-  return r && (r.verdict === 'pass' || (r.score || 0) >= 1);
-}
-
-function avg(nums) {
-  const vals = nums.filter(v => v != null && !Number.isNaN(v));
-  if (!vals.length) return null;
-  return vals.reduce((a, b) => a + b, 0) / vals.length;
-}
-
-function fmtNum(n, digits = 0) {
-  if (n == null || Number.isNaN(n)) return '—';
-  return Number(n).toLocaleString(undefined, {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  });
-}
-
-function fmtPct(n, digits = 1) {
-  if (n == null || Number.isNaN(n)) return '—';
-  return `${Number(n).toFixed(digits)}%`;
-}
-
-function fmtDelta(n, { invert = false, digits = 0, suffix = '' } = {}) {
-  if (n == null || Number.isNaN(n)) return '<span class="delta-zero">—</span>';
-  const eps = digits > 0 ? 10 ** -digits : 0.5;
-  if (Math.abs(n) < eps) return '<span class="delta-zero">0</span>';
-  const good = invert ? n < 0 : n > 0;
-  const cls = good ? 'delta-pos' : 'delta-neg';
-  const sign = n > 0 ? '+' : '';
-  const text = digits > 0 ? `${sign}${n.toFixed(digits)}${suffix}` : `${sign}${fmtNum(n)}${suffix}`;
-  return `<span class="${cls}">${text}</span>`;
-}
-
-function analyzeRollouts(rows) {
-  const passed = rows.filter(isPassRow);
-  const failed = rows.filter(r => !isPassRow(r));
-  const toolCalls = rows.map(r => {
-    if (r.num_tool_calls != null) return r.num_tool_calls;
-    return (r.predicted_calls || []).length;
-  });
-  const passOne = passed.filter(r => (r.num_steps || 0) === 1).length;
-  const passMulti = passed.filter(r => (r.num_steps || 0) >= 2).length;
-  return {
-    n: rows.length,
-    passed: passed.length,
-    passRate: rows.length ? (passed.length / rows.length) * 100 : 0,
-    avgToolCalls: avg(toolCalls),
-    avgSteps: avg(rows.map(r => r.num_steps ?? 0)),
-    noCallsMade: rows.filter(r => (r.num_tool_calls ?? (r.predicted_calls || []).length) === 0).length,
-    earlyStopNoCalls: failed.filter(r =>
-      r.stopped === 'no_more_calls' &&
-      (r.num_steps || 0) === 1 &&
-      (r.predicted_calls || []).length === 0 &&
-      (r.num_tool_calls ?? 0) === 0
-    ).length,
-    executorMismatch: failed.filter(r => r.verdict_reason === 'executor_mismatch').length,
-    noFinalValue: failed.filter(r => r.verdict_reason === 'no_final_value').length,
-    passOneStepPct: passed.length ? (passOne / passed.length) * 100 : 0,
-    passMultiStepPct: passed.length ? (passMulti / passed.length) * 100 : 0,
-    passOne,
-    passMulti,
-  };
-}
-
-function mergeSummaryStats(stats, summary) {
-  if (!summary) return stats;
-  const out = { ...stats };
-  if (summary.avg_tool_calls != null) out.avgToolCalls = summary.avg_tool_calls;
-  if (summary.avg_steps != null) out.avgSteps = summary.avg_steps;
-  if (summary.mean_score_percent != null) out.passRate = summary.mean_score_percent;
-  if (summary.passed != null) out.passed = summary.passed;
-  if (summary.total_tasks != null && summary.total_rollouts == null) out.n = summary.total_tasks;
-  if (summary.total_rollouts != null) out.n = summary.total_rollouts;
-  const exec = summary.execution_class_breakdown || {};
-  if (exec.no_calls_made != null) out.noCallsMade = exec.no_calls_made;
-  if (exec.executed_ok_ibm != null) out.executedOkIbm = exec.executed_ok_ibm;
-  return out;
-}
-
-function buildCompareSummary(bucket) {
-  const leftRows = bucket.predictions[COMPARE_LEFT] || [];
-  const rightRows = bucket.predictions[COMPARE_RIGHT] || [];
-  if (!leftRows.length || !rightRows.length) return null;
-
-  const leftLabel = profileLabel(bucket, COMPARE_LEFT);
-  const rightLabel = profileLabel(bucket, COMPARE_RIGHT);
-  const left = mergeSummaryStats(analyzeRollouts(leftRows), bucket.summaries[COMPARE_LEFT]);
-  const right = mergeSummaryStats(analyzeRollouts(rightRows), bucket.summaries[COMPARE_RIGHT]);
-
-  const bMap = new Map();
-  leftRows.forEach(t => bMap.set(rowKeyFor(t.task_id, rolloutOf(t)), t));
-  let improved = 0, regressed = 0, unchanged = 0;
-  for (const ft of rightRows) {
-    const bt = bMap.get(rowKeyFor(ft.task_id, rolloutOf(ft)));
-    if (!bt) continue;
-    if ((ft.score || 0) > (bt.score || 0)) improved++;
-    else if ((ft.score || 0) < (bt.score || 0)) regressed++;
-    else unchanged++;
-  }
-
-  const taskIds = new Set([...leftRows, ...rightRows].map(r => r.task_id));
-  const taskPass = tid => {
-    const lr = leftRows.filter(r => r.task_id === tid);
-    const rr = rightRows.filter(r => r.task_id === tid);
-    return {
-      left: lr.filter(isPassRow).length,
-      right: rr.filter(isPassRow).length,
-      n: Math.max(lr.length, rr.length) || 8,
-    };
-  };
-  let tasksImproved = 0, tasksRegressed = 0, tasksSame = 0;
-  taskIds.forEach(tid => {
-    const t = taskPass(tid);
-    if (t.right > t.left) tasksImproved++;
-    else if (t.right < t.left) tasksRegressed++;
-    else tasksSame++;
-  });
-
-  return { leftLabel, rightLabel, left, right, improved, regressed, unchanged, tasksImproved, tasksRegressed, tasksSame };
-}
-
-function summaryMetricRow(label, leftVal, rightVal, delta, { leftFmt, rightFmt, deltaOpts } = {}) {
-  const lf = leftFmt || (v => fmtNum(v));
-  const rf = rightFmt || lf;
-  return `<tr>
-    <td>${esc(label)}</td>
-    <td class="num">${lf(leftVal)}</td>
-    <td class="num">${rf(rightVal)}</td>
-    <td class="num">${fmtDelta(delta, deltaOpts || {})}</td>
-  </tr>`;
-}
-
-function renderCompareSummary() {
-  const el = $('#compareSummarySection');
-  const bucket = getCurrentBucket();
-  const data = bucket ? buildCompareSummary(bucket) : null;
-  if (!data) {
-    el.classList.add('hidden');
-    el.innerHTML = '';
-    return;
-  }
-
-  const { leftLabel, rightLabel, left, right } = data;
-  const passDelta = right.passRate - left.passRate;
-  const passDeltaRollouts = right.passed - left.passed;
-
-  el.classList.remove('hidden');
-  el.innerHTML = `
-    <h2>What improved — ${esc(leftLabel)} vs ${esc(rightLabel)}</h2>
-    <p class="summary-lead">Auto-computed from loaded predictions${bucket.summaries[COMPARE_LEFT] || bucket.summaries[COMPARE_RIGHT] ? ' and summary JSON' : ''}. Rollout-level compare (same task_id + rollout_idx).</p>
-    <div class="summary-headline">
-      <div>
-        <div class="sh-main">${fmtPct(left.passRate)} → ${fmtPct(right.passRate)}</div>
-        <div class="sh-sub">Pass rate (${fmtNum(left.passed)} / ${fmtNum(left.n)} → ${fmtNum(right.passed)} / ${fmtNum(right.n)} rollouts)</div>
-      </div>
-      <div class="sh-sub">${fmtDelta(passDelta, { digits: 2, suffix: ' pp' })} · ${fmtDelta(passDeltaRollouts, { suffix: ' rollouts' })}</div>
-      <div class="sh-sub">Tasks (pass@8 count): ${fmtNum(data.tasksImproved)} improved · ${fmtNum(data.tasksSame)} same · ${fmtNum(data.tasksRegressed)} regressed</div>
-    </div>
-    <div class="summary-grid">
-      <div class="summary-block">
-        <h3>1. Model continues tool chains more often</h3>
-        <p>Main win: fewer early stops without tool calls; longer trajectories on average.</p>
-        <table class="summary-table">
-          <thead><tr><th>Metric</th><th>${esc(leftLabel)}</th><th>${esc(rightLabel)}</th><th>Δ</th></tr></thead>
-          <tbody>
-            ${summaryMetricRow('avg_tool_calls', left.avgToolCalls, right.avgToolCalls, right.avgToolCalls - left.avgToolCalls, { leftFmt: v => fmtNum(v, 2), rightFmt: v => fmtNum(v, 2), deltaOpts: { digits: 2 } })}
-            ${summaryMetricRow('avg_steps', left.avgSteps, right.avgSteps, right.avgSteps - left.avgSteps, { leftFmt: v => fmtNum(v, 2), rightFmt: v => fmtNum(v, 2), deltaOpts: { digits: 2 } })}
-            ${summaryMetricRow('no_calls_made', left.noCallsMade, right.noCallsMade, right.noCallsMade - left.noCallsMade, { deltaOpts: { invert: true } })}
-            ${summaryMetricRow('Fail early-stop, step 1, no calls', left.earlyStopNoCalls, right.earlyStopNoCalls, right.earlyStopNoCalls - left.earlyStopNoCalls, { deltaOpts: { invert: true } })}
-          </tbody>
-        </table>
-      </div>
-      <div class="summary-block">
-        <h3>2. Fewer wrong final answers</h3>
-        <p>Improvement is mainly fewer <code>executor_mismatch</code> failures after chain execution.</p>
-        <table class="summary-table">
-          <thead><tr><th>Fail reason (rollouts)</th><th>${esc(leftLabel)}</th><th>${esc(rightLabel)}</th><th>Δ</th></tr></thead>
-          <tbody>
-            ${summaryMetricRow('executor_mismatch', left.executorMismatch, right.executorMismatch, right.executorMismatch - left.executorMismatch, { deltaOpts: { invert: true } })}
-            ${summaryMetricRow('no_final_value', left.noFinalValue, right.noFinalValue, right.noFinalValue - left.noFinalValue, { deltaOpts: { invert: true } })}
-          </tbody>
-        </table>
-      </div>
-      <div class="summary-block">
-        <h3>3. More passes need multi-step reasoning</h3>
-        <p>Among successful rollouts: fewer one-step “lucky” passes; more wins via ≥2 tool steps.</p>
-        <table class="summary-table">
-          <thead><tr><th>Among passes</th><th>${esc(leftLabel)}</th><th>${esc(rightLabel)}</th><th>Δ</th></tr></thead>
-          <tbody>
-            ${summaryMetricRow('Pass with 1 step', left.passOneStepPct, right.passOneStepPct, right.passOneStepPct - left.passOneStepPct, { leftFmt: v => fmtPct(v), rightFmt: v => fmtPct(v), deltaOpts: { digits: 1, suffix: ' pp', invert: true } })}
-            ${summaryMetricRow('Pass with ≥2 steps', left.passMultiStepPct, right.passMultiStepPct, right.passMultiStepPct - left.passMultiStepPct, { leftFmt: v => fmtPct(v), rightFmt: v => fmtPct(v), deltaOpts: { digits: 1, suffix: ' pp' } })}
-          </tbody>
-        </table>
-      </div>
-      <div class="summary-block">
-        <h3>4. More successful IBM executions</h3>
-        <p>From summary JSON when loaded; otherwise omitted if unavailable.</p>
-        <table class="summary-table">
-          <thead><tr><th>Metric</th><th>${esc(leftLabel)}</th><th>${esc(rightLabel)}</th><th>Δ</th></tr></thead>
-          <tbody>
-            ${left.executedOkIbm != null && right.executedOkIbm != null
-              ? summaryMetricRow('executed_ok_ibm', left.executedOkIbm, right.executedOkIbm, right.executedOkIbm - left.executedOkIbm)
-              : `<tr><td colspan="4" style="color:var(--muted);padding:10px 8px">Load summary JSON files for <code>executed_ok_ibm</code>, or use preset button.</td></tr>`}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-/* ─── Paired data ───────────────────────────────────────── */
-function rolloutOf(t) {
-  return (t && t.rollout_idx !== undefined && t.rollout_idx !== null) ? t.rollout_idx : null;
-}
-function rowKeyFor(taskId, rollout) {
-  return rollout === null ? taskId : `${taskId}::r${rollout}`;
-}
-
-// One row per (task_id, rollout_idx). Multiple rollouts of the same task each
-// get their own row; downstream sort keeps them grouped together.
-function getPairedData() {
-  const bucket = getCurrentBucket();
-  if (!bucket) return [];
-  const bp = bucket.predictions[COMPARE_LEFT] || [];
-  const fp = bucket.predictions[COMPARE_RIGHT] || [];
-  const bMap = new Map();
-  bp.forEach(t => bMap.set(rowKeyFor(t.task_id, rolloutOf(t)), t));
-  const fMap = new Map();
-  fp.forEach(t => fMap.set(rowKeyFor(t.task_id, rolloutOf(t)), t));
-  const allKeys = new Set([...bMap.keys(), ...fMap.keys()]);
-  return Array.from(allKeys).map(key => {
-    const b = bMap.get(key) || null;
-    const f = fMap.get(key) || null;
-    const any = f || b;
-    return {
-      key,
-      task_id: any.task_id,
-      rollout_idx: rolloutOf(any),
-      baseline: b,
-      finetuned: f,
-      any,
-    };
-  });
-}
-
-function getFilteredData() {
-  let data = getPairedData();
-  const status = $('#filterStatus').value;
-  const verdict = $('#filterVerdict').value;
-  const stopped = $('#filterStopped').value;
-  const error = $('#filterError').value;
-  const search = $('#filterSearch').value.toLowerCase();
-  const view = $('#filterView').value;
-
-  if (status !== 'all') {
-    data = data.filter(d => (d.baseline?.status === status) || (d.finetuned?.status === status));
-  }
-  if (verdict !== 'all') {
-    data = data.filter(d => (d.baseline?.verdict === verdict) || (d.finetuned?.verdict === verdict));
-  }
-  if (stopped !== 'all') {
-    data = data.filter(d => (d.baseline?.stopped === stopped) || (d.finetuned?.stopped === stopped));
-  }
-  if (error !== 'all') {
-    if (error === '__unknown_function__') {
-      data = data.filter(d => /^unknown_function/.test(d.baseline?.error_category || '') || /^unknown_function/.test(d.finetuned?.error_category || ''));
-    } else if (error === '__runtime_error__') {
-      data = data.filter(d => /^runtime_error/.test(d.baseline?.error_category || '') || /^runtime_error/.test(d.finetuned?.error_category || ''));
-    } else {
-      data = data.filter(d => (d.baseline?.error_category === error) || (d.finetuned?.error_category === error));
-    }
-  }
-  if (search) {
-    data = data.filter(d => {
-      const txt = `${d.task_id} ${d.any?.question || ''} ${d.any?.api_name || ''} ${d.any?.conversation_name || ''}`.toLowerCase();
-      return txt.includes(search);
-    });
-  }
-  switch(view) {
-    case 'baseline': data = data.filter(d => d.baseline); break;
-    case 'finetuned': data = data.filter(d => d.finetuned); break;
-    case 'improved': data = data.filter(d => d.baseline && d.finetuned && (d.finetuned.score || 0) > (d.baseline.score || 0)); break;
-    case 'regressed': data = data.filter(d => d.baseline && d.finetuned && (d.finetuned.score || 0) < (d.baseline.score || 0)); break;
-    case 'both_fail': data = data.filter(d => (d.baseline?.score || 0) === 0 && (d.finetuned?.score || 0) === 0 && d.baseline && d.finetuned); break;
-    case 'both_pass': data = data.filter(d => (d.baseline?.score || 0) >= 1 && (d.finetuned?.score || 0) >= 1); break;
-  }
-
-  return groupAndSort(data);
-}
-
-// Keep all rollouts of the same task adjacent ("under each other"). Groups are
-// ordered by the active sort column (using the group's first row as the key,
-// falling back to task_id); within a group rows are ordered by rollout_idx.
-function groupAndSort(data) {
-  const groups = new Map();
-  for (const d of data) {
-    if (!groups.has(d.task_id)) groups.set(d.task_id, []);
-    groups.get(d.task_id).push(d);
-  }
-  const groupList = Array.from(groups.values());
-  groupList.forEach(g => g.sort((a, b) => (a.rollout_idx ?? 0) - (b.rollout_idx ?? 0)));
-  groupList.sort((ga, gb) => {
-    if (state.sortCol) {
-      const va = getSortVal(ga[0], state.sortCol);
-      const vb = getSortVal(gb[0], state.sortCol);
-      if (va < vb) return -state.sortDir;
-      if (va > vb) return state.sortDir;
-    }
-    return ga[0].task_id < gb[0].task_id ? -1 : ga[0].task_id > gb[0].task_id ? 1 : 0;
-  });
-  const out = [];
-  for (const g of groupList) {
-    g.forEach((d, i) => { d.groupFirst = (i === 0); d.groupSize = g.length; });
-    out.push(...g);
-  }
-  return out;
-}
-
-// Paginate without splitting a task's rollouts across pages.
-function paginateGroups(rows, pageSize) {
-  const pages = [];
-  let cur = [];
-  for (const r of rows) {
-    if (r.groupFirst && cur.length >= pageSize) { pages.push(cur); cur = []; }
-    cur.push(r);
-  }
-  if (cur.length) pages.push(cur);
-  return pages.length ? pages : [[]];
-}
-
-function getSortVal(row, col) {
-  if (col === 'task_id') return row.task_id;
-  if (col === 'question') return (row.any?.question || '').toLowerCase();
-  if (col === 'b_score') return row.baseline?.score ?? -1;
-  if (col === 'f_score') return row.finetuned?.score ?? -1;
-  if (col === 'delta') return (row.finetuned?.score ?? 0) - (row.baseline?.score ?? 0);
-  if (col === 'b_status') return row.baseline?.status || '';
-  if (col === 'f_status') return row.finetuned?.status || '';
-  if (col === 'b_verdict') return row.baseline?.verdict || '';
-  if (col === 'f_verdict') return row.finetuned?.verdict || '';
-  if (col === 'steps') return Math.max(row.baseline?.num_steps || 0, row.finetuned?.num_steps || 0);
-  if (col === 'stopped') return row.any?.stopped || '';
-  if (col === 'error') return row.any?.error_category || '';
-  return 0;
-}
-
-/* ─── Table ─────────────────────────────────────────────── */
-function isVerdictMode() { return state.activeMode === 'execute' || state.activeMode === 'multiturn'; }
-
-function renderTable() {
-  populateFilters();
-  syncFilterVisibility();
-
-  const data = getFilteredData();
-  const total = data.length;
-  const taskCount = new Set(data.map(d => d.task_id)).size;
-  const pageList = paginateGroups(data, PAGE_SIZE);
-  const pages = pageList.length;
-  if (state.page >= pages) state.page = Math.max(0, pages - 1);
-  const slice = pageList[state.page] || [];
-
-  const hasRollouts = data.some(d => d.rollout_idx !== null);
-  $('#resultCount').textContent = hasRollouts
-    ? `${taskCount} tasks · ${total} rollouts`
-    : `${total} tasks`;
-
-  const bucket = getCurrentBucket();
-  const cols = buildColumnsForMode(bucket);
-  const thead = $('#tableHead');
-  thead.innerHTML = cols.map(c => {
-    const arrow = state.sortCol === c.key ? (state.sortDir === 1 ? '▲' : '▼') : '';
-    return `<th data-col="${c.key}">${c.label}<span class="arrow">${arrow}</span></th>`;
-  }).join('');
-  thead.querySelectorAll('th').forEach(th => th.addEventListener('click', () => {
-    const col = th.dataset.col;
-    if (state.sortCol === col) state.sortDir *= -1;
-    else { state.sortCol = col; state.sortDir = 1; }
-    renderTable();
-  }));
-
-  const tbody = $('#tableBody');
-  if (!slice.length) {
-    tbody.innerHTML = `<tr><td colspan="${cols.length}" style="text-align:center;padding:30px;color:var(--muted)">No matching tasks</td></tr>`;
-  } else {
-    tbody.innerHTML = slice.map(row => {
-      const sel = row.key === state.selectedKey ? 'selected' : '';
-      const grp = (row.groupFirst && row.groupSize > 1) ? ' group-start' : '';
-      const cells = cols.map(c => `<td${c.mono ? ' class="mono"' : ''}>${renderCell(c.key, row)}</td>`).join('');
-      return `<tr class="${sel}${grp}" data-key="${esc(row.key)}">${cells}</tr>`;
-    }).join('');
-  }
-
-  tbody.querySelectorAll('tr[data-key]').forEach(tr => tr.addEventListener('click', () => {
-    state.selectedKey = tr.dataset.key;
-    renderTable();
-    renderDetail();
-  }));
-
-  renderPagination(total, pages);
-}
-
-function buildColumnsForMode(bucket) {
-  const bLabel = bucket ? profileLabel(bucket, COMPARE_LEFT) : 'B';
-  const fLabel = bucket ? profileLabel(bucket, COMPARE_RIGHT) : 'F';
-  const base = [
-    { key: 'task_id', label: 'Task ID', mono: true },
-  ];
-  if (state.activeMode === 'multiturn') {
-    base.push({ key: 'rollout', label: 'Roll', mono: true });
-  }
-  base.push(
-    { key: 'question', label: 'Question' },
-    { key: 'b_score', label: `${bLabel} Score` },
-    { key: 'f_score', label: `${fLabel} Score` },
-    { key: 'delta', label: 'Δ' },
-  );
-  if (isVerdictMode()) {
-    base.push({ key: 'b_verdict', label: `${bLabel} Verdict` });
-    base.push({ key: 'f_verdict', label: `${fLabel} Verdict` });
-    if (state.activeMode === 'multiturn') {
-      base.push({ key: 'steps', label: 'Steps' });
-      base.push({ key: 'stopped', label: 'Stopped' });
-    } else {
-      base.push({ key: 'final', label: 'Pred → Gold' });
-    }
-  } else {
-    base.push({ key: 'b_status', label: `${bLabel} Status` });
-    base.push({ key: 'f_status', label: `${fLabel} Status` });
-  }
-  base.push({ key: 'error', label: 'Error' });
-  return base;
-}
-
-function renderCell(key, row) {
-  switch (key) {
-    case 'task_id':
-      if (!row.groupFirst && row.groupSize > 1) {
-        return `<span class="group-cont" title="${esc(row.task_id)}">↳ same task</span>`;
-      }
-      return esc(row.task_id);
-    case 'rollout':
-      return row.rollout_idx === null
-        ? '<span style="color:var(--muted)">--</span>'
-        : `<span class="rollout-badge">#${row.rollout_idx}</span>`;
-    case 'question':
-      if (!row.groupFirst && row.groupSize > 1) return '';
-      return `<div class="q-text">${esc(row.any?.question || '')}</div>`;
-    case 'b_score': return scoreCell(row.baseline?.score);
-    case 'f_score': return scoreCell(row.finetuned?.score);
-    case 'delta': {
-      const b = row.baseline?.score, f = row.finetuned?.score;
-      return deltaCell((b != null && f != null) ? f - b : null);
-    }
-    case 'b_status': return statusBadge(row.baseline?.status);
-    case 'f_status': return statusBadge(row.finetuned?.status);
-    case 'b_verdict': return verdictBadge(row.baseline?.verdict, row.baseline?.judge_used);
-    case 'f_verdict': return verdictBadge(row.finetuned?.verdict, row.finetuned?.judge_used);
-    case 'steps': {
-      const b = row.baseline?.num_steps, f = row.finetuned?.num_steps;
-      if (b == null && f == null) return '<span style="color:var(--muted)">--</span>';
-      return `<span class="mono" style="font-size:12px">${b ?? '-'} / ${f ?? '-'}</span>`;
-    }
-    case 'stopped': {
-      const s = row.baseline?.stopped || row.finetuned?.stopped;
-      if (!s) return '<span style="color:var(--muted)">--</span>';
-      const cls = (s === 'no_more_calls' || s === 'converged') ? 'info'
-                : (s === 'explicit_final' || s === 'result_tag_final') ? 'ok'
-                : (s === 'execution_error') ? 'fail'
-                : 'warn';
-      return `<span class="badge ${cls}">${esc(s)}</span>`;
-    }
-    case 'final': return finalCompareCell(row);
-    case 'error': return errorBadge(row.baseline?.error_category, row.finetuned?.error_category);
-  }
-  return '';
-}
-
-function finalCompareCell(row) {
-  const t = row.finetuned || row.baseline;
-  if (!t || t.predicted_final === undefined) return '<span style="color:var(--muted)">--</span>';
-  const pred = formatVal(t.predicted_final);
-  const gold = formatVal(t.gold_answer);
-  const ok = (t.verdict || '').includes('pass') || (t.score || 0) >= 1;
-  const color = ok ? 'var(--green)' : 'var(--red)';
-  return `<span class="mono" style="font-size:11px;color:${color}">${esc(pred)} → ${esc(gold)}</span>`;
-}
-
-function formatVal(v) {
-  if (v === null || v === undefined) return '∅';
-  if (typeof v === 'string' && v.length > 24) return v.slice(0, 24) + '…';
-  if (typeof v === 'object') {
-    const s = JSON.stringify(v);
-    return s.length > 30 ? s.slice(0, 30) + '…' : s;
-  }
-  return String(v);
-}
-
-function populateFilters() {
-  const data = getPairedData();
-
-  const errors = new Set();
-  const verdicts = new Set();
-  const stops = new Set();
-  data.forEach(d => {
-    [d.baseline, d.finetuned].forEach(t => {
-      if (!t) return;
-      if (t.error_category) errors.add(t.error_category);
-      if (t.verdict) verdicts.add(t.verdict);
-      if (t.stopped) stops.add(t.stopped);
-    });
-  });
-
-  const groupedErrors = [];
-  let unknownCount = 0, runtimeCount = 0;
-  errors.forEach(e => {
-    if (/^unknown_function/.test(e)) unknownCount++;
-    else if (/^runtime_error/.test(e)) runtimeCount++;
-    else groupedErrors.push(e);
-  });
-  groupedErrors.sort();
-  const errorOpts = ['<option value="all">All</option>'];
-  if (unknownCount > 0) errorOpts.push(`<option value="__unknown_function__">unknown_function (${unknownCount} variants)</option>`);
-  if (runtimeCount > 0) errorOpts.push(`<option value="__runtime_error__">runtime_error (${runtimeCount} variants)</option>`);
-  for (const e of groupedErrors) errorOpts.push(`<option value="${esc(e)}">${esc(e)}</option>`);
-  setSelect('#filterError', errorOpts.join(''));
-
-  const verdictOpts = ['<option value="all">All</option>', ...Array.from(verdicts).sort().map(v => `<option value="${esc(v)}">${esc(v)}</option>`)];
-  setSelect('#filterVerdict', verdictOpts.join(''));
-
-  const stopOpts = ['<option value="all">All</option>', ...Array.from(stops).sort().map(v => `<option value="${esc(v)}">${esc(v)}</option>`)];
-  setSelect('#filterStopped', stopOpts.join(''));
-}
-
-function setSelect(sel, html) {
-  const el = $(sel);
-  const cur = el.value;
-  el.innerHTML = html;
-  if (Array.from(el.options).some(o => o.value === cur)) el.value = cur;
-}
-
-function syncFilterVisibility() {
-  const verdict = state.activeMode === 'execute' || state.activeMode === 'multiturn';
-  const stopped = state.activeMode === 'multiturn';
-  toggleControl('#filterVerdict', verdict);
-  toggleControl('#filterStopped', stopped);
-  toggleControl('#filterStatus', !verdict);
-}
-
-function toggleControl(sel, show) {
-  const el = $(sel);
-  if (!el) return;
-  const label = el.previousElementSibling;
-  const sep = el.nextElementSibling;
-  el.style.display = show ? '' : 'none';
-  if (label && label.tagName === 'LABEL') label.style.display = show ? '' : 'none';
-  if (sep && sep.classList.contains('sep')) sep.style.display = show ? '' : 'none';
-  if (!show) el.value = 'all';
-}
-
-function scoreCell(s) {
-  if (s == null) return '<span style="color:var(--muted)">--</span>';
-  const pct = (s * 100).toFixed(0);
-  const color = s >= 1 ? 'var(--green)' : s > 0 ? 'var(--yellow)' : 'var(--red)';
-  return `<span style="color:${color};font-weight:600">${pct}%</span><div class="score-bar"><div class="fill" style="width:${pct}%;background:${color}"></div></div>`;
-}
-
-function deltaCell(d) {
-  if (d == null) return '<span style="color:var(--muted)">--</span>';
-  const pct = (d * 100).toFixed(1);
-  const color = d > 0 ? 'var(--green)' : d < 0 ? 'var(--red)' : 'var(--muted)';
-  const sign = d > 0 ? '+' : '';
-  return `<span style="color:${color};font-weight:600">${sign}${pct}</span>`;
-}
-
-function statusBadge(s) {
-  if (!s) return '<span style="color:var(--muted)">--</span>';
-  const cls = s === 'completed' ? 'ok' : s === 'failed' ? 'fail' : 'warn';
-  return `<span class="badge ${cls}">${esc(s)}</span>`;
-}
-
-function verdictBadge(v, judgeUsed) {
-  if (!v) return '<span style="color:var(--muted)">--</span>';
-  const cls = v === 'pass' ? 'ok' : 'fail';
-  const judgeMarker = judgeUsed ? '<span class="badge purple" style="margin-left:4px" title="judge fallback used">J</span>' : '';
-  return `<span class="badge ${cls}">${esc(v)}</span>${judgeMarker}`;
-}
-
-function errorBadge(be, fe) {
-  const errors = [be, fe].filter(e => e && e !== 'none' && e !== 'pass');
-  if (!errors.length) return '<span class="badge ok">none</span>';
-  return errors.map(e => `<span class="badge fail">${esc(shortError(e))}</span>`).join(' ');
-}
-
-function shortError(e) {
-  if (e.length > 50) return e.slice(0, 50) + '…';
-  return e;
-}
-
-function renderPagination(total, pages) {
-  const el = $('#pagination');
-  if (pages <= 1) { el.innerHTML = ''; return; }
-  const btns = [];
-  btns.push(`<button class="btn secondary" ${state.page === 0 ? 'disabled' : ''} onclick="goPage(${state.page - 1})">Prev</button>`);
-  const range = 3;
-  for (let i = 0; i < pages; i++) {
-    if (i === 0 || i === pages - 1 || Math.abs(i - state.page) <= range) {
-      btns.push(`<button class="btn ${i === state.page ? '' : 'secondary'}" onclick="goPage(${i})">${i + 1}</button>`);
-    } else if (i === state.page - range - 1 || i === state.page + range + 1) {
-      btns.push('<span style="color:var(--muted)">...</span>');
-    }
-  }
-  btns.push(`<button class="btn secondary" ${state.page >= pages - 1 ? 'disabled' : ''} onclick="goPage(${state.page + 1})">Next</button>`);
-  el.innerHTML = btns.join('');
-}
-window.goPage = function(p) { state.page = p; renderTable(); };
-
-/* ─── Detail panel ──────────────────────────────────────── */
-$('#detailClose').addEventListener('click', () => {
-  state.selectedKey = null;
-  $('#detailPanel').classList.remove('show');
-  renderTable();
-});
-
-function renderDetail() {
-  const data = getPairedData();
-  const row = data.find(d => d.key === state.selectedKey);
-  if (!row) { $('#detailPanel').classList.remove('show'); return; }
-  $('#detailPanel').classList.add('show');
-
-  const task = row.any;
-  const rolloutSuffix = row.rollout_idx !== null ? `  ·  rollout #${row.rollout_idx}` : '';
-  $('#detailTitle').textContent = `${row.task_id}${rolloutSuffix}`;
-
-  $('#crossModeBar').innerHTML = buildCrossModeBar(row.task_id);
-
-  $('#detailQuestion').innerHTML = `<div style="font-size:13px;color:var(--muted);margin-bottom:4px">Question / Instruction</div><div style="font-size:14px">${esc(task.question || '')}</div>`;
-
-  const sides = $('#detailSides');
-  sides.innerHTML = '';
-
-  const bucket = getCurrentBucket();
-  if (row.baseline) sides.innerHTML += buildSide(COMPARE_LEFT, row.baseline, bucket);
-  if (row.finetuned) sides.innerHTML += buildSide(COMPARE_RIGHT, row.finetuned, bucket);
-  if (!row.baseline && !row.finetuned) sides.innerHTML = '<p style="color:var(--muted)">No predictions available</p>';
-
-  $('#detailMeta').innerHTML = buildMetaGrid(task);
-
-  $('#detailPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function buildCrossModeBar(taskId) {
-  const bench = state.benchmarks[state.activeBenchmark];
-  if (!bench) return '';
-  const modes = getModesForBench(state.activeBenchmark);
-  if (modes.length <= 1) return '';
-
-  const pills = modes.map(m => {
-    const bucket = bench.modes[m];
-    const bp = bucket.predictions[COMPARE_LEFT] || [];
-    const fp = bucket.predictions[COMPARE_RIGHT] || [];
-    const bt = bp.find(t => t.task_id === taskId);
-    const ft = fp.find(t => t.task_id === taskId);
-    if (!bt && !ft) return `<span class="pill" style="opacity:.4" data-mode="${esc(m)}">${MODE_LABELS[m] || m}: --</span>`;
-    let cls = 'fail';
-    let icon = '✗';
-    if ((bt?.score || 0) >= 1 && (ft?.score || 0) >= 1) { cls = 'pass'; icon = '✓'; }
-    else if ((bt?.score || 0) >= 1 || (ft?.score || 0) >= 1) { cls = 'partial'; icon = '½'; }
-    const active = m === state.activeMode ? ' active' : '';
-    const bScore = bt ? `${(bt.score * 100).toFixed(0)}%` : '–';
-    const fScore = ft ? `${(ft.score * 100).toFixed(0)}%` : '–';
-    return `<span class="pill ${cls}${active}" data-mode="${esc(m)}" title="baseline ${bScore} / finetuned ${fScore}"><span class="icon">${icon}</span>${MODE_LABELS[m] || m} <span style="opacity:.7;font-size:10px">B:${bScore}/F:${fScore}</span></span>`;
-  }).join('');
-
-  setTimeout(() => {
-    document.querySelectorAll('#crossModeBar .pill[data-mode]').forEach(p => {
-      p.addEventListener('click', () => {
-        state.activeMode = p.dataset.mode;
-        state.page = 0;
-        renderAll();
-      });
-    });
-  }, 0);
-
-  return `<div class="cross-mode-bar"><span class="label">This task across modes:</span>${pills}</div>`;
-}
-
-function buildSide(profile, task, bucket) {
-  const tagCls = profile === COMPARE_RIGHT ? 'finetuned' : 'baseline';
-  const label = profileLabel(bucket, profile);
-  const mode = state.activeMode;
-  const bench = state.activeBenchmark;
-
-  let body = '';
-
-  if (mode === 'multiturn') {
-    body += buildAnswerCompare(task);
-    body += buildVerdictRow(task);
-    body += `<div class="section-label">Trajectory (${task.num_steps ?? task.execution_trace?.length ?? 0} steps · stopped: ${esc(task.stopped || 'unknown')})</div>`;
-    body += buildTrajectory(task);
-  } else if (mode === 'execute') {
-    body += buildAnswerCompare(task);
-    body += buildVerdictRow(task);
-    body += `<div class="section-label">Model response</div>`;
-    body += `<div class="resp-block">${highlightResponse(task.response || '')}</div>`;
-  } else {
-    body += `<div class="section-label">Model response</div>`;
-    body += `<div class="resp-block">${highlightResponse(task.response || '')}</div>`;
-  }
-
-  if (task.gt_name || task.gt_args) {
-    body += `<div class="section-label">Ground truth</div><div class="resp-block compact">${esc(JSON.stringify({ name: task.gt_name, args: task.gt_args }, null, 2))}</div>`;
-  }
-
-  body += `<div class="section-label">Metrics</div>`;
-  body += buildMetricRows(task, mode, bench);
-
-  return `<div class="side">
-    <h3><span class="tag ${tagCls}">${label}</span> ${MODE_LABELS[mode] || ''}</h3>
-    ${body}
-  </div>`;
-}
-
-function buildAnswerCompare(task) {
-  if (task.predicted_final === undefined && task.gold_answer === undefined) return '';
-  const pass = (task.verdict || '').includes('pass') || (task.score || 0) >= 1;
-  const cls = pass ? 'pass' : 'fail';
-  return `<div class="section-label">Final answer</div>
-    <div class="answer-compare ${cls}">
-      <div class="ac-side">
-        <div class="ac-label">Predicted</div>
-        <div class="ac-value">${esc(formatVal(task.predicted_final))}</div>
-      </div>
-      <div class="ac-arrow">→</div>
-      <div class="ac-side">
-        <div class="ac-label">Gold</div>
-        <div class="ac-value">${esc(formatVal(task.gold_answer))}</div>
-      </div>
-    </div>`;
-}
-
-function buildVerdictRow(task) {
-  if (!task.verdict) return '';
-  const pass = task.verdict.includes('pass');
-  const cls = pass ? 'pass' : 'fail';
-  const judgeMark = task.judge_used ? ' <span class="badge purple" title="judge used">judge</span>' : '';
-  const cacheMark = task.judge_cache_hit ? ' <span class="badge info" title="cache hit">cached</span>' : '';
-  const reason = task.verdict_reason ? `<span class="vr-reason">${esc(task.verdict_reason)}</span>` : '';
-  return `<div class="verdict-row ${cls}"><b>${esc(task.verdict.toUpperCase())}</b>${judgeMark}${cacheMark}${reason}</div>`;
-}
-
-function buildTrajectory(task) {
-  const trace = Array.isArray(task.execution_trace) ? task.execution_trace : [];
-  const completions = Array.isArray(task.raw_completions) ? task.raw_completions : [];
-  const calls = Array.isArray(task.predicted_calls) ? task.predicted_calls : [];
-  const totalTurns = Math.max(trace.length, completions.length, calls.length);
-
-  if (totalTurns === 0) {
-    return '<div style="color:var(--muted);font-size:12px;padding:8px">No trajectory available.</div>';
-  }
-
-  const cards = [];
-  for (let i = 0; i < totalTurns; i++) {
-    const t = trace[i];
-    const completion = completions[i];
-    const planCall = calls[i];
-
-    let cls = 'ok';
-    if (t && t.error) cls = 'err';
-    else if (!t && completion) cls = 'thinking';
-
-    const head = `<div class="sc-head">
-      <span>Step ${i + 1}</span>
-      <span class="sc-name">${t ? esc(t.name + (t.label ? ' → ' + t.label : '')) : (planCall ? esc(planCall.name + (planCall.label ? ' → ' + planCall.label : '')) : 'thinking')}</span>
-      <span class="sc-status badge ${cls === 'ok' ? 'ok' : cls === 'err' ? 'fail' : 'purple'}">${cls === 'ok' ? 'ok' : cls === 'err' ? 'error' : 'no exec'}</span>
-    </div>`;
-
-    const bodyRows = [];
-
-    if (completion) {
-      bodyRows.push(`<details><summary>Model completion (${completion.length} chars)</summary><div class="resp-block compact" style="margin-top:6px">${highlightResponse(completion)}</div></details>`);
-    }
-
-    if (planCall) {
-      bodyRows.push(`<div class="sc-row"><span class="sc-key">Call</span><span class="sc-val">${esc(planCall.name)}(${esc(JSON.stringify(planCall.arguments || {}))})</span></div>`);
-    }
-
-    if (t && t.arguments_resolved) {
-      bodyRows.push(`<div class="sc-row"><span class="sc-key">Resolved</span><span class="sc-val">${esc(JSON.stringify(t.arguments_resolved))}</span></div>`);
-    }
-
-    if (t) {
-      if (t.error) {
-        bodyRows.push(`<div class="sc-row"><span class="sc-key">Error</span><span class="sc-val error">${esc(t.error)}</span></div>`);
-      } else {
-        bodyRows.push(`<div class="sc-row"><span class="sc-key">Result</span><span class="sc-val">${esc(formatVal(t.result))}</span></div>`);
-      }
-    } else if (planCall) {
-      bodyRows.push(`<div class="sc-row"><span class="sc-key">Result</span><span class="sc-val" style="color:var(--muted)">(not executed)</span></div>`);
-    }
-
-    cards.push(`<div class="step-card ${cls}">${head}<div class="sc-body">${bodyRows.join('')}</div></div>`);
-  }
-
-  return `<div class="trajectory">${cards.join('')}</div>`;
-}
-
-function buildMetricRows(task, mode, bench) {
-  const rows = [];
-  const addRow = (k, v) => { rows.push(`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid #1e293b"><span style="color:var(--muted)">${k}</span><span>${v}</span></div>`); };
-
-  if (task.score !== undefined) {
-    const c = task.score >= 1 ? 'var(--green)' : task.score > 0 ? 'var(--yellow)' : 'var(--red)';
-    addRow('Score', `<span style="color:${c};font-weight:700">${(task.score * 100).toFixed(1)}%</span>`);
-  }
-  if (task.status) addRow('Status', statusBadge(task.status));
-  if (task.parse_method) addRow('Parse', `<span class="badge ${task.parse_success || task.parse_method !== 'unparseable' ? 'ok' : 'fail'}">${esc(task.parse_method)}</span>`);
-  if (task.error_category && task.error_category !== 'none') addRow('Error', `<span class="badge fail">${esc(shortError(task.error_category))}</span>`);
-  if (task.num_tool_calls !== undefined) addRow('Tool calls', task.num_tool_calls);
-  if (task.num_predicted_calls !== undefined && task.num_predicted_calls !== task.num_tool_calls) addRow('Predicted calls', task.num_predicted_calls);
-  if (task.num_gold_calls !== undefined) addRow('Gold calls', task.num_gold_calls);
-
-  if (bench === 'nestful') {
-    if (mode === 'structural') {
-      if (task.name_f1 != null) addRow('Name F1', (task.name_f1 * 100).toFixed(1) + '%');
-      if (task.arg_match_ratio != null) addRow('Arg match', (task.arg_match_ratio * 100).toFixed(1) + '%');
-      if (task.length_match !== undefined) addRow('Length match', task.length_match ? 'Yes' : 'No');
-      if (task.full_match !== undefined) addRow('Full match', task.full_match ? 'Yes' : 'No');
-    }
-    if (mode === 'execute' || mode === 'multiturn') {
-      if (task.execution_class) addRow('Exec class', `<span class="badge ${task.execution_class === 'executed_ok' ? 'ok' : 'warn'}">${esc(task.execution_class)}</span>`);
-      if (task.execution_error) addRow('Exec error', `<span class="badge fail">${esc(shortError(task.execution_error))}</span>`);
-      if (task.judge_used !== undefined) addRow('Judge used', task.judge_used ? 'Yes' : 'No');
-    }
-    if (mode === 'multiturn') {
-      if (task.num_steps !== undefined) addRow('Steps', task.num_steps);
-      if (task.stopped) addRow('Stopped', `<span class="badge info">${esc(task.stopped)}</span>`);
-    }
-  }
-  if (bench === 'toolalpaca') {
-    if (task.soft_score != null) addRow('Soft score', (task.soft_score * 100).toFixed(1) + '%');
-    if (task.diagnostics) {
-      addRow('Name match', (task.diagnostics.mean_name_score * 100).toFixed(1) + '%');
-      addRow('Key match', (task.diagnostics.mean_key_score * 100).toFixed(1) + '%');
-      addRow('Value match', (task.diagnostics.mean_value_score * 100).toFixed(1) + '%');
-    }
-  }
-  if (bench === 'apibank') {
-    if (task.gt_name) addRow('GT API', task.gt_name);
-    if (task.predicted_name) addRow('Predicted API', task.predicted_name);
-  }
-  if (bench === 'tooltalk') {
-    if (task.name_matches !== undefined) addRow('Name matches', task.name_matches);
-    if (task.param_matches !== undefined) addRow('Param matches', task.param_matches);
-    if (task.difficulty) addRow('Difficulty', task.difficulty);
-  }
-  if (bench === 'appworld') {
-    if (task.task_success !== undefined) addRow('Task success', task.task_success ? 'Yes' : 'No');
-    addRow('Exec success', `${task.exec_calls_success ?? 0}/${task.exec_calls_total ?? 0}`);
-    if (task.gt_num_api_calls !== undefined) addRow('GT API calls', task.gt_num_api_calls);
-    if (task.api_name_recall != null) addRow('API recall', (task.api_name_recall * 100).toFixed(1) + '%');
-    addRow('Tests', `${task.num_tests_passed ?? 0} pass / ${task.num_tests_failed ?? 0} fail`);
-  }
-  if (bench === 'bfcl') {
-    if (task.category) addRow('Category', task.category);
-    if (task.error_detail) addRow('Detail', shortError(task.error_detail));
-  }
-  return rows.join('');
-}
-
-function buildMetaGrid(task) {
-  const fields = ['task_id', 'category', 'api_name', 'conversation_name', 'difficulty', 'source_file', 'num_apis'];
-  let html = '';
-  for (const f of fields) {
-    if (task[f] != null) {
-      html += `<div class="meta-item"><div class="mk">${f}</div><div class="mv">${esc(String(task[f]))}</div></div>`;
-    }
-  }
-  return html;
-}
-
-function highlightResponse(text) {
-  if (!text) return '<span style="color:var(--muted)">(empty)</span>';
-  let s = esc(text);
-  s = s.replace(/(&lt;redacted_thinking&gt;)([\s\S]*?)(&lt;\/redacted_thinking&gt;)/g, '<span class="think">$1$2$3</span>');
-  s = s.replace(/(&lt;think&gt;)([\s\S]*?)(&lt;\/think&gt;)/g, '<span class="think">$1$2$3</span>');
-  s = s.replace(/(&lt;tool_call_answer&gt;)([\s\S]*?)(&lt;\/tool_call_answer&gt;)/g, '<span class="tool-call">$1$2$3</span>');
-  s = s.replace(/(&lt;tool_response&gt;)([\s\S]*?)(&lt;\/tool_response&gt;)/g, '<span style="color:var(--cyan)">$1$2$3</span>');
-  s = s.replace(/(\[ERROR\][^\n]*)/g, '<span class="error">$1</span>');
-  return s;
-}
-
-async function fetchText(path) {
-  const res = await fetch(path);
-  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
-  return res.text();
-}
-
-async function loadPreset(preset) {
-  state.files = [];
-  rebuildBenchmarks();
-  for (const entry of preset.files) {
-    const path = typeof entry === 'string' ? entry : entry.path;
-    const content = await fetchText(path);
-    const name = path.split('/').pop();
-    const fileEntry = { name, content, path };
-    state.files.push(fileEntry);
-    fileEntry.meta = parseFile(name, content);
-    if (entry.summary) {
-      try {
-        const summaryContent = await fetchText(entry.summary);
-        const summaryName = entry.summary.split('/').pop();
-        if (!state.files.find(f => f.name === summaryName)) {
-          const summaryEntry = { name: summaryName, content: summaryContent, path: entry.summary };
-          state.files.push(summaryEntry);
-          summaryEntry.meta = parseFile(summaryName, summaryContent);
-        }
-      } catch (e) {
-        console.warn('Summary load skipped', entry.summary, e);
-      }
-    }
-  }
-  renderLoadedFiles();
-  renderAll();
-}
-
-$('#loadToolr0Preset').addEventListener('click', async () => {
-  const btn = $('#loadToolr0Preset');
-  btn.disabled = true;
-  btn.textContent = 'Loading…';
-  try {
-    await loadPreset(TOOLR0_PRESET);
-  } catch (e) {
-    alert(
-      'Could not load preset files via fetch. Serve the repo over HTTP (e.g. python -m http.server) ' +
-      'or drop the two JSONL files manually.\n\n' + e.message
-    );
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Load Tool-R0: baseline vs stage3';
-  }
-});
-
-if (new URLSearchParams(location.search).get('preset') === 'toolr0') {
-  loadPreset(TOOLR0_PRESET).catch(e => console.warn('Auto preset load failed', e));
+/* ── Helpers ───────────────────────────────────────────────────────── */
+function toast(msg, ms = 2800) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove("show"), ms);
 }
 
 function esc(s) {
-  if (s === null || s === undefined) return '';
-  const d = document.createElement('div');
-  d.textContent = String(s);
-  return d.innerHTML;
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
-/* ─── Event wiring ──────────────────────────────────────── */
-['filterStatus', 'filterVerdict', 'filterStopped', 'filterError', 'filterSearch', 'filterView'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('change', () => { state.page = 0; renderTable(); });
-  if (el.tagName === 'INPUT') el.addEventListener('input', () => { state.page = 0; renderTable(); });
-});
+function fmt(v, digits = 3) {
+  if (v == null || Number.isNaN(v)) return "—";
+  if (typeof v === "boolean") return v ? "PASS" : "FAIL";
+  if (typeof v === "number") return Number.isInteger(v) ? String(v) : v.toFixed(digits);
+  return String(v);
+}
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    state.selectedKey = null;
-    $('#detailPanel').classList.remove('show');
-    renderTable();
-  }
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-    const data = getFilteredData();
-    const idx = data.findIndex(d => d.key === state.selectedKey);
-    const next = e.key === 'ArrowDown' ? idx + 1 : idx - 1;
-    if (next >= 0 && next < data.length) {
-      state.selectedKey = data[next].key;
-      renderTable();
-      renderDetail();
-      e.preventDefault();
+function pct(n, d) {
+  if (!d) return "—";
+  return ((100 * n) / d).toFixed(1) + "%";
+}
+
+function shortId(id) {
+  const s = String(id || "");
+  if (s.length <= 16) return s;
+  return s.slice(0, 8) + "…" + s.slice(-4);
+}
+
+function detectProfile(filename) {
+  const f = (filename || "").toLowerCase();
+  if (f.includes("c0_") || f.includes("/c0") || f.includes("c0.")) return "C0";
+  if (f.includes("d1_") || f.includes("/d1") || f.includes("d1.") || f.includes("pilot3")) return "D1";
+  if (f.includes("c1_") || f.includes("/c1")) return "C1";
+  return "generic";
+}
+
+function profileLabel(p, fallback) {
+  if (p === "C0") return "C0 (base)";
+  if (p === "D1") return "D1 (Pilot3)";
+  if (p === "C1") return "C1 (Pilot2)";
+  return fallback;
+}
+
+function parseJsonl(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    try {
+      rows.push(JSON.parse(line));
+    } catch (e) {
+      console.warn("JSONL parse error line", i + 1, e);
     }
   }
+  return rows;
+}
+
+function asBool(v) {
+  if (typeof v === "boolean") return v;
+  if (v == null) return null;
+  if (typeof v === "number") return v > 0;
+  if (typeof v === "string") {
+    const s = v.toLowerCase();
+    if (["true", "pass", "yes", "1", "ok"].includes(s)) return true;
+    if (["false", "fail", "no", "0"].includes(s)) return false;
+  }
+  return Boolean(v);
+}
+
+function pick(obj, keys, fallback = null) {
+  for (const k of keys) {
+    if (obj && obj[k] != null && obj[k] !== "") return obj[k];
+  }
+  return fallback;
+}
+
+function normalizeTurns(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((t, i) => {
+    const parsed = t.parsed_call || t.tool_call || t.call || null;
+    let toolName = null;
+    if (parsed && typeof parsed === "object") {
+      toolName = parsed.name || parsed.tool || parsed.function || null;
+    }
+    return {
+      turn: t.turn ?? t.turn_idx ?? t.step ?? i + 1,
+      model_text: t.model_text || t.assistant || t.content || t.text || "",
+      parsed_call: parsed,
+      tool_name: toolName,
+      observation: t.observation ?? t.obs ?? t.tool_result ?? null,
+      fail_reason: t.fail_reason || t.error || null,
+      is_terminal: t.is_terminal ?? null,
+      raw: t,
+    };
+  });
+}
+
+/** Normalize Tool-R0 final_eval_trajectories + generic formats */
+function normalizeRow(row, sourceLabel) {
+  const traj = row._traj && typeof row._traj === "object" ? row._traj : {};
+  const id = String(
+    pick(row, ["sample_id", "task_id", "id", "uid", "example_id"], "") ||
+    pick(traj, ["sample_id", "task_id", "id"], "") ||
+    `row_${Math.random().toString(36).slice(2, 8)}`
+  );
+
+  const officialWin = asBool(
+    pick(traj, ["official_win"], null) ??
+    pick(row, ["official_win", "win", "is_win"], null)
+  );
+  const score =
+    officialWin != null
+      ? officialWin
+        ? 1
+        : 0
+      : Number(pick(row, ["score", "reward", "final_score"], NaN));
+
+  const pass =
+    officialWin != null
+      ? officialWin
+      : asBool(pick(row, ["pass", "success", "correct"], null)) ??
+        (Number.isFinite(score) ? score >= 0.5 : null);
+
+  const internal = traj.internal || row.internal || {};
+  const f1FuncRaw = pick(row, ["internal_f1_func", "f1_func"], pick(internal, ["f1_func"], null));
+  const f1ParamRaw = pick(row, ["internal_f1_param", "f1_param"], pick(internal, ["f1_param"], null));
+  const f1Func = Number(f1FuncRaw);
+  const f1Param = Number(f1ParamRaw);
+  const f1MeanRaw = Number(pick(row, ["internal_f1_mean", "f1", "tool_f1"], NaN));
+  let f1 = Number.isFinite(f1MeanRaw) ? f1MeanRaw : NaN;
+  if (!Number.isFinite(f1) && Number.isFinite(f1Func) && Number.isFinite(f1Param)) {
+    f1 = (f1Func + f1Param) / 2;
+  } else if (!Number.isFinite(f1) && Number.isFinite(f1Func)) {
+    f1 = f1Func;
+  }
+  const f1Paper = Number(pick(row, ["internal_f1_paper"], NaN));
+  const internalWinRate = Number(
+    pick(row, ["internal_win_rate"], pick(internal, ["win_rate"], NaN))
+  );
+
+  const turns = normalizeTurns(
+    traj.turns || row.turns || row.trajectory || row.messages || []
+  );
+
+  const predAnswer = pick(traj, ["pred_answer", "answer"], null) ??
+    pick(row, ["pred_answer", "answer", "final_answer"], null);
+  const goldAnswer = pick(row, ["gold_answer", "expected_answer"], null);
+
+  const question =
+    pick(row, ["question", "query", "input", "prompt", "user"], null) ||
+    pick(traj, ["question", "query", "input"], null) ||
+    "";
+
+  return {
+    id,
+    sourceLabel,
+    question,
+    pass,
+    score: Number.isFinite(score) ? score : pass ? 1 : 0,
+    official_win: officialWin,
+    final_answer_pass: asBool(
+      pick(row, ["final_answer_pass"], null) ??
+      pick(traj.paper || {}, ["final_answer_pass"], null)
+    ),
+    solution_equivalent_pass: asBool(
+      pick(row, ["solution_equivalent_pass"], null) ??
+      pick(traj.paper || {}, ["solution_equivalent_pass"], null)
+    ),
+    strict_gold_trace_pass: asBool(
+      pick(row, ["strict_gold_trace_pass"], null) ??
+      pick(traj.paper || {}, ["strict_gold_trace_pass"], null)
+    ),
+    alternative_valid_solution_pass: asBool(
+      pick(row, ["alternative_valid_solution_pass"], null) ??
+      pick(traj.paper || {}, ["alternative_valid_solution_pass"], null)
+    ),
+    internal_f1_mean: Number.isFinite(f1) ? f1 : null,
+    internal_f1_func: Number.isFinite(f1Func) ? f1Func : null,
+    internal_f1_param: Number.isFinite(f1Param) ? f1Param : null,
+    internal_f1_paper: Number.isFinite(f1Paper) ? f1Paper : null,
+    internal_win_rate: Number.isFinite(internalWinRate) ? internalWinRate : null,
+    num_gold_calls: row.num_gold_calls ?? traj.num_gold_calls ?? traj.gold_num_turns ?? null,
+    num_tool_calls: traj.num_tool_calls ?? row.num_tool_calls ?? turns.filter((t) => t.parsed_call).length,
+    stop_reason: traj.stop_reason || row.stop_reason || null,
+    executable: traj.executable ?? null,
+    parse_valid: traj.parse_valid ?? null,
+    mismatch_reason: traj.mismatch_reason || null,
+    pred_answer: predAnswer,
+    gold_answer: goldAnswer,
+    paper: traj.paper || row.paper || null,
+    internal: internal,
+    turns,
+    raw: row,
+  };
+}
+
+function normalizeDiag(row) {
+  const id = String(row.sample_id || row.id || "");
+  if (!id) return null;
+  return {
+    id,
+    question: row.input || row.question || row.query || "",
+    gold_answer: row.gold_answer ?? row.answer ?? null,
+    output: row.output ?? null,
+    tools: row.tools ?? null,
+    n_gold: Array.isArray(row.output) ? row.output.length : null,
+  };
+}
+
+function enrichFromDiag(norm) {
+  const d = state.diag.get(norm.id);
+  if (!d) return norm;
+  return {
+    ...norm,
+    question: norm.question || d.question || "",
+    gold_answer: norm.gold_answer ?? d.gold_answer,
+    diag_output: d.output ?? norm.diag_output,
+    num_gold_calls: norm.num_gold_calls ?? d.n_gold ?? null,
+  };
+}
+
+function reenrichArms() {
+  for (const [id, n] of state.armA) state.armA.set(id, enrichFromDiag(n));
+  for (const [id, n] of state.armB) state.armB.set(id, enrichFromDiag(n));
+}
+
+function mergeDiagEntry(id, d) {
+  const prev = state.diag.get(id) || { id };
+  state.diag.set(id, {
+    id,
+    question: d.question || prev.question || "",
+    gold_answer: d.gold_answer ?? prev.gold_answer ?? null,
+    output: d.output ?? prev.output ?? null,
+    tools: d.tools ?? prev.tools ?? null,
+    n_gold: d.n_gold ?? prev.n_gold ?? null,
+  });
+}
+
+/** Accepts compact JSON map or diagnostic JSONL */
+function loadTaskMeta(text, filename, { quiet = false } = {}) {
+  const trimmed = String(text || "").trim();
+  if (!trimmed) return 0;
+  let added = 0;
+
+  if (trimmed.startsWith("{")) {
+    const obj = JSON.parse(trimmed);
+    for (const [id, v] of Object.entries(obj)) {
+      let d;
+      if (typeof v === "string") {
+        d = { id, question: v, gold_answer: null, output: null, n_gold: null };
+      } else if (v && typeof v === "object") {
+        d = {
+          id,
+          question: v.q || v.question || v.input || "",
+          gold_answer: v.gold ?? v.gold_answer ?? null,
+          output: v.output ?? null,
+          tools: v.tools ?? null,
+          n_gold: v.n ?? v.n_gold ?? (Array.isArray(v.output) ? v.output.length : null),
+        };
+      } else continue;
+      if (!d.question && d.gold_answer == null) continue;
+      mergeDiagEntry(id, d);
+      added += 1;
+    }
+  } else {
+    for (const row of parseJsonl(trimmed)) {
+      const d = normalizeDiag(row);
+      if (!d) continue;
+      mergeDiagEntry(d.id, d);
+      added += 1;
+    }
+  }
+
+  if (added) {
+    document.getElementById("dropD").classList.add("loaded");
+    document.getElementById("fnameD").textContent =
+      (filename || "questions").split(/[/\\]/).pop() + ` (${state.diag.size})`;
+    reenrichArms();
+    rebuild();
+    if (!quiet) toast(`NESTFUL otázky: ${state.diag.size}`);
+  }
+  return added;
+}
+
+function loadDiag(text, filename) {
+  loadTaskMeta(text, filename);
+}
+
+function missingQuestionCount() {
+  let miss = 0;
+  for (const id of new Set([...state.armA.keys(), ...state.armB.keys()])) {
+    const a = state.armA.get(id);
+    const b = state.armB.get(id);
+    const q = (a && a.question) || (b && b.question) || state.diag.get(id)?.question || "";
+    if (!q) miss += 1;
+  }
+  return miss;
+}
+
+async function ensureNestfulQuestions({ force = false } = {}) {
+  if (location.protocol === "file:") return false;
+  if (!force && state.diag.size >= 400 && missingQuestionCount() === 0) return true;
+  const tries = [PRESET.tasks, PRESET.d];
+  for (const url of tries) {
+    try {
+      const text = await fetchText(url);
+      loadTaskMeta(text, url, { quiet: true });
+      if (missingQuestionCount() === 0 || state.diag.size > 0) {
+        toast(`NESTFUL otázky načteny (${state.diag.size})`);
+        return true;
+      }
+    } catch (e) {
+      console.warn("ensureNestfulQuestions", url, e);
+    }
+  }
+  return false;
+}
+
+function loadArm(text, filename, which) {
+  const rows = parseJsonl(text);
+  const profile = detectProfile(filename);
+  const map = new Map();
+  for (const row of rows) {
+    const n = enrichFromDiag(normalizeRow(row, filename));
+    map.set(n.id, n);
+  }
+  if (which === "A") {
+    state.armA = map;
+    state.profileA = profile;
+    state.labelA = profileLabel(profile, filename.split(/[/\\]/).pop() || "A");
+    document.getElementById("dropA").classList.add("loaded");
+    document.getElementById("fnameA").textContent = filename.split(/[/\\]/).pop();
+  } else {
+    state.armB = map;
+    state.profileB = profile;
+    state.labelB = profileLabel(profile, filename.split(/[/\\]/).pop() || "B");
+    document.getElementById("dropB").classList.add("loaded");
+    document.getElementById("fnameB").textContent = filename.split(/[/\\]/).pop();
+  }
+  if (state.diag.size) reenrichArms();
+  rebuild();
+  toast(`Loaded ${map.size} rows → ${which === "A" ? state.labelA : state.labelB}`);
+  // traj JSONL nemá otázku — doplň z NESTFUL mapy
+  if (missingQuestionCount() > 0) {
+    void ensureNestfulQuestions();
+  }
+}
+
+function rebuild() {
+  const ids = new Set([...state.armA.keys(), ...state.armB.keys()]);
+  const paired = [];
+  for (const id of ids) {
+    const a = state.armA.get(id) || null;
+    const b = state.armB.get(id) || null;
+    const passA = a ? a.pass : null;
+    const passB = b ? b.pass : null;
+    let outcome = "unique";
+    if (a && b) {
+      if (passA && passB) outcome = "both_pass";
+      else if (!passA && !passB) outcome = "both_fail";
+      else if (!passA && passB) outcome = "gained";
+      else if (passA && !passB) outcome = "lost";
+      else outcome = "disagree";
+    } else if (a) outcome = "a_only";
+    else outcome = "b_only";
+
+    const question = (a && a.question) || (b && b.question) || "";
+    const gold = (a && a.gold_answer) ?? (b && b.gold_answer) ?? null;
+    const diag = state.diag.get(id);
+    const nGold =
+      (a && a.num_gold_calls != null ? a.num_gold_calls : null) ??
+      (b && b.num_gold_calls != null ? b.num_gold_calls : null) ??
+      (diag && diag.n_gold != null ? diag.n_gold : null) ??
+      (diag && Array.isArray(diag.output) ? diag.output.length : null);
+    const q = question || (diag && diag.question) || "";
+    paired.push({ id, a, b, passA, passB, outcome, question: q, gold, nGold });
+  }
+  paired.sort((x, y) => {
+    const order = { gained: 0, lost: 1, both_fail: 2, both_pass: 3, disagree: 4, a_only: 5, b_only: 6 };
+    const d = (order[x.outcome] ?? 9) - (order[y.outcome] ?? 9);
+    if (d) return d;
+    return String(x.id).localeCompare(String(y.id));
+  });
+  state.paired = paired;
+  applyFilter();
+}
+
+function nGoldBucket(n) {
+  if (n == null || !Number.isFinite(Number(n))) return "?";
+  const v = Number(n);
+  if (v <= 1) return String(v);
+  if (v >= 6) return "6plus";
+  return String(v);
+}
+
+function bucketLabel(key) {
+  if (key === "all") return "all";
+  if (key === "6plus") return "6+ callů";
+  if (key === "?") return "? callů";
+  if (key === "5") return "5 callů";
+  return `${key} cally`;
+}
+
+function matchesNFilter(p, nF) {
+  if (nF === "all") return true;
+  return nGoldBucket(p.nGold) === nF;
+}
+
+function applyFilter() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const f = document.getElementById("filter").value;
+  const nF = document.getElementById("filterN").value;
+  state.filtered = state.paired.filter((p) => {
+    if (f === "gained" && p.outcome !== "gained") return false;
+    if (f === "lost" && p.outcome !== "lost") return false;
+    if (f === "both_pass" && p.outcome !== "both_pass") return false;
+    if (f === "both_fail" && p.outcome !== "both_fail") return false;
+    if (f === "disagree" && !(p.outcome === "gained" || p.outcome === "lost")) return false;
+    if (f === "a_only" && p.outcome !== "a_only") return false;
+    if (f === "b_only" && p.outcome !== "b_only") return false;
+    if (!matchesNFilter(p, nF)) return false;
+    if (q) {
+      const hay = (p.id + " " + p.question + " " + (p.a?.pred_answer ?? "") + " " + (p.b?.pred_answer ?? "")).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  renderStats();
+  renderNToolBreakdown();
+  renderList();
+  if (state.activeId && state.filtered.some((p) => p.id === state.activeId)) {
+    renderDetail(state.activeId);
+  } else if (state.filtered.length) {
+    selectTask(state.filtered[0].id);
+  } else {
+    state.activeId = null;
+    document.getElementById("detail").innerHTML =
+      '<div class="empty-state"><div class="icon">∅</div><p>Žádné tasky pro tento filtr.</p></div>';
+  }
+}
+
+function mean(arr) {
+  const xs = arr.filter((x) => x != null && Number.isFinite(x));
+  if (!xs.length) return null;
+  return xs.reduce((a, b) => a + b, 0) / xs.length;
+}
+
+function renderStats() {
+  const both = state.paired.filter((p) => p.a && p.b);
+  const bar = document.getElementById("statsBar");
+  if (!state.paired.length) {
+    bar.style.display = "none";
+    return;
+  }
+  bar.style.display = "flex";
+
+  document.getElementById("sLabelA").textContent = state.labelA + " win";
+  document.getElementById("sLabelB").textContent = state.labelB + " win";
+
+  const winA = both.filter((p) => p.passA).length;
+  const winB = both.filter((p) => p.passB).length;
+  const n = both.length;
+  const gained = both.filter((p) => p.outcome === "gained").length;
+  const lost = both.filter((p) => p.outcome === "lost").length;
+  const delta = n ? (100 * (winB - winA)) / n : 0;
+
+  document.getElementById("sPaired").textContent = String(n);
+  document.getElementById("sWinA").textContent = n ? `${pct(winA, n)} (${winA})` : "—";
+  document.getElementById("sWinB").textContent = n ? `${pct(winB, n)} (${winB})` : "—";
+  const dEl = document.getElementById("sDelta");
+  dEl.textContent = n ? `${delta >= 0 ? "+" : ""}${delta.toFixed(1)} pp` : "—";
+  dEl.className = "val " + (delta > 0 ? "green" : delta < 0 ? "red" : "");
+
+  document.getElementById("sGained").textContent = String(gained);
+  document.getElementById("sLost").textContent = String(lost);
+
+  const f1a = mean(both.map((p) => p.a?.internal_f1_mean));
+  const f1b = mean(both.map((p) => p.b?.internal_f1_mean));
+  document.getElementById("sF1A").textContent = f1a == null ? "—" : f1a.toFixed(3);
+  document.getElementById("sF1B").textContent = f1b == null ? "—" : f1b.toFixed(3);
+  // also surface func/param means in title tooltips
+  const f1fa = mean(both.map((p) => p.a?.internal_f1_func));
+  const f1fb = mean(both.map((p) => p.b?.internal_f1_func));
+  const f1pa = mean(both.map((p) => p.a?.internal_f1_param));
+  const f1pb = mean(both.map((p) => p.b?.internal_f1_param));
+  document.getElementById("sF1A").title =
+    `mean((f1_func+f1_param)/2); func=${f1fa == null ? "—" : f1fa.toFixed(3)} param=${f1pa == null ? "—" : f1pa.toFixed(3)}`;
+  document.getElementById("sF1B").title =
+    `mean((f1_func+f1_param)/2); func=${f1fb == null ? "—" : f1fb.toFixed(3)} param=${f1pb == null ? "—" : f1pb.toFixed(3)}`;
+  document.getElementById("sShowing").textContent = String(state.filtered.length);
+  document.getElementById("listCount").textContent = String(state.filtered.length);
+}
+
+function ratePct(ok, n) {
+  if (!n) return null;
+  return (100 * ok) / n;
+}
+
+function fmtPct(v, digits = 1) {
+  if (v == null || Number.isNaN(v)) return "—";
+  return v.toFixed(digits).replace(".", ",") + " %";
+}
+
+function fmtDeltaPp(d, digits = 1) {
+  if (d == null || Number.isNaN(d)) return "—";
+  const s = (d >= 0 ? "+" : "") + d.toFixed(digits).replace(".", ",");
+  return s + " pp";
+}
+
+function deltaClass(d) {
+  if (d == null || Number.isNaN(d) || Math.abs(d) < 0.05) return "";
+  return d > 0 ? "delta-pos" : "delta-neg";
+}
+
+function aggBucket(items) {
+  const n = items.length;
+  const aOk = items.filter((p) => p.passA).length;
+  const bOk = items.filter((p) => p.passB).length;
+  return {
+    n,
+    aOk,
+    bOk,
+    wa: ratePct(aOk, n),
+    wb: ratePct(bOk, n),
+    d: n ? ratePct(bOk, n) - ratePct(aOk, n) : null,
+  };
+}
+
+function meanBoolRate(items, getter) {
+  let n = 0, ok = 0;
+  for (const p of items) {
+    const v = getter(p);
+    if (v == null) continue;
+    n += 1;
+    if (v) ok += 1;
+  }
+  return n ? (100 * ok) / n : null;
+}
+
+function meanNum(items, getter) {
+  const xs = [];
+  for (const p of items) {
+    const v = getter(p);
+    if (v != null && Number.isFinite(v)) xs.push(v);
+  }
+  if (!xs.length) return null;
+  return (100 * xs.reduce((a, b) => a + b, 0)) / xs.length;
+}
+
+function buildImproveNote(rows, both) {
+  // rows: [{key, label, ...agg}] without all
+  const ranked = [...rows].filter((r) => r.n >= 10).sort((a, b) => (b.d ?? -999) - (a.d ?? -999));
+  const best = ranked[0];
+  const positives = rows.filter((r) => (r.d ?? 0) > 0.5);
+  let html = "";
+  if (best) {
+    html += `Největší zlepšení je u <strong>${esc(best.label)}</strong> (${fmtDeltaPp(best.d)}). `;
+  }
+  const others = positives.filter((r) => !best || r.key !== best.key).map((r) => r.label);
+  if (others.length) {
+    html += `Pozitivní směr ale není omezen pouze na ně: zlepšily se také ${esc(others.join(", "))}. `;
+  }
+
+  // special note for exact 8-call if present and small n
+  const eight = both.filter((p) => Number(p.nGold) === 8);
+  if (eight.length) {
+    const a = aggBucket(eight);
+    if (a.d != null && a.d < -0.5) {
+      html += `<br><br>U samotných <strong>8call</strong> tasků nastal ${a.d < 0 ? "mírný pokles" : "posun"} z ${fmtPct(a.wa)} na ${fmtPct(a.wb)}, ale jde jen o ${a.n} příkladů. Delší buckety proto ještě potřebují podrobnější kontrolu.`;
+    } else if (a.n < 30) {
+      html += `<br><br>Bucket <strong>6+</strong> je heterogenní (např. 8call: n=${a.n}). Delší buckety proto ještě potřebují podrobnější kontrolu.`;
+    }
+  }
+  return html || "Klikni řádek pro filtr úloh podle bucketu (včetně <strong>all</strong>).";
+}
+
+function renderNToolBreakdown() {
+  const wrap = document.getElementById("nToolWrap");
+  const both = state.paired.filter((p) => p.a && p.b);
+  if (!both.length) {
+    wrap.classList.remove("visible");
+    return;
+  }
+  const firstShow = !wrap.classList.contains("visible");
+  wrap.classList.add("visible");
+  // first load: open summary (still capped by max-height); later keep user toggle state
+  if (firstShow) wrap.classList.remove("collapsed");
+
+  const labA = state.profileA === "generic" ? "A" : state.profileA;
+  const labB = state.profileB === "generic" ? "B" : state.profileB;
+  document.getElementById("nthA").textContent = labA;
+  document.getElementById("nthB").textContent = labB;
+  document.getElementById("nthDiagA").textContent = labA;
+  document.getElementById("nthDiagB").textContent = labB;
+
+  const order = ["2", "3", "4", "5", "6plus"];
+  const byBucket = new Map(order.map((k) => [k, []]));
+  const other = [];
+  for (const p of both) {
+    const k = nGoldBucket(p.nGold);
+    if (byBucket.has(k)) byBucket.get(k).push(p);
+    else other.push(p);
+  }
+
+  const activeN = document.getElementById("filterN").value;
+  const rowData = [];
+  for (const k of order) {
+    const items = byBucket.get(k);
+    if (!items.length) continue;
+    const a = aggBucket(items);
+    rowData.push({ key: k, label: bucketLabel(k), ...a });
+  }
+  if (other.length) {
+    const a = aggBucket(other);
+    rowData.push({ key: "?", label: bucketLabel("?"), ...a });
+  }
+
+  const rowsHtml = rowData.map((r) => {
+    const active = activeN === r.key ? " active" : "";
+    return `<tr class="bucket-row${active}" data-n="${esc(r.key)}">
+      <td>${esc(r.label)}</td>
+      <td>${r.n}</td>
+      <td>${fmtPct(r.wa, 0)}</td>
+      <td>${fmtPct(r.wb, 0)}</td>
+      <td class="${deltaClass(r.d)}">${fmtDeltaPp(r.d, 0)}</td>
+    </tr>`;
+  });
+
+  const allAgg = aggBucket(both);
+  const allActive = activeN === "all" ? " active" : "";
+  rowsHtml.push(`<tr class="bucket-row${allActive}" data-n="all" style="font-weight:600">
+    <td>all</td>
+    <td>${allAgg.n}</td>
+    <td>${fmtPct(allAgg.wa, 0)}</td>
+    <td>${fmtPct(allAgg.wb, 0)}</td>
+    <td class="${deltaClass(allAgg.d)}">${fmtDeltaPp(allAgg.d, 0)}</td>
+  </tr>`);
+
+  document.getElementById("nToolBody").innerHTML = rowsHtml.join("");
+  document.getElementById("nToolNoteImprove").innerHTML = buildImproveNote(rowData, both);
+
+  // diagnostic behavior table
+  const diagSpecs = [
+    {
+      name: "Executable trajectory",
+      a: meanBoolRate(both, (p) => (p.a?.executable == null ? null : asBool(p.a.executable))),
+      b: meanBoolRate(both, (p) => (p.b?.executable == null ? null : asBool(p.b.executable))),
+    },
+    {
+      name: "Final-answer pass",
+      a: meanBoolRate(both, (p) => p.a?.final_answer_pass),
+      b: meanBoolRate(both, (p) => p.b?.final_answer_pass),
+    },
+    {
+      name: "Solution-equivalent pass",
+      a: meanBoolRate(both, (p) => p.a?.solution_equivalent_pass),
+      b: meanBoolRate(both, (p) => p.b?.solution_equivalent_pass),
+    },
+    {
+      name: "Strict gold-trace pass",
+      a: meanBoolRate(both, (p) => p.a?.strict_gold_trace_pass),
+      b: meanBoolRate(both, (p) => p.b?.strict_gold_trace_pass),
+    },
+    {
+      name: "Interní Function F1",
+      a: meanNum(both, (p) => p.a?.internal_f1_func),
+      b: meanNum(both, (p) => p.b?.internal_f1_func),
+    },
+    {
+      name: "Interní Parameter F1",
+      a: meanNum(both, (p) => p.a?.internal_f1_param),
+      b: meanNum(both, (p) => p.b?.internal_f1_param),
+    },
+  ];
+
+  document.getElementById("nDiagBody").innerHTML = diagSpecs
+    .map((r) => {
+      const d = r.a == null || r.b == null ? null : r.b - r.a;
+      return `<tr>
+        <td>${esc(r.name)}</td>
+        <td>${fmtPct(r.a)}</td>
+        <td>${fmtPct(r.b)}</td>
+        <td class="${deltaClass(d)}">${fmtDeltaPp(d)}</td>
+      </tr>`;
+    })
+    .join("");
+
+  document.querySelectorAll("#nToolBody tr.bucket-row").forEach((tr) => {
+    tr.addEventListener("click", () => {
+      const sel = document.getElementById("filterN");
+      const k = tr.dataset.n;
+      // all always clears; other rows toggle
+      if (k === "all") sel.value = "all";
+      else sel.value = sel.value === k ? "all" : k;
+      applyFilter();
+      });
+    });
+}
+
+function outcomeBadge(outcome) {
+  if (outcome === "gained") return '<span class="badge gain">GAINED</span>';
+  if (outcome === "lost") return '<span class="badge loss">LOST</span>';
+  if (outcome === "both_pass") return '<span class="badge pass">BOTH ✓</span>';
+  if (outcome === "both_fail") return '<span class="badge fail">BOTH ✗</span>';
+  if (outcome === "a_only") return '<span class="badge meta">A only</span>';
+  if (outcome === "b_only") return '<span class="badge meta">B only</span>';
+  return '<span class="badge same">—</span>';
+}
+
+function passBadge(pass) {
+  if (pass == null) return '<span class="badge same">n/a</span>';
+  return pass
+    ? '<span class="badge pass">PASS</span>'
+    : '<span class="badge fail">FAIL</span>';
+}
+
+function renderList() {
+  const root = document.getElementById("taskList");
+  root.innerHTML = state.filtered
+    .map((p) => {
+      const active = p.id === state.activeId ? " active" : "";
+      const q = p.question || "(načítám NESTFUL otázku… / Load C0↔D1 přes HTTP)";
+      const nLabel = p.nGold == null ? "?-tool" : `${p.nGold}-tool`;
+      return `<div class="task-item${active}" data-id="${esc(p.id)}">
+        <div class="tid">
+          <span class="short" title="${esc(p.id)}">${esc(shortId(p.id))}</span>
+          <span class="badge meta">${esc(nLabel)}</span>
+      </div>
+        <div class="q" title="${esc(q)}">${esc(q)}</div>
+        <div class="badges">
+          ${outcomeBadge(p.outcome)}
+          <span class="badge meta">${esc(state.profileA === "generic" ? "A" : state.profileA)} ${p.passA == null ? "?" : p.passA ? "✓" : "✗"}</span>
+          <span class="badge meta">${esc(state.profileB === "generic" ? "B" : state.profileB)} ${p.passB == null ? "?" : p.passB ? "✓" : "✗"}</span>
+      </div>
+    </div>`;
+    })
+    .join("");
+
+  root.querySelectorAll(".task-item").forEach((el) => {
+    el.addEventListener("click", () => selectTask(el.dataset.id));
+  });
+}
+
+function selectTask(id) {
+  state.activeId = id;
+  renderList();
+  renderDetail(id);
+}
+
+function metaCard(k, v, cls = "") {
+  return `<div class="meta-card"><div class="k">${esc(k)}</div><div class="v ${cls}">${esc(v)}</div></div>`;
+}
+
+function renderArmPanel(norm, label, profileClass) {
+  if (!norm) {
+    return `<div class="arm-panel missing">
+      <div class="arm-hdr"><span class="name ${profileClass}">${esc(label)}</span>${passBadge(null)}</div>
+      <div class="turns" style="padding:16px;color:var(--muted)">Missing for this sample_id</div>
+    </div>`;
+  }
+  const winCls = norm.pass ? "pass" : "fail";
+  const turnsHtml = norm.turns.length
+    ? norm.turns
+        .map((t, i) => {
+          const open = i < 2 ? " open" : "";
+          const tool = t.tool_name ? `<span class="tool-name">${esc(t.tool_name)}</span>` : "";
+          const fail = t.fail_reason
+            ? `<span class="fail-tag">${esc(String(t.fail_reason).slice(0, 40))}</span>`
+            : `<span class="chev">▶</span>`;
+          const callStr = t.parsed_call
+            ? JSON.stringify(t.parsed_call, null, 2)
+            : "";
+          const obsStr =
+            t.observation == null
+              ? ""
+              : typeof t.observation === "string"
+                ? t.observation
+                : JSON.stringify(t.observation, null, 2);
+          return `<div class="turn${open}">
+            <div class="turn-bar">
+              <span class="tn">T${esc(t.turn)}</span>
+              ${tool}
+              ${fail}
+            </div>
+            <div class="turn-body">
+              ${t.model_text ? `<div class="blk"><div class="blk-lbl model">model</div><pre>${esc(t.model_text)}</pre></div>` : ""}
+              ${callStr ? `<div class="blk"><div class="blk-lbl call">tool call</div><pre>${esc(callStr)}</pre></div>` : ""}
+              ${obsStr ? `<div class="blk"><div class="blk-lbl obs">observation</div><pre>${esc(obsStr)}</pre></div>` : ""}
+              ${t.fail_reason ? `<div class="blk"><div class="blk-lbl err">fail_reason</div><pre>${esc(t.fail_reason)}</pre></div>` : ""}
+            </div>
+          </div>`;
+        })
+        .join("")
+    : `<div style="padding:12px;color:var(--muted);font-size:12px">No turns in _traj</div>`;
+
+  return `<div class="arm-panel">
+    <div class="arm-hdr">
+      <span class="name ${profileClass}">${esc(label)}</span>
+      ${passBadge(norm.pass)}
+    </div>
+    <div class="arm-meta">
+      <span>official_win: <b class="${winCls}">${fmt(norm.official_win)}</b></span>
+      <span>F1_func: <b>${fmt(norm.internal_f1_func)}</b></span>
+      <span>F1_param: <b>${fmt(norm.internal_f1_param)}</b></span>
+      <span>F1̄: <b>${fmt(norm.internal_f1_mean)}</b></span>
+      <span>ans_pass: <b class="${norm.final_answer_pass ? "pass" : "fail"}">${fmt(norm.final_answer_pass)}</b></span>
+      <span>sol_eq: <b class="${norm.solution_equivalent_pass ? "pass" : "fail"}">${fmt(norm.solution_equivalent_pass)}</b></span>
+      <span>strict_gold: <b class="${norm.strict_gold_trace_pass ? "pass" : "fail"}">${fmt(norm.strict_gold_trace_pass)}</b></span>
+      <span>alt_sol: <b class="${norm.alternative_valid_solution_pass ? "pass" : "fail"}">${fmt(norm.alternative_valid_solution_pass)}</b></span>
+      <span>tools: <b>${fmt(norm.num_tool_calls)}</b> / gold <b>${fmt(norm.num_gold_calls)}</b></span>
+      <span>stop: <b>${esc(norm.stop_reason || "—")}</b></span>
+      ${norm.mismatch_reason ? `<span>mismatch: <b class="fail">${esc(String(norm.mismatch_reason).slice(0, 48))}</b></span>` : ""}
+    </div>
+    <div class="answer-box">
+      <div class="lbl">pred_answer</div>
+      <div class="val">${esc(norm.pred_answer == null ? "—" : typeof norm.pred_answer === "string" ? norm.pred_answer : JSON.stringify(norm.pred_answer))}</div>
+    </div>
+    <div class="turns">${turnsHtml}</div>
+  </div>`;
+}
+
+function renderDetail(id) {
+  const p = state.paired.find((x) => x.id === id);
+  const root = document.getElementById("detail");
+  if (!p) {
+    root.innerHTML = '<div class="empty-state"><p>Not found</p></div>';
+    return;
+  }
+
+  const clsA = state.profileA === "C0" ? "c0" : state.profileA === "D1" ? "d1" : "generic";
+  const clsB = state.profileB === "D1" ? "d1" : state.profileB === "C0" ? "c0" : "generic";
+
+  const goldStr =
+    p.gold == null
+      ? null
+      : typeof p.gold === "string"
+        ? p.gold
+        : JSON.stringify(p.gold, null, 2);
+
+  const outStr = p.a?.diag_output || p.b?.diag_output;
+  const goldCalls =
+    outStr != null
+      ? typeof outStr === "string"
+        ? outStr
+        : JSON.stringify(outStr, null, 2)
+      : null;
+
+  const nLabel = p.nGold == null ? "?" : String(p.nGold);
+  root.innerHTML = `
+    <div class="detail-hdr">
+      <h2>${esc(p.id)}</h2>
+      <div class="task-lbl">Otázka z NESTFUL (${esc(nLabel)}-tool) — input, na který model odpovídal</div>
+      <div class="question">${esc(p.question || "(otázka chybí — spusť přes HTTP a Load C0↔D1, nebo dropni eval_viewer_nestful500_tasks.json / nestful_diagnostic_500.jsonl do Q)")}</div>
+      <div class="badges" style="margin-bottom:4px">
+        ${outcomeBadge(p.outcome)}
+        <span class="badge meta">${esc(nLabel)}-tool</span>
+        ${passBadge(p.passA)} ${esc(state.labelA)}
+        ${passBadge(p.passB)} ${esc(state.labelB)}
+      </div>
+    </div>
+    <div class="meta-grid">
+      ${metaCard("outcome", p.outcome, p.outcome === "gained" ? "pass" : p.outcome === "lost" ? "fail" : "amber")}
+      ${metaCard(state.labelA + " win", p.passA == null ? "—" : p.passA ? "PASS" : "FAIL", p.passA ? "pass" : "fail")}
+      ${metaCard(state.labelB + " win", p.passB == null ? "—" : p.passB ? "PASS" : "FAIL", p.passB ? "pass" : "fail")}
+      ${metaCard("Δ F1", (() => {
+        const fa = p.a?.internal_f1_mean, fb = p.b?.internal_f1_mean;
+        if (fa == null || fb == null) return "—";
+        const d = fb - fa;
+        return (d >= 0 ? "+" : "") + d.toFixed(3);
+      })(), "amber")}
+      ${metaCard("n gold tools", nLabel)}
+      ${metaCard("gold answer", goldStr == null ? "—" : String(goldStr).slice(0, 40))}
+    </div>
+    ${
+      goldStr != null || goldCalls
+        ? `<div class="gold-box">
+            <h3>Gold</h3>
+            ${goldStr != null ? `<pre>answer: ${esc(goldStr)}</pre>` : ""}
+            ${goldCalls ? `<pre style="margin-top:8px">gold tool plan:\n${esc(goldCalls)}</pre>` : ""}
+          </div>`
+        : ""
+    }
+    <div class="compare-row">
+      ${renderArmPanel(p.a, state.labelA, clsA)}
+      ${renderArmPanel(p.b, state.labelB, clsB)}
+    </div>
+  `;
+
+  root.querySelectorAll(".turn-bar").forEach((bar) => {
+    bar.addEventListener("click", () => {
+      bar.parentElement.classList.toggle("open");
+    });
+  });
+}
+
+/* ── File / fetch wiring ───────────────────────────────────────────── */
+function wireDrop(zoneId, fileId, handler) {
+  const zone = document.getElementById(zoneId);
+  const input = document.getElementById(fileId);
+  zone.addEventListener("click", (e) => {
+    if (e.target !== input) input.click();
+  });
+  zone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    zone.classList.add("dragover");
+  });
+  zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    zone.classList.remove("dragover");
+    const f = e.dataTransfer.files[0];
+    if (f) readFile(f, handler);
+  });
+  input.addEventListener("change", () => {
+    const f = input.files[0];
+    if (f) readFile(f, handler);
+  });
+}
+
+function readFile(file, handler) {
+  const reader = new FileReader();
+  reader.onload = () => handler(String(reader.result), file.name);
+  reader.onerror = () => toast("Failed to read " + file.name);
+  reader.readAsText(file);
+}
+
+async function fetchText(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${url}`);
+  return res.text();
+}
+
+document.getElementById("btnPreset").addEventListener("click", async () => {
+  const btn = document.getElementById("btnPreset");
+  btn.disabled = true;
+  btn.textContent = "Loading…";
+  try {
+    const [ta, tb, tTasks, td] = await Promise.all([
+      fetchText(PRESET.a),
+      fetchText(PRESET.b),
+      fetchText(PRESET.tasks).catch(() => null),
+      fetchText(PRESET.d).catch(() => null),
+    ]);
+    // full diag preferred (má i gold tool plan); compact map stačí na otázky
+    if (td) loadTaskMeta(td, PRESET.d, { quiet: true });
+    else if (tTasks) loadTaskMeta(tTasks, PRESET.tasks, { quiet: true });
+    loadArm(ta, PRESET.a, "A");
+    loadArm(tb, PRESET.b, "B");
+    if (!state.diag.size && tTasks) loadTaskMeta(tTasks, PRESET.tasks, { quiet: true });
+    toast(`C0 + D1 loaded · otázky ${state.diag.size}/500`);
+  } catch (e) {
+    console.error(e);
+    toast("Fetch failed — serve repo via HTTP or use drag & drop. " + e.message, 5000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Load C0↔D1";
+  }
 });
+
+document.getElementById("btnClear").addEventListener("click", () => {
+  state.armA = new Map();
+  state.armB = new Map();
+  state.diag = new Map();
+  state.paired = [];
+  state.filtered = [];
+  state.activeId = null;
+  state.profileA = state.profileB = "generic";
+  state.labelA = "C0 / A";
+  state.labelB = "D1 / B";
+  ["dropA", "dropB", "dropD"].forEach((id) =>
+    document.getElementById(id).classList.remove("loaded")
+  );
+  document.getElementById("fnameA").textContent = "drop or click";
+  document.getElementById("fnameB").textContent = "drop or click";
+  document.getElementById("fnameD").textContent = "NESTFUL otázky";
+  document.getElementById("statsBar").style.display = "none";
+  document.getElementById("nToolWrap").classList.remove("visible");
+  document.getElementById("nToolWrap").classList.add("collapsed");
+  document.getElementById("nToolBody").innerHTML = "";
+  document.getElementById("nDiagBody").innerHTML = "";
+  document.getElementById("nToolNoteImprove").innerHTML = "";
+  document.getElementById("filterN").value = "all";
+  document.getElementById("taskList").innerHTML = "";
+  document.getElementById("listCount").textContent = "0";
+  document.getElementById("detail").innerHTML = `<div class="empty-state">
+    <div class="icon">◈</div>
+    <p>Cleared. Load C0 / D1 trajectories again.</p>
+  </div>`;
+});
+
+document.getElementById("search").addEventListener("input", () => applyFilter());
+document.getElementById("filter").addEventListener("change", () => applyFilter());
+document.getElementById("filterN").addEventListener("change", () => applyFilter());
+document.getElementById("nToolToggle").addEventListener("click", () => {
+  document.getElementById("nToolWrap").classList.toggle("collapsed");
+});
+
+wireDrop("dropA", "fileA", (t, n) => loadArm(t, n, "A"));
+wireDrop("dropB", "fileB", (t, n) => loadArm(t, n, "B"));
+wireDrop("dropD", "fileD", (t, n) => loadTaskMeta(t, n));
+
+// Prefetch NESTFUL questions (sample_id → input) when served over HTTP
+if (location.protocol !== "file:") {
+  void ensureNestfulQuestions({ force: true });
+  if (/[?&]preset=c0d1\b/.test(location.search)) {
+    document.getElementById("btnPreset").click();
+  }
+}
 </script>
 </body>
 </html>

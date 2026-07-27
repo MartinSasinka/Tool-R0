@@ -87,8 +87,14 @@ def official_win_rate(trajs: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--run-dir", type=Path, required=True,
-                    help="Training run directory containing the final adapter")
+    ap.add_argument("--run-dir", type=Path, default=None,
+                    help="Training run directory containing the final adapter "
+                         "(omit with --base-model for C0 / no-LoRA eval)")
+    ap.add_argument("--base-model", action="store_true",
+                    help="Eval base instruct checkpoint (no LoRA). "
+                         "Sets model.lora_adapter=null; --run-dir not required.")
+    ap.add_argument("--arm", default=None,
+                    help="Label written into metrics_merged.json (default D1, or C0 with --base-model)")
     ap.add_argument("--diagnostic", type=Path, required=True)
     ap.add_argument("--out-dir", type=Path, required=True)
     ap.add_argument("--run-py", type=Path, required=True)
@@ -102,10 +108,21 @@ def main() -> int:
         print("[eval4] ABORT: empty --gpus", file=sys.stderr)
         return 2
 
-    ck = find_checkpoint(args.run_dir)
-    if ck is None and not args.dry_run:
-        print(f"[eval4] ABORT: no final adapter under {args.run_dir}", file=sys.stderr)
+    if not args.base_model and args.run_dir is None:
+        print("[eval4] ABORT: pass --run-dir or --base-model", file=sys.stderr)
         return 2
+
+    ck = None
+    if args.base_model:
+        print("[eval4] --base-model: no LoRA adapter (C0-style)")
+    else:
+        ck = find_checkpoint(args.run_dir)
+        if ck is None and not args.dry_run:
+            print(f"[eval4] ABORT: no final adapter under {args.run_dir}",
+                  file=sys.stderr)
+            print("[eval4] hint: for base C0 use --base-model (no --run-dir)",
+                  file=sys.stderr)
+            return 2
 
     rows = read_jsonl(args.diagnostic)
     if not rows:
@@ -119,9 +136,11 @@ def main() -> int:
     shards_root = out / "shards"
     shards_root.mkdir(parents=True, exist_ok=True)
 
-    print(f"[eval4] checkpoint: {ck}")
+    arm = args.arm or ("C0" if args.base_model else "D1")
+    print(f"[eval4] checkpoint: {ck if ck is not None else '(base model, no adapter)'}")
     print(f"[eval4] diagnostic: {args.diagnostic} ({len(rows)} rows)")
     print(f"[eval4] gpus: {gpus}  shards: {[len(s) for s in shards]}")
+    print(f"[eval4] arm: {arm}")
 
     procs: List[subprocess.Popen] = []
     shard_dirs: List[Path] = []
@@ -193,7 +212,7 @@ def main() -> int:
         "shard_sizes": [len(s) for s in shards],
         "worker_returncodes": codes,
         "elapsed_sec": round(elapsed, 1),
-        "arm": "D1",
+        "arm": arm,
     })
     # Prefer per-shard metrics_official if present (sum wins / n).
     wins = 0

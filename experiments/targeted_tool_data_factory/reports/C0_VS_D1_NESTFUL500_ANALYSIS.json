@@ -1,0 +1,1151 @@
+{
+  "headline": "On paired NESTFUL-500, D1 (Pilot3 GRPO n=300) reaches 57.6% official win vs C0 48.8% (Δ +8.8 pp, McNemar p=8.41e-05, gained 83 / lost 39); largest lift on 2-call tasks, but gain is not exclusive to them. Backend confound: C0 HF vs D1 vLLM.",
+  "paths": {
+    "c0_traj": "experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot2\\phase1_canary_from_zip\\eval\\C0_nestful500\\final_eval_trajectories.jsonl",
+    "d1_traj": "experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3\\train_nestful500_from_zip\\train_nestful500\\eval\\D1_nestful500\\final_eval_trajectories.jsonl",
+    "c0_manifest": "experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot2\\phase1_canary_from_zip\\eval\\C0_nestful500\\eval_manifest.json",
+    "d1_manifest": "experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3\\train_nestful500_from_zip\\train_nestful500\\eval\\D1_nestful500\\eval_manifest.json",
+    "diagnostic": "experiments\\targeted_tool_data_factory\\runpod_bundle_pilot2\\data\\nestful_diagnostic_500.jsonl",
+    "train_full": "experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl",
+    "train_n300_definition": "first 300 rows of experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl (matches run_train_nestful500_4gpu.sh)",
+    "config": "experiments\\nestful_mtgrpo_partial\\config.yaml",
+    "d1_eval_script": "experiments\\targeted_tool_data_factory\\runpod_bundle_pilot3\\eval_nestful500_sharded.py"
+  },
+  "fairness": {
+    "n_c0": 500,
+    "n_d1": 500,
+    "n_paired": 500,
+    "only_c0": 0,
+    "only_d1": 0,
+    "same_diagnostic": true,
+    "diagnostic_path": "experiments\\targeted_tool_data_factory\\runpod_bundle_pilot2\\data\\nestful_diagnostic_500.jsonl",
+    "c0_temperature": 0.0,
+    "d1_temperature": 0.0,
+    "c0_top_p": 1.0,
+    "d1_top_p": 1.0,
+    "paradigm": "react",
+    "num_eval_rollouts": 1,
+    "scorer": "NESTFUL official calculate_win_score / official_win",
+    "c0_backend": "HF (no use_vllm override in eval_manifest)",
+    "d1_backend": "vLLM (eval_nestful500_sharded.py DECODING)",
+    "backend_identical": false,
+    "c0_checkpoint": null,
+    "d1_checkpoint": "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/outputs/runs/pilot3_D1_seed20260727_n300/checkpoints/FINAL",
+    "c0_manifest_cmd": [
+      "/usr/bin/python3",
+      "/workspace/Tool-R0/experiments/nestful_synthetic_curriculum_v3/run.py",
+      "--mode",
+      "final_eval",
+      "--config",
+      "/workspace/Tool-R0/experiments/nestful_mtgrpo_partial/config.yaml",
+      "--override",
+      "experiment.output_dir=/workspace/Tool-R0/experiments/targeted_tool_data_factory/outputs/runpod_pilot2/phase1_canary/eval/C0_nestful500",
+      "--override",
+      "paths.full_nestful_jsonl=/workspace/Tool-R0/experiments/targeted_tool_data_factory/runpod_bundle_pilot2/data/nestful_diagnostic_500.jsonl",
+      "--override",
+      "generation.temperature=0.0",
+      "--override",
+      "generation.top_p=1.0",
+      "--override",
+      "data.num_eval_rollouts=1",
+      "--override",
+      "data.eval_paradigm=react",
+      "--override",
+      "model.lora_adapter=null"
+    ],
+    "note": "Backend NOT identical: C0 phase1 canary eval omitted hardware.use_vllm=true; D1 sharded eval forced vLLM. Do not treat headline Δ as fully confounded-free. Re-run C0 with the D1 eval script into a NEW directory (do not overwrite)."
+  },
+  "summary": {
+    "win_rate_c0": 0.488,
+    "win_rate_d1": 0.576,
+    "delta_pp": 8.799999999999997,
+    "bootstrap_95ci_pp": [
+      4.600000000000004,
+      13.199999999999996
+    ],
+    "gained": 83,
+    "lost": 39,
+    "unchanged_pass": 205,
+    "unchanged_fail": 173,
+    "mcnemar_b_lost": 39,
+    "mcnemar_c_gained": 83,
+    "mcnemar_exact_p": 8.407391840775614e-05,
+    "relative_error_reduction": 0.17187499999999994,
+    "f1_func_c0": 0.43224237160490425,
+    "f1_func_d1": 0.5976720392841093,
+    "f1_param_c0": 0.17939682816154015,
+    "f1_param_d1": 0.26262991238435107,
+    "executable_c0": 0.714,
+    "executable_d1": 0.838,
+    "final_answer_pass_c0": 0.466,
+    "final_answer_pass_d1": 0.596,
+    "sol_eq_c0": 0.438,
+    "sol_eq_d1": 0.532,
+    "strict_gold_c0": 0.084,
+    "strict_gold_d1": 0.162
+  },
+  "by_gold_calls": [
+    {
+      "bucket": "2",
+      "n": 100,
+      "c0": 0.23,
+      "d1": 0.47,
+      "delta_pp": 23.999999999999996,
+      "gained": 28,
+      "lost": 4
+    },
+    {
+      "bucket": "3",
+      "n": 100,
+      "c0": 0.59,
+      "d1": 0.62,
+      "delta_pp": 3.0000000000000027,
+      "gained": 14,
+      "lost": 11
+    },
+    {
+      "bucket": "4",
+      "n": 100,
+      "c0": 0.57,
+      "d1": 0.65,
+      "delta_pp": 8.000000000000007,
+      "gained": 17,
+      "lost": 9
+    },
+    {
+      "bucket": "5",
+      "n": 100,
+      "c0": 0.55,
+      "d1": 0.6,
+      "delta_pp": 4.999999999999993,
+      "gained": 11,
+      "lost": 6
+    },
+    {
+      "bucket": "6",
+      "n": 29,
+      "c0": 0.4827586206896552,
+      "d1": 0.5862068965517241,
+      "delta_pp": 10.34482758620689,
+      "gained": 6,
+      "lost": 3
+    },
+    {
+      "bucket": "7",
+      "n": 16,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 2,
+      "lost": 2
+    },
+    {
+      "bucket": "8",
+      "n": 19,
+      "c0": 0.42105263157894735,
+      "d1": 0.3684210526315789,
+      "delta_pp": -5.263157894736842,
+      "gained": 2,
+      "lost": 3
+    },
+    {
+      "bucket": "9",
+      "n": 7,
+      "c0": 0.7142857142857143,
+      "d1": 0.8571428571428571,
+      "delta_pp": 14.28571428571428,
+      "gained": 1,
+      "lost": 0
+    },
+    {
+      "bucket": "10",
+      "n": 5,
+      "c0": 0.4,
+      "d1": 0.6,
+      "delta_pp": 19.999999999999996,
+      "gained": 1,
+      "lost": 0
+    },
+    {
+      "bucket": "11",
+      "n": 4,
+      "c0": 0.75,
+      "d1": 0.5,
+      "delta_pp": -25.0,
+      "gained": 0,
+      "lost": 1
+    },
+    {
+      "bucket": "12",
+      "n": 2,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "13",
+      "n": 7,
+      "c0": 0.42857142857142855,
+      "d1": 0.42857142857142855,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "14",
+      "n": 2,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "15",
+      "n": 1,
+      "c0": 1.0,
+      "d1": 1.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "18",
+      "n": 2,
+      "c0": 0.5,
+      "d1": 1.0,
+      "delta_pp": 50.0,
+      "gained": 1,
+      "lost": 0
+    },
+    {
+      "bucket": "19",
+      "n": 1,
+      "c0": 1.0,
+      "d1": 1.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "20",
+      "n": 2,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "25",
+      "n": 1,
+      "c0": 1.0,
+      "d1": 1.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "36",
+      "n": 1,
+      "c0": 0.0,
+      "d1": 0.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "53",
+      "n": 1,
+      "c0": 0.0,
+      "d1": 0.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    }
+  ],
+  "by_gold_calls_2_to_8": [
+    {
+      "bucket": "2",
+      "n": 100,
+      "c0": 0.23,
+      "d1": 0.47,
+      "delta_pp": 23.999999999999996,
+      "gained": 28,
+      "lost": 4
+    },
+    {
+      "bucket": "3",
+      "n": 100,
+      "c0": 0.59,
+      "d1": 0.62,
+      "delta_pp": 3.0000000000000027,
+      "gained": 14,
+      "lost": 11
+    },
+    {
+      "bucket": "4",
+      "n": 100,
+      "c0": 0.57,
+      "d1": 0.65,
+      "delta_pp": 8.000000000000007,
+      "gained": 17,
+      "lost": 9
+    },
+    {
+      "bucket": "5",
+      "n": 100,
+      "c0": 0.55,
+      "d1": 0.6,
+      "delta_pp": 4.999999999999993,
+      "gained": 11,
+      "lost": 6
+    },
+    {
+      "bucket": "6",
+      "n": 29,
+      "c0": 0.4827586206896552,
+      "d1": 0.5862068965517241,
+      "delta_pp": 10.34482758620689,
+      "gained": 6,
+      "lost": 3
+    },
+    {
+      "bucket": "7",
+      "n": 16,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 2,
+      "lost": 2
+    },
+    {
+      "bucket": "8",
+      "n": 19,
+      "c0": 0.42105263157894735,
+      "d1": 0.3684210526315789,
+      "delta_pp": -5.263157894736842,
+      "gained": 2,
+      "lost": 3
+    }
+  ],
+  "call_bucket_win_contribution": [
+    {
+      "bucket": "2",
+      "net_wins": 24,
+      "share_of_delta": 0.5454545454545454
+    },
+    {
+      "bucket": "3",
+      "net_wins": 3,
+      "share_of_delta": 0.06818181818181818
+    },
+    {
+      "bucket": "4",
+      "net_wins": 8,
+      "share_of_delta": 0.18181818181818182
+    },
+    {
+      "bucket": "5",
+      "net_wins": 5,
+      "share_of_delta": 0.11363636363636363
+    },
+    {
+      "bucket": "6",
+      "net_wins": 3,
+      "share_of_delta": 0.06818181818181818
+    },
+    {
+      "bucket": "7",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "8",
+      "net_wins": -1,
+      "share_of_delta": -0.022727272727272728
+    },
+    {
+      "bucket": "9",
+      "net_wins": 1,
+      "share_of_delta": 0.022727272727272728
+    },
+    {
+      "bucket": "10",
+      "net_wins": 1,
+      "share_of_delta": 0.022727272727272728
+    },
+    {
+      "bucket": "11",
+      "net_wins": -1,
+      "share_of_delta": -0.022727272727272728
+    },
+    {
+      "bucket": "12",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "13",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "14",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "15",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "18",
+      "net_wins": 1,
+      "share_of_delta": 0.022727272727272728
+    },
+    {
+      "bucket": "19",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "20",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "25",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "36",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    },
+    {
+      "bucket": "53",
+      "net_wins": 0,
+      "share_of_delta": 0.0
+    }
+  ],
+  "by_answer_type": [
+    {
+      "bucket": "bool",
+      "n": 7,
+      "c0": 0.2857142857142857,
+      "d1": 1.0,
+      "delta_pp": 71.42857142857143,
+      "gained": 5,
+      "lost": 0
+    },
+    {
+      "bucket": "dict",
+      "n": 1,
+      "c0": 0.0,
+      "d1": 1.0,
+      "delta_pp": 100.0,
+      "gained": 1,
+      "lost": 0
+    },
+    {
+      "bucket": "float",
+      "n": 432,
+      "c0": 0.5370370370370371,
+      "d1": 0.5902777777777778,
+      "delta_pp": 5.32407407407407,
+      "gained": 58,
+      "lost": 35
+    },
+    {
+      "bucket": "int",
+      "n": 14,
+      "c0": 0.2857142857142857,
+      "d1": 0.42857142857142855,
+      "delta_pp": 14.285714285714285,
+      "gained": 2,
+      "lost": 0
+    },
+    {
+      "bucket": "list",
+      "n": 22,
+      "c0": 0.13636363636363635,
+      "d1": 0.4090909090909091,
+      "delta_pp": 27.272727272727277,
+      "gained": 8,
+      "lost": 2
+    },
+    {
+      "bucket": "numeric_string",
+      "n": 2,
+      "c0": 0.0,
+      "d1": 0.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "string",
+      "n": 22,
+      "c0": 0.13636363636363635,
+      "d1": 0.45454545454545453,
+      "delta_pp": 31.818181818181817,
+      "gained": 9,
+      "lost": 2
+    }
+  ],
+  "by_motif": [
+    {
+      "bucket": "fan_in",
+      "n": 283,
+      "c0": 0.5335689045936396,
+      "d1": 0.6007067137809188,
+      "delta_pp": 6.7137809187279185,
+      "gained": 40,
+      "lost": 21
+    },
+    {
+      "bucket": "linear",
+      "n": 211,
+      "c0": 0.4218009478672986,
+      "d1": 0.5497630331753555,
+      "delta_pp": 12.796208530805686,
+      "gained": 43,
+      "lost": 16
+    },
+    {
+      "bucket": "mixed",
+      "n": 6,
+      "c0": 0.6666666666666666,
+      "d1": 0.3333333333333333,
+      "delta_pp": -33.33333333333333,
+      "gained": 0,
+      "lost": 2
+    }
+  ],
+  "by_offered_tools": [
+    {
+      "bucket": "10-12",
+      "n": 236,
+      "c0": 0.559322033898305,
+      "d1": 0.5805084745762712,
+      "delta_pp": 2.1186440677966156,
+      "gained": 27,
+      "lost": 22
+    },
+    {
+      "bucket": "13+",
+      "n": 75,
+      "c0": 0.2,
+      "d1": 0.48,
+      "delta_pp": 27.999999999999996,
+      "gained": 27,
+      "lost": 6
+    },
+    {
+      "bucket": "8-9",
+      "n": 189,
+      "c0": 0.5132275132275133,
+      "d1": 0.6084656084656085,
+      "delta_pp": 9.523809523809524,
+      "gained": 29,
+      "lost": 11
+    }
+  ],
+  "by_ref_density": [
+    {
+      "bucket": "ref0.25-0.45",
+      "n": 423,
+      "c0": 0.5106382978723404,
+      "d1": 0.5768321513002365,
+      "delta_pp": 6.619385342789608,
+      "gained": 62,
+      "lost": 34
+    },
+    {
+      "bucket": "ref<0.25",
+      "n": 3,
+      "c0": 0.0,
+      "d1": 0.0,
+      "delta_pp": 0.0,
+      "gained": 0,
+      "lost": 0
+    },
+    {
+      "bucket": "ref>=0.45",
+      "n": 74,
+      "c0": 0.3783783783783784,
+      "d1": 0.5945945945945946,
+      "delta_pp": 21.62162162162162,
+      "gained": 21,
+      "lost": 5
+    }
+  ],
+  "by_prompt_length": [
+    {
+      "bucket": "q120-199",
+      "n": 207,
+      "c0": 0.4975845410628019,
+      "d1": 0.5942028985507246,
+      "delta_pp": 9.661835748792269,
+      "gained": 40,
+      "lost": 20
+    },
+    {
+      "bucket": "q<120",
+      "n": 136,
+      "c0": 0.5661764705882353,
+      "d1": 0.6691176470588235,
+      "delta_pp": 10.29411764705882,
+      "gained": 24,
+      "lost": 10
+    },
+    {
+      "bucket": "q>=200",
+      "n": 157,
+      "c0": 0.40764331210191085,
+      "d1": 0.4713375796178344,
+      "delta_pp": 6.369426751592355,
+      "gained": 19,
+      "lost": 9
+    }
+  ],
+  "failure_class_c0": {
+    "success": 244,
+    "too_few_calls": 215,
+    "final_answer": 7,
+    "parse": 14,
+    "wrong_args": 6,
+    "too_many_calls": 11,
+    "unresolved_reference": 1,
+    "wrong_tool": 2
+  },
+  "failure_class_d1": {
+    "success": 288,
+    "wrong_args": 32,
+    "too_few_calls": 121,
+    "final_answer": 20,
+    "too_many_calls": 19,
+    "wrong_tool": 4,
+    "parse": 15,
+    "unresolved_reference": 1
+  },
+  "failure_class_among_gained_was_c0": {
+    "too_few_calls": 69,
+    "wrong_args": 4,
+    "parse": 6,
+    "too_many_calls": 3,
+    "final_answer": 1
+  },
+  "failure_class_among_lost_is_d1": {
+    "wrong_args": 7,
+    "too_few_calls": 18,
+    "final_answer": 3,
+    "parse": 7,
+    "unresolved_reference": 1,
+    "wrong_tool": 2,
+    "too_many_calls": 1
+  },
+  "gain_2call_share_of_gained": 0.3373493975903614,
+  "train300": {
+    "n": 300,
+    "call_count": {
+      "2": 89,
+      "3": 58,
+      "4": 43,
+      "5": 34,
+      "6": 44,
+      "7": 18,
+      "8": 14
+    },
+    "call_count_share": {
+      "2": 0.2966666666666667,
+      "3": 0.19333333333333333,
+      "4": 0.14333333333333334,
+      "5": 0.11333333333333333,
+      "6": 0.14666666666666667,
+      "7": 0.06,
+      "8": 0.04666666666666667
+    },
+    "motif": {
+      "branch_aggregate": 22,
+      "fan_in": 131,
+      "linear": 147
+    },
+    "motif_share": {
+      "branch_aggregate": 0.07333333333333333,
+      "fan_in": 0.43666666666666665,
+      "linear": 0.49
+    },
+    "answer_type": {
+      "float": 203,
+      "string": 20,
+      "bool": 16,
+      "int": 23,
+      "numeric_string": 9,
+      "list": 29
+    },
+    "answer_share": {
+      "float": 0.6766666666666666,
+      "string": 0.06666666666666667,
+      "bool": 0.05333333333333334,
+      "int": 0.07666666666666666,
+      "numeric_string": 0.03,
+      "list": 0.09666666666666666
+    },
+    "track": {
+      "G": 139,
+      "A": 161
+    },
+    "track_share": {
+      "G": 0.4633333333333333,
+      "A": 0.5366666666666666
+    },
+    "top_cells": [
+      [
+        "A_6pcall_linear_long_horizon_00",
+        20
+      ],
+      [
+        "A_4call_fan_in_variable_pla_00",
+        16
+      ],
+      [
+        "G_3call_fan_in_variable_pla_00",
+        13
+      ],
+      [
+        "G_4call_fan_in_variable_pla_00",
+        12
+      ],
+      [
+        "A_2call_linear_continuation_00",
+        12
+      ],
+      [
+        "G_6pcall_fan_in_long_horizon_00",
+        11
+      ],
+      [
+        "G_2call_linear_continuation_01",
+        11
+      ],
+      [
+        "A_3call_fan_in_tool_catalog_01",
+        11
+      ],
+      [
+        "A_2call_linear_continuation_03",
+        11
+      ],
+      [
+        "G_5call_fan_in_long_horizon_00",
+        10
+      ],
+      [
+        "A_3call_fan_in_variable_pla_00",
+        10
+      ],
+      [
+        "A_5call_fan_in_long_horizon_00",
+        10
+      ],
+      [
+        "G_2call_linear_continuation_03",
+        10
+      ],
+      [
+        "A_6pcall_fan_in_tool_catalog_01",
+        9
+      ],
+      [
+        "G_3call_fan_in_tool_catalog_01",
+        9
+      ]
+    ],
+    "n_distinct_cells": 38,
+    "failure_targets": {
+      "distractor_confusion": 77,
+      "premature_stop": 70,
+      "too_few_calls": 76,
+      "wrong_second_tool_after_correct_prefix": 68,
+      "numeric_string_confusion": 9
+    },
+    "skills": {
+      "tool_catalog_search": 77,
+      "long_horizon_planning": 70,
+      "variable_planning": 76,
+      "continuation_after_observation": 68,
+      "argument_typing": 9
+    },
+    "gold_tool_single_word_share": 0.11872909698996656,
+    "mean_ref_density": 0.4130678444649032
+  },
+  "coverage_vs_delta_by_calls": [
+    {
+      "bucket": "2",
+      "n": 100,
+      "c0": 0.23,
+      "d1": 0.47,
+      "delta_pp": 23.999999999999996,
+      "gained": 28,
+      "lost": 4,
+      "train300_n": 89,
+      "train300_share": 0.2966666666666667
+    },
+    {
+      "bucket": "3",
+      "n": 100,
+      "c0": 0.59,
+      "d1": 0.62,
+      "delta_pp": 3.0000000000000027,
+      "gained": 14,
+      "lost": 11,
+      "train300_n": 58,
+      "train300_share": 0.19333333333333333
+    },
+    {
+      "bucket": "4",
+      "n": 100,
+      "c0": 0.57,
+      "d1": 0.65,
+      "delta_pp": 8.000000000000007,
+      "gained": 17,
+      "lost": 9,
+      "train300_n": 43,
+      "train300_share": 0.14333333333333334
+    },
+    {
+      "bucket": "5",
+      "n": 100,
+      "c0": 0.55,
+      "d1": 0.6,
+      "delta_pp": 4.999999999999993,
+      "gained": 11,
+      "lost": 6,
+      "train300_n": 34,
+      "train300_share": 0.11333333333333333
+    },
+    {
+      "bucket": "6",
+      "n": 29,
+      "c0": 0.4827586206896552,
+      "d1": 0.5862068965517241,
+      "delta_pp": 10.34482758620689,
+      "gained": 6,
+      "lost": 3,
+      "train300_n": 44,
+      "train300_share": 0.14666666666666667
+    },
+    {
+      "bucket": "7",
+      "n": 16,
+      "c0": 0.5,
+      "d1": 0.5,
+      "delta_pp": 0.0,
+      "gained": 2,
+      "lost": 2,
+      "train300_n": 18,
+      "train300_share": 0.06
+    },
+    {
+      "bucket": "8",
+      "n": 19,
+      "c0": 0.42105263157894735,
+      "d1": 0.3684210526315789,
+      "delta_pp": -5.263157894736842,
+      "gained": 2,
+      "lost": 3,
+      "train300_n": 14,
+      "train300_share": 0.04666666666666667
+    }
+  ],
+  "dag_audit": {
+    "train_n": 300,
+    "train_source": "first 300 rows of experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl (matches run_train_nestful500_4gpu.sh)",
+    "topology_id": {
+      "n_tasks": 300,
+      "n_unique": 40,
+      "top1_share": 0.2966666666666667,
+      "top10_share": 0.74,
+      "shannon_bits": 4.0148140663287615,
+      "mean_tasks_per_family": 7.5,
+      "top10": [
+        {
+          "id": "topo_fdeb50f24873",
+          "n": 89,
+          "share": 0.2966666666666667
+        },
+        {
+          "id": "topo_911586a55488",
+          "n": 43,
+          "share": 0.14333333333333334
+        },
+        {
+          "id": "topo_bd3dd51ec1a9",
+          "n": 21,
+          "share": 0.07
+        },
+        {
+          "id": "topo_02b29308ce2b",
+          "n": 16,
+          "share": 0.05333333333333334
+        },
+        {
+          "id": "topo_1c8dbe1830b2",
+          "n": 15,
+          "share": 0.05
+        },
+        {
+          "id": "topo_5296967693d8",
+          "n": 10,
+          "share": 0.03333333333333333
+        },
+        {
+          "id": "topo_926c72bac680",
+          "n": 7,
+          "share": 0.023333333333333334
+        },
+        {
+          "id": "topo_ff8ead63c33b",
+          "n": 7,
+          "share": 0.023333333333333334
+        },
+        {
+          "id": "topo_0c51481d8aeb",
+          "n": 7,
+          "share": 0.023333333333333334
+        },
+        {
+          "id": "topo_d228dd6db98a",
+          "n": 7,
+          "share": 0.023333333333333334
+        }
+      ]
+    },
+    "primitive_program_id": {
+      "n_tasks": 300,
+      "n_unique": 295,
+      "top1_share": 0.006666666666666667,
+      "top10_share": 0.05,
+      "shannon_bits": 8.195485357162601,
+      "mean_tasks_per_family": 1.0169491525423728,
+      "top10": [
+        {
+          "id": "prim_d45c19b58375",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "prim_72f085b6b3b5",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "prim_66dc5d6a8319",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "prim_8c06ea1494b7",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "prim_26be69ef3d7b",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "prim_80fb7a045b14",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "prim_2f7aee542af7",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "prim_168cbbc96c9d",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "prim_606d63f7dbca",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "prim_dc0e8ea424c8",
+          "n": 1,
+          "share": 0.0033333333333333335
+        }
+      ]
+    },
+    "surface_program_id": {
+      "n_tasks": 300,
+      "n_unique": 298,
+      "top1_share": 0.006666666666666667,
+      "top10_share": 0.04,
+      "shannon_bits": 8.215485357162605,
+      "mean_tasks_per_family": 1.0067114093959733,
+      "top10": [
+        {
+          "id": "surf_45571be68722",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "surf_f9fe67b5274b",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "surf_2ff77ecbfaed",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_dc002f0d3c50",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_982976a06f33",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_fe8879b984b5",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_f3dd650dfba9",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_24718c9f43a6",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_58f7a56c53c1",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "surf_d949f340325c",
+          "n": 1,
+          "share": 0.0033333333333333335
+        }
+      ]
+    },
+    "semantic_program_family": {
+      "n_tasks": 300,
+      "n_unique": 294,
+      "top1_share": 0.006666666666666667,
+      "top10_share": 0.05333333333333334,
+      "shannon_bits": 8.188818690495937,
+      "mean_tasks_per_family": 1.0204081632653061,
+      "top10": [
+        {
+          "id": "pf_c218401edf38",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_f2f1f9deb112",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_e21c7ecec690",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_5cf8fa30504f",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_4f6a2062a24b",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_b8b72ab43a11",
+          "n": 2,
+          "share": 0.006666666666666667
+        },
+        {
+          "id": "pf_5240c3db5eff",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "pf_44698d2d849b",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "pf_b68927c61851",
+          "n": 1,
+          "share": 0.0033333333333333335
+        },
+        {
+          "id": "pf_b4e1f57c175e",
+          "n": 1,
+          "share": 0.0033333333333333335
+        }
+      ]
+    },
+    "topology_unique_by_call_count": {
+      "2": 1,
+      "3": 2,
+      "4": 5,
+      "5": 7,
+      "6": 10,
+      "7": 9,
+      "8": 6
+    },
+    "topology_unique_by_motif": {
+      "branch_aggregate": 6,
+      "fan_in": 27,
+      "linear": 7
+    },
+    "definitions": {
+      "topology_id": "n + dependency edges only (no tools/constants)",
+      "primitive_program_id": "topology + mapped primitive sids + arg ref/type pattern (no constants/surfaces)",
+      "surface_program_id": "tool names + param schemas + labels",
+      "semantic_program_family": "factory provenance field when present; else primitive_program_id"
+    }
+  },
+  "c0_reeval_commands": "# Backend-matched C0 re-eval (NEW dir — do NOT overwrite phase1 C0)\ncd /workspace/Tool-R0\nmkdir -p experiments/targeted_tool_data_factory/outputs/runpod_pilot3/c0_vllm_placeholder\n# no adapter_config.json => eval_nestful500_sharded.py sets model.lora_adapter=null\npython experiments/targeted_tool_data_factory/runpod_bundle_pilot3/eval_nestful500_sharded.py \\\n  --run-dir experiments/targeted_tool_data_factory/outputs/runpod_pilot3/c0_vllm_placeholder \\\n  --diagnostic experiments/targeted_tool_data_factory/runpod_bundle_pilot2/data/nestful_diagnostic_500.jsonl \\\n  --out-dir experiments/targeted_tool_data_factory/outputs/runpod_pilot3/eval_C0_nestful500_vllm_matched \\\n  --run-py experiments/nestful_synthetic_curriculum_v3/run.py \\\n  --config experiments/nestful_mtgrpo_partial/config.yaml \\\n  --gpus 0,1,2,3\n# DECODING inside the script already forces: use_vllm=true, T=0, top_p=1, react, 1 rollout\n",
+  "claims": {
+    "certain": [
+      "Same 500 sample_ids paired 500/500; same diagnostic JSONL path.",
+      "Official win C0=0.488 D1=0.576; gained=83 lost=39.",
+      "Exact McNemar p=8.407e-05; bootstrap 95% CI for Δpp=[4.60,13.20].",
+      "D1 eval used vLLM; C0 phase1 manifest has no use_vllm=true override.",
+      "Train subset for D1 was first 300 rows of train_grpo_pilot3.jsonl."
+    ],
+    "interpretation": [
+      "Largest absolute win lift on 2-call bucket aligns with train oversample of short tasks + student failure profile.",
+      "Executable / final-answer / sol_eq / F1_func all move with official win → not only answer-flip noise.",
+      "Positive deltas on 3–5 call buckets suggest broader transfer than 2-call-only, but smaller."
+    ],
+    "open": [
+      "How much of Δ is vLLM vs HF backend (need matched C0 vLLM re-eval).",
+      "Causal role of specific train cells vs generic GRPO on tool-calling.",
+      "Whether 8-call regression is noise (n=19) or systematic long-horizon regression."
+    ]
+  }
+}
