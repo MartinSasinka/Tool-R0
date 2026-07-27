@@ -112,46 +112,69 @@ def main() -> int:
         print("[eval4] ABORT: pass --run-dir or --base-model", file=sys.stderr)
         return 2
 
+    # Absolute paths are mandatory: nestful_mtgrpo_minimal/run.py resolves
+    # relative paths from its CWD and, if the file is missing, copies the FULL
+    # nestful_data.jsonl (1861) over the configured path — which silently turns
+    # a 500-shard eval into a 1861-task run.
+    diagnostic = args.diagnostic.resolve()
+    out = args.out_dir.resolve()
+    run_py = args.run_py.resolve()
+    config = args.config.resolve()
+    run_dir = args.run_dir.resolve() if args.run_dir is not None else None
+
     ck = None
     if args.base_model:
         print("[eval4] --base-model: no LoRA adapter (C0-style)")
     else:
-        ck = find_checkpoint(args.run_dir)
+        ck = find_checkpoint(run_dir)
         if ck is None and not args.dry_run:
-            print(f"[eval4] ABORT: no final adapter under {args.run_dir}",
+            print(f"[eval4] ABORT: no final adapter under {run_dir}",
                   file=sys.stderr)
             print("[eval4] hint: for base C0 use --base-model (no --run-dir)",
                   file=sys.stderr)
             return 2
+        if ck is not None:
+            ck = ck.resolve()
 
-    rows = read_jsonl(args.diagnostic)
+    rows = read_jsonl(diagnostic)
     if not rows:
-        print(f"[eval4] ABORT: empty diagnostic {args.diagnostic}", file=sys.stderr)
+        print(f"[eval4] ABORT: empty diagnostic {diagnostic}", file=sys.stderr)
         return 2
+    if len(rows) != 500:
+        print(f"[eval4] WARN: diagnostic has {len(rows)} rows (expected 500)",
+              file=sys.stderr)
 
     shards = split_shards(rows, len(gpus))
     # Align GPU list to non-empty shards (e.g. tiny dry datasets).
     gpus = gpus[:len(shards)]
-    out = args.out_dir
     shards_root = out / "shards"
     shards_root.mkdir(parents=True, exist_ok=True)
 
     arm = args.arm or ("C0" if args.base_model else "D1")
     print(f"[eval4] checkpoint: {ck if ck is not None else '(base model, no adapter)'}")
-    print(f"[eval4] diagnostic: {args.diagnostic} ({len(rows)} rows)")
+    print(f"[eval4] diagnostic: {diagnostic} ({len(rows)} rows)")
     print(f"[eval4] gpus: {gpus}  shards: {[len(s) for s in shards]}")
     print(f"[eval4] arm: {arm}")
+    print(f"[eval4] out-dir (abs): {out}")
 
     procs: List[subprocess.Popen] = []
     shard_dirs: List[Path] = []
     for i, (gpu, shard) in enumerate(zip(gpus, shards)):
-        shard_dir = shards_root / f"gpu{gpu}"
-        shard_data = shard_dir / "data.jsonl"
+        shard_dir = (shards_root / f"gpu{gpu}").resolve()
+        shard_data = (shard_dir / "data.jsonl").resolve()
         write_jsonl(shard_data, shard)
+        n_written = sum(1 for _ in shard_data.open(encoding="utf-8") if _.strip())
+        if n_written != len(shard):
+            print(f"[eval4] ABORT: shard write mismatch {n_written}!={len(shard)}",
+                  file=sys.stderr)
+            return 2
+        if not shard_data.is_file():
+            print(f"[eval4] ABORT: missing shard data {shard_data}", file=sys.stderr)
+            return 2
         shard_dirs.append(shard_dir)
         cmd = [
-            sys.executable, str(args.run_py), "--mode", "final_eval",
-            "--config", str(args.config),
+            sys.executable, str(run_py), "--mode", "final_eval",
+            "--config", str(config),
             "--override", f"experiment.output_dir={shard_dir}",
             "--override", f"paths.full_nestful_jsonl={shard_data}",
             *DECODING,
@@ -161,7 +184,7 @@ def main() -> int:
         else:
             cmd += ["--override", "model.lora_adapter=null"]
         (shard_dir / "eval_cmd.txt").write_text(" ".join(cmd) + "\n", encoding="utf-8")
-        print(f"[eval4][gpu{gpu}] {len(shard)} tasks -> {shard_dir}")
+        print(f"[eval4][gpu{gpu}] {len(shard)} tasks -> {shard_data}")
         if args.dry_run:
             continue
         env = dict(os.environ)
@@ -200,14 +223,17 @@ def main() -> int:
         merged.extend(read_jsonl(traj))
 
     if len(merged) != len(rows):
-        print(f"[eval4] WARN: merged {len(merged)} trajs vs {len(rows)} diagnostic rows",
+        print(f"[eval4] ABORT: merged {len(merged)} trajs vs {len(rows)} diagnostic rows "
+              f"(likely relative-path overwrite with full NESTFUL-1861)",
               file=sys.stderr)
+        return 1
 
     write_jsonl(out / "final_eval_trajectories.jsonl", merged)
     summary = official_win_rate(merged)
     summary.update({
         "checkpoint": str(ck) if ck else None,
-        "diagnostic": str(args.diagnostic),
+        "diagnostic": str(diagnostic),
+        "n_diagnostic": len(rows),
         "n_gpus": len(gpus),
         "shard_sizes": [len(s) for s in shards],
         "worker_returncodes": codes,
