@@ -3,8 +3,8 @@
   "dataset_version": "pilot3",
   "files": {
     "README.md": {
-      "bytes": 744,
-      "sha256": "912f9c3a2938c85bdfa2e227f45a256115bc22865c98b59babcb9c773990e888"
+      "bytes": 1079,
+      "sha256": "e4baa3288b97f68924151cfdc6644dd8dbee801eadea47b1cb66f5a24d2177d7"
     },
     "build_bundle.py": {
       "bytes": 3413,
@@ -53,12 +53,16 @@
       "bytes": 6403,
       "sha256": "c3193233f97b861908aa5b63e4e96c24bb74c611206711865f9271e37fb0fc2d"
     },
+    "run_train_nestful500_4gpu.sh": {
+      "bytes": 7566,
+      "sha256": "1606139cc505e4b2c6b700bac5ef8d1189aef38c50216084ec50aa1e3c0b9da0"
+    },
     "verify_hashes.py": {
       "bytes": 1631,
       "sha256": "2e568d34dd36386a7c9754b0d952c0974e08915086c377c8fea67fad6ed7cea2"
     }
   },
-  "frozen_at": "2026-07-27T00:37:58.180567+00:00",
+  "frozen_at": "2026-07-27T00:54:10.354860+00:00",
   "note": "Signal-probe bundle for pilot3. Pilot2 artefacts are untouched.",
   "seed": 20260727
 }

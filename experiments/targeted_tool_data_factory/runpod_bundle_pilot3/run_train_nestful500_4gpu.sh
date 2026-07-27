@@ -104,7 +104,12 @@ print(f"[p3train] visible GPUs: {n}")
 PYEOF
 
 banner "2/4  hashes + train subset + gold replay"
-"$PY" "$BUNDLE/verify_hashes.py" --manifest "$BUNDLE/MANIFEST.sha256.json"
+# Fail-fast on any frozen artefact drift (including README / scripts).
+if ! "$PY" "$BUNDLE/verify_hashes.py" --manifest "$BUNDLE/MANIFEST.sha256.json"; then
+  echo "[p3train] ABORT: hash mismatch — sync runpod_bundle_pilot3/ from the" >&2
+  echo "         machine that ran build_bundle.py (README/scripts were updated)." >&2
+  exit 1
+fi
 [ -f "$TRAIN_FULL" ] || { echo "[p3train] ABORT: missing $TRAIN_FULL" >&2; exit 1; }
 [ -f "$DIAG" ] || { echo "[p3train] ABORT: missing $DIAG" >&2; exit 1; }
 
