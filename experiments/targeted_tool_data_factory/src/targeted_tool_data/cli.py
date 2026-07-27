@@ -141,6 +141,12 @@ class Ctx:
 # ── steps ─────────────────────────────────────────────────────────────────
 def step_profile(ctx: Ctx) -> TargetProfile:
     g = ctx.guard("profile", "profiles")
+    # The NESTFUL profile is shared across pilot versions. Never regenerate it
+    # when a frozen file already exists — overwriting would disturb pilot1/2
+    # provenance even if the numbers are identical.
+    if ctx.p_profile().is_file():
+        print(f"[profile] reusing frozen {ctx.p_profile()}")
+        return TargetProfile(**read_json(ctx.p_profile()))
     if g.should_skip():
         return TargetProfile(**read_json(ctx.p_profile()))
     with ctx.timed("profile"):
@@ -217,11 +223,35 @@ def step_validate(ctx: Ctx, force: bool = False) -> None:
         return
     with ctx.timed("validate"):
         cand = read_jsonl(ctx.p_candidates())
+        # Rows already accepted in a prior pilot (seeded into this version)
+        # keep their validation payload and skip the expensive V4 search.
+        prior_ok = {
+            r["task_id"]: r for r in (
+                read_jsonl(ctx.p_validated()) if ctx.p_validated().is_file() else [])
+            if (r.get("pilot3_seed") or r.get("validation", {}).get("passed"))
+        }
         passed: List[Dict[str, Any]] = []
         rejected: List[Dict[str, Any]] = []
         taxonomy: Counter = Counter()
         replay_ok = 0
+        skipped_seed = 0
         for row in cand:
+            tid = row["task_id"]
+            if tid in prior_ok and (
+                    row.get("pilot3_seed")
+                    or (row.get("validation") or {}).get("passed")):
+                kept = prior_ok[tid]
+                # Prefer the candidate row surface but keep validation metadata.
+                kept_val = kept.get("validation") or row.get("validation")
+                row = dict(row)
+                row["validation"] = kept_val
+                row["pilot3_seed"] = True
+                if kept.get("minimal_valid_call_count") is not None:
+                    row["minimal_valid_call_count"] = kept["minimal_valid_call_count"]
+                passed.append(row)
+                replay_ok += 1
+                skipped_seed += 1
+                continue
             rec = TaskRecord(**row)
             res = validate_record(rec, ctx.thresholds)
             row["validation"] = res
@@ -290,10 +320,12 @@ def step_validate(ctx: Ctx, force: bool = False) -> None:
             "rejection_taxonomy": dict(taxonomy),
             "distribution_audit": dist,
         }
+        summary["n_seed_skipped_v4"] = skipped_seed
         write_json(ctx.p_valsummary(), summary)
-        g.mark({"n_passed": len(final)})
+        g.mark({"n_passed": len(final), "n_seed_skipped_v4": skipped_seed})
     print(f"[validate] passed={len(final)} rejected={len(rejected)} "
-          f"(dedup {len(drops)}, contaminated {len(contaminated)})")
+          f"(dedup {len(drops)}, contaminated {len(contaminated)}, "
+          f"seed_skip_v4={skipped_seed})")
     if ctx.args.strict and (len(contaminated) or summary["replay_rate_validated"] < 1.0):
         raise SystemExit("[validate] STRICT: contamination or replay failure")
 
@@ -711,26 +743,30 @@ def _pilot2_report(ctx: Ctx, selected, gen_stats, valsum, match, leak,
                          "docs/LOCAL_PROBE_REPORT.md for the exact command"}
     preflight = opt_json(ctx.out / "reports" / f"preflight_{ctx.version}.json")
 
-    write_json(ctx.out / "reports" / f"pilot2_metrics_{ctx.version}.json", metrics)
-    write_json(ctx.out / "reports" / f"pilot2_gates_{ctx.version}.json", gates)
+    tag = "pilot3" if str(ctx.version).startswith("pilot3") else "pilot2"
+    write_json(ctx.out / "reports" / f"{tag}_metrics_{ctx.version}.json", metrics)
+    write_json(ctx.out / "reports" / f"{tag}_gates_{ctx.version}.json", gates)
     if b_metrics:
+        split_sizes = dict((ctx.cfg.get("selection") or {}).get("split") or {})
         report = build_pilot2_report(
             metrics=metrics, pilot1_metrics=b_metrics, gates=gates,
             gen_stats=gen_stats, validation_summary=valsum,
             paraphrase_report=para, profile_match=match, pilot1_match=b_match,
             leakage=leak, manifest=manifest, preflight=preflight, probe=probe,
-            target_answer_dist=target_answer, selected=selected)
-        (ctx.out / "reports" / f"PILOT2_REPORT_{ctx.version}.md").write_text(
+            target_answer_dist=target_answer, selected=selected,
+            current_label=tag, baseline_label=str(baseline),
+            split_sizes=split_sizes, seed=int(ctx.seed))
+        (ctx.out / "reports" / f"{tag.upper()}_REPORT_{ctx.version}.md").write_text(
             report, encoding="utf-8")
         if not ctx.args.no_docs:
-            (MODULE_ROOT / "docs" / "PILOT2_REPORT.md").write_text(
+            (MODULE_ROOT / "docs" / f"{tag.upper()}_REPORT.md").write_text(
                 report, encoding="utf-8")
     else:
-        print(f"[report] baseline '{baseline}' not on disk — pilot2 comparison skipped")
+        print(f"[report] baseline '{baseline}' not on disk — {tag} comparison skipped")
     for f in gates["fails"]:
-        print(f"[pilot2] FAIL {f}")
+        print(f"[{tag}] FAIL {f}")
     for w in gates["warns"]:
-        print(f"[pilot2] WARN {w}")
+        print(f"[{tag}] WARN {w}")
     return gates
 
 

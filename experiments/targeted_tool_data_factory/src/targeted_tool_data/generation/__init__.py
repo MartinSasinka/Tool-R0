@@ -50,10 +50,18 @@ _CALLS_BY_BUCKET = {"2": [2], "3": [3], "4": [4], "5": [5], "6+": [6, 7, 8]}
 
 
 def derive_call_bucket_shares(profile_call_dist: Dict[str, float],
-                              failure_profile: Dict[str, Any]) -> Dict[str, float]:
+                              failure_profile: Dict[str, Any],
+                              call_bucket_boosts: Optional[Dict[str, float]] = None,
+                              ) -> Dict[str, float]:
     """Start from the target profile; oversample 2-call ONLY if the measured
-    student failure profile shows 2-call as the weakest bucket (D07)."""
-    shares = dict(profile_call_dist)
+    student failure profile shows 2-call as the weakest bucket (D07).
+
+    Optional ``call_bucket_boosts`` (e.g. ``{"5": 0.02, "6+": 0.03}``) gently
+    upweights long-horizon buckets; mass is taken primarily from bucket ``2``
+    so the NESTFUL shape stays recognisable. Used by pilot3 — pilot2 passes
+    ``None`` and is unchanged.
+    """
+    shares = {str(k): float(v) for k, v in dict(profile_call_dist).items()}
     wr = (failure_profile or {}).get("win_rate_by_call_bucket", {})
     others = [k for k in shares if k != "2"]
     if wr and others and min(wr, key=lambda k: wr[k]) == "2":
@@ -62,7 +70,18 @@ def derive_call_bucket_shares(profile_call_dist: Dict[str, float],
         # take the boost from the largest non-2 bucket
         donor = max(others, key=lambda k: shares[k])
         shares[donor] = max(shares[donor] - boost, 0.01)
-    total = sum(shares.values())
+    if call_bucket_boosts:
+        total_boost = 0.0
+        for k, b in call_bucket_boosts.items():
+            kk = str(k)
+            bb = float(b)
+            if bb <= 0:
+                continue
+            shares[kk] = shares.get(kk, 0.0) + bb
+            total_boost += bb
+        if total_boost > 0:
+            shares["2"] = max(shares.get("2", 0.0) - total_boost, 0.05)
+    total = sum(shares.values()) or 1.0
     return {k: v / total for k, v in shares.items()}
 
 
@@ -218,7 +237,8 @@ def build_cells_v2(profile: Any, cfg: Dict[str, Any], tracks: List[str],
     gcfg = cfg.get("generation", {}) or {}
     hard_share = float(gcfg.get("hard_distractor_share", 0.8))
     call_shares = derive_call_bucket_shares(
-        profile.call_count_dist, profile.student_failure_profile)
+        profile.call_count_dist, profile.student_failure_profile,
+        call_bucket_boosts=gcfg.get("call_bucket_boosts"))
     ns_quota = 0.0
     cells: List[GenerationCell] = []
     track_shares = {"A": adaptation_ratio, "G": 1 - adaptation_ratio}

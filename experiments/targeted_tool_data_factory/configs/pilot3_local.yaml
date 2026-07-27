@@ -1,0 +1,69 @@
+# pilot3: 1000 NESTFUL-like tasks (600/200/200). Does NOT modify pilot2.
+# Reuses engine v2 (typed answers, unit-aware plausibility, real fan-in,
+# OpenRouter paraphrases) with a larger pool, stricter cell cap (8 %),
+# slightly higher G-track and a gentle long-horizon call-count boost.
+extends: base.yaml
+
+version: pilot3
+baseline_version: pilot2
+
+generation:
+  engine: v2
+  # Seeded from pilot2 validated (~2k rows, V4 skipped). Only NEW candidates
+  # below pay V4 cost. Full-from-scratch 8k was multi-hour.
+  candidates: 3500
+  max_candidates: 8000
+  seed_from: pilot2
+  # Match NESTFUL answer profile (float ~77 %, not the pilot1 97 %).
+  answer_kind_shares:
+    float: 0.78
+    list: 0.07
+    string: 0.06
+    int: 0.05
+    bool: 0.02
+    numeric_string: 0.02
+  hard_distractor_share: 0.8
+  # Gentle upweight of 5-call and 6–8-call buckets; mass taken from 2-call
+  # so major-feature JSD vs NESTFUL stays under the 0.10 gate.
+  call_bucket_boosts:
+    "5": 0.025
+    "6+": 0.035
+
+selection:
+  n_selected: 1000
+  split:
+    train: 600
+    heldout: 200
+    reserve: 200
+
+thresholds:
+  jsd_warn: 0.10
+  auc_warn: 0.75
+  template_max_share: 0.05
+  cell_max_share: 0.08          # pilot3 hard cap (pilot2 used 0.10)
+  hard_distractor_min_task_share: 0.50
+
+paraphrase:
+  enabled: true
+  provider: openrouter_paraphrase
+  model: mistralai/mistral-small-24b-instruct-2501
+  base_url: https://openrouter.ai/api/v1
+  expected_accept_rate: {2: 0.64, 3: 0.28, 4: 0.34, 5: 0.11, 6: 0.23}
+  shortlist: 4500
+  variants: 2
+  temperature: 0.7
+  max_tokens: 480
+  max_chars: 420
+  max_requests: 4500
+  max_usd: 5.0
+  selected_share: 0.65
+
+probe:
+  enabled: true
+  p1_pool: 1000
+  p2_pool: 600
+  p3_pool: 160
+  informative_band: [0.125, 0.875]
+
+provider:
+  kind: template_only

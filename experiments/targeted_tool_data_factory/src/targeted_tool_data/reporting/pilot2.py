@@ -77,8 +77,10 @@ def pilot2_gates(metrics: Dict[str, Any], pilot1_metrics: Optional[Dict[str, Any
                      "count disagrees with the metadata")
     if metrics["template_max_share"] > float(thresholds.get("template_max_share", 0.05)):
         fails.append(f"template share {metrics['template_max_share']:.3f} > 5 %")
-    if metrics["cell_max_share"] > float(thresholds.get("cell_max_share", 0.10)):
-        fails.append(f"cell share {metrics['cell_max_share']:.3f} > 10 %")
+    cell_max = float(thresholds.get("cell_max_share", 0.10))
+    if metrics["cell_max_share"] > cell_max:
+        fails.append(f"cell share {metrics['cell_max_share']:.3f} > "
+                     f"{100 * cell_max:.0f} %")
     if metrics["list_ref_args"] > 0:
         fails.append("reference nested in an array argument (trainer cannot resolve)")
 
@@ -100,7 +102,7 @@ def pilot2_gates(metrics: Dict[str, Any], pilot1_metrics: Optional[Dict[str, Any
         notes.append(f"answer-type L1 distance to NESTFUL dev: pilot2={d_new:.3f} "
                      f"vs pilot1={d_old:.3f}")
         if d_new >= d_old:
-            fails.append("answer-type match not better than pilot1")
+            fails.append("answer-type match not better than baseline")
 
     fan_in = metrics["motif"].get("fan_in", 0.0)
     if fan_in < 0.32:
@@ -148,7 +150,14 @@ def build_pilot2_report(*, metrics: Dict[str, Any], pilot1_metrics: Dict[str, An
                         preflight: Optional[Dict[str, Any]],
                         probe: Dict[str, Any],
                         target_answer_dist: Dict[str, float],
-                        selected: List[Dict[str, Any]]) -> str:
+                        selected: List[Dict[str, Any]],
+                        current_label: str = "pilot2",
+                        baseline_label: str = "pilot1",
+                        split_sizes: Optional[Dict[str, int]] = None,
+                        seed: int = 20260726) -> str:
+    cur, base = current_label, baseline_label
+    sizes = split_sizes or {"train": 160, "heldout": 80, "reserve": 80}
+
     def _row(label, m2, m1, tgt=None):
         t = f" | {tgt}" if tgt is not None else ""
         return f"| {label} | {m2} | {m1}{t} |"
@@ -156,20 +165,20 @@ def build_pilot2_report(*, metrics: Dict[str, Any], pilot1_metrics: Dict[str, An
     at2, at1 = metrics["answer_type"], pilot1_metrics["answer_type"]
     mo2, mo1 = metrics["motif"], pilot1_metrics["motif"]
     keys_at = sorted(set(at2) | set(at1) | set(target_answer_dist))
-    at_lines = ["| answer type | pilot2 | pilot1 | NESTFUL dev |", "|---|---|---|---|"]
+    at_lines = [f"| answer type | {cur} | {base} | NESTFUL dev |", "|---|---|---|---|"]
     for k in keys_at:
         at_lines.append(f"| {k} | {_pct(at2.get(k, 0))} | {_pct(at1.get(k, 0))} | "
                         f"{_pct(target_answer_dist.get(k, 0))} |")
-    mo_lines = ["| motif | pilot2 | pilot1 |", "|---|---|---|"]
+    mo_lines = [f"| motif | {cur} | {base} |", "|---|---|---|"]
     for k in sorted(set(mo2) | set(mo1)):
         mo_lines.append(f"| {k} | {_pct(mo2.get(k, 0))} | {_pct(mo1.get(k, 0))} |")
 
     pm_lines = ["| dataset | JSD call | JSD motif | JSD args | JSD answer | "
                 "W tools | W qlen | AUC |", "|---|---|---|---|---|---|---|---|"]
-    for label, pm in [("pilot2", next((p for p in profile_match
-                                       if p["label"] == "new_selected"), None)),
-                      ("pilot1", next((p for p in pilot1_match
-                                       if p["label"] == "new_selected"), None)),
+    for label, pm in [(cur, next((p for p in profile_match
+                                  if p["label"] == "new_selected"), None)),
+                      (base, next((p for p in pilot1_match
+                                   if p["label"] == "new_selected"), None)),
                       ("stage3 (old)", next((p for p in profile_match
                                              if p["label"] == "stage3_old"), None))]:
         if pm:
@@ -205,12 +214,13 @@ def build_pilot2_report(*, metrics: Dict[str, Any], pilot1_metrics: Dict[str, An
                         f"{info['n_reference_args']} | "
                         f"{'PASS' if info['passed'] else 'FAIL'} |")
 
-    return f"""# PILOT2 REPORT — targeted tool-data factory
+    return f"""# {cur.upper()} REPORT — targeted tool-data factory
 
 Verdict: **{gates['verdict']}**
 
-Frozen dataset: {metrics['n']} tasks (train 160 / structural held-out 80 /
-reserve 80), seed 20260726, generator engine v2.
+Frozen dataset: {metrics['n']} tasks (train {sizes.get('train', '?')} /
+structural held-out {sizes.get('heldout', '?')} / reserve {sizes.get('reserve', '?')}),
+seed {seed}, generator engine v2. Baseline comparison: `{base}`.
 
 ## 1. Counts
 

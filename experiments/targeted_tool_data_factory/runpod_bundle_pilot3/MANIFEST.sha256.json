@@ -1,0 +1,64 @@
+{
+  "bundle": "runpod_bundle_pilot3",
+  "dataset_version": "pilot3",
+  "files": {
+    "README.md": {
+      "bytes": 744,
+      "sha256": "912f9c3a2938c85bdfa2e227f45a256115bc22865c98b59babcb9c773990e888"
+    },
+    "build_bundle.py": {
+      "bytes": 3413,
+      "sha256": "f20604a1f07c1416acfaa20520ab307dea2591e02497f08ff6127cbe1bdcafa4"
+    },
+    "data/canonical_pilot3.jsonl": {
+      "bytes": 11188741,
+      "lines": 1000,
+      "sha256": "0f01f8d124f6429735ee684115aa8f10f6b5fee859939a803998eacba632e5c9"
+    },
+    "data/heldout_grpo_pilot3.jsonl": {
+      "bytes": 1168719,
+      "lines": 200,
+      "sha256": "99c6a1cf2e8d50c5bcb2dfc6548f43f089d2833840fba1346dc1ae53afacfb3d"
+    },
+    "data/heldout_nestful_pilot3.jsonl": {
+      "bytes": 869212,
+      "lines": 200,
+      "sha256": "27115cd8822aa52558070c449b62213a02e8eb8185419b9a2d6749f0cd6d23ee"
+    },
+    "data/nestful_profile.json": {
+      "bytes": 2611,
+      "sha256": "8ea95facf1ff6d2ca781b71917079a85832c4266787097b3a2c586bc06e86420"
+    },
+    "data/reserve_grpo_pilot3.jsonl": {
+      "bytes": 1172485,
+      "lines": 200,
+      "sha256": "cdb63ad453d049873c870127f0a7b13003a3d1e5db4efcc0b0f83f8f4a591fe5"
+    },
+    "data/reserve_nestful_pilot3.jsonl": {
+      "bytes": 873394,
+      "lines": 200,
+      "sha256": "662c932550b685a4abebe9727743d997478030c1d7a0e8be67a6918dd88932e4"
+    },
+    "data/train_grpo_pilot3.jsonl": {
+      "bytes": 3517394,
+      "lines": 600,
+      "sha256": "b1bf1d7e24e71521fa6fe34540f757237c113c598d461ed14777afff758f4d6e"
+    },
+    "data/train_nestful_pilot3.jsonl": {
+      "bytes": 2621934,
+      "lines": 600,
+      "sha256": "00178b0279d27cfd5d640cf646cec3a59438e749cfa197b994770977b4651d11"
+    },
+    "run_signal_probe_4gpu.sh": {
+      "bytes": 6403,
+      "sha256": "c3193233f97b861908aa5b63e4e96c24bb74c611206711865f9271e37fb0fc2d"
+    },
+    "verify_hashes.py": {
+      "bytes": 1631,
+      "sha256": "2e568d34dd36386a7c9754b0d952c0974e08915086c377c8fea67fad6ed7cea2"
+    }
+  },
+  "frozen_at": "2026-07-27T00:37:58.180567+00:00",
+  "note": "Signal-probe bundle for pilot3. Pilot2 artefacts are untouched.",
+  "seed": 20260727
+}

@@ -1,22 +1,23 @@
-# COST REPORT — pilot2
+# COST REPORT — pilot3
 
 Local CPU-only run. No GPU, no remote API.
 
 | step | wall s | cpu s | peak python MB |
 |---|---|---|---|
-| export | 3.4 | 2.9 | 20 |
-| generate | 22.7 | 21.5 | 151 |
-| paraphrase | 2087.0 | 213.7 | 139 |
-| probe | 0.9 | 0.9 | 14 |
-| report | 1.1 | 0.9 | 27 |
-| select | 15.1 | 12.5 | 150 |
-| split | 1.9 | 1.8 | 14 |
-| validate | 1052.7 | 981.9 | 141 |
+| export | 15.4 | 14.9 | 62 |
+| generate | 118.8 | 114.8 | 493 |
+| generate_expand | 10.0 | 9.7 | 96 |
+| paraphrase | 3.1 | 3.1 | 39 |
+| probe | 4.5 | 4.5 | 44 |
+| report | 2.5 | 2.1 | 16 |
+| select | 17.0 | 16.3 | 140 |
+| split | 7.9 | 7.7 | 45 |
+| validate | 97.5 | 95.7 | 231 |
 
-- total wall time: 3184.9 s
-- total CPU time: 1236.1 s
-- peak python-allocated RAM (tracemalloc, per step max): 151 MB (process RSS is higher; tracemalloc tracks python allocations only)
-- outputs disk usage: 134.4 MB
+- total wall time: 276.7 s
+- total CPU time: 268.8 s
+- peak python-allocated RAM (tracemalloc, per step max): 493 MB (process RSS is higher; tracemalloc tracks python allocations only)
+- outputs disk usage: 261.6 MB
 - local model inference: none
 - LLM call count: 0
 - paid API cost: £0 (no remote endpoint enabled)
