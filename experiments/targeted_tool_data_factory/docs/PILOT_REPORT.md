@@ -6,105 +6,122 @@
 - WARN: student probe NOT_RUN_LOCAL (structural P0 only)
 
 ## Counts
-- generated candidates: 2213
-- validated: 2210
-- rejected: 3
+- generated candidates: 5671
+- validated: 5243
+- rejected: 428
 - selected (frozen pilot): 1000
-- track mix: A=563, G=437 (A share 56.3 %)
-- tasks with >=1 hard distractor: 81.0 % (threshold >= 50.0 %)
+- track mix: A=552, G=448 (A share 55.2 %)
+- tasks with >=1 hard distractor: 79.0 % (threshold >= 50.0 %)
 - deterministic replay rate: 100.0 %
-- contamination hits in candidate pool (all rejected; selected pool = 0): 0
-- dedup drops: 0
+- contamination hits in candidate pool (all rejected; selected pool = 0): 7
+- dedup drops: 16
 - split leakage collisions: 0
 - split sizes: {'heldout': 200, 'reserve': 200, 'train': 600}
 
 ## Rejection taxonomy
 | reason | count |
 |---|---|
-| V4:shorter valid path found | 2 |
-| V4:single offered tool solves the whole task | 1 |
+| V4:shorter valid path found | 241 |
+| V4:single offered tool solves the whole task | 160 |
+| V3:oracle answer '[2, 4, 5, 7, 8, 10]' appears in query | 10 |
+| V5:gold tool-call skeleton overlap with target | 7 |
+| V3:oracle answer '[105, 185, 263, 343, 418, 523]' appears in qu | 1 |
+| V3:oracle answer '[127, 225, 319, 417, 508, 635]' appears in qu | 1 |
+| V3:oracle answer '[1796, 3182, 4517, 5902, 7186, 8982]' appears | 1 |
+| V3:oracle answer '[200, 354, 502, 656, 799, 998]' appears in qu | 1 |
+| V3:oracle answer '[22, 39, 55, 72, 88, 110]' appears in query | 1 |
+| V3:oracle answer '[30, 53, 75, 98, 119, 149]' appears in query | 1 |
+| V3:oracle answer '[357, 633, 898, 1174, 1429, 1787]' appears in | 1 |
+| V3:oracle answer '[4, 6, 9, 12, 14, 18]' appears in query | 1 |
+| V3:oracle answer '[60, 106, 150, 197, 239, 299]' appears in que | 1 |
+| V3:oracle answer '[692, 1226, 1741, 2275, 2769, 3462]' appears  | 1 |
+| V3:oracle answer '[731487, 1295777, 1839168, 2403458, 2925949,  | 1 |
+| V3:oracle answer '[817, 1447, 2054, 2685, 3268, 4085]' appears  | 1 |
+| V3:oracle answer '[94, 167, 238, 310, 378, 472]' appears in que | 1 |
+| V3:oracle answer '[99, 175, 248, 324, 395, 494]' appears in que | 1 |
+| V5:normalized duplicate | 1 |
 
 ## Generation cells (requested / generated / validated / rejected / selected)
 | cell | req | gen | valid | rej | sel |
 |---|---|---|---|---|---|
-| A_2call_linear_continuation_00 | 1 | 1 | 50 | 0 | 30 |
-| A_2call_linear_continuation_01 | 1 | 1 | 81 | 0 | 30 |
-| A_2call_linear_continuation_03 | 1 | 1 | 78 | 0 | 29 |
-| A_2call_linear_continuation_04 | 1 | 1 | 77 | 0 | 29 |
-| A_2call_linear_tool_catalog_02 | 1 | 1 | 78 | 0 | 29 |
-| A_2call_linear_tool_catalog_05 | 1 | 1 | 74 | 0 | 29 |
-| A_3call_fan_in_tool_catalog_01 | 1 | 1 | 58 | 0 | 31 |
-| A_3call_fan_in_variable_pla_00 | 1 | 1 | 42 | 0 | 31 |
-| A_3call_linear_variable_pla_00 | 1 | 1 | 51 | 0 | 35 |
-| A_4call_branch_aggregate_tool_catalog_00 | 1 | 1 | 31 | 0 | 12 |
-| A_4call_fan_in_variable_pla_00 | 1 | 1 | 58 | 1 | 44 |
-| A_4call_linear_variable_pla_00 | 1 | 1 | 50 | 0 | 21 |
-| A_5call_branch_aggregate_tool_catalog_00 | 1 | 1 | 22 | 0 | 11 |
-| A_5call_fan_in_long_horizon_00 | 1 | 1 | 86 | 0 | 40 |
-| A_5call_linear_long_horizon_00 | 1 | 1 | 36 | 0 | 17 |
-| A_6pcall_branch_aggregate_tool_catalog_00 | 1 | 1 | 49 | 0 | 22 |
-| A_6pcall_fan_in_long_horizon_00 | 1 | 1 | 66 | 0 | 29 |
-| A_6pcall_fan_in_tool_catalog_01 | 1 | 1 | 66 | 0 | 29 |
-| A_6pcall_fan_in_tool_catalog_02 | 1 | 1 | 67 | 0 | 29 |
-| A_6pcall_linear_long_horizon_00 | 1 | 1 | 59 | 0 | 36 |
-| G_2call_linear_continuation_00 | 1 | 1 | 75 | 0 | 29 |
-| G_2call_linear_continuation_01 | 1 | 1 | 72 | 0 | 29 |
-| G_2call_linear_continuation_03 | 1 | 1 | 69 | 0 | 29 |
-| G_2call_linear_continuation_04 | 1 | 1 | 70 | 0 | 29 |
-| G_2call_linear_tool_catalog_02 | 1 | 1 | 70 | 0 | 29 |
-| G_3call_fan_in_tool_catalog_01 | 1 | 1 | 1 | 0 | 1 |
-| G_3call_fan_in_variable_pla_00 | 1 | 1 | 55 | 1 | 26 |
-| G_3call_linear_variable_pla_00 | 1 | 1 | 54 | 1 | 29 |
-| G_4call_branch_aggregate_tool_catalog_00 | 1 | 1 | 20 | 0 | 10 |
-| G_4call_fan_in_variable_pla_00 | 1 | 1 | 78 | 0 | 36 |
-| G_4call_linear_variable_pla_00 | 1 | 1 | 30 | 0 | 17 |
-| G_5call_branch_aggregate_tool_catalog_00 | 1 | 1 | 15 | 0 | 9 |
-| G_5call_fan_in_long_horizon_00 | 1 | 1 | 58 | 0 | 33 |
-| G_5call_linear_long_horizon_00 | 1 | 1 | 17 | 0 | 14 |
-| G_6pcall_branch_aggregate_tool_catalog_00 | 1 | 1 | 33 | 0 | 18 |
-| G_6pcall_fan_in_long_horizon_00 | 1 | 1 | 65 | 0 | 35 |
-| G_6pcall_fan_in_tool_catalog_01 | 1 | 1 | 66 | 0 | 35 |
-| G_6pcall_linear_long_horizon_00 | 1 | 1 | 51 | 0 | 29 |
+| A_2call_linear_continuation_00 | 101 | 101 | 129 | 21 | 29 |
+| A_2call_linear_continuation_01 | 101 | 101 | 176 | 5 | 29 |
+| A_2call_linear_continuation_03 | 101 | 101 | 176 | 2 | 29 |
+| A_2call_linear_continuation_04 | 101 | 101 | 172 | 5 | 29 |
+| A_2call_linear_tool_catalog_02 | 101 | 101 | 173 | 5 | 29 |
+| A_2call_linear_tool_catalog_05 | 101 | 101 | 164 | 10 | 29 |
+| A_3call_fan_in_tool_catalog_01 | 108 | 108 | 130 | 35 | 31 |
+| A_3call_fan_in_variable_pla_00 | 108 | 108 | 97 | 52 | 31 |
+| A_3call_linear_variable_pla_00 | 121 | 121 | 168 | 3 | 35 |
+| A_4call_branch_aggregate_tool_catalog_00 | 39 | 39 | 66 | 3 | 11 |
+| A_4call_fan_in_variable_pla_00 | 151 | 151 | 156 | 53 | 43 |
+| A_4call_linear_variable_pla_00 | 70 | 70 | 116 | 3 | 20 |
+| A_5call_branch_aggregate_tool_catalog_00 | 35 | 35 | 54 | 2 | 10 |
+| A_5call_fan_in_long_horizon_00 | 139 | 139 | 224 | 0 | 40 |
+| A_5call_linear_long_horizon_00 | 58 | 58 | 90 | 3 | 17 |
+| A_6pcall_branch_aggregate_tool_catalog_00 | 74 | 74 | 122 | 0 | 21 |
+| A_6pcall_fan_in_long_horizon_00 | 98 | 98 | 162 | 1 | 28 |
+| A_6pcall_fan_in_tool_catalog_01 | 98 | 98 | 163 | 0 | 28 |
+| A_6pcall_fan_in_tool_catalog_02 | 98 | 98 | 161 | 3 | 28 |
+| A_6pcall_linear_long_horizon_00 | 123 | 123 | 150 | 31 | 35 |
+| G_2call_linear_continuation_00 | 99 | 99 | 168 | 5 | 28 |
+| G_2call_linear_continuation_01 | 99 | 99 | 162 | 8 | 28 |
+| G_2call_linear_continuation_03 | 99 | 99 | 163 | 4 | 28 |
+| G_2call_linear_continuation_04 | 99 | 99 | 157 | 11 | 28 |
+| G_2call_linear_tool_catalog_02 | 99 | 99 | 162 | 6 | 28 |
+| G_3call_fan_in_tool_catalog_01 | 88 | 88 | 61 | 27 | 25 |
+| G_3call_fan_in_variable_pla_00 | 88 | 88 | 93 | 50 | 25 |
+| G_3call_linear_variable_pla_00 | 99 | 99 | 127 | 26 | 28 |
+| G_4call_branch_aggregate_tool_catalog_00 | 32 | 32 | 51 | 0 | 9 |
+| G_4call_fan_in_variable_pla_00 | 123 | 123 | 172 | 28 | 35 |
+| G_4call_linear_variable_pla_00 | 57 | 57 | 81 | 5 | 16 |
+| G_5call_branch_aggregate_tool_catalog_00 | 28 | 28 | 42 | 0 | 8 |
+| G_5call_fan_in_long_horizon_00 | 113 | 113 | 167 | 3 | 32 |
+| G_5call_linear_long_horizon_00 | 47 | 47 | 61 | 2 | 14 |
+| G_6pcall_branch_aggregate_tool_catalog_00 | 60 | 60 | 92 | 0 | 17 |
+| G_6pcall_fan_in_long_horizon_00 | 120 | 120 | 183 | 1 | 35 |
+| G_6pcall_fan_in_tool_catalog_01 | 120 | 120 | 185 | 0 | 35 |
+| G_6pcall_linear_long_horizon_00 | 100 | 100 | 135 | 15 | 29 |
 
 ## Profile match vs NESTFUL dev (lower = closer; AUC 0.5 = indistinguishable)
 | dataset | JSD call | JSD motif | JSD args | JSD answer | W tools | W qlen | AUC |
 |---|---|---|---|---|---|---|---|
-| new_selected | 0.0072 | 0.0517 | 0.0234 | 0.0020 | 0.67 | 45.2 | 0.549 |
+| new_selected | 0.0041 | 0.0487 | 0.0231 | 0.0057 | 0.76 | 42.0 | 0.545 |
 | stage3_old | 0.5847 | 0.1222 | 0.0091 | 0.1517 | 1.10 | 31.4 | 0.728 |
 
 ## Selected distributions
 ### Call counts
 | value | count | share |
 |---|---|---|
-| 2 | 321 | 32.1 % |
-| 3 | 153 | 15.3 % |
-| 4 | 140 | 14.0 % |
-| 5 | 124 | 12.4 % |
-| 6 | 134 | 13.4 % |
-| 7 | 73 | 7.3 % |
-| 8 | 55 | 5.5 % |
+| 2 | 314 | 31.4 % |
+| 3 | 175 | 17.5 % |
+| 4 | 134 | 13.4 % |
+| 5 | 121 | 12.1 % |
+| 6 | 133 | 13.3 % |
+| 7 | 55 | 5.5 % |
+| 8 | 68 | 6.8 % |
 
 ### Motifs
 | value | count | share |
 |---|---|---|
-| branch_aggregate | 82 | 8.2 % |
-| fan_in | 399 | 39.9 % |
-| linear | 519 | 51.9 % |
+| branch_aggregate | 76 | 7.6 % |
+| fan_in | 416 | 41.6 % |
+| linear | 508 | 50.8 % |
 
 ### Answer types
 | value | count | share |
 |---|---|---|
-| bool | 31 | 3.1 % |
-| float | 740 | 74.0 % |
-| int | 59 | 5.9 % |
-| list | 66 | 6.6 % |
-| numeric_string | 28 | 2.8 % |
-| string | 76 | 7.6 % |
+| bool | 42 | 4.2 % |
+| float | 716 | 71.6 % |
+| int | 62 | 6.2 % |
+| list | 68 | 6.8 % |
+| numeric_string | 35 | 3.5 % |
+| string | 77 | 7.7 % |
 
-### Templates (max share 3.8 %, cap 5.0 %)
-top: `[('goal_first_v1', 38), ('indirect_v6', 38), ('sequence_v1', 38), ('imperative_v1', 37), ('sequence_v3', 37)]`
+### Templates (max share 4.0 %, cap 5.0 %)
+top: `[('imperative_v2', 40), ('word_problem_report', 38), ('goal_first_v1', 37), ('indirect_v4', 37), ('sequence_v1', 37)]`
 
-### Cells (max share 4.4 %, cap 8.0 %)
+### Cells (max share 4.3 %, cap 8.0 %)
 
 ### Distribution warnings
 - none
@@ -117,43 +134,43 @@ status: `{'NOT_RUN_LOCAL': 1000}`
 {
   "analysis_csv": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\analysis_pilot3.csv",
-    "sha256": "6e2a827166717b6328a0ebe26d71028cd5d86fd6c6ef6828f1d6237d482cb241"
+    "sha256": "6e81936836bfd7ccaa45c0777e200a819f4388e594a640db87b56e4bf91a142d"
   },
   "canonical": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\canonical_pilot3.jsonl",
-    "sha256": "0f01f8d124f6429735ee684115aa8f10f6b5fee859939a803998eacba632e5c9"
+    "sha256": "5deb55092d27e16209126c0f0144bd115e7e4a97f83901392c5c3a17dce397b0"
   },
   "grpo_train_ready": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\grpo_train_ready_pilot3.jsonl",
-    "sha256": "dd7bac86b02cc2a0bcf5381733f094ee39e3f5ab8476d60151d555f05fde4e1f"
+    "sha256": "ae7042b23dfb1b50ee998ea08cbf9cd3ff70217a9c0327c95bf4449c4bb0ffec"
   },
   "heldout_grpo": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\heldout_grpo_pilot3.jsonl",
-    "sha256": "99c6a1cf2e8d50c5bcb2dfc6548f43f089d2833840fba1346dc1ae53afacfb3d"
+    "sha256": "dce7a610153f347e1590241a4f41aaacaedaf14a92498f2cee78df3ddf36640a"
   },
   "heldout_nestful": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\heldout_nestful_pilot3.jsonl",
-    "sha256": "27115cd8822aa52558070c449b62213a02e8eb8185419b9a2d6749f0cd6d23ee"
+    "sha256": "c0f1c3ae0d9a5bfaac2efdb5fc36b60859ef2e1ee7fcddc15506b71b4dab85dd"
   },
   "nestful_compat": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\nestful_compat_pilot3.jsonl",
-    "sha256": "badcce161e37dd3365f4f0aa2c80b23c56e05d80f2ef5e6afe49d176aaf1717a"
+    "sha256": "12a97bdf22ef47568e09611150275820029120544b7ef1ebd841c32f5daf672f"
   },
   "reserve_grpo": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\reserve_grpo_pilot3.jsonl",
-    "sha256": "cdb63ad453d049873c870127f0a7b13003a3d1e5db4efcc0b0f83f8f4a591fe5"
+    "sha256": "711d7093114255b156bf8362471fb09b1188c17c511ea6d3fa491d26da6712d8"
   },
   "reserve_nestful": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\reserve_nestful_pilot3.jsonl",
-    "sha256": "662c932550b685a4abebe9727743d997478030c1d7a0e8be67a6918dd88932e4"
+    "sha256": "6f78e4e8a2a4ac4f6ca15af656e893e5160365ff3c711b8cb45a168f035640ba"
   },
   "train_grpo": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl",
-    "sha256": "b1bf1d7e24e71521fa6fe34540f757237c113c598d461ed14777afff758f4d6e"
+    "sha256": "77d7e2bf51acd9a998d4cd202f6b7add7e841a41eb31cc74af249745f765e538"
   },
   "train_nestful": {
     "path": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_nestful_pilot3.jsonl",
-    "sha256": "00178b0279d27cfd5d640cf646cec3a59438e749cfa197b994770977b4651d11"
+    "sha256": "d8b3960e7460218d39b6b8db99bf773b7ddc25274697cd5c996855dbbb906972"
   }
 }
 ```
@@ -164,53 +181,53 @@ status: `{'NOT_RUN_LOCAL': 1000}`
 - generator_version: `ttdf-0.1.0`
 
 ## Representative tasks (max 10)
-### ttdf_0982b2624c98 (G, G_3call_linear_variable_pla_00)
-- query: Calculate the average of 23, 47, 1, 42, 31. Then, increase 670 by that result percent. Finally, express the increase as a percent of 549 and report the result.
-- calls: `[{"name": "central_value", "arguments": {"number_list": [23, 47, 1, 42, 31]}}, {"name": "grow_by_rate", "arguments": {"growth_rate": "$var1.output_0$", "starting_value": 670}}, {"name": "portion_by_rate", "arguments": {"rate": "$var2.output_0$", "reference_value": 549}}]`
-- answer: `4737.6504` | offered 8 (hard distractors 2)
+### ttdf_2134f49bd3ad (G, G_5call_branch_aggregate_tool_catalog_00)
+- query: An engineer checks a report. Step 1: subtract 11 from 230. Step 2: compute how many whole times 31 fits into that result. Step 3: round 151.78 up to a whole number. Step 4: negate 863. Step 5: add up the result of step 2, the result of step 3 and that result. What is the final result?
+- calls: `[{"name": "reduce_amount", "arguments": {"base_value": 230, "reduction": 11}}, {"name": "full_groups_of", "arguments": {"group_size": 31, "total_items": "$var1.output_0$"}}, {"name": "round_up_whole", "arguments": {"value": 151.78}}, {"name": "flip_sign", "arguments": {"value": 863}}, {"name": "total_of_three_parts", "arguments": {"part_one": "$var2.output_0$", "part_three": "$var4.output_0$", "part_two": "$var3.output_0$"}}]`
+- answer: `-704.0` | offered 14 (hard distractors 3)
 
-### ttdf_a1f4522870c7 (G, G_4call_fan_in_variable_pla_00)
-- query: First, round 746.71 up to a whole number. Then negate 231. Then compute the result of step 1 percent of that result. Finally, build an identifier from the prefix 'run' and that result.
-- calls: `[{"name": "round_up_whole", "arguments": {"value": 746.71}}, {"name": "flip_sign", "arguments": {"value": 231}}, {"name": "portion_by_rate", "arguments": {"rate": "$var1.output_0$", "reference_value": "$var2.output_0$"}}, {"name": "compose_reference_code", "arguments": {"code_number": "$var3.output_0$", "code_prefix": "run"}}]`
-- answer: `run--1725.57` | offered 12 (hard distractors 2)
+### ttdf_a59ae8939796 (G, G_5call_fan_in_long_horizon_00)
+- query: You will need to find the ratio of 524 to 17, then square that result, then increase the result by 9 percent, then increase 1422 by 5 percent first, and lastly, for the final goal, find the percent of the result of step 3 of the value those steps produce.
+- calls: `[{"name": "proportion_between", "arguments": {"part_value": 524, "whole_value": 17}}, {"name": "self_product", "arguments": {"value": "$var1.output_0$"}}, {"name": "grow_by_rate", "arguments": {"growth_rate": 9, "starting_value": "$var2.output_0$"}}, {"name": "grow_by_rate", "arguments": {"growth_rate": 5, "starting_value": 1422}}, {"name": "portion_by_rate", "arguments": {"rate": "$var3.output_0$", "reference_value": "$var4.output_0$"}}]`
+- answer: `15462.514261` | offered 11 (hard distractors 2)
 
-### ttdf_88d02f070bad (G, G_2call_linear_continuation_01)
-- query: First, round 395.09 down to the nearest whole number. Then, use that result to find the remainder of 2247 divided by it.
-- calls: `[{"name": "round_down_whole", "arguments": {"value": 395.09}}, {"name": "leftover_after_grouping", "arguments": {"group_size": "$var1.output_0$", "total_items": 2247}}]`
-- answer: `272.0` | offered 10 (hard distractors 2)
+### ttdf_562e14e68ec4 (A, A_2call_linear_tool_catalog_02)
+- query: Determine the outcome of this procedure: round 562.55 to the nearest whole number; subtract 30 from that result. (Note: the team has 7 members, which is not needed here.)
+- calls: `[{"name": "nearest_integer", "arguments": {"arg_0": 562.55}}, {"name": "subtract", "arguments": {"arg_0": "$var1.output_0$", "arg_1": 30}}]`
+- answer: `533.0` | offered 15 (hard distractors 4)
 
-### ttdf_acf64105ab0f (G, G_5call_linear_long_horizon_00)
-- query: A school tracks these figures for its yearbook. Step 1: increase 820 by 39 percent. Step 2: average 459 and that result. Step 3: increase 484 by that result percent. Step 4: average 725 and that result. Step 5: find the remainder of that result divided by 44.
-- calls: `[{"name": "grow_by_rate", "arguments": {"growth_rate": 39, "starting_value": 820}}, {"name": "midpoint_value", "arguments": {"value_one": 459, "value_two": "$var1.output_0$"}}, {"name": "grow_by_rate", "arguments": {"growth_rate": "$var2.output_0$", "starting_value": 484}}, {"name": "midpoint_value", "arguments": {"value_one": 725, "value_two": "$var3.output_0$"}}, {"name": "leftover_after_grouping", "arguments": {"group_size": 44, "total_items": "$var4.output_0$"}}]`
-- answer: `31.048` | offered 9 (hard distractors 2)
+### ttdf_4753fd527f32 (G, G_4call_fan_in_variable_pla_00)
+- query: Find the remainder of 2051 divided by 30, then convert 34 degrees Fahrenheit to Celsius, then compute the ratio of the result of step 1 to that result, and finally build an identifier from the prefix 'order' and that result.
+- calls: `[{"name": "leftover_after_grouping", "arguments": {"group_size": 30, "total_items": 2051}}, {"name": "celsius_from_fahrenheit", "arguments": {"temp_f": 34}}, {"name": "proportion_between", "arguments": {"part_value": "$var1.output_0$", "whole_value": "$var2.output_0$"}}, {"name": "compose_reference_code", "arguments": {"code_number": "$var3.output_0$", "code_prefix": "order"}}]`
+- answer: `order-9.900001` | offered 11 (hard distractors 2)
 
-### ttdf_52e02b0074e9 (A, A_2call_linear_continuation_04)
-- query: First, determine how many times 10 fits into 424 as a whole number. Then, report the square of that result.
-- calls: `[{"name": "whole_quotient", "arguments": {"dividend": 424, "divisor": 10}}, {"name": "square_value", "arguments": {"arg_0": "$var_1.output_0$"}}]`
-- answer: `1764.0` | offered 11 (hard distractors 3)
+### ttdf_a67dd02aea22 (A, A_3call_fan_in_variable_pla_00)
+- query: First, take the negative of 459. Then, increase the value of 581 by 28 percent, that result, and finally, divide the result of step 1 by the previous value.
+- calls: `[{"name": "negate", "arguments": {"arg_0": 459}}, {"name": "increase_by_percent", "arguments": {"base": 581, "percent": 28}}, {"name": "divide", "arguments": {"arg_0": "$var1.output_0$", "arg_1": "$var2.output_0$"}}]`
+- answer: `-0.617201` | offered 12 (hard distractors 3)
 
-### ttdf_28600db1173f (A, A_6pcall_fan_in_long_horizon_00)
-- query: Tell me what comes out when I compute how many whole times 12 fits into 80; take the square root of that result; negate 191; subtract 83 from that result; average that result and 27; round that result up to a whole number; increase that result by 57 percent; multiply the result of step 2 by that result.
-- calls: `[{"name": "floor_divide", "arguments": {"arg_0": 80, "arg_1": 12}}, {"name": "sqrt", "arguments": {"arg_0": "$var1.output_0$"}}, {"name": "negate", "arguments": {"arg_0": 191}}, {"name": "difference_of_numbers", "arguments": {"minuend": "$var3.output_0$", "subtrahend": 83}}, {"name": "average_of_two", "arguments": {"arg_0": "$var4.output_0$", "arg_1": 27}}, {"name": "ceiling", "arguments": {"arg_0": "$var5.output_0$"}}, {"name": "increase_by_percent", "arguments": {"base": "$var6.output_0$", "percent": 57}}, {"name": "multiply", "arguments": {"arg_0": "$var2.output_0$", "arg_1": "$var7.output_0$"}}]`
-- answer: `-473.021014` | offered 11 (hard distractors 2)
+### ttdf_2930e4ea8e12 (G, G_6pcall_linear_long_horizon_00)
+- query: First, determine the ratio of 657 to 11, then round the previous value down to the nearest whole number. Next, take the ratio of that result to 81, then divide that result by 28. After that, work out that result as a percentage of 3554, then subtract the result from 731, and finally divide that result by 9.
+- calls: `[{"name": "proportion_between", "arguments": {"part_value": 657, "whole_value": 11}}, {"name": "round_down_whole", "arguments": {"value": "$var1.output_0$"}}, {"name": "proportion_between", "arguments": {"part_value": "$var2.output_0$", "whole_value": 81}}, {"name": "per_unit_value", "arguments": {"units": 28, "whole": "$var3.output_0$"}}, {"name": "portion_by_rate", "arguments": {"rate": "$var4.output_0$", "reference_value": 3554}}, {"name": "remaining_after", "arguments": {"from_value": 731, "take_away": "$var5.output_0$"}}, {"name": "per_unit_value", "arguments": {"units": 9, "whole": "$var6.output_0$"}}]`
+- answer: `81.119496` | offered 8 (hard distractors 2)
 
-### ttdf_4bcc0bcb441d (A, A_5call_fan_in_long_horizon_00)
-- query: Calculate the absolute difference between 175 and 77. Afterwards, 1843 by 57 percent and then square that value. Then, determine the result of step 1 percent of the squared value. Lastly, format that result with the unit 'boxes' and return that value.
-- calls: `[{"name": "absolute_difference", "arguments": {"arg_0": 175, "arg_1": 77}}, {"name": "increase_by_percent", "arguments": {"base": 1843, "percent": 57}}, {"name": "square_value", "arguments": {"arg_0": "$var2.output_0$"}}, {"name": "percent_of", "arguments": {"percent": "$var1.output_0$", "whole": "$var3.output_0$"}}, {"name": "label_with_unit", "arguments": {"unit": "boxes", "value": "$var4.output_0$"}}]`
-- answer: `8204952.117698 boxes` | offered 10 (hard distractors 0)
+### ttdf_5142b25ba487 (A, A_6pcall_fan_in_tool_catalog_01)
+- query: An engineer checks a report. Step 1: add 650 and 78. Step 2: multiply 197 by that result. Step 3: compute 87 percent of that result. Step 4: subtract 76 from that result. Step 5: divide that result by 12. Step 6: take the square root of that result. Step 7: find how many whole minutes fit into 10472 seconds. Step 8: compute the ratio of the result of step 6 to that result. What is the final result?
+- calls: `[{"name": "sum_two_numbers", "arguments": {"first_number": 650, "second_number": 78}}, {"name": "product_of_numbers", "arguments": {"first_factor": 197, "second_factor": "$var1.output_0$"}}, {"name": "percent_of", "arguments": {"percent": 87, "whole": "$var2.output_0$"}}, {"name": "subtract", "arguments": {"arg_0": "$var3.output_0$", "arg_1": 76}}, {"name": "quotient_of", "arguments": {"denominator": 12, "numerator": "$var4.output_0$"}}, {"name": "sqrt", "arguments": {"arg_0": "$var5.output_0$"}}, {"name": "seconds_to_full_minutes", "arguments": {"seconds": 10472}}, {"name": "ratio_of", "arguments": {"denominator": "$var7.output_0$", "numerator": "$var6.output_0$"}}]`
+- answer: `0.58585` | offered 16 (hard distractors 2)
 
-### ttdf_1897e88c19ac (A, A_6pcall_fan_in_tool_catalog_02)
-- query: Please find the remainder of 1204 divided by 38. then decrease 524 by that result percent. then divide that result by 28. then take the square root of that result. then convert 3 hours to minutes. and finally compute the ratio of the result of step 4 to that result. (For context only: the meeting lasted 90 minutes.)
-- calls: `[{"name": "reminder", "arguments": {"arg_0": 1204, "arg_1": 38}}, {"name": "decrease_by_percent", "arguments": {"base": 524, "percent": "$var1.output_0$"}}, {"name": "quotient_of", "arguments": {"denominator": 28, "numerator": "$var2.output_0$"}}, {"name": "sqrt", "arguments": {"arg_0": "$var3.output_0$"}}, {"name": "hours_to_minutes", "arguments": {"hours": 3}}, {"name": "ratio_of", "arguments": {"denominator": "$var5.output_0$", "numerator": "$var4.output_0$"}}]`
-- answer: `0.020674` | offered 9 (hard distractors 2)
+### ttdf_532d50f0732d (G, G_2call_linear_continuation_00)
+- query: First, take the square root of 196, then take the opposite of that result.
+- calls: `[{"name": "root_extract", "arguments": {"input_value": 196}}, {"name": "flip_sign", "arguments": {"value": "$var1.output_0$"}}]`
+- answer: `-14.0` | offered 8 (hard distractors 0)
 
-### ttdf_a180adf5caad (A, A_3call_linear_variable_pla_00)
-- query: Begin by taking 639 and finding the remainder when divided by 20. Then, raise the result by 58 percent. Finally, add that result to the list [15, 24, 46, 64, 81]
-- calls: `[{"name": "modulo_of", "arguments": {"dividend": 639, "divisor": 20}}, {"name": "increase_by_percent", "arguments": {"base": "$var1.output_0$", "percent": 58}}, {"name": "append_to_values", "arguments": {"value": "$var2.output_0$", "values": [15, 24, 46, 64, 81]}}]`
-- answer: `[15.0, 24.0, 46.0, 64.0, 81.0, 30.02]` | offered 8 (hard distractors 2)
+### ttdf_206eda2ac240 (G, G_6pcall_fan_in_long_horizon_00)
+- query: Start by transforming 25 degrees Celsius to Fahrenheit. Lower that result by 34 percent. Negate that result. Compute the ratio of 843 to the result. Find the remainder of the result when divided by 17. Decrease that result by 55 percent. Convert 42 degrees Celsius to Fahrenheit. Subtract that result from the result of the 6th operation.
+- calls: `[{"name": "fahrenheit_from_celsius", "arguments": {"temp_c": 25}}, {"name": "shrink_by_rate", "arguments": {"discount_rate": 34, "starting_value": "$var1.output_0$"}}, {"name": "flip_sign", "arguments": {"value": "$var2.output_0$"}}, {"name": "proportion_between", "arguments": {"part_value": 843, "whole_value": "$var3.output_0$"}}, {"name": "leftover_after_grouping", "arguments": {"group_size": 17, "total_items": "$var4.output_0$"}}, {"name": "shrink_by_rate", "arguments": {"discount_rate": 55, "starting_value": "$var5.output_0$"}}, {"name": "fahrenheit_from_celsius", "arguments": {"temp_c": 42}}, {"name": "reduce_amount", "arguments": {"base_value": "$var6.output_0$", "reduction": "$var7.output_0$"}}]`
+- answer: `-107.414581` | offered 10 (hard distractors 0)
 
-### ttdf_6c5b125b6094 (A, A_6pcall_linear_long_horizon_00)
-- query: First, work out the range of [10, 13, 11] by finding the difference between the largest and smallest. Then, see how many whole times that number fits into 3351. Next, calculate 79 percent of that result. Then, multiply 325 by that result. Afterwards, take the square root of that result. Finally, round that result to the nearest integer.
-- calls: `[{"name": "range_of_values", "arguments": {"values": [10, 13, 11]}}, {"name": "whole_quotient", "arguments": {"dividend": 3351, "divisor": "$var_1.output_0$"}}, {"name": "percent_of", "arguments": {"percent": 79, "whole": "$var_2.output_0$"}}, {"name": "multiply", "arguments": {"arg_0": 325, "arg_1": "$var_3.output_0$"}}, {"name": "sqrt", "arguments": {"arg_0": "$var_4.output_0$"}}, {"name": "nearest_integer", "arguments": {"arg_0": "$var_5.output_0$"}}]`
-- answer: `536` | offered 9 (hard distractors 2)
+### ttdf_4372e82cfaea (G, G_3call_fan_in_tool_catalog_01)
+- query: A warehouse audit produced these numbers. Step 1: compute 52 percent of 2097. Step 2: find how many whole minutes fit into 47103 seconds. Step 3: add the result of step 1 and that result. (Unrelated: the office moved in 2019.)
+- calls: `[{"name": "portion_by_rate", "arguments": {"rate": 52, "reference_value": 2097}}, {"name": "whole_minutes_from_seconds", "arguments": {"second_count": 47103}}, {"name": "total_of_pair", "arguments": {"left": "$var1.output_0$", "right": "$var2.output_0$"}}]`
+- answer: `1875.44` | offered 14 (hard distractors 0)
 

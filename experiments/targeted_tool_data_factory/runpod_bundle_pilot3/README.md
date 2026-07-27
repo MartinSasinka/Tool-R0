@@ -11,9 +11,14 @@ cd /workspace/Tool-R0
 export HF_TOKEN=...
 # full 600 train, then eval only the new ckpt on NESTFUL-500 (no C0)
 bash experiments/targeted_tool_data_factory/runpod_bundle_pilot3/run_train_nestful500_4gpu.sh
-# or a 200-task slice of the frozen train file:
-bash experiments/targeted_tool_data_factory/runpod_bundle_pilot3/run_train_nestful500_4gpu.sh --train-n 200
+# or a 300-task slice:
+bash experiments/targeted_tool_data_factory/runpod_bundle_pilot3/run_train_nestful500_4gpu.sh --train-n 300
+# re-run 4-GPU sharded NESTFUL-500 eval on an existing checkpoint:
+bash experiments/targeted_tool_data_factory/runpod_bundle_pilot3/run_train_nestful500_4gpu.sh --train-n 300 --stage eval
 ```
+
+Eval shards the 500 diagnostic tasks across `EVAL_GPUS` (default `0,1,2,3`)
+via `eval_nestful500_sharded.py`, then merges trajectories.
 
 ## Optional signal probe (inference only, no GRPO)
 
