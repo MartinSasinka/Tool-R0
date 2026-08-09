@@ -46,6 +46,17 @@ _METADATA_FIELDS = (
     "observations",
     "registry_version",
     "registry_hash",
+    # Pilot4.3 / NESTFUL_PROFILE_1000 provenance used by the dynamic sampler.
+    "actual_query_mode",
+    "requested_query_mode",
+    "difficulty_band",
+    "call_bucket",
+    "call_count",
+    "surface_track",
+    "declared",
+    "workflow_id",
+    "program_fingerprint",
+    "dataset_name",
 )
 
 _EXPECTED_FORMAT = (
@@ -98,23 +109,49 @@ def _normalize_tool_schema(tools_raw: Any) -> List[Dict[str, Any]]:
             out.append(t)
             continue
         properties: Dict[str, Any] = {}
-        for pname, pspec in params.items():
-            if isinstance(pspec, dict):
-                properties[pname] = {
+        required: List[str] = []
+        # Pilot4.3 / factory format: parameters = [{name, type, required, ...}, ...]
+        if isinstance(params, list):
+            for pspec in params:
+                if not isinstance(pspec, dict):
+                    continue
+                pname = pspec.get("name")
+                if not pname:
+                    continue
+                properties[str(pname)] = {
                     "type": pspec.get("type", "string"),
                     "description": pspec.get("description", ""),
                 }
-        out.append({
+                if pspec.get("required", True):
+                    required.append(str(pname))
+        elif isinstance(params, dict):
+            for pname, pspec in params.items():
+                if isinstance(pspec, dict):
+                    properties[pname] = {
+                        "type": pspec.get("type", "string"),
+                        "description": pspec.get("description", ""),
+                    }
+            required = list(properties.keys())
+        else:
+            continue
+        tool_out: Dict[str, Any] = {
             "name": t.get("name", ""),
             "description": t.get("description", ""),
             "parameters": {
                 "type": "object",
                 "properties": properties,
-                "required": list(properties.keys()),
+                "required": required or list(properties.keys()),
             },
             # Preserve output schema (used by executor for var resolution hints).
             "output_parameters": t.get("output_parameters", {}),
-        })
+        }
+        # Pilot4.3 tools often expose a single output_field instead of
+        # output_parameters; keep it for executor / var-resolution helpers.
+        if t.get("output_field") is not None:
+            tool_out["output_field"] = t.get("output_field")
+        if t.get("output_type") is not None:
+            tool_out["output_type"] = t.get("output_type")
+        out.append(tool_out)
     return out
 
 
