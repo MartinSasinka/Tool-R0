@@ -32,6 +32,14 @@ from .util import (MODULE_ROOT, StepGuard, load_config, read_json, read_jsonl,
 from .validation import (contamination_check, dedup_pool, v6_distribution,
                          validate_record)
 from .export import export_all
+from .pilot4_cli import PILOT4_COMMANDS
+from .pilot4_cli import main as pilot4_main
+from .pilot42_cli import PILOT42_COMMANDS
+from .pilot42_cli import main as pilot42_main
+from .pilot41_cli import PILOT41_COMMANDS
+from .pilot41_cli import main as pilot41_main
+from .pilot43_cli import PILOT43_COMMANDS
+from .pilot43_cli import main as pilot43_main
 
 sys.path.insert(0, str(MODULE_ROOT))   # make `targets.*` adapters importable
 
@@ -799,6 +807,16 @@ def cmd_all(ctx: Ctx) -> None:
 
 
 def main(argv: Optional[List[str]] = None) -> None:
+    raw = list(argv if argv is not None else sys.argv[1:])
+    if raw and raw[0] in PILOT43_COMMANDS:
+        raise SystemExit(pilot43_main(raw))
+    if raw and raw[0] in PILOT42_COMMANDS:
+        raise SystemExit(pilot42_main(raw))
+    if raw and raw[0] in PILOT41_COMMANDS:
+        raise SystemExit(pilot41_main(raw))
+    if raw and raw[0] in PILOT4_COMMANDS:
+        raise SystemExit(pilot4_main(raw))
+
     ap = argparse.ArgumentParser(prog="targeted-data")
     ap.add_argument("step", choices=["profile", "generate", "validate",
                                      "paraphrase", "select", "probe", "split",

@@ -1,0 +1,157 @@
+{
+  "bootstrap_paired": {
+    "ci95_hi_pp": 4.799999999999994,
+    "ci95_lo_pp": -0.40000000000000036,
+    "n_boot": 20000.0,
+    "point_pp": 2.199999999999991,
+    "seed": 42.0
+  },
+  "bootstrap_stratified_by_call_bucket": {
+    "ci95_hi_pp": 4.799999999999994,
+    "ci95_lo_pp": -0.39999999999998925,
+    "n_boot": 20000.0,
+    "point_pp": 2.199999999999991,
+    "seed": 42.0
+  },
+  "by_call_bucket": {
+    "2": {
+      "delta_pp": -1.0000000000000009,
+      "gained": 3,
+      "lost": 4,
+      "n": 100,
+      "win_rate_c0": 0.48,
+      "win_rate_d1": 0.47,
+      "wins_c0": 48,
+      "wins_d1": 47
+    },
+    "3": {
+      "delta_pp": 3.0000000000000027,
+      "gained": 6,
+      "lost": 3,
+      "n": 100,
+      "win_rate_c0": 0.59,
+      "win_rate_d1": 0.62,
+      "wins_c0": 59,
+      "wins_d1": 62
+    },
+    "4": {
+      "delta_pp": 1.0000000000000009,
+      "gained": 3,
+      "lost": 2,
+      "n": 100,
+      "win_rate_c0": 0.64,
+      "win_rate_d1": 0.65,
+      "wins_c0": 64,
+      "wins_d1": 65
+    },
+    "5": {
+      "delta_pp": 3.9999999999999925,
+      "gained": 8,
+      "lost": 4,
+      "n": 100,
+      "win_rate_c0": 0.56,
+      "win_rate_d1": 0.6,
+      "wins_c0": 56,
+      "wins_d1": 60
+    },
+    "6+": {
+      "delta_pp": 4.0000000000000036,
+      "gained": 7,
+      "lost": 3,
+      "n": 100,
+      "win_rate_c0": 0.5,
+      "win_rate_d1": 0.54,
+      "wins_c0": 50,
+      "wins_d1": 54
+    }
+  },
+  "delta_pp": 2.2,
+  "gained_ids": [
+    "0a78c579-29ef-4c96-918c-e8df417194dc",
+    "0f0a365f-d57e-4682-891b-b43b9d244d33",
+    "174a02ed-7ae5-4508-9754-d9408a886790",
+    "1ddeac74-83ee-4119-9100-83133001b0f5",
+    "21d13279-bf86-4ffe-92fd-c65f65389f43",
+    "24a1101f-819c-4ca7-a4e4-e7dee741c4f6",
+    "2b2c1931-a5c2-44a9-8283-08a4067256c2",
+    "38e7c22f-c209-4f49-8bbd-08bc3cb08203",
+    "42143b4c-1a3d-4f30-a3a6-c5e10facc1fe",
+    "58f0da42-f029-4773-86a1-dc7548859054",
+    "603b4a8b-a4dc-4b16-bb35-ab167c6c45c7",
+    "6c0d717a-af97-47db-ad9d-45255f829e0d",
+    "7da0f6e7-2a24-4fa8-b48d-cc84cae3e578",
+    "8ab9d4d5-0011-4e49-85cb-ee24f852f350",
+    "8ee1d3b2-4632-4455-b3b1-7a165383c55b",
+    "9855f520-4ad7-4658-85fc-b66003e186bb",
+    "99501e17-529b-42b7-ae83-e98b576c8019",
+    "9f02bfaf-4adb-40b5-837c-aac1bc3fac30",
+    "b3e268c9-2465-41d5-ba04-adfe860d791f",
+    "d5aec711-273b-4a98-9789-02d7ac1a45be",
+    "db8d72af-7a1a-4201-a376-4b827b0162df",
+    "df7d09de-9314-438c-a726-5189f82d3bd9",
+    "e3f3049a-021f-4f90-9c4e-640aaf4519c4",
+    "e67ab11d-70f4-4d75-9cf4-dc77d18dda1f",
+    "e70bd2c9-99af-410a-bc6d-61a65e00f7d8",
+    "e854fd67-4e08-483f-a4b2-a4c7c4f85d17",
+    "e8605b92-ee9a-4265-9c3c-aa4bc3a691e9"
+  ],
+  "interpretation_guards": [
+    "diagnostic-500 is a balanced slice (100 tasks per call-count bucket 2/3/4/5/6+).",
+    "Overall win equals the macro average across call-count buckets.",
+    "It is not an estimate of naturally distributed NESTFUL official win rate.",
+    "+delta_pp is a matched-engine point estimate, not a proven causal training effect.",
+    "Residual LoRA inference-path confound cannot be removed from these two trajectory sets alone."
+  ],
+  "loss_to_loss": 196,
+  "loss_to_win": 27,
+  "lost_ids": [
+    "0219f9a1-ced9-4e6d-9b99-1570e1178b66",
+    "04bd68f8-3e77-4cda-b43f-c42616d95d33",
+    "35adf4ad-dada-47dd-8c92-1af9100d6a8a",
+    "4b54ac08-7d24-4d16-b63d-c4d07aaccd80",
+    "52373c4f-e3e9-49cc-ada0-260f70efa0d3",
+    "6a42f278-ce39-4b47-ae02-60f80782c2c6",
+    "6bcc90ed-8253-46d4-86a6-ebc1c8550f7a",
+    "6c668a48-30d8-46ba-a9ac-8e0c58f9d9f0",
+    "766a4d29-1adf-4c1b-ae0b-bda50257dfb3",
+    "7bdd0e4f-6c99-4f49-b9e8-2afc9546891b",
+    "b370d25b-a241-486b-9630-7dbd523312c2",
+    "c28f3807-67fa-4513-8fdc-7802409d49d9",
+    "d27d13fd-1d87-4878-bb12-c9910d53a134",
+    "e1a005a4-216d-4486-a15b-d53ccb574e78",
+    "e5eb37ac-bd11-4a84-82a3-588c93ba7712",
+    "fe72229a-2b0d-4eb4-8ba9-1e5179ff5029"
+  ],
+  "mcnemar": {
+    "b_win_to_loss": 16,
+    "c_loss_to_win": 27,
+    "exact_p": 0.12628947438543037
+  },
+  "methodology": {
+    "alignment": "sample_id",
+    "bootstrap_ci": "percentile 2.5/97.5",
+    "bootstrap_iterations": 20000,
+    "bootstrap_seed": 42,
+    "mcnemar": "exact two-sided binomial(b+c, 0.5)",
+    "official_metric": "_traj.official_win",
+    "stratified_bootstrap": "resample within call_bucket then pool"
+  },
+  "n": 500,
+  "relative_delta": 0.03971119133573997,
+  "three_arm": {
+    "n": 500,
+    "note": "C0-HF must not be mixed into the main training-effect contrast.",
+    "win_rate_c0_hf": 0.488,
+    "win_rate_c0_vllm": 0.554,
+    "win_rate_d1_vllm": 0.576,
+    "wins_c0_hf": 244,
+    "wins_c0_vllm": 277,
+    "wins_d1_vllm": 288
+  },
+  "win_rate_c0": 0.554,
+  "win_rate_d1": 0.576,
+  "win_to_loss": 16,
+  "win_to_win": 261,
+  "wins_c0": 277,
+  "wins_d1": 288
+}

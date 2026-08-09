@@ -1,0 +1,2793 @@
+{
+  "schema_version": "ttdf.pilot4_implementation_report.v1",
+  "pilot4_schema_version": "ttdf.pilot4.task.v1",
+  "repro": {
+    "repro_schema_version": "ttdf.repro.v1",
+    "schema_version": "ttdf.pilot4_implementation_report.v1",
+    "generated_at_utc": "2026-07-30T23:36:42.784544+00:00",
+    "git": {
+      "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+      "dirty": true,
+      "n_dirty_files": 32,
+      "branch": "main"
+    },
+    "python_version": "3.11.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "dependency_versions": {
+      "pydantic": "2.12.5",
+      "pyyaml": "6.0.1",
+      "numpy": "1.26.4",
+      "matplotlib": "3.8.4"
+    },
+    "cli_args": [
+      "implementation-report"
+    ],
+    "seeds": {},
+    "config_hash": "",
+    "input_hashes": {}
+  },
+  "known_limitations": [
+    "No training, rollout, vLLM, Hugging Face generation or NESTFUL evaluation was run, so nothing here is evidence about model accuracy.",
+    "V4 (bounded minimal-path shortcut search) is disabled in the default run because it dominates runtime; V1-V3 and V5-V8 gate every selected task and the run can be repeated with --run-v4.",
+    "Fan-out and output reuse are generated even though dev-200 shows none of them. That is deliberate coverage of the structures pilot3 lacked entirely, and it is a known distribution-mismatch risk rather than a profile match.",
+    "At two and three calls the topology space is exhausted by 1 and 3 shapes, so per-bucket diversity there cannot be improved further; the top-1 share is pinned by the join rate the profile asks for.",
+    "Query realism is measured by a versioned rule-based lexicon. A low leakage score is not proof that a question reads naturally to a human.",
+    "The sampler simulation uses a synthetic difficulty model, not recorded rollouts, because no per-rollout reward log exists from the pilot3 run. It exercises the sampler mechanics only.",
+    "Training and evaluation logging are implemented and unit-tested against their schemas, but no run has produced the artifacts yet.",
+    "Capability demand for the diagnostic-informed gap report is exploratory and is never used as a generation quota."
+  ],
+  "recommended_next_experiment_not_executed": [
+    "Freeze the pilot4 train-600 split and run one MT-GRPO training with the history-adaptive sampler enabled and the new per-rollout logging on, keeping every other hyperparameter identical to the pilot3 run.",
+    "Read dead_group_rate and effective_group_rate from train_steps.jsonl rather than inferring them, and confirm the sampler reduces the dead-group share.",
+    "Evaluate the resulting adapter and the base model in one matched-engine paired run, checking the eval manifest equality gates (same task set, order, prompt hashes, tool-schema hashes, scorer version) before comparing scores.",
+    "Only then compare NESTFUL accuracy, with a paired significance test, and treat the pilot3 +2.2 pp result as the baseline to beat."
+  ],
+  "reproduction_commands": [
+    "python -m targeted_tool_data.cli audit-provenance",
+    "python -m targeted_tool_data.cli audit-query-realism --profile-safe",
+    "python -m targeted_tool_data.cli build-profile-v2",
+    "python -m targeted_tool_data.cli capability-audit",
+    "python -m targeted_tool_data.cli generate-pilot4",
+    "python -m targeted_tool_data.cli compare-datasets --baseline pilot3 --candidate pilot4_profile_safe",
+    "python -m targeted_tool_data.cli simulate-sampler",
+    "python -m targeted_tool_data.cli implementation-report",
+    "python -m pytest tests -q"
+  ],
+  "run_id": "pilot4_profile_safe",
+  "provenance": {
+    "status": "EXACT_FIRST_300_BYTES",
+    "n_parent_rows": 600,
+    "n_subset_rows": 300,
+    "n_canonical_matched": 300,
+    "n_matched_inside_parent_first_n": 300,
+    "matched_positions_are_identity_prefix": true,
+    "byte_level": {
+      "n_lines_taken": 300,
+      "parent_prefix_sha256": "8b0a16a39a1b5815ae768ac4cd57a9941114426c91465e28783dfad941939c69",
+      "subset_sha256": "8b0a16a39a1b5815ae768ac4cd57a9941114426c91465e28783dfad941939c69",
+      "exact_bytes_match": true,
+      "match_after_trailing_newline_normalization": false,
+      "note": ""
+    },
+    "multi_key_overlap": {
+      "sample_id": {
+        "subset_defined": 300,
+        "overlap_with_parent_any": 300,
+        "overlap_with_parent_first_n": 300,
+        "parent_unique": 600,
+        "subset_unique": 300
+      },
+      "task_id": {
+        "subset_defined": 0,
+        "overlap_with_parent_any": 0,
+        "overlap_with_parent_first_n": 0,
+        "parent_unique": 0,
+        "subset_unique": 0
+      },
+      "semantic_program_id": {
+        "subset_defined": 300,
+        "overlap_with_parent_any": 295,
+        "overlap_with_parent_first_n": 295,
+        "parent_unique": 583,
+        "subset_unique": 295
+      },
+      "semantic_program_family": {
+        "subset_defined": 300,
+        "overlap_with_parent_any": 295,
+        "overlap_with_parent_first_n": 295,
+        "parent_unique": 583,
+        "subset_unique": 295
+      },
+      "graph_template_id": {
+        "subset_defined": 300,
+        "overlap_with_parent_any": 143,
+        "overlap_with_parent_first_n": 143,
+        "parent_unique": 228,
+        "subset_unique": 143
+      },
+      "generation_cell_id": {
+        "subset_defined": 300,
+        "overlap_with_parent_any": 36,
+        "overlap_with_parent_first_n": 36,
+        "parent_unique": 38,
+        "subset_unique": 36
+      }
+    },
+    "resolved": true,
+    "retracts_previous_claim": true,
+    "verdict_note": "Subset is byte-identical to the parent's first 300 lines. Provenance fully verified.",
+    "n_parent_candidates": 15
+  },
+  "query_realism": {
+    "lexicon_version": "ttdf.operation_lexicon.v1",
+    "datasets": [
+      {
+        "dataset": "d1_train_subset_300",
+        "n_tasks": 300,
+        "plan_leak_rate": 0.6533,
+        "mean_exact_operation_coverage": 0.7618,
+        "mean_lexical_operation_coverage": 0.8521,
+        "mean_implicit_operation_rate": 0.1479,
+        "mean_sequence_leakage": 0.8129,
+        "mean_procedural_cue_count": 6.5233
+      },
+      {
+        "dataset": "pilot3_train_600_as_trained",
+        "n_tasks": 600,
+        "plan_leak_rate": 0.6417,
+        "mean_exact_operation_coverage": 0.7566,
+        "mean_lexical_operation_coverage": 0.8378,
+        "mean_implicit_operation_rate": 0.1622,
+        "mean_sequence_leakage": 0.7922,
+        "mean_procedural_cue_count": 6.6833
+      },
+      {
+        "dataset": "pilot3_train_600_worktree",
+        "n_tasks": 600,
+        "plan_leak_rate": 0.6717,
+        "mean_exact_operation_coverage": 0.7596,
+        "mean_lexical_operation_coverage": 0.845,
+        "mean_implicit_operation_rate": 0.155,
+        "mean_sequence_leakage": 0.812,
+        "mean_procedural_cue_count": 6.3967
+      },
+      {
+        "dataset": "pilot3_heldout_200",
+        "n_tasks": 200,
+        "plan_leak_rate": 0.605,
+        "mean_exact_operation_coverage": 0.6976,
+        "mean_lexical_operation_coverage": 0.8284,
+        "mean_implicit_operation_rate": 0.1716,
+        "mean_sequence_leakage": 0.8121,
+        "mean_procedural_cue_count": 6.49
+      },
+      {
+        "dataset": "pilot3_reserve_200",
+        "n_tasks": 200,
+        "plan_leak_rate": 0.615,
+        "mean_exact_operation_coverage": 0.7211,
+        "mean_lexical_operation_coverage": 0.8138,
+        "mean_implicit_operation_rate": 0.1862,
+        "mean_sequence_leakage": 0.7543,
+        "mean_procedural_cue_count": 6.27
+      },
+      {
+        "dataset": "nestful_dev_200",
+        "n_tasks": 200,
+        "plan_leak_rate": 0.045,
+        "mean_exact_operation_coverage": 0.0653,
+        "mean_lexical_operation_coverage": 0.1645,
+        "mean_implicit_operation_rate": 0.8355,
+        "mean_sequence_leakage": 0.152,
+        "mean_procedural_cue_count": 0.645
+      }
+    ],
+    "query_mode_distributions": {
+      "d1_train_subset_300": {
+        "GOAL_BASED_IMPLICIT": 0.0067,
+        "PROCEDURAL_EXPLICIT": 0.6533,
+        "PROCEDURAL_PARTIAL": 0.33,
+        "SEMI_IMPLICIT": 0.0067,
+        "UNCLASSIFIED": 0.0033
+      },
+      "pilot3_train_600_as_trained": {
+        "GOAL_BASED_IMPLICIT": 0.01,
+        "PROCEDURAL_EXPLICIT": 0.6417,
+        "PROCEDURAL_PARTIAL": 0.3267,
+        "SEMI_IMPLICIT": 0.0133,
+        "UNCLASSIFIED": 0.0083
+      },
+      "pilot3_train_600_worktree": {
+        "GOAL_BASED_IMPLICIT": 0.01,
+        "PROCEDURAL_EXPLICIT": 0.67,
+        "PROCEDURAL_PARTIAL": 0.3017,
+        "SEMI_IMPLICIT": 0.0133,
+        "UNCLASSIFIED": 0.005
+      },
+      "pilot3_heldout_200": {
+        "GOAL_BASED_IMPLICIT": 0.005,
+        "PROCEDURAL_EXPLICIT": 0.61,
+        "PROCEDURAL_PARTIAL": 0.355,
+        "SEMI_IMPLICIT": 0.025,
+        "UNCLASSIFIED": 0.005
+      },
+      "pilot3_reserve_200": {
+        "GOAL_BASED_IMPLICIT": 0.02,
+        "PROCEDURAL_EXPLICIT": 0.635,
+        "PROCEDURAL_PARTIAL": 0.32,
+        "SEMI_IMPLICIT": 0.015,
+        "UNCLASSIFIED": 0.01
+      },
+      "nestful_dev_200": {
+        "GOAL_BASED_IMPLICIT": 0.7,
+        "PROCEDURAL_EXPLICIT": 0.035,
+        "PROCEDURAL_PARTIAL": 0.125,
+        "SEMI_IMPLICIT": 0.115,
+        "UNCLASSIFIED": 0.025
+      }
+    }
+  },
+  "profile_v2": {
+    "source": "nestful_dev_200",
+    "mode": "PROFILE_SAFE",
+    "n_rows": 200,
+    "call_count_dist": {
+      "2": 0.33,
+      "3": 0.22,
+      "4": 0.135,
+      "5": 0.095,
+      "6+": 0.22
+    },
+    "conditional_keys": [
+      "P(answer_type|call_count)",
+      "P(depth|call_count)",
+      "P(fan_out_count|call_count)",
+      "P(join_count|call_count)",
+      "P(motif|call_count)",
+      "P(offered_tool_count|call_count)",
+      "P(operation_explicitness|query_mode)",
+      "P(query_mode|call_count)",
+      "P(reference_density|call_count)",
+      "P(reuse_count|call_count)",
+      "P(schema_complexity|call_count)",
+      "P(sequence_leakage|query_mode)"
+    ],
+    "graph_feature_keys": [
+      "critical_path",
+      "depth",
+      "max_indegree",
+      "max_outdegree",
+      "max_reference_distance",
+      "mean_reference_distance",
+      "n_edges",
+      "n_fan_out_nodes",
+      "n_joins",
+      "n_late_references",
+      "n_leaves",
+      "n_nodes",
+      "n_parallel_branches",
+      "n_reused_outputs",
+      "n_roots",
+      "n_type_transitions"
+    ],
+    "surface_feature_keys": [
+      "nested_schema_depth",
+      "optional_parameter_count",
+      "output_key_family",
+      "parameter_count",
+      "repeated_tool_count",
+      "required_parameter_count",
+      "same_family_tool_count",
+      "schema_complexity"
+    ],
+    "query_realism": {
+      "query_mode_distribution": {
+        "GOAL_BASED_IMPLICIT": 0.7,
+        "PROCEDURAL_EXPLICIT": 0.035,
+        "PROCEDURAL_PARTIAL": 0.125,
+        "SEMI_IMPLICIT": 0.115,
+        "UNCLASSIFIED": 0.025
+      },
+      "operation_explicitness_distribution": {
+        "full": 0.045,
+        "high": 0.05,
+        "low": 0.085,
+        "medium": 0.16,
+        "none": 0.66
+      },
+      "sequence_leakage_distribution": {
+        "full": 0.1,
+        "high": 0.075,
+        "low": 0.155,
+        "medium": 0.01,
+        "none": 0.66
+      },
+      "procedural_cue_distribution": {
+        "0": 0.55,
+        "1": 0.32,
+        "2": 0.105,
+        "3": 0.01,
+        "4": 0.005,
+        "5": 0.01
+      },
+      "intermediate_reference_explicitness": {
+        "share_with_explicit_reference": 0.45,
+        "mean_reference_density": 0.3753
+      },
+      "mean_operation_explicitness": 0.1645,
+      "mean_sequence_leakage": 0.152,
+      "mean_procedural_cue_count": 0.645,
+      "plan_leak_rate": 0.035
+    },
+    "topology_diversity_by_bucket": {
+      "2": {
+        "n": 66,
+        "n_distinct_topologies": 1,
+        "top1_topology_share": 1.0,
+        "normalized_entropy": 0.0,
+        "motif_distribution": {
+          "linear": 1.0
+        },
+        "join_rate": 0.0,
+        "fan_out_rate": 0.0,
+        "reuse_rate": 0.0,
+        "multi_join_rate": 0.0,
+        "late_reference_rate": 0.0,
+        "mean_reference_distance": 1.0,
+        "mean_type_transitions": 0.2273
+      },
+      "3": {
+        "n": 44,
+        "n_distinct_topologies": 4,
+        "top1_topology_share": 0.6818,
+        "normalized_entropy": 0.6254,
+        "motif_distribution": {
+          "fan_in": 0.22727,
+          "linear": 0.68182,
+          "mixed": 0.09091
+        },
+        "join_rate": 0.2273,
+        "fan_out_rate": 0.0,
+        "reuse_rate": 0.0,
+        "multi_join_rate": 0.0,
+        "late_reference_rate": 0.25,
+        "mean_reference_distance": 1.1364,
+        "mean_type_transitions": 0.0455
+      },
+      "4": {
+        "n": 27,
+        "n_distinct_topologies": 2,
+        "top1_topology_share": 0.6296,
+        "normalized_entropy": 0.951,
+        "motif_distribution": {
+          "fan_in": 0.62963,
+          "linear": 0.37037
+        },
+        "join_rate": 0.6296,
+        "fan_out_rate": 0.0,
+        "reuse_rate": 0.0,
+        "multi_join_rate": 0.0,
+        "late_reference_rate": 0.6296,
+        "mean_reference_distance": 1.2592,
+        "mean_type_transitions": 0.0
+      },
+      "5": {
+        "n": 19,
+        "n_distinct_topologies": 4,
+        "top1_topology_share": 0.3158,
+        "normalized_entropy": 0.9892,
+        "motif_distribution": {
+          "fan_in": 0.52632,
+          "linear": 0.21053,
+          "multi_join": 0.26316
+        },
+        "join_rate": 0.7895,
+        "fan_out_rate": 0.0,
+        "reuse_rate": 0.0,
+        "multi_join_rate": 0.2632,
+        "late_reference_rate": 0.7895,
+        "mean_reference_distance": 1.3816,
+        "mean_type_transitions": 0.0
+      },
+      "6+": {
+        "n": 44,
+        "n_distinct_topologies": 26,
+        "top1_topology_share": 0.1364,
+        "normalized_entropy": 0.9263,
+        "motif_distribution": {
+          "fan_in": 0.54545,
+          "multi_join": 0.45455
+        },
+        "join_rate": 1.0,
+        "fan_out_rate": 0.0,
+        "reuse_rate": 0.0,
+        "multi_join_rate": 0.4545,
+        "late_reference_rate": 1.0,
+        "mean_reference_distance": 1.6208,
+        "mean_type_transitions": 0.0
+      }
+    },
+    "derived_constraints": {
+      "2": {
+        "allowed_patterns": [
+          "LINEAR_CHAIN"
+        ],
+        "minimum_pattern_families": 1
+      },
+      "3": {
+        "minimum_pattern_families": 3,
+        "minimum_join_rate": 0.136,
+        "maximum_top1_topology_share": 0.6
+      },
+      "4": {
+        "minimum_pattern_families": 3,
+        "minimum_join_rate": 0.378,
+        "maximum_top1_topology_share": 0.6
+      },
+      "5": {
+        "minimum_pattern_families": 3,
+        "minimum_join_rate": 0.474,
+        "maximum_top1_topology_share": 0.379,
+        "minimum_multi_join_rate": 0.158,
+        "minimum_reuse_rate": 0.15
+      },
+      "6+": {
+        "minimum_pattern_families": 10,
+        "minimum_join_rate": 0.6,
+        "maximum_top1_topology_share": 0.18,
+        "minimum_multi_join_rate": 0.273,
+        "minimum_reuse_rate": 0.15,
+        "minimum_fan_out_rate": 0.2,
+        "minimum_late_reference_rate": 0.6
+      }
+    }
+  },
+  "capability_registry": {
+    "n_primitives": 89,
+    "n_families_declared": 25,
+    "n_families_populated": 25,
+    "empty_families": [],
+    "primitives_outside_taxonomy": [],
+    "validation_errors": []
+  },
+  "patterns": {
+    "families": [
+      "LINEAR_CHAIN",
+      "FAN_IN_SINGLE",
+      "FAN_IN_MULTIPLE",
+      "FAN_OUT",
+      "DIAMOND",
+      "PARALLEL_THEN_MERGE",
+      "REUSE_EARLY_OUTPUT",
+      "LATE_REFERENCE",
+      "TWO_STAGE_AGGREGATION",
+      "MULTI_JOIN",
+      "ALTERNATING_BRANCH_CHAIN",
+      "MIXED_INDEPENDENT_DEPENDENT",
+      "REPEATED_PRIMITIVE",
+      "TYPE_TRANSITION_CHAIN",
+      "NESTED_AGGREGATION"
+    ],
+    "transformations": [
+      "INSERT_NODE_ON_EDGE",
+      "SPLIT_BRANCH",
+      "MERGE_BRANCHES",
+      "REUSE_OUTPUT",
+      "ADD_PARALLEL_BRANCH",
+      "ADD_LATE_JOIN",
+      "ADD_SECOND_JOIN",
+      "REPEAT_PRIMITIVE_WITH_NEW_ARGS",
+      "CHANGE_TYPE_PATH",
+      "EXTEND_CRITICAL_PATH"
+    ],
+    "admissible_topologies_per_bucket": {
+      "2": 1,
+      "3": 3,
+      "4": 21,
+      "5": 315,
+      "6+": null
+    },
+    "selected_topologies_per_bucket": {
+      "2": 1,
+      "3": 3,
+      "4": 12,
+      "5": 34,
+      "6+": 167
+    }
+  },
+  "renderers": {
+    "query_modes": [
+      "GOAL_BASED_IMPLICIT",
+      "PROCEDURAL_EXPLICIT",
+      "SEMI_IMPLICIT"
+    ],
+    "surface_tracks": [
+      "A_NATIVE",
+      "G_GENERAL"
+    ],
+    "selected_query_mode_share": {
+      "GOAL_BASED_IMPLICIT": 0.602,
+      "PROCEDURAL_EXPLICIT": 0.12,
+      "SEMI_IMPLICIT": 0.278
+    },
+    "selected_classified_query_mode_share": {
+      "GOAL_BASED_IMPLICIT": 0.646,
+      "PROCEDURAL_EXPLICIT": 0.091,
+      "PROCEDURAL_PARTIAL": 0.121,
+      "SEMI_IMPLICIT": 0.086,
+      "UNCLASSIFIED": 0.056
+    },
+    "selected_track_share": {
+      "A_NATIVE": 0.498,
+      "G_GENERAL": 0.502
+    },
+    "n_paired_records": 575
+  },
+  "distractors": {
+    "levels": [
+      "EASY_TYPE_INCOMPATIBLE",
+      "MEDIUM_SAME_OUTPUT_TYPE",
+      "HARD_SAME_ARITY_AND_TYPES",
+      "HARD_SAME_CAPABILITY_FAMILY",
+      "HARD_SEMANTIC_NEIGHBOR",
+      "HARD_REPEATED_SURFACE_AMBIGUITY"
+    ],
+    "schema_compatible_share": 0.955,
+    "mean_hard_distractor_count": 4.047
+  },
+  "validation": {
+    "schema_version": "ttdf.pilot4.task.v1",
+    "n_candidates": 5045,
+    "n_validated": 4523,
+    "pass_rate": 0.8965,
+    "per_layer_failures": {
+      "V3": 522
+    },
+    "V5_dedup": {
+      "layer": "V5_DEDUP",
+      "n_records": 4523,
+      "n_duplicates": 0,
+      "duplicate_ids": [],
+      "n_contaminated": 0,
+      "contaminated_ids": [],
+      "passed": true
+    },
+    "V5_dedup_after_removal": {
+      "layer": "V5_DEDUP",
+      "n_records": 4523,
+      "n_duplicates": 0,
+      "duplicate_ids": [],
+      "n_contaminated": 0,
+      "contaminated_ids": [],
+      "passed": true
+    },
+    "V6_distribution": {
+      "layer": "V6_DISTRIBUTION",
+      "n_records": 4523,
+      "top_query_skeleton_share": 0.0007,
+      "top_cell_share": 0.0862,
+      "top_family_share": 0.0035,
+      "warnings": [
+        "generation_cell 'P4_2_LINEAR_CHAIN_A_GOAL_numeric__c6318a' holds 0.086 > 0.05"
+      ],
+      "passed": false
+    },
+    "V7_in_target_bucket_rate": 0.8335,
+    "V8_pass_rate": 1.0,
+    "v4_minimal_path": "skipped: reported as a known limitation",
+    "generation": {
+      "per_cell": {
+        "P4_2_LINEAR_CHAIN_A_GOAL_numeric__c6318a": {
+          "requested": 399,
+          "generated": 399,
+          "attempts": 350
+        },
+        "P4_2_LINEAR_CHAIN_A_PROC_statisti_1f091c": {
+          "requested": 177,
+          "generated": 177,
+          "attempts": 151
+        },
+        "P4_2_LINEAR_CHAIN_A_SEMI_sequence_e30742": {
+          "requested": 291,
+          "generated": 292,
+          "attempts": 260
+        },
+        "P4_2_LINEAR_CHAIN_G_GOAL_statisti_ab7735": {
+          "requested": 399,
+          "generated": 399,
+          "attempts": 355
+        },
+        "P4_2_LINEAR_CHAIN_G_PROC_sequence_6f5316": {
+          "requested": 145,
+          "generated": 145,
+          "attempts": 128
+        },
+        "P4_2_LINEAR_CHAIN_G_SEMI_predicat_68df96": {
+          "requested": 238,
+          "generated": 238,
+          "attempts": 283
+        },
+        "P4_3_REPEATED_PRIMI_A_GOAL_numeric__29ed29": {
+          "requested": 78,
+          "generated": 78,
+          "attempts": 73
+        },
+        "P4_3_REPEATED_PRIMI_A_PROC_statisti_b0aedd": {
+          "requested": 16,
+          "generated": 17,
+          "attempts": 14
+        },
+        "P4_3_REPEATED_PRIMI_A_SEMI_sequence_5d25ae": {
+          "requested": 27,
+          "generated": 28,
+          "attempts": 24
+        },
+        "P4_3_REPEATED_PRIMI_G_GOAL_statisti_6c96e4": {
+          "requested": 64,
+          "generated": 65,
+          "attempts": 62
+        },
+        "P4_3_REPEATED_PRIMI_G_PROC_sequence_26cb7d": {
+          "requested": 13,
+          "generated": 13,
+          "attempts": 13
+        },
+        "P4_3_REPEATED_PRIMI_G_SEMI_predicat_bf3aeb": {
+          "requested": 22,
+          "generated": 22,
+          "attempts": 26
+        },
+        "P4_3_TYPE_TRANSITIO_A_GOAL_statisti_fc6bba": {
+          "requested": 78,
+          "generated": 78,
+          "attempts": 86
+        },
+        "P4_3_TYPE_TRANSITIO_A_PROC_sequence_921f7d": {
+          "requested": 16,
+          "generated": 16,
+          "attempts": 15
+        },
+        "P4_3_TYPE_TRANSITIO_A_SEMI_predicat_98d2de": {
+          "requested": 27,
+          "generated": 28,
+          "attempts": 43
+        },
+        "P4_3_TYPE_TRANSITIO_G_GOAL_sequence_c2c6db": {
+          "requested": 64,
+          "generated": 64,
+          "attempts": 61
+        },
+        "P4_3_TYPE_TRANSITIO_G_PROC_predicat_2e638f": {
+          "requested": 13,
+          "generated": 13,
+          "attempts": 14
+        },
+        "P4_3_TYPE_TRANSITIO_G_SEMI_text_and_09da52": {
+          "requested": 22,
+          "generated": 22,
+          "attempts": 22
+        },
+        "P4_3_LINEAR_CHAIN_A_GOAL_sequence_c456ea": {
+          "requested": 78,
+          "generated": 78,
+          "attempts": 79
+        },
+        "P4_3_LINEAR_CHAIN_A_PROC_predicat_de0111": {
+          "requested": 16,
+          "generated": 16,
+          "attempts": 15
+        },
+        "P4_3_LINEAR_CHAIN_A_SEMI_text_and_eecc96": {
+          "requested": 27,
+          "generated": 27,
+          "attempts": 27
+        },
+        "P4_3_LINEAR_CHAIN_G_GOAL_predicat_9c6bf6": {
+          "requested": 64,
+          "generated": 64,
+          "attempts": 85
+        },
+        "P4_3_LINEAR_CHAIN_G_PROC_text_and_f8d16b": {
+          "requested": 13,
+          "generated": 13,
+          "attempts": 15
+        },
+        "P4_3_LINEAR_CHAIN_G_SEMI_unit_con_971fff": {
+          "requested": 22,
+          "generated": 22,
+          "attempts": 18
+        },
+        "P4_3_FAN_IN_SINGLE_A_GOAL_predicat_04c60e": {
+          "requested": 78,
+          "generated": 78,
+          "attempts": 83
+        },
+        "P4_3_FAN_IN_SINGLE_A_PROC_text_and_c249f3": {
+          "requested": 16,
+          "generated": 16,
+          "attempts": 14
+        },
+        "P4_3_FAN_IN_SINGLE_A_SEMI_unit_con_84e1ea": {
+          "requested": 27,
+          "generated": 27,
+          "attempts": 21
+        },
+        "P4_3_FAN_IN_SINGLE_G_GOAL_text_and_cf7ea9": {
+          "requested": 64,
+          "generated": 64,
+          "attempts": 47
+        },
+        "P4_3_FAN_IN_SINGLE_G_PROC_unit_con_49b1b4": {
+          "requested": 13,
+          "generated": 13,
+          "attempts": 12
+        },
+        "P4_3_FAN_IN_SINGLE_G_SEMI_geometry_ad614d": {
+          "requested": 22,
+          "generated": 22,
+          "attempts": 16
+        },
+        "P4_3_REUSE_EARLY_OU_A_GOAL_text_and_d8ba70": {
+          "requested": 78,
+          "generated": 78,
+          "attempts": 72
+        },
+        "P4_3_REUSE_EARLY_OU_A_PROC_unit_con_15ae3c": {
+          "requested": 16,
+          "generated": 16,
+          "attempts": 13
+        },
+        "P4_3_REUSE_EARLY_OU_A_SEMI_geometry_9a523a": {
+          "requested": 27,
+          "generated": 27,
+          "attempts": 23
+        },
+        "P4_3_REUSE_EARLY_OU_G_GOAL_unit_con_16a785": {
+          "requested": 64,
+          "generated": 64,
+          "attempts": 54
+        },
+        "P4_3_REUSE_EARLY_OU_G_PROC_geometry_aa9f77": {
+          "requested": 13,
+          "generated": 14,
+          "attempts": 12
+        },
+        "P4_3_REUSE_EARLY_OU_G_SEMI_mixed_tr_07106f": {
+          "requested": 22,
+          "generated": 22,
+          "attempts": 21
+        },
+        "P4_4_FAN_IN_SINGLE_A_GOAL_numeric__36c013": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 27
+        },
+        "P4_4_FAN_IN_SINGLE_A_PROC_statisti_58ee0e": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_4_FAN_IN_SINGLE_A_SEMI_sequence_fb7058": {
+          "requested": 12,
+          "generated": 13,
+          "attempts": 10
+        },
+        "P4_4_FAN_IN_SINGLE_G_GOAL_statisti_ee75e3": {
+          "requested": 28,
+          "generated": 28,
+          "attempts": 24
+        },
+        "P4_4_FAN_IN_SINGLE_G_PROC_sequence_1f6cbf": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 3
+        },
+        "P4_4_FAN_IN_SINGLE_G_SEMI_predicat_08a05b": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 13
+        },
+        "P4_4_FAN_OUT_A_GOAL_statisti_1789ab": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 28
+        },
+        "P4_4_FAN_OUT_A_PROC_sequence_6c6d00": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_4_FAN_OUT_A_SEMI_predicat_c8de06": {
+          "requested": 12,
+          "generated": 13,
+          "attempts": 21
+        },
+        "P4_4_FAN_OUT_G_GOAL_sequence_ad9c54": {
+          "requested": 28,
+          "generated": 28,
+          "attempts": 26
+        },
+        "P4_4_FAN_OUT_G_PROC_predicat_b46ce1": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 27
+        },
+        "P4_4_FAN_OUT_G_SEMI_text_and_6adf75": {
+          "requested": 10,
+          "generated": 11,
+          "attempts": 8
+        },
+        "P4_4_DIAMOND_A_GOAL_sequence_b4a288": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 31
+        },
+        "P4_4_DIAMOND_A_PROC_predicat_12c30b": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_4_DIAMOND_A_SEMI_text_and_ac0a78": {
+          "requested": 12,
+          "generated": 12,
+          "attempts": 12
+        },
+        "P4_4_DIAMOND_G_GOAL_predicat_683f7e": {
+          "requested": 28,
+          "generated": 28,
+          "attempts": 36
+        },
+        "P4_4_DIAMOND_G_PROC_text_and_fc9907": {
+          "requested": 6,
+          "generated": 7,
+          "attempts": 7
+        },
+        "P4_4_DIAMOND_G_SEMI_unit_con_964bf3": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_4_PARALLEL_THEN__A_GOAL_predicat_602cec": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 34
+        },
+        "P4_4_PARALLEL_THEN__A_PROC_text_and_7228b0": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 8
+        },
+        "P4_4_PARALLEL_THEN__A_SEMI_unit_con_e28786": {
+          "requested": 12,
+          "generated": 13,
+          "attempts": 10
+        },
+        "P4_4_PARALLEL_THEN__G_GOAL_text_and_4295dd": {
+          "requested": 28,
+          "generated": 29,
+          "attempts": 23
+        },
+        "P4_4_PARALLEL_THEN__G_PROC_unit_con_39deb1": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_4_PARALLEL_THEN__G_SEMI_geometry_9bccc3": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_4_REUSE_EARLY_OU_A_GOAL_text_and_c08cea": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 28
+        },
+        "P4_4_REUSE_EARLY_OU_A_PROC_unit_con_e49aba": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_4_REUSE_EARLY_OU_A_SEMI_geometry_5a5b9a": {
+          "requested": 12,
+          "generated": 12,
+          "attempts": 10
+        },
+        "P4_4_REUSE_EARLY_OU_G_GOAL_unit_con_3ac8f5": {
+          "requested": 28,
+          "generated": 28,
+          "attempts": 27
+        },
+        "P4_4_REUSE_EARLY_OU_G_PROC_geometry_556c98": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_4_REUSE_EARLY_OU_G_SEMI_mixed_tr_c59549": {
+          "requested": 10,
+          "generated": 11,
+          "attempts": 8
+        },
+        "P4_4_LATE_REFERENCE_A_GOAL_unit_con_18b6e1": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 30
+        },
+        "P4_4_LATE_REFERENCE_A_PROC_geometry_c032bc": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_4_LATE_REFERENCE_A_SEMI_mixed_tr_862429": {
+          "requested": 12,
+          "generated": 13,
+          "attempts": 10
+        },
+        "P4_4_LATE_REFERENCE_G_GOAL_geometry_4ceabb": {
+          "requested": 28,
+          "generated": 29,
+          "attempts": 21
+        },
+        "P4_4_LATE_REFERENCE_G_PROC_mixed_tr_8eae0f": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_4_LATE_REFERENCE_G_SEMI_numeric__c72577": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_4_MIXED_INDEPEND_A_GOAL_geometry_70b4db": {
+          "requested": 34,
+          "generated": 34,
+          "attempts": 32
+        },
+        "P4_4_MIXED_INDEPEND_A_PROC_mixed_tr_47dcb5": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 7
+        },
+        "P4_4_MIXED_INDEPEND_A_SEMI_numeric__c18cc5": {
+          "requested": 12,
+          "generated": 12,
+          "attempts": 10
+        },
+        "P4_4_MIXED_INDEPEND_G_GOAL_mixed_tr_c42b54": {
+          "requested": 28,
+          "generated": 28,
+          "attempts": 24
+        },
+        "P4_4_MIXED_INDEPEND_G_PROC_numeric__8e64cf": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_4_MIXED_INDEPEND_G_SEMI_statisti_e79a51": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 8
+        },
+        "P4_5_FAN_IN_SINGLE_A_GOAL_numeric__ba91f5": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 18
+        },
+        "P4_5_FAN_IN_SINGLE_A_PROC_statisti_bb6bab": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_5_FAN_IN_SINGLE_A_SEMI_sequence_a75022": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 8
+        },
+        "P4_5_FAN_IN_SINGLE_G_GOAL_statisti_cb0566": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 19
+        },
+        "P4_5_FAN_IN_SINGLE_G_PROC_sequence_6e1aba": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 3
+        },
+        "P4_5_FAN_IN_SINGLE_G_SEMI_predicat_c330da": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 10
+        },
+        "P4_5_FAN_IN_MULTIPL_A_GOAL_statisti_316e43": {
+          "requested": 24,
+          "generated": 25,
+          "attempts": 21
+        },
+        "P4_5_FAN_IN_MULTIPL_A_PROC_sequence_a1c60f": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 6
+        },
+        "P4_5_FAN_IN_MULTIPL_A_SEMI_predicat_4ba33d": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 8
+        },
+        "P4_5_FAN_IN_MULTIPL_G_GOAL_sequence_7d1dff": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 19
+        },
+        "P4_5_FAN_IN_MULTIPL_G_PROC_predicat_adad84": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 4
+        },
+        "P4_5_FAN_IN_MULTIPL_G_SEMI_text_and_9ca06e": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 5
+        },
+        "P4_5_FAN_OUT_A_GOAL_sequence_dd2487": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 19
+        },
+        "P4_5_FAN_OUT_A_PROC_predicat_fab7d0": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 11
+        },
+        "P4_5_FAN_OUT_A_SEMI_text_and_c93ba7": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_5_FAN_OUT_G_GOAL_predicat_b19c1b": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 30
+        },
+        "P4_5_FAN_OUT_G_PROC_text_and_2b4d41": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 5
+        },
+        "P4_5_FAN_OUT_G_SEMI_unit_con_d22127": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_5_DIAMOND_A_GOAL_predicat_0c4891": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 55
+        },
+        "P4_5_DIAMOND_A_PROC_text_and_c9ccc0": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_5_DIAMOND_A_SEMI_unit_con_ecb5ac": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_5_DIAMOND_G_GOAL_text_and_eecafc": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 17
+        },
+        "P4_5_DIAMOND_G_PROC_unit_con_82ff2d": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 3
+        },
+        "P4_5_DIAMOND_G_SEMI_geometry_6a5f00": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_5_PARALLEL_THEN__A_GOAL_text_and_1c2695": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 23
+        },
+        "P4_5_PARALLEL_THEN__A_PROC_unit_con_728d91": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 4
+        },
+        "P4_5_PARALLEL_THEN__A_SEMI_geometry_9d442d": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_5_PARALLEL_THEN__G_GOAL_unit_con_42215c": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 19
+        },
+        "P4_5_PARALLEL_THEN__G_PROC_geometry_f68927": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 4
+        },
+        "P4_5_PARALLEL_THEN__G_SEMI_mixed_tr_81fd23": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 5
+        },
+        "P4_5_REUSE_EARLY_OU_A_GOAL_unit_con_1a8160": {
+          "requested": 24,
+          "generated": 25,
+          "attempts": 20
+        },
+        "P4_5_REUSE_EARLY_OU_A_PROC_geometry_0ecb6e": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 4
+        },
+        "P4_5_REUSE_EARLY_OU_A_SEMI_mixed_tr_21aa6b": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_5_REUSE_EARLY_OU_G_GOAL_geometry_2119f0": {
+          "requested": 20,
+          "generated": 20,
+          "attempts": 17
+        },
+        "P4_5_REUSE_EARLY_OU_G_PROC_mixed_tr_fec92d": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 2
+        },
+        "P4_5_REUSE_EARLY_OU_G_SEMI_numeric__05df90": {
+          "requested": 7,
+          "generated": 8,
+          "attempts": 5
+        },
+        "P4_5_LATE_REFERENCE_A_GOAL_geometry_3fbbce": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 19
+        },
+        "P4_5_LATE_REFERENCE_A_PROC_mixed_tr_5d3158": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 4
+        },
+        "P4_5_LATE_REFERENCE_A_SEMI_numeric__ed0488": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_5_LATE_REFERENCE_G_GOAL_mixed_tr_56f7ef": {
+          "requested": 20,
+          "generated": 21,
+          "attempts": 16
+        },
+        "P4_5_LATE_REFERENCE_G_PROC_numeric__78b2db": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 3
+        },
+        "P4_5_LATE_REFERENCE_G_SEMI_statisti_e71724": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_6p_LATE_REFERENCE_A_GOAL_numeric__bbe1ae": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 24
+        },
+        "P4_6p_LATE_REFERENCE_A_PROC_statisti_b49c40": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_6p_LATE_REFERENCE_A_SEMI_sequence_ed43e0": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_6p_LATE_REFERENCE_G_GOAL_statisti_372587": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 22
+        },
+        "P4_6p_LATE_REFERENCE_G_PROC_sequence_024ccb": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 3
+        },
+        "P4_6p_LATE_REFERENCE_G_SEMI_predicat_7631f5": {
+          "requested": 8,
+          "generated": 9,
+          "attempts": 7
+        },
+        "P4_6p_TWO_STAGE_AGGR_A_GOAL_statisti_7cc734": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 23
+        },
+        "P4_6p_TWO_STAGE_AGGR_A_PROC_sequence_506c1d": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 8
+        },
+        "P4_6p_TWO_STAGE_AGGR_A_SEMI_predicat_1ec45b": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 21
+        },
+        "P4_6p_TWO_STAGE_AGGR_G_GOAL_sequence_2871ed": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 22
+        },
+        "P4_6p_TWO_STAGE_AGGR_G_PROC_predicat_451360": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 12
+        },
+        "P4_6p_TWO_STAGE_AGGR_G_SEMI_text_and_8cf4df": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_6p_MULTI_JOIN_A_GOAL_sequence_7103e6": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 24
+        },
+        "P4_6p_MULTI_JOIN_A_PROC_predicat_38cf49": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 10
+        },
+        "P4_6p_MULTI_JOIN_A_SEMI_text_and_16e199": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_6p_MULTI_JOIN_G_GOAL_predicat_f4795c": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 30
+        },
+        "P4_6p_MULTI_JOIN_G_PROC_text_and_4bd1cc": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_6p_MULTI_JOIN_G_SEMI_unit_con_c99644": {
+          "requested": 8,
+          "generated": 9,
+          "attempts": 8
+        },
+        "P4_6p_ALTERNATING_BR_A_GOAL_predicat_00cab3": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 58
+        },
+        "P4_6p_ALTERNATING_BR_A_PROC_text_and_672d07": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_6p_ALTERNATING_BR_A_SEMI_unit_con_c23483": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 8
+        },
+        "P4_6p_ALTERNATING_BR_G_GOAL_text_and_5ba75a": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 22
+        },
+        "P4_6p_ALTERNATING_BR_G_PROC_unit_con_d80d1f": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 3
+        },
+        "P4_6p_ALTERNATING_BR_G_SEMI_geometry_b4793d": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_6p_MIXED_INDEPEND_A_GOAL_text_and_5f6bf4": {
+          "requested": 29,
+          "generated": 30,
+          "attempts": 24
+        },
+        "P4_6p_MIXED_INDEPEND_A_PROC_unit_con_f47392": {
+          "requested": 6,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_6p_MIXED_INDEPEND_A_SEMI_geometry_9dbe79": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 8
+        },
+        "P4_6p_MIXED_INDEPEND_G_GOAL_unit_con_8601dc": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 22
+        },
+        "P4_6p_MIXED_INDEPEND_G_PROC_geometry_7557ef": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 6
+        },
+        "P4_6p_MIXED_INDEPEND_G_SEMI_mixed_tr_9e955c": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_6p_REPEATED_PRIMI_A_GOAL_unit_con_e69e47": {
+          "requested": 23,
+          "generated": 24,
+          "attempts": 21
+        },
+        "P4_6p_REPEATED_PRIMI_A_PROC_geometry_2b4bff": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 3
+        },
+        "P4_6p_REPEATED_PRIMI_A_SEMI_mixed_tr_5ad82c": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_6p_REPEATED_PRIMI_G_GOAL_geometry_ceebe2": {
+          "requested": 19,
+          "generated": 19,
+          "attempts": 22
+        },
+        "P4_6p_REPEATED_PRIMI_G_PROC_mixed_tr_2486e2": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 4
+        },
+        "P4_6p_REPEATED_PRIMI_G_SEMI_numeric__6575c2": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 6
+        },
+        "P4_6p_TYPE_TRANSITIO_A_GOAL_geometry_4efbea": {
+          "requested": 23,
+          "generated": 23,
+          "attempts": 28
+        },
+        "P4_6p_TYPE_TRANSITIO_A_PROC_mixed_tr_1c30d8": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 9
+        },
+        "P4_6p_TYPE_TRANSITIO_A_SEMI_numeric__c91213": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 8
+        },
+        "P4_6p_TYPE_TRANSITIO_G_GOAL_mixed_tr_9fcbb6": {
+          "requested": 19,
+          "generated": 19,
+          "attempts": 15
+        },
+        "P4_6p_TYPE_TRANSITIO_G_PROC_numeric__40d287": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 6
+        },
+        "P4_6p_TYPE_TRANSITIO_G_SEMI_statisti_7b6f6c": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 9
+        },
+        "P4_6p_NESTED_AGGREGA_A_GOAL_mixed_tr_217af2": {
+          "requested": 29,
+          "generated": 30,
+          "attempts": 23
+        },
+        "P4_6p_NESTED_AGGREGA_A_PROC_numeric__8ed3f5": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_6p_NESTED_AGGREGA_A_SEMI_statisti_673b71": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 9
+        },
+        "P4_6p_NESTED_AGGREGA_G_GOAL_numeric__20d31f": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 19
+        },
+        "P4_6p_NESTED_AGGREGA_G_PROC_statisti_5d245a": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 3
+        },
+        "P4_6p_NESTED_AGGREGA_G_SEMI_sequence_20f751": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 8
+        },
+        "P4_6p_LINEAR_CHAIN_A_GOAL_numeric__7ba124": {
+          "requested": 23,
+          "generated": 23,
+          "attempts": 18
+        },
+        "P4_6p_LINEAR_CHAIN_A_PROC_statisti_c0e3ea": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 3
+        },
+        "P4_6p_LINEAR_CHAIN_A_SEMI_sequence_b6a8aa": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 11
+        },
+        "P4_6p_LINEAR_CHAIN_G_GOAL_statisti_52602e": {
+          "requested": 19,
+          "generated": 20,
+          "attempts": 16
+        },
+        "P4_6p_LINEAR_CHAIN_G_PROC_sequence_41d53c": {
+          "requested": 4,
+          "generated": 4,
+          "attempts": 3
+        },
+        "P4_6p_LINEAR_CHAIN_G_SEMI_predicat_2fb889": {
+          "requested": 7,
+          "generated": 7,
+          "attempts": 15
+        },
+        "P4_6p_FAN_IN_SINGLE_A_GOAL_statisti_3e52ea": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 23
+        },
+        "P4_6p_FAN_IN_SINGLE_A_PROC_sequence_7a1c47": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_6p_FAN_IN_SINGLE_A_SEMI_predicat_7907ab": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 32
+        },
+        "P4_6p_FAN_IN_SINGLE_G_GOAL_sequence_41a004": {
+          "requested": 24,
+          "generated": 25,
+          "attempts": 23
+        },
+        "P4_6p_FAN_IN_SINGLE_G_PROC_predicat_3a3489": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 13
+        },
+        "P4_6p_FAN_IN_SINGLE_G_SEMI_text_and_649e17": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_6p_FAN_IN_MULTIPL_A_GOAL_sequence_c252da": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 31
+        },
+        "P4_6p_FAN_IN_MULTIPL_A_PROC_predicat_ad008f": {
+          "requested": 6,
+          "generated": 7,
+          "attempts": 5
+        },
+        "P4_6p_FAN_IN_MULTIPL_A_SEMI_text_and_5b647a": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 8
+        },
+        "P4_6p_FAN_IN_MULTIPL_G_GOAL_predicat_af1063": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 34
+        },
+        "P4_6p_FAN_IN_MULTIPL_G_PROC_text_and_7b29f5": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 4
+        },
+        "P4_6p_FAN_IN_MULTIPL_G_SEMI_unit_con_c8a171": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 6
+        },
+        "P4_6p_FAN_OUT_A_GOAL_predicat_7dcf36": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 61
+        },
+        "P4_6p_FAN_OUT_A_PROC_text_and_28fedf": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_6p_FAN_OUT_A_SEMI_unit_con_3fbc8a": {
+          "requested": 10,
+          "generated": 11,
+          "attempts": 8
+        },
+        "P4_6p_FAN_OUT_G_GOAL_text_and_fe7880": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 22
+        },
+        "P4_6p_FAN_OUT_G_PROC_unit_con_c16487": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_6p_FAN_OUT_G_SEMI_geometry_09cf35": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 9
+        },
+        "P4_6p_DIAMOND_A_GOAL_text_and_b8deb0": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 32
+        },
+        "P4_6p_DIAMOND_A_PROC_unit_con_22b759": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 7
+        },
+        "P4_6p_DIAMOND_A_SEMI_geometry_6a35b7": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 10
+        },
+        "P4_6p_DIAMOND_G_GOAL_unit_con_6cde89": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 24
+        },
+        "P4_6p_DIAMOND_G_PROC_geometry_98bb7f": {
+          "requested": 5,
+          "generated": 6,
+          "attempts": 4
+        },
+        "P4_6p_DIAMOND_G_SEMI_mixed_tr_a4cae0": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        },
+        "P4_6p_PARALLEL_THEN__A_GOAL_unit_con_349796": {
+          "requested": 29,
+          "generated": 29,
+          "attempts": 25
+        },
+        "P4_6p_PARALLEL_THEN__A_PROC_geometry_612cef": {
+          "requested": 6,
+          "generated": 6,
+          "attempts": 5
+        },
+        "P4_6p_PARALLEL_THEN__A_SEMI_mixed_tr_3b1be8": {
+          "requested": 10,
+          "generated": 10,
+          "attempts": 7
+        },
+        "P4_6p_PARALLEL_THEN__G_GOAL_geometry_e8e980": {
+          "requested": 24,
+          "generated": 24,
+          "attempts": 23
+        },
+        "P4_6p_PARALLEL_THEN__G_PROC_mixed_tr_92ab81": {
+          "requested": 5,
+          "generated": 5,
+          "attempts": 6
+        },
+        "P4_6p_PARALLEL_THEN__G_SEMI_numeric__6e4a40": {
+          "requested": 8,
+          "generated": 8,
+          "attempts": 7
+        }
+      },
+      "failure_reasons": {
+        "query:answer_leak": 766,
+        "program:PatternError": 28
+      },
+      "n_candidates": 5045
+    }
+  },
+  "selection": {
+    "schema_version": "ttdf.selection.v2",
+    "n_pool": 4523,
+    "n_requested": 1000,
+    "n_selected": 1000,
+    "constraint_rows": [
+      {
+        "constraint": "call_bucket_share[2]",
+        "requested_target": 0.33,
+        "achieved": 0.316,
+        "absolute_deficit": 0.014,
+        "relative_deficit": 0.0424,
+        "tolerance": 0.05,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "call_bucket_share[3]",
+        "requested_target": 0.22,
+        "achieved": 0.214,
+        "absolute_deficit": 0.006,
+        "relative_deficit": 0.0273,
+        "tolerance": 0.05,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "call_bucket_share[4]",
+        "requested_target": 0.135,
+        "achieved": 0.136,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.05,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "call_bucket_share[5]",
+        "requested_target": 0.095,
+        "achieved": 0.101,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.05,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "call_bucket_share[6+]",
+        "requested_target": 0.22,
+        "achieved": 0.233,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.05,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "min_goal_based_share",
+        "requested_target": 0.35,
+        "achieved": 0.646,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.0,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "min_g_general_share",
+        "requested_target": 0.4,
+        "achieved": 0.502,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.0,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "min_schema_compatible_distractor_share",
+        "requested_target": 0.6,
+        "achieved": 0.955,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.0,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "min_topology_diversity_5call",
+        "requested_target": 6,
+        "achieved": 34,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.0,
+        "met": true,
+        "reason_not_met": ""
+      },
+      {
+        "constraint": "min_topology_diversity_6plus",
+        "requested_target": 10,
+        "achieved": 167,
+        "absolute_deficit": 0.0,
+        "relative_deficit": 0.0,
+        "tolerance": 0.0,
+        "met": true,
+        "reason_not_met": ""
+      }
+    ],
+    "all_hard_constraints_met": true,
+    "max_program_family_share": 0.003,
+    "max_query_skeleton_share": 0.001,
+    "n_cells_with_target_but_empty": 0,
+    "empty_cells": [],
+    "hard_constraint_rejections": {
+      "call_bucket_cap[6+]": 67617,
+      "call_bucket_cap[5]": 15464
+    },
+    "distributions": {
+      "call_bucket": {
+        "2": 0.316,
+        "3": 0.214,
+        "4": 0.136,
+        "5": 0.101,
+        "6+": 0.233
+      },
+      "query_mode": {
+        "GOAL_BASED_IMPLICIT": 0.646,
+        "PROCEDURAL_EXPLICIT": 0.091,
+        "PROCEDURAL_PARTIAL": 0.121,
+        "SEMI_IMPLICIT": 0.086,
+        "UNCLASSIFIED": 0.056
+      },
+      "surface_track": {
+        "A_NATIVE": 0.498,
+        "G_GENERAL": 0.502
+      },
+      "difficulty_band": {
+        "easy": 0.138,
+        "hard": 0.415,
+        "medium": 0.447
+      },
+      "capability_family": {
+        "arithmetic.binary": 472,
+        "arithmetic.reduction": 162,
+        "arithmetic.unary": 200,
+        "bitwise": 86,
+        "boolean.logic": 82,
+        "classification.deterministic": 71,
+        "comparison": 41,
+        "conversion.numeric": 189,
+        "conversion.text": 78,
+        "date_time": 141,
+        "dictionary.lookup": 21,
+        "dictionary.update": 31,
+        "geometry": 160,
+        "path_url": 79,
+        "rounding": 104,
+        "sequence.combine": 82,
+        "sequence.filter": 19,
+        "sequence.index": 24,
+        "sequence.map": 24,
+        "sequence.reduce": 78,
+        "statistics": 236,
+        "string.format": 222,
+        "string.parse": 33,
+        "string.transform": 97,
+        "validation": 58
+      },
+      "topologies_per_bucket": {
+        "2": 1,
+        "3": 3,
+        "4": 12,
+        "5": 34,
+        "6+": 167
+      }
+    },
+    "V5_dedup_selected": {
+      "layer": "V5_DEDUP",
+      "n_records": 1000,
+      "n_duplicates": 0,
+      "duplicate_ids": [],
+      "n_contaminated": 0,
+      "contaminated_ids": [],
+      "passed": true
+    },
+    "V6_distribution_selected": {
+      "layer": "V6_DISTRIBUTION",
+      "n_records": 1000,
+      "top_query_skeleton_share": 0.001,
+      "top_cell_share": 0.078,
+      "top_family_share": 0.003,
+      "warnings": [
+        "generation_cell 'P4_2_LINEAR_CHAIN_A_GOAL_numeric__c6318a' holds 0.078 > 0.05"
+      ],
+      "passed": false
+    }
+  },
+  "dataset": {
+    "n_cells": 204,
+    "counts": {
+      "candidates": 5045,
+      "validated": 4523,
+      "selected": 1000,
+      "train": 600,
+      "heldout": 200,
+      "reserve": 200
+    },
+    "deficits": {},
+    "ordered_sample_ids_hash": "4c380e1ea38d",
+    "frozen": true,
+    "split": {
+      "schema_version": "ttdf.split_manifest.v2",
+      "sizes_requested": {
+        "train": 600,
+        "heldout": 200,
+        "reserve": 200
+      },
+      "sizes_achieved": {
+        "train": 600,
+        "heldout": 200,
+        "reserve": 200
+      },
+      "n_groups": 717,
+      "largest_group": 3,
+      "group_keys": [
+        "semantic_program_id",
+        "program_family_id",
+        "paired_with"
+      ],
+      "leakage": {
+        "semantic_program_id": 0,
+        "program_family_id": 0,
+        "paired_with": 0
+      },
+      "leak_free": true,
+      "shared_by_design": {
+        "graph_template_id": 288
+      },
+      "seed": 20260730
+    },
+    "call_bucket_share_selected": {
+      "2": 0.316,
+      "3": 0.214,
+      "4": 0.136,
+      "5": 0.101,
+      "6+": 0.233
+    },
+    "difficulty_band_share_selected": {
+      "easy": 0.138,
+      "hard": 0.415,
+      "medium": 0.447
+    },
+    "call_bucket_share_train": {
+      "2": 0.3133,
+      "3": 0.2267,
+      "4": 0.1433,
+      "5": 0.1,
+      "6+": 0.2167
+    },
+    "artifact_hashes": {
+      "candidates.jsonl": "62ba72b377f398ccae74bcfff7e3448c3805dfb56cb3eaa7b8ef7c70d52d7912",
+      "canonical.jsonl": "a5ede4b138653fa7ffd71e924a482ab4cd29e75d15e805590b38e0c951353cfa",
+      "freeze_manifest.json": "0e1214d47dae79c27b275efb4654c0634ea2c917e635d8d1716c5c44c8e3377b",
+      "generation_cells.json": "78d7fded405e66b1ecf91dfc4c32a55b7e05c7d03aec54e23eb405df7a3e4d42",
+      "heldout.jsonl": "f9803934f72816560cfe642daa411d7b6cae8b19c7d35b470f235360cb550fcc",
+      "nestful_compat.jsonl": "2f355d981bb223ff9cc8712ad10a885f3c068e8df0c696b86f9c208411f8facf",
+      "pilot4_tasks.csv": "f39bc46c61c451b1505cca43961f25dfcdb380d1f484d439a88d4af2e0d828ec",
+      "reserve.jsonl": "9a4789547d4671dd7f91ee56cbc5dead8fd18c6f9e8f30f0ebf2754c7e01ca34",
+      "selected.jsonl": "7db469618e844e023853fdbcb9bd44d8e7a0d44db94ce12f970c135afa4423d4",
+      "selection_report.json": "b3e522b43b82491318751ab5544ff0cbed55889932066f1579151f0a6ef5e3b8",
+      "split_manifest.json": "d380fa73ddf8694cc25f0c5c6b46283a50b5e25f1b6754bcfbb9bd7476fc07bb",
+      "target_profile_v2.json": "db0fbe29a5d44f0b73e02345196fa337437368637b1c6f4af928d51959cf015b",
+      "topology_constraints.json": "630477e48ed3fbea559b50572bc5e86197eafdef63c88a79073c8025b75e9e0c",
+      "train.jsonl": "bc8ed06fd131ee83cb8c2257df196bd29f3237e6457b52e20052eb89e43b7193",
+      "validated.jsonl": "874aeb52c5728bc787ce5f941f7ecd7987f9b6440f456ee91f3a237921987dfa",
+      "validation_report.json": "ea790e66561e47a43347d1b6dce238c88568c10cd6e0c4e5d673d166f8617df5"
+    }
+  },
+  "comparison": {
+    "n_metrics": 75,
+    "verdict_counts": {
+      "further_from_target": 14,
+      "improved": 30,
+      "coverage_added": 10,
+      "descriptive": 1,
+      "closer_to_target": 7,
+      "structurally_capped": 6,
+      "unchanged": 7
+    },
+    "distribution_distances": {
+      "call_count_tv_pilot3": 0.0817,
+      "call_count_tv_pilot4": 0.0217,
+      "query_mode_tv_pilot3": 0.8084,
+      "query_mode_tv_pilot4": 0.09
+    },
+    "metrics": [
+      {
+        "metric": "mean_call_count",
+        "pilot3": 4.0917,
+        "pilot4_train600": 3.8783,
+        "pilot4_selected": 3.956,
+        "target_dev200": 4.195,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "structural only; matching the profile is the goal, not maximisation"
+      },
+      {
+        "metric": "join_rate",
+        "pilot3": 0.5133,
+        "pilot4_train600": 0.5167,
+        "pilot4_selected": 0.52,
+        "target_dev200": 0.43,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "measured over the whole set, not per bucket"
+      },
+      {
+        "metric": "multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.2133,
+        "pilot4_selected": 0.229,
+        "target_dev200": 0.125,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "pilot3 weakness; higher is only better up to the profile"
+      },
+      {
+        "metric": "fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.27,
+        "pilot4_selected": 0.273,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "dev-200 contains no fan-out, so this is deliberate coverage beyond the measured profile and a known distribution-mismatch risk"
+      },
+      {
+        "metric": "reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.27,
+        "pilot4_selected": 0.273,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "dev-200 contains no output reuse, so this is deliberate coverage beyond the measured profile and a known distribution-mismatch risk"
+      },
+      {
+        "metric": "late_reference_rate",
+        "pilot3": 0.5133,
+        "pilot4_train600": 0.5167,
+        "pilot4_selected": 0.52,
+        "target_dev200": 0.435,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "profile-relative"
+      },
+      {
+        "metric": "mean_reference_distance",
+        "pilot3": 1.2788,
+        "pilot4_train600": 1.323,
+        "pilot4_selected": 1.3359,
+        "target_dev200": 1.2378,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "long references are harder to track but also rarer in the benchmark"
+      },
+      {
+        "metric": "mean_depth",
+        "pilot3": 2.3067,
+        "pilot4_train600": 2.18,
+        "pilot4_selected": 2.21,
+        "target_dev200": "",
+        "direction": "closer_to_target_is_better",
+        "verdict": "descriptive",
+        "caveat": "descriptive"
+      },
+      {
+        "metric": "mean_type_transitions",
+        "pilot3": 0.1433,
+        "pilot4_train600": 0.3433,
+        "pilot4_selected": 0.336,
+        "target_dev200": 0.085,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "type transitions exercise conversion capabilities"
+      },
+      {
+        "metric": "plan_leak_rate",
+        "pilot3": 0.6417,
+        "pilot4_train600": 0.0967,
+        "pilot4_selected": 0.091,
+        "target_dev200": 0.035,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "rule-based classifier, not a human judgement of realism"
+      },
+      {
+        "metric": "goal_based_share",
+        "pilot3": 0.01,
+        "pilot4_train600": 0.6533,
+        "pilot4_selected": 0.646,
+        "target_dev200": 0.7,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "target taken from the dev-200 profile"
+      },
+      {
+        "metric": "mean_operation_explicitness",
+        "pilot3": 0.8378,
+        "pilot4_train600": 0.235,
+        "pilot4_selected": 0.2349,
+        "target_dev200": 0.1645,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "lexicon-based; a low value is not proof the task is implicit"
+      },
+      {
+        "metric": "mean_sequence_leakage",
+        "pilot3": 0.7922,
+        "pilot4_train600": 0.2141,
+        "pilot4_selected": 0.2148,
+        "target_dev200": 0.152,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "only defined when at least two operations are cued"
+      },
+      {
+        "metric": "mean_procedural_cue_count",
+        "pilot3": 6.6833,
+        "pilot4_train600": 1.3467,
+        "pilot4_selected": 1.308,
+        "target_dev200": 0.645,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "counts surface cues, not reasoning difficulty"
+      },
+      {
+        "metric": "n_distinct_tool_names",
+        "pilot3": 132,
+        "pilot4_train600": 190,
+        "pilot4_selected": 190,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "raw surface vocabulary size"
+      },
+      {
+        "metric": "n_distinct_output_keys",
+        "pilot3": 1,
+        "pilot4_train600": 8,
+        "pilot4_selected": 8,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "affects reference-format diversity"
+      },
+      {
+        "metric": "output_key_entropy",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.7972,
+        "pilot4_selected": 0.7993,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "normalised entropy, comparable across sizes"
+      },
+      {
+        "metric": "n_distinct_tool_combinations",
+        "pilot3": 582,
+        "pilot4_train600": 599,
+        "pilot4_selected": 995,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "absolute count scales with n"
+      },
+      {
+        "metric": "tool_combination_entropy",
+        "pilot3": 0.9973,
+        "pilot4_train600": 0.9999,
+        "pilot4_selected": 0.9997,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "normalised, size-robust"
+      },
+      {
+        "metric": "n_distinct_primitives",
+        "pilot3": 0,
+        "pilot4_train600": 80,
+        "pilot4_selected": 80,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "capability breadth proxy"
+      },
+      {
+        "metric": "primitive_entropy",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.9547,
+        "pilot4_selected": 0.9524,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "normalised, size-robust"
+      },
+      {
+        "metric": "n_capability_families",
+        "pilot3": 0,
+        "pilot4_train600": 25,
+        "pilot4_selected": 25,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "pilot3 rows predate the taxonomy, so this is 0 for pilot3 by construction"
+      },
+      {
+        "metric": "top1_query_skeleton_share",
+        "pilot3": 0.0083,
+        "pilot4_train600": 0.0017,
+        "pilot4_selected": 0.001,
+        "target_dev200": "",
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "template concentration"
+      },
+      {
+        "metric": "top1_program_family_share",
+        "pilot3": 0.01,
+        "pilot4_train600": 0.005,
+        "pilot4_selected": 0.003,
+        "target_dev200": "",
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "program-family concentration"
+      },
+      {
+        "metric": "mean_offered_tool_count",
+        "pilot3": 11.3967,
+        "pilot4_train600": 12.5133,
+        "pilot4_selected": 12.51,
+        "target_dev200": 10.99,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "environment size, profile-relative"
+      },
+      {
+        "metric": "mean_schema_complexity",
+        "pilot3": 2.3602,
+        "pilot4_train600": 2.5537,
+        "pilot4_selected": 2.5761,
+        "target_dev200": 1.9173,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "profile-relative"
+      },
+      {
+        "metric": "mean_parameter_count",
+        "pilot3": 7.1183,
+        "pilot4_train600": 6.905,
+        "pilot4_selected": 7.107,
+        "target_dev200": 8.01,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "profile-relative"
+      },
+      {
+        "metric": "mean_nested_schema_depth",
+        "pilot3": 4.15,
+        "pilot4_train600": 4.3183,
+        "pilot4_selected": 4.321,
+        "target_dev200": 3.18,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "profile-relative"
+      },
+      {
+        "metric": "schema_compatible_distractor_share",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.95,
+        "pilot4_selected": 0.955,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "pilot3 has no distractor metadata, so this is 0 for pilot3 by construction"
+      },
+      {
+        "metric": "mean_hard_distractor_count",
+        "pilot3": 0.0,
+        "pilot4_train600": 4.1283,
+        "pilot4_selected": 4.047,
+        "target_dev200": "",
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "hardness labels differ between pilots; not directly comparable"
+      },
+      {
+        "metric": "bucket[2].n_distinct_topologies",
+        "pilot3": 1,
+        "pilot4_train600": 1,
+        "pilot4_selected": 1,
+        "target_dev200": 1,
+        "direction": "higher_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].top1_topology_share",
+        "pilot3": 1.0,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 1.0,
+        "direction": "lower_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].normalized_entropy",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "higher_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "closer_to_target_is_better",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "higher_is_better",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].late_reference_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "closer_to_target_is_better",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[2].mean_reference_distance",
+        "pilot3": 1.0,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 1.0,
+        "direction": "closer_to_target_is_better",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 1
+      },
+      {
+        "metric": "bucket[3].n_distinct_topologies",
+        "pilot3": 2,
+        "pilot4_train600": 3,
+        "pilot4_selected": 3,
+        "target_dev200": 4,
+        "direction": "higher_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].top1_topology_share",
+        "pilot3": 0.6262,
+        "pilot4_train600": 0.7206,
+        "pilot4_selected": 0.743,
+        "target_dev200": 0.6818,
+        "direction": "lower_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].normalized_entropy",
+        "pilot3": 0.9536,
+        "pilot4_train600": 0.7141,
+        "pilot4_selected": 0.6809,
+        "target_dev200": 0.6254,
+        "direction": "higher_is_better",
+        "verdict": "structurally_capped",
+        "caveat": "all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].join_rate",
+        "pilot3": 0.6262,
+        "pilot4_train600": 0.2794,
+        "pilot4_selected": 0.257,
+        "target_dev200": 0.2273,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.0,
+        "pilot4_selected": 0.0,
+        "target_dev200": 0.0,
+        "direction": "higher_is_better",
+        "verdict": "unchanged",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.1544,
+        "pilot4_selected": 0.1308,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.1544,
+        "pilot4_selected": 0.1308,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].late_reference_rate",
+        "pilot3": 0.6262,
+        "pilot4_train600": 0.2794,
+        "pilot4_selected": 0.257,
+        "target_dev200": 0.25,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[3].mean_reference_distance",
+        "pilot3": 1.3131,
+        "pilot4_train600": 1.114,
+        "pilot4_selected": 1.1067,
+        "target_dev200": 1.1364,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 3
+      },
+      {
+        "metric": "bucket[4].n_distinct_topologies",
+        "pilot3": 3,
+        "pilot4_train600": 7,
+        "pilot4_selected": 7,
+        "target_dev200": 2,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].top1_topology_share",
+        "pilot3": 0.5761,
+        "pilot4_train600": 0.2759,
+        "pilot4_selected": 0.2555,
+        "target_dev200": 0.6296,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].normalized_entropy",
+        "pilot3": 0.8867,
+        "pilot4_train600": 0.9158,
+        "pilot4_selected": 0.9382,
+        "target_dev200": 0.951,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].join_rate",
+        "pilot3": 0.7717,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 0.6296,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.1264,
+        "pilot4_selected": 0.1241,
+        "target_dev200": 0.0,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.4713,
+        "pilot4_selected": 0.4672,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.4713,
+        "pilot4_selected": 0.4672,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].late_reference_rate",
+        "pilot3": 0.7717,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 0.6296,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[4].mean_reference_distance",
+        "pilot3": 1.4275,
+        "pilot4_train600": 1.5659,
+        "pilot4_selected": 1.5686,
+        "target_dev200": 1.2592,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 21
+      },
+      {
+        "metric": "bucket[5].n_distinct_topologies",
+        "pilot3": 4,
+        "pilot4_train600": 18,
+        "pilot4_selected": 19,
+        "target_dev200": 4,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].top1_topology_share",
+        "pilot3": 0.5484,
+        "pilot4_train600": 0.15,
+        "pilot4_selected": 0.099,
+        "target_dev200": 0.3158,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].normalized_entropy",
+        "pilot3": 0.8139,
+        "pilot4_train600": 0.9273,
+        "pilot4_selected": 0.972,
+        "target_dev200": 0.9892,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].join_rate",
+        "pilot3": 0.7419,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 0.7895,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.55,
+        "pilot4_selected": 0.495,
+        "target_dev200": 0.2632,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.6333,
+        "pilot4_selected": 0.5842,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.6333,
+        "pilot4_selected": 0.5842,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].late_reference_rate",
+        "pilot3": 0.7419,
+        "pilot4_train600": 1.0,
+        "pilot4_selected": 1.0,
+        "target_dev200": 0.7895,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[5].mean_reference_distance",
+        "pilot3": 1.3669,
+        "pilot4_train600": 1.7419,
+        "pilot4_selected": 1.7432,
+        "target_dev200": 1.3816,
+        "direction": "closer_to_target_is_better",
+        "verdict": "further_from_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": 315
+      },
+      {
+        "metric": "bucket[6+].n_distinct_topologies",
+        "pilot3": 16,
+        "pilot4_train600": 62,
+        "pilot4_selected": 91,
+        "target_dev200": 26,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].top1_topology_share",
+        "pilot3": 0.1939,
+        "pilot4_train600": 0.0465,
+        "pilot4_selected": 0.0345,
+        "target_dev200": 0.1364,
+        "direction": "lower_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].normalized_entropy",
+        "pilot3": 0.917,
+        "pilot4_train600": 0.9582,
+        "pilot4_selected": 0.9591,
+        "target_dev200": 0.9263,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].join_rate",
+        "pilot3": 0.7515,
+        "pilot4_train600": 0.969,
+        "pilot4_selected": 0.9784,
+        "target_dev200": 1.0,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].multi_join_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.6512,
+        "pilot4_selected": 0.6983,
+        "target_dev200": 0.4545,
+        "direction": "higher_is_better",
+        "verdict": "improved",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].fan_out_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.4806,
+        "pilot4_selected": 0.5259,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].reuse_rate",
+        "pilot3": 0.0,
+        "pilot4_train600": 0.4806,
+        "pilot4_selected": 0.5259,
+        "target_dev200": 0.0,
+        "direction": "coverage_required_above_profile",
+        "verdict": "coverage_added",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].late_reference_rate",
+        "pilot3": 0.7515,
+        "pilot4_train600": 0.969,
+        "pilot4_selected": 0.9784,
+        "target_dev200": 1.0,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      },
+      {
+        "metric": "bucket[6+].mean_reference_distance",
+        "pilot3": 1.4345,
+        "pilot4_train600": 1.6553,
+        "pilot4_selected": 1.6899,
+        "target_dev200": 1.6208,
+        "direction": "closer_to_target_is_better",
+        "verdict": "closer_to_target",
+        "caveat": "conditional on the call bucket",
+        "n_admissible_topologies": ""
+      }
+    ]
+  },
+  "sampler_simulation": {
+    "response_model": "synthetic_difficulty_model",
+    "caveat": "synthetic difficulty model: exercises the sampler only, it is not evidence about the trained policy",
+    "n_prompts": 600,
+    "steps": 200,
+    "results": {
+      "uniform": {
+        "mean_dead_group_rate_before_filtering": 0.0361,
+        "mean_effective_group_rate_after_filtering": 0.9639,
+        "mean_rollout_utilization": 0.9639,
+        "mean_refill_rounds": 1.005,
+        "final_sampler_entropy": 1.0,
+        "n_prompts_touched": 600
+      },
+      "dynamic_effective_group": {
+        "mean_dead_group_rate_before_filtering": 0.0372,
+        "mean_effective_group_rate_after_filtering": 0.9628,
+        "mean_rollout_utilization": 0.9628,
+        "mean_refill_rounds": 1.01,
+        "final_sampler_entropy": 0.998805,
+        "n_prompts_touched": 600
+      },
+      "history_adaptive": {
+        "mean_dead_group_rate_before_filtering": 0.0322,
+        "mean_effective_group_rate_after_filtering": 0.9678,
+        "mean_rollout_utilization": 0.9678,
+        "mean_refill_rounds": 1.01,
+        "final_sampler_entropy": 0.994196,
+        "n_prompts_touched": 600
+      },
+      "cell_curriculum": {
+        "mean_dead_group_rate_before_filtering": 0.0302,
+        "mean_effective_group_rate_after_filtering": 0.9698,
+        "mean_rollout_utilization": 0.9698,
+        "mean_refill_rounds": 1.01,
+        "final_sampler_entropy": 0.995081,
+        "n_prompts_touched": 600
+      }
+    }
+  },
+  "tests": {
+    "per_file": {
+      "test_cli_dummy.py": 2,
+      "test_core.py": 11,
+      "test_export_probe.py": 6,
+      "test_generation.py": 7,
+      "test_pilot2.py": 31,
+      "test_pilot3.py": 3,
+      "test_pilot4.py": 48,
+      "test_selection_split.py": 6,
+      "test_validation.py": 12
+    },
+    "n_test_functions": 126,
+    "command": "python -m pytest tests -q"
+  },
+  "files_changed": {
+    "modified": [
+      "experiments/nestful_mtgrpo_minimal/grpo_train.py",
+      "experiments/targeted_tool_data_factory/runpod_bundle_pilot3/eval_nestful500_sharded.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/cli.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/registry/__init__.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/validation/__init__.py",
+      "experiments/targeted_tool_data_factory/tests/test_pilot2.py",
+      "experiments/targeted_tool_data_factory/tests/test_validation.py"
+    ],
+    "added": [
+      "experiments/__init__.py",
+      "experiments/nestful_mtgrpo_minimal/train_observability.py",
+      "experiments/targeted_tool_data_factory/__init__.py",
+      "experiments/targeted_tool_data_factory/analysis/",
+      "experiments/targeted_tool_data_factory/reports/PILOT4_IMPLEMENTATION_REPORT.json",
+      "experiments/targeted_tool_data_factory/reports/PILOT4_IMPLEMENTATION_REPORT.md",
+      "experiments/targeted_tool_data_factory/reports/capability/",
+      "experiments/targeted_tool_data_factory/reports/pilot3_forensics/",
+      "experiments/targeted_tool_data_factory/reports/pilot3_provenance/",
+      "experiments/targeted_tool_data_factory/reports/pilot3_vs_pilot4/",
+      "experiments/targeted_tool_data_factory/reports/profile_v2/",
+      "experiments/targeted_tool_data_factory/reports/query_realism/",
+      "experiments/targeted_tool_data_factory/reports/sampler_simulation/",
+      "experiments/targeted_tool_data_factory/runpod_bundle_pilot3/eval_observability.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/capability.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/observability/",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/pilot4/",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/pilot4_cli.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/profile_v2.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/provenance.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/query_realism.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/registry/extensions.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/repro.py",
+      "experiments/targeted_tool_data_factory/src/targeted_tool_data/sampling/",
+      "experiments/targeted_tool_data_factory/tests/test_pilot4.py"
+    ]
+  }
+}

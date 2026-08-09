@@ -264,6 +264,32 @@ def main() -> int:
         json.dumps(summary, indent=2), encoding="utf-8")
     (out / "eval_manifest.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8")
+
+    # Phase-Q identity artifacts: backend, adapter, prompt and scorer identity,
+    # so a later C0/D1 pair can be checked for comparability instead of assumed.
+    try:
+        from eval_observability import write_eval_artifacts
+
+        obs = write_eval_artifacts(
+            out_dir=out, run_id=f"{arm}_{out.name}", arm=arm,
+            input_rows=rows, trajectories=merged, dataset_path=diagnostic,
+            checkpoint=ck,
+            backend=("vllm" if not getattr(args, "hf_backend", False) else "hf"),
+            generation={"seed": getattr(args, "seed", None),
+                        "temperature": getattr(args, "temperature", None),
+                        "top_p": getattr(args, "top_p", None),
+                        "max_tokens": getattr(args, "max_tokens", None),
+                        "tensor_parallel_size": 1},
+            merged_lora=bool(getattr(args, "merged_lora", False)),
+            model_revision=str(getattr(args, "base_model", "") or ""),
+            shard_manifest={"n_gpus": len(gpus),
+                            "shard_sizes": [len(s) for s in shards],
+                            "worker_returncodes": codes},
+            scorer_config={"metric": "official_win"})
+        print(f"[eval4] observability: {obs}")
+    except Exception as exc:  # noqa: BLE001 - logging must not fail an eval
+        print(f"[eval4] observability skipped: {exc}", file=sys.stderr)
+
     print(json.dumps(summary, indent=2))
     print(f"[eval4] wrote {out / 'final_eval_trajectories.jsonl'}")
     print(f"[eval4] wrote {out / 'metrics_merged.json'}")

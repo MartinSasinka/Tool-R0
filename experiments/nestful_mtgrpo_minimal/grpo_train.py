@@ -19,9 +19,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from parser import parse_tool_call
@@ -38,6 +40,8 @@ from rollout import (
     exec_failure_categories,
 )
 from group_stats import compute_group_stats
+from train_observability import (chat_template_hash, group_row,
+                                 make_train_logger, rollout_rows, step_row)
 
 _STRICT_POLICY_ALIASES = ("strict", "strict_gold_trace", "strict_gold_trace_legacy")
 
@@ -94,6 +98,17 @@ def _verify_reward_dispatch(config: Dict[str, Any], rollout_pool) -> Dict[str, A
             f"Fix reward wiring (vllm_dp_pool.resolve_reward_info / run.py monkeypatch) "
             f"before training.")
     return info
+
+
+def _prompt_hash_for_task(task: Dict[str, Any]) -> str:
+    """Stable identity of what the model was shown, independent of sampling."""
+    payload = {
+        "question": task.get("question") or task.get("input"),
+        "tools": task.get("tools"),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, ensure_ascii=False,
+                   default=str).encode("utf-8")).hexdigest()
 
 
 def _completion_hash(ep: "Episode") -> str:
@@ -765,6 +780,41 @@ def train(
     }
     _log({"reward_dispatch": dispatch_info})
 
+    # ── Phase-P observability: per-rollout / per-group / per-step artifacts.
+    # Opt-in (logging.observability_dir or TTDF_TRAIN_LOG_DIR); a null logger
+    # keeps the training path unchanged when it is off.
+    obs_run_id = str(config.get("experiment_id") or config.get("run_id")
+                     or phase_name or "grpo_run")
+    obs = make_train_logger(config, run_id=obs_run_id,
+                            default_dir=os.path.join(
+                                os.path.dirname(log_path) or ".", "observability"))
+    obs_batch_id = f"{obs_run_id}:{global_step_start}"
+    if getattr(obs, "enabled", False):
+        sample_ids = [str(t.get("task_id") or t.get("sample_id")) for t in tasks]
+        obs.write_manifest(
+            config=config,
+            dataset_path=(config.get("data") or {}).get("train_path"),
+            sample_ids=sample_ids,
+            subset_ids=sample_ids,
+            subset_algorithm=str((config.get("data") or {})
+                                 .get("subset_algorithm", "first_n_of_frozen_file")),
+            base_model=str((config.get("model") or {}).get("name", "")),
+            model_revision=str((config.get("model") or {}).get("revision", "")),
+            tokenizer_revision=str((config.get("model") or {})
+                                   .get("tokenizer_revision", "")),
+            chat_template_sha=chat_template_hash(tokenizer),
+            seeds={"training": int(tr.get("seed", 0) or 0),
+                   "rollout": int(gen.get("seed", 0) or 0)},
+            reward_version=str(dispatch_info.get("resolved_policy", "")),
+            parser_version=str(config.get("parser_version", "")),
+            executor_version=str(config.get("executor_version", "")),
+            sampler_version=str((config.get("sampler") or {}).get("version",
+                                                                  "none_uniform")),
+            sampler_config=config.get("sampler") or {},
+            extra={"reward_dispatch": dispatch_info,
+                   "num_generations": num_gen, "epochs": epochs})
+    obs_epoch_groups: List[Dict[str, Any]] = []
+
     num_tasks = len(tasks)
     if wandb_run is not None:
         _wandb_setup_train_metrics(wandb_run, num_tasks)
@@ -776,6 +826,66 @@ def train(
         task_best_mean = {}
     if task_prev_rollout_rewards is None:
         task_prev_rollout_rewards = {}
+
+    # ── Nestful profile / dynamic sampler (optional; Phase GRPO-P43) ─────────
+    sampler = config.get("_sampler_instance")
+    if sampler is None:
+        try:
+            from nestful_sampler_bridge import (
+                build_sampler_from_config, maybe_restore_sampler,
+                plan_epoch_candidates, refill_same_bucket,
+                rewards_to_observation, save_sampler_artifacts,
+                map_group_class, pool_of,
+            )
+            sampler = build_sampler_from_config(config, tasks)
+            if sampler is not None:
+                maybe_restore_sampler(
+                    sampler,
+                    (config.get("_runtime") or {}).get("init_checkpoint"))
+                config["_sampler_instance"] = sampler
+                print(f"[sampler] mode={sampler.sampler_mode} "
+                      f"profile={len(sampler.profile)} "
+                      f"enrichment={len(sampler.enrichment)} "
+                      f"group_size={num_gen}", flush=True)
+        except Exception as _samp_exc:  # noqa: BLE001
+            print(f"[sampler] bridge unavailable ({_samp_exc}); "
+                  f"falling back to sequential task order", flush=True)
+            sampler = None
+    else:
+        from nestful_sampler_bridge import (
+            plan_epoch_candidates, refill_same_bucket, rewards_to_observation,
+            save_sampler_artifacts, map_group_class, pool_of,
+        )
+
+    sampler_cfg = dict(config.get("sampler") or {})
+    # Effective micro-batch: default to gradient_accumulation_steps (reference
+    # Qwen3 MT-GRPO optimizer batch), not a hardcoded 32.
+    _tgt_cfg = sampler_cfg.get("target_effective_groups")
+    if _tgt_cfg is None and sampler is not None:
+        _tgt_cfg = sampler.cfg.get("target_effective_groups")
+    if _tgt_cfg is None or int(_tgt_cfg) <= 0:
+        target_effective = int(grad_accum)
+    else:
+        target_effective = int(_tgt_cfg)
+    oversample0 = float(sampler_cfg.get("initial_oversample_factor", 1.5))
+    max_refill_rounds = int(sampler_cfg.get("max_refill_rounds", 5))
+    max_raw_factor = float(sampler_cfg.get("max_raw_groups_per_update_factor", 3.0))
+    max_raw_per_cycle = max(target_effective,
+                            int(math.ceil(target_effective * max_raw_factor)))
+    reward_var_eps = float(sampler_cfg.get("reward_variance_epsilon", 1e-6))
+    # Primary budget for dynamic online training (not "1 epoch = all tasks").
+    target_optimizer_updates = int(tr.get("target_optimizer_updates") or 0)
+    eff_rate_hist: List[float] = []
+    invalid_rate_hist: List[float] = []
+    group_log_path = os.path.join(os.path.dirname(log_path) or ".",
+                                  "sampler_group_log.jsonl")
+    group_log_f = open(group_log_path, "a" if log_append else "w", encoding="utf-8")
+    run_out_dir = Path(os.path.dirname(log_path) or ".")
+    if sampler is not None:
+        print(f"[sampler] target_effective_groups={target_effective} "
+              f"(grad_accum={grad_accum}) max_raw/cycle={max_raw_per_cycle} "
+              f"target_optimizer_updates={target_optimizer_updates or 'epochs'} "
+              f"bootstrap={sampler.in_bootstrap()}", flush=True)
 
     for epoch in range(epochs):
         model.train()
@@ -795,7 +905,57 @@ def train(
         epoch_rollout_improve_rates: List[float] = []
         total_rollouts_improved = 0
         total_rollouts_regressed = 0
-        for ti, task in enumerate(tasks):
+        epoch_effective = 0
+        epoch_raw_candidates = 0
+        epoch_refill_appends = 0
+        epoch_class_counts: Dict[str, int] = {}
+        epoch_eff_by_bucket: Dict[str, int] = {}
+        epoch_eff_by_qmode: Dict[str, int] = {}
+
+        if sampler is not None:
+            if sampler.sampler_mode == "uniform_profile":
+                epoch_tasks = plan_epoch_candidates(
+                    sampler, target_effective=max(len(sampler.profile), 1),
+                    oversample_factor=1.0)
+            else:
+                # Reservoir sampling: plan a chunk; refill extends the queue.
+                # Budget is optimizer_updates, not "see every task once".
+                plan_n = max(target_effective * 8, max_raw_per_cycle)
+                epoch_tasks = plan_epoch_candidates(
+                    sampler, target_effective=plan_n,
+                    oversample_factor=oversample0)
+            print(f"[sampler] epoch={epoch} planned_candidates={len(epoch_tasks)} "
+                  f"mode={sampler.sampler_mode} "
+                  f"bootstrap={sampler.in_bootstrap()}", flush=True)
+        else:
+            epoch_tasks = list(tasks)
+
+        _budget_hit = False
+        ti = 0
+        while ti < len(epoch_tasks):
+            # Dynamic online: stop on optimizer-update budget (not full-pool epochs)
+            if (sampler is not None
+                    and sampler.sampler_mode != "uniform_profile"
+                    and target_optimizer_updates > 0
+                    and global_step >= target_optimizer_updates):
+                print(f"[sampler] reached target_optimizer_updates="
+                      f"{target_optimizer_updates} (global_step={global_step})",
+                      flush=True)
+                _budget_hit = True
+                break
+            # Soft per-cycle cap: after enough raw candidates without filling
+            # effective quota this cycle, replan rather than spin forever.
+            if (sampler is not None
+                    and sampler.sampler_mode != "uniform_profile"
+                    and epoch_raw_candidates >= max_raw_per_cycle
+                    and epoch_effective < target_effective
+                    and ti >= len(epoch_tasks) - 1):
+                _log({"epoch": epoch, "effective_deficit":
+                      target_effective - epoch_effective,
+                      "hit_raw_cap": True,
+                      "raw_candidate_groups": epoch_raw_candidates})
+            task = epoch_tasks[ti]
+            epoch_raw_candidates += 1
             gold_n = int(task.get("num_calls") or gold_n_default)
             episodes: List[Episode] = []
             ep_r_seqs: List[List[float]] = []
@@ -1001,15 +1161,139 @@ def train(
                 **_reward_component_rates(episodes, task),
             }
 
+            if getattr(obs, "enabled", False):
+                g_row = group_row(
+                    run_id=obs_run_id, task=task, rec=rec, episodes=episodes,
+                    gstats=gstats, global_step=global_step, epoch=epoch,
+                    batch_id=obs_batch_id, accepted=not dead,
+                    rejection_reason=("dead_group_no_reward_variance"
+                                      if dead else ""))
+                obs.log_group(g_row)
+                obs_epoch_groups.append(g_row)
+                for r_row in rollout_rows(
+                        run_id=obs_run_id, task=task, rec=rec, episodes=episodes,
+                        ep_r_seqs=ep_r_seqs, gstats=gstats, ep_diags=ep_diags,
+                        global_step=global_step, epoch=epoch,
+                        batch_id=obs_batch_id,
+                        prompt_hash=_prompt_hash_for_task(task)):
+                    obs.log_rollout(r_row)
+
             epoch_rewards.append(mean_r)
             epoch_task_groups += 1
-            if dead:
+
+            # ── Nestful sampler: classify, history, same-bucket refill ────────
+            # Learning-signal gate is reward_std (nestful_eff), NOT terminal 0/8.
+            nestful_eff = not dead
+            user_cls = None
+            force_episode_adv = False
+            if sampler is not None:
+                term_flags = []
+                for d, r in zip(ep_diags, rewards):
+                    ok = bool(d.get("final_answer_pass") or d.get("strict_gold_trace_pass")
+                              or (float(r) >= 0.99))
+                    term_flags.append(1.0 if ok else 0.0)
+                parse_flags = [
+                    not bool(d.get("parse_fail") or d.get("cap_applied") == "parse_error")
+                    for d in ep_diags
+                ] or [True] * len(rewards)
+                call_bucket = str(task.get("_call_bucket")
+                                  or (task.get("num_calls") if int(task.get("num_calls") or 0) <= 5
+                                      else "6+")
+                                  or "2")
+                if str(call_bucket) not in ("2", "3", "4", "5", "6+"):
+                    nc = int(task.get("num_calls") or len(task.get("gold_calls") or []))
+                    call_bucket = "6+" if nc >= 6 else str(max(nc, 2))
+                gobs = rewards_to_observation(
+                    str(task.get("task_id")),
+                    rewards,
+                    terminal_rewards=term_flags,
+                    process_rewards=rewards,
+                    parse_flags=parse_flags,
+                    call_bucket=call_bucket,
+                    query_mode=str(task.get("actual_query_mode")
+                                   or task.get("requested_query_mode") or ""),
+                    difficulty_band=str(task.get("difficulty_band") or ""),
+                    global_step=global_step,
+                )
+                w_before = float(sampler._ext(str(task["task_id"]))
+                                 .get("current_sampling_weight", 0.0))
+                was_boot = sampler.in_bootstrap()
+                nestful_eff = sampler.observe_group(gobs)
+                user_cls = map_group_class(
+                    gobs.group_class, gobs, reward_var_eps)
+                epoch_class_counts[user_cls] = epoch_class_counts.get(user_cls, 0) + 1
+                w_after = float(sampler._combine(
+                    sampler.weight_components(
+                        sampler.by_id[str(task["task_id"])], sampler.state))
+                    if str(task["task_id"]) in sampler.by_id else 0.0)
+                sampler._ext(str(task["task_id"]))["current_sampling_weight"] = w_after
+                if was_boot and sampler.bootstrap_complete and not sampler._bootstrap_report_written:
+                    try:
+                        from nestful_sampler_bridge import write_online_bootstrap_report
+                        paths_b = write_online_bootstrap_report(sampler, run_out_dir)
+                        _log({"bootstrap_complete": True,
+                              "bootstrap_completed_at_step": sampler.bootstrap_completed_at_step,
+                              "bootstrap_report": paths_b,
+                              **sampler.bootstrap_status()})
+                    except Exception as _be:  # noqa: BLE001
+                        _log({"bootstrap_report_error": str(_be)})
+                if nestful_eff:
+                    epoch_effective += 1
+                    epoch_eff_by_bucket[call_bucket] = (
+                        epoch_eff_by_bucket.get(call_bucket, 0) + 1)
+                    qm = str(task.get("actual_query_mode") or "")
+                    epoch_eff_by_qmode[qm] = epoch_eff_by_qmode.get(qm, 0) + 1
+                    # Episode-reward variance can be effective while turn-position
+                    # GRPO stats look dead — rebuild episode-level advantages.
+                    if dead and gstats.episode_reward_std > reward_var_eps:
+                        mean_ep = mean_r
+                        std_ep = float(gstats.episode_reward_std) + 1e-8
+                        aligned = []
+                        for ep, gs in zip(episodes, ep_returns):
+                            adv_e = (ep.reward - mean_ep) / std_ep
+                            aligned.append([adv_e] * len(gs) if gs else [])
+                        gstats.advantages = aligned
+                        dead = False
+                        force_episode_adv = True
+                elif (sampler.sampler_mode != "uniform_profile"
+                      and epoch_refill_appends < max(
+                          max_refill_rounds * max(target_effective, 1), 8)
+                      and epoch_raw_candidates < max(
+                          max_raw_per_cycle * max(epoch + 1, 1), max_raw_per_cycle)):
+                    pool_name = str(task.get("_pool") or "PROFILE")
+                    repl = refill_same_bucket(
+                        sampler, pool=pool_name, call_bucket=call_bucket,
+                        exclude_ids=[str(task["task_id"])])
+                    if repl is not None:
+                        epoch_tasks.append(repl)
+                        epoch_refill_appends += 1
+                group_log_f.write(json.dumps({
+                    "step": global_step, "epoch": epoch,
+                    "task_id": task.get("task_id"),
+                    "pool": task.get("_pool") or "PROFILE",
+                    "call_bucket": call_bucket,
+                    "n_rollouts": len(rewards),
+                    "n_valid": sum(1 for p in parse_flags if p),
+                    "n_terminal_success": int(sum(term_flags)),
+                    "reward_mean": mean_r,
+                    "reward_std": float(gstats.episode_reward_std),
+                    "group_class": user_cls,
+                    "used_for_update": nestful_eff,
+                    "trainer_dead_corrected": gstats.dead_corrected,
+                    "bootstrap": was_boot,
+                    "sampling_weight_before": w_before,
+                    "sampling_weight_after": w_after,
+                }, ensure_ascii=False) + "\n")
+                group_log_f.flush()
+
+            skip_update = not nestful_eff
+            if skip_update:
                 epoch_dead_groups += 1
 
             # ── Signal-collapse bookkeeping + early aborts (audit Bug 10) ─────
             groups_seen += 1
             total_groups += 1
-            if dead:
+            if skip_update:
                 total_dead_groups += 1
             if gstats.position_artifact_detected:
                 position_artifact_groups += 1
@@ -1023,7 +1307,7 @@ def train(
             agg_too_few += fail_counts["too_few_calls_count"]
             agg_pred_calls += sum(pred_calls)
             if groups_seen <= 50:
-                if dead:
+                if skip_update:
                     first50_dead += 1
                 first50_reward_values.update(round(float(r), 6) for r in rewards)
             if early_abort_enabled and groups_seen == 50:
@@ -1049,8 +1333,9 @@ def train(
                     "[train] EARLY ABORT: 0 optimizer steps and 0 contributing turns "
                     "after 100 groups — training is not learning anything.")
 
-            if dead:
+            if skip_update:
                 dead_rec = {**rec, "update": "skipped_dead_group",
+                            "group_class": user_cls,
                             "optimizer_step_executed": False, "contributing_turns": 0}
                 _log(dead_rec)
                 _log_canary_group(
@@ -1065,6 +1350,7 @@ def train(
                     task_prev_mean=task_prev_mean.get(task_id),
                     task_best_mean=task_best_mean.get(task_id),
                 )
+                ti += 1
                 continue
 
             step_loss = 0.0
@@ -1073,6 +1359,7 @@ def train(
             logp_sum = 0.0
             logp_count = 0
             contributing = 0
+            _use_turn = use_turn_level and not force_episode_adv
             for ei, (ep, gs) in enumerate(zip(episodes, ep_returns)):
                 if mask_clipped and ep.trajectory.clipped_any:
                     continue
@@ -1080,7 +1367,7 @@ def train(
                 for j, tt in enumerate(ep.turn_tokens):
                     if j >= len(gs) or tt.completion_ids.numel() == 0:
                         continue
-                    if use_turn_level:
+                    if _use_turn:
                         # Per-position between-completion advantage (audit Bug 3):
                         # centered/normalized ACROSS completions at the same turn
                         # position, so mechanical position offsets cancel out.
@@ -1151,6 +1438,57 @@ def train(
                 ep_returns=ep_returns, gstats=gstats, ep_diags=ep_diags,
                 rec=rec, grad_norm=step_grad_norm,
             )
+            ti += 1
+
+        # Sampler epoch metrics + HARD WARNINGS (rolling window)
+        if sampler is not None and epoch_task_groups:
+            eff_rate = epoch_effective / max(epoch_task_groups, 1)
+            dead_rate = epoch_dead_groups / max(epoch_task_groups, 1)
+            invalid_n = epoch_class_counts.get("INVALID_GROUP", 0)
+            invalid_rate = invalid_n / max(epoch_task_groups, 1)
+            eff_rate_hist.append(eff_rate)
+            invalid_rate_hist.append(invalid_rate)
+            pq = sampler.profile_quota.as_dict()
+            _log({
+                "epoch": epoch,
+                "sampler_mode": sampler.sampler_mode,
+                "raw_candidate_groups": epoch_raw_candidates,
+                "effective_groups": epoch_effective,
+                "effective_group_rate": round(eff_rate, 4),
+                "dead_group_rate": round(dead_rate, 4),
+                "n_all_correct": epoch_class_counts.get("ALL_CORRECT", 0),
+                "n_all_fail_with_progress": epoch_class_counts.get(
+                    "ALL_FAIL_WITH_PROGRESS", 0),
+                "n_all_fail_no_progress": epoch_class_counts.get(
+                    "ALL_FAIL_NO_PROGRESS", 0),
+                "n_low_variance": epoch_class_counts.get("LOW_VARIANCE", 0),
+                "n_invalid": invalid_n,
+                "n_mixed_effective": epoch_class_counts.get("MIXED_EFFECTIVE", 0),
+                "refill_rounds": epoch_refill_appends,
+                "effective_groups_by_call_bucket": dict(epoch_eff_by_bucket),
+                "effective_groups_by_query_mode": dict(epoch_eff_by_qmode),
+                "target_profile_distribution": pq.get("shares_target"),
+                "actual_effective_distribution": pq.get("actual_counts"),
+                "profile_tv_distance": pq.get("tv_distance"),
+                "pool_actual": dict(sampler.pool_actual),
+            })
+            warn_w = int(sampler_cfg.get("warn_window_steps", 50))
+            if len(eff_rate_hist) >= warn_w:
+                mean_eff = sum(eff_rate_hist[-warn_w:]) / warn_w
+                if mean_eff < float(sampler_cfg.get("effective_group_rate_warn", 0.20)):
+                    print(f"[sampler] HARD WARNING: rolling effective_group_rate="
+                          f"{mean_eff:.3f} < 0.20 over last {warn_w} epochs",
+                          flush=True)
+            if len(invalid_rate_hist) >= warn_w:
+                mean_inv = sum(invalid_rate_hist[-warn_w:]) / warn_w
+                if mean_inv > float(sampler_cfg.get("invalid_group_rate_warn", 0.05)):
+                    print(f"[sampler] HARD WARNING: rolling invalid_group_rate="
+                          f"{mean_inv:.3f} > 0.05", flush=True)
+            if (sampler.profile_quota.total >= warn_w
+                    and float(pq.get("tv_distance") or 0) >
+                    float(sampler_cfg.get("profile_tv_warn", 0.10))):
+                print(f"[sampler] HARD WARNING: effective-profile TV="
+                      f"{pq.get('tv_distance')} > 0.10", flush=True)
 
         # Flush any remaining grads at epoch end.
         if accum % grad_accum != 0:
@@ -1159,11 +1497,30 @@ def train(
             optimizer.zero_grad(set_to_none=True)
             global_step += 1
 
+        if _budget_hit:
+            break
+
         if epoch_task_groups:
             dgr = epoch_dead_groups / epoch_task_groups
             summary["dead_group_rate_last_epoch"] = dgr
             _log({"epoch": epoch, "dead_group_rate": dgr,
                   "dead_groups": epoch_dead_groups, "task_groups": epoch_task_groups})
+
+        if getattr(obs, "enabled", False):
+            obs.log_step(step_row(
+                run_id=obs_run_id, global_step=global_step, epoch=epoch,
+                candidate_prompt_count=len(tasks),
+                group_rows=obs_epoch_groups,
+                reward_component_means={
+                    "mean_episode_reward": (sum(epoch_rewards) / len(epoch_rewards))
+                    if epoch_rewards else 0.0,
+                    "mean_win_rate": (sum(epoch_win_rates) / len(epoch_win_rates))
+                    if epoch_win_rates else 0.0,
+                },
+                gradient_norm=locals().get("step_grad_norm"),
+                sampler_entropy=None,
+                refill_rounds=1))
+            obs_epoch_groups = []
 
         mean_reward_epoch = (sum(epoch_rewards) / len(epoch_rewards)
                              if epoch_rewards else 0.0)
@@ -1210,6 +1567,22 @@ def train(
                 model.save_pretrained(adapter_dir)
                 tokenizer.save_pretrained(adapter_dir)
                 _log({"epoch": epoch, "saved_adapter": adapter_dir})
+                # Sampler state travels with the checkpoint so a resume restores
+                # the curriculum and per-prompt history, not just the weights.
+                if getattr(obs, "enabled", False):
+                    _samp = config.get("_sampler_instance")
+                    state = (_samp.state_dict()
+                             if _samp is not None and hasattr(_samp, "state_dict")
+                             else {"sampler": "none_uniform",
+                                   "global_step": global_step, "epoch": epoch + 1})
+                    obs.save_sampler_state(state, Path(adapter_dir))
+                _samp = config.get("_sampler_instance")
+                if _samp is not None:
+                    try:
+                        from nestful_sampler_bridge import save_sampler_artifacts as _ssa
+                        _ssa(_samp, Path(adapter_dir))
+                    except Exception as _se:  # noqa: BLE001
+                        _log({"epoch": epoch, "sampler_save_error": str(_se)})
                 # Reproducibility sidecars next to the adapter (config, trainer
                 # state, wandb id) so any checkpoint can be resumed / audited.
                 _write_checkpoint_sidecars(
@@ -1291,6 +1664,10 @@ def train(
             "contributing_turns==0" if total_contributing == 0 else
             "dead_group_rate>=0.95")
     log_f.close()
+    try:
+        group_log_f.close()
+    except Exception:
+        pass
     if canary_f is not None:
         canary_f.close()
     return summary

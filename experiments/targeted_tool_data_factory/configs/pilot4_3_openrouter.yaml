@@ -1,0 +1,67 @@
+# Pilot4.3 OpenRouter configuration.
+#
+# Model slugs live here and nowhere else: a slug hard-coded in Python cannot be
+# frozen into the run manifest, which is how Pilot4.2 ended up with logs whose
+# recorded model did not match the model that actually answered.
+#
+# Every slug is pinned (dated or immutable point release). ":free", "auto" and
+# "latest" are rejected by the loader because they route to a model the freeze
+# manifest cannot name.
+openrouter:
+  enabled: true
+  base_url: https://openrouter.ai/api/v1
+
+  # three distinct families on purpose: a critic from the writer's own family
+  # agrees with it far too often, and a second critic from the critic's family
+  # cannot break a tie.
+  # The first critic decides whether a task survives, and gemini-2.5-flash-lite
+  # was not up to it: over 93 doubly-criticised smoke queries the two critics
+  # agreed on 68 %, and flash-lite was the lone dissenter 18 times against the
+  # second critic's 8, nearly always claiming "workflow_matches_query" on queries
+  # that read correctly by hand. The full-size model in the same family costs
+  # about 0.001 USD more per task, which is cheaper than discarding the sample.
+  writer_model: openai/gpt-4o-mini-2024-07-18
+  critic_model: google/gemini-2.5-flash
+  second_critic_model: deepseek/deepseek-chat-v3.1
+  rewrite_model: openai/gpt-4o-mini-2024-07-18
+  audit_model: anthropic/claude-haiku-4.5
+
+  allow_fallbacks: false
+  require_structured_outputs: true
+
+  temperature: 0.6
+  top_p: 0.9
+  max_output_tokens: 1400
+
+  max_retries: 3
+  backoff_seconds_base: 2.0
+  backoff_max_seconds: 60.0
+  request_timeout_seconds: 120
+
+  # Resume after OpenRouter top-up (+25 USD). Prior spend ~22.28 USD; allow the
+  # new credits without changing models. Hitting the ceiling stops cleanly.
+  max_total_cost_usd: 48.0
+  max_cost_per_task_usd: 0.02
+  max_incremental_cost_usd: 25.0
+
+  writer_max_input_usd_per_million: 0.20
+  writer_max_output_usd_per_million: 0.80
+  critic_max_input_usd_per_million: 0.15
+  critic_max_output_usd_per_million: 0.60
+  audit_max_input_usd_per_million: 0.80
+  audit_max_output_usd_per_million: 3.00
+
+  # Kept as pilot43 (not pilot43_final) so the interrupted full-run request
+  # cache continues to replay; changing the namespace would re-spend on every hit.
+  cache_namespace: pilot43
+  run_id: pilot4_3_nestful_final
+
+  # Cost-efficient second-critic sample (mandatory routes are in orrun).
+  second_critic_sample_rate: 0.10
+
+  prompt_version:
+    writer: pilot43.writer.v6
+    critic: pilot43.critic.v6
+    critic2: pilot43.critic2.v6
+    rewrite: pilot43.rewrite.v6
+    audit: pilot43.audit.v1

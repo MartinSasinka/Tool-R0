@@ -1,0 +1,420 @@
+{
+  "bottlenecks": [
+    {
+      "alternative_explanations": [
+        "True small training effect masked by power."
+      ],
+      "argument_against": "Matched C0/D1 still share residual LoRA/vLLM path differences.",
+      "argument_for": "Original +8.8pp used mismatched HF vs vLLM backends; matched contrast is smaller.",
+      "category": "EVAL_PROTOCOL",
+      "evidence_strength": "HIGH",
+      "fixable_by_data_only": false,
+      "metrics": {
+        "bootstrap_ci": [
+          -0.40000000000000036,
+          4.799999999999994
+        ],
+        "c0_hf_vs_c0_vllm_if_present": {
+          "n": 500,
+          "note": "C0-HF must not be mixed into the main training-effect contrast.",
+          "win_rate_c0_hf": 0.488,
+          "win_rate_c0_vllm": 0.554,
+          "win_rate_d1_vllm": 0.576,
+          "wins_c0_hf": 244,
+          "wins_c0_vllm": 277,
+          "wins_d1_vllm": 288
+        },
+        "matched_delta_pp": 2.2
+      },
+      "next_step": "Keep matched vLLM eval as the only training-effect contrast; freeze eval script hash.",
+      "rank": 1,
+      "rank_score": 95,
+      "requires_new_train_or_eval": true,
+      "status": "SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "n=300 underpowered regardless of balance.",
+        "Artifact sync drift after RunPod."
+      ],
+      "argument_against": "Even a balanced 300 may still yield small transfer.",
+      "argument_for": "D1 train_subset_300 is not identical to the local train_grpo_pilot3 prefix/freeze; selection provenance is broken or the export was regenerated.",
+      "category": "TRAIN_SUBSET_SELECTION",
+      "evidence_strength": "HIGH",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "generation_cell_jsd": 0.22221832288757049,
+        "n_missing_cells": 12,
+        "n_overlap_with_local_full_train": 62,
+        "shuffle_interpretation": "likely_interleaved_or_shuffled",
+        "subset_identity_status": "INCONSISTENT"
+      },
+      "next_step": "Freeze SHA256 of exact D1 subset; nested stratified subset by cell×call_bucket×motif×track; never silent file-prefix slices.",
+      "rank": 2,
+      "rank_score": 92,
+      "requires_new_train_or_eval": true,
+      "status": "SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Registry semantic gap",
+        "distractor realism"
+      ],
+      "argument_against": "Factory intentionally uses synthetic surfaces; some transfer still observed.",
+      "argument_for": "Diagnostic gold tools largely outside factory exact namespace; transfer relies on schema/lexical proxies.",
+      "category": "SURFACE_SCHEMA_MISMATCH",
+      "evidence_strength": "HIGH",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "diag_only_exact": [
+          "access_attrs",
+          "activation_function",
+          "add_1",
+          "add_duration",
+          "add_feature",
+          "add_id_to_dicts",
+          "add_list_elements",
+          "add_or_divide",
+          "add_tab",
+          "add_tuples_to_dict",
+          "add_up",
+          "align_left",
+          "all_even",
+          "analyze_sentiment",
+          "append_path_components",
+          "are_overlapping",
+          "area_of_triangle_from_sides",
+          "arithmetic_list",
+          "ascii_to_integer_list",
+          "authenticate_token",
+          "average_colors",
+          "average_of_top_k",
+          "average_value",
+          "beta_value",
+          "binary_classification_accuracy",
+          "bit_not_inverse",
+          "bit_representation",
+          "bits_to_num",
+          "bitwise_left_shift",
+          "bitwise_reorder",
+          "bool_indicator",
+          "both_positive_and_negative",
+          "build_facebook_url",
+          "build_file_path",
+          "build_span_string",
+          "buy_cookies",
+          "byte_string_to_bit_string",
+          "bytearray_to_string",
+          "calc_struct_area",
+          "calc_vector_distances",
+          "calculate_ab_error",
+          "calculate_average",
+          "calculate_average_except_zeros_and_negatives",
+          "calculate_average_speed",
+          "calculate_ber",
+          "calculate_bpm",
+          "calculate_derivatives",
+          "calculate_diameter",
+          "calculate_elastic_modulus",
+          "calculate_error"
+        ],
+        "exact_names": [
+          "add",
+          "divide",
+          "floor",
+          "inverse",
+          "is_within_range",
+          "multiply",
+          "negate",
+          "power",
+          "reminder",
+          "sqrt",
+          "subtract"
+        ],
+        "exact_overlap": 11,
+        "exact_overlap_rate_vs_diag": 0.013480392156862746,
+        "n_diagnostic": 816,
+        "n_train": 132,
+        "normalized_overlap": 11,
+        "normalized_overlap_rate_vs_diag": 0.013480392156862746
+      },
+      "next_step": "Paired A-native/G-general renderers; NESTFUL-like output keys; harder schema-compatible distractors.",
+      "rank": 3,
+      "rank_score": 90,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Data too easy",
+        "epsilon process too weak",
+        "gating collapses distinctions"
+      ],
+      "argument_against": "Without per-rollout groups cannot separate all-success vs all-fail cells.",
+      "argument_for": "Aggregate dead_group_rate=0.51 and low unique rewards imply many non-informative GRPO groups.",
+      "category": "REWARD_SIGNAL",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "dead_group_rate": 0.51,
+        "fallback_used": 0.0,
+        "kl_beta": 0.15,
+        "mean_reward": 0.79481,
+        "mean_reward_dense": 0.79481,
+        "mean_unique_rewards": 1.67,
+        "per_rollout_available": false,
+        "reward_policy": "A4_GATED_VERIFIABLE",
+        "run_id": "pilot3_D1_seed20260727_n300",
+        "tasks_seen": 300
+      },
+      "next_step": "Add difficulty-targeted cells + persist per-rollout rewards; balance effective-group rate.",
+      "rank": 4,
+      "rank_score": 88,
+      "requires_new_train_or_eval": true,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Genuine policy change from GRPO."
+      ],
+      "argument_against": "Cannot quantify from stored trajectories alone.",
+      "argument_for": "D1 uses adapter; C0 is base. Path differences can shift decoding even at T=0.",
+      "category": "LORA_INFERENCE_PATH",
+      "evidence_strength": "LOW",
+      "fixable_by_data_only": false,
+      "metrics": {},
+      "next_step": "Future A/B: base+null-LoRA vs D1 under identical vLLM loader.",
+      "rank": 5,
+      "rank_score": 80,
+      "requires_new_train_or_eval": true,
+      "status": "NOT_IDENTIFIABLE"
+    },
+    {
+      "alternative_explanations": [
+        "Surface/schema mismatch",
+        "reward degeneracy"
+      ],
+      "argument_against": "Topology coverage may not associate with gained/lost if surface mismatch dominates.",
+      "argument_for": "High top-1 topology share and/or high diagnostic unseen-topology rate indicate shape mismatch risk.",
+      "category": "TOPOLOGY_DIVERSITY",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "diag_unseen_topology_rate": 0.24,
+        "train300_top1_share": 0.3
+      },
+      "next_step": "Cap top-1 topology family share; raise unique topology quota; joint topology×call_count matching.",
+      "rank": 6,
+      "rank_score": 78,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Surface renderer",
+        "topology"
+      ],
+      "argument_against": "Registry size alone does not explain gap; exact IBM clone is not required.",
+      "argument_for": "Unmapped diagnostic gold tools on critical path associate with persistent failures (proxy).",
+      "category": "REGISTRY_SEMANTIC_COVERAGE",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "by_outcome_preview": [
+          {
+            "bucket": "exact_full",
+            "c0_win_rate": 0.5728155339805825,
+            "c0_wins": 236,
+            "d1_win_rate": 0.5922330097087378,
+            "d1_wins": 244,
+            "gained": 22,
+            "lost": 14,
+            "mean_ood": 0.05291262135922319,
+            "n": 412,
+            "net_gain": 8
+          },
+          {
+            "bucket": "exact_low",
+            "c0_win_rate": 0.6666666666666666,
+            "c0_wins": 2,
+            "d1_win_rate": 0.6666666666666666,
+            "d1_wins": 2,
+            "gained": 0,
+            "lost": 0,
+            "mean_ood": 0.6222,
+            "n": 3,
+            "net_gain": 0
+          },
+          {
+            "bucket": "exact_none",
+            "c0_win_rate": 0.47368421052631576,
+            "c0_wins": 36,
+            "d1_win_rate": 0.4868421052631579,
+            "d1_wins": 37,
+            "gained": 3,
+            "lost": 2,
+            "mean_ood": 0.6830039473684206,
+            "n": 76,
+            "net_gain": 1
+          },
+          {
+            "bucket": "exact_partial",
+            "c0_win_rate": 0.3333333333333333,
+            "c0_wins": 3,
+            "d1_win_rate": 0.5555555555555556,
+            "d1_wins": 5,
+            "gained": 2,
+            "lost": 0,
+            "mean_ood": 0.32217777777777773,
+            "n": 9,
+            "net_gain": 2
+          },
+          {
+            "bucket": "ood_high",
+            "c0_win_rate": 0.4714285714285714,
+            "c0_wins": 33,
+            "d1_win_rate": 0.5,
+            "d1_wins": 35,
+            "gained": 3,
+            "lost": 1,
+            "mean_ood": 0.711355714285714,
+            "n": 70,
+            "net_gain": 2
+          }
+        ],
+        "n_coverage_rows": 500
+      },
+      "next_step": "Expand abstract operation families with high eval frequency + low coverage + low D1 gain.",
+      "rank": 7,
+      "rank_score": 77,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Call-count stratification already dominates."
+      ],
+      "argument_against": "Nearest-neighbor OOD may not predict flips at n=27/16.",
+      "argument_for": "Margin match can hide unseen joint cells (topology×calls×answer×track).",
+      "category": "JOINT_DISTRIBUTION_MISMATCH",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "unseen_combination_rate": 1.0
+      },
+      "next_step": "Selection objective: joint deficit matching + rare-cell floors.",
+      "rank": 8,
+      "rank_score": 76,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Offered-tool count mismatch."
+      ],
+      "argument_against": "Hardness proxies are not semantic.",
+      "argument_for": "If train distractors are lexically far / type-impossible, model learns weak discrimination.",
+      "category": "DISTRACTOR_REALISM",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "diag_mean_hardness": 0.0015219999999999997,
+        "train_mean_hardness": 0.031226499999999983
+      },
+      "next_step": "Minimum distractor hardness gate; schema-compatible near-miss distractors.",
+      "rank": 9,
+      "rank_score": 74,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Quality/composition > scale."
+      ],
+      "argument_against": "More easy data can worsen dead groups.",
+      "argument_for": "n=300 with 51% dead groups yields few effective updates; underpowered for +2pp.",
+      "category": "DATA_SCALE",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "ci_includes_0": true,
+        "delta_pp": 2.2,
+        "mcnemar_p": 0.12628947438543037,
+        "train_n": 300
+      },
+      "next_step": "Scale only after effective-group and joint-coverage constraints.",
+      "rank": 10,
+      "rank_score": 73,
+      "requires_new_train_or_eval": true,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Argument value errors mislabeled as reference."
+      ],
+      "argument_against": "Parser accepts multiple formats; may not drive official_win.",
+      "argument_for": "Train and diagnostic may differ in $var vs $var_ and output key conventions.",
+      "category": "REFERENCE_SYNTAX_MISMATCH",
+      "evidence_strength": "MEDIUM",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "counts": {
+          "pattern_0": 3662,
+          "unparsed_dollar_string": 1
+        },
+        "examples": {
+          "pattern_0": "$var1.output_0$",
+          "unparsed_dollar_string": "The cost of the item is $12.50 and the tax is $2.50"
+        }
+      },
+      "next_step": "Validation gate on reference syntax + output-key distribution vs TargetProfile.",
+      "rank": 11,
+      "rank_score": 72,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Genuine skill learning on narrow family."
+      ],
+      "argument_against": "Shortcuts may be limited after paraphrase.",
+      "argument_for": "Template concentration / shortcut cues can inflate train reward without transfer.",
+      "category": "OTHER",
+      "evidence_strength": "LOW",
+      "fixable_by_data_only": true,
+      "metrics": {
+        "answer_leak_rate": 0.0,
+        "constants_in_question_rate": 0.9766666666666667,
+        "mean_gold_tool_offered_position": 5.0930376984127035,
+        "n": 600,
+        "n_unique_program_hashes": 585,
+        "n_unique_skeletons": 600,
+        "n_unique_tool_combos": 585,
+        "note": "Lexical/template proxies only; not proof of reward hacking.",
+        "top1_skeleton_share": 0.0016666666666666668,
+        "top1_tool_combo_share": 0.006666666666666667
+      },
+      "next_step": "Template-skeleton concentration gate; anti-leak checks in V7+.",
+      "rank": 12,
+      "rank_score": 58,
+      "requires_new_train_or_eval": false,
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "alternative_explanations": [
+        "Stable small effect."
+      ],
+      "argument_against": "No multi-seed artifacts available.",
+      "argument_for": "Single seed run; flips could be seed noise.",
+      "category": "TRAINING_SEED_VARIANCE",
+      "evidence_strength": "LOW",
+      "fixable_by_data_only": false,
+      "metrics": {},
+      "next_step": "Multi-seed train only after data composition fix.",
+      "rank": 13,
+      "rank_score": 40,
+      "requires_new_train_or_eval": true,
+      "status": "NOT_IDENTIFIABLE"
+    }
+  ]
+}

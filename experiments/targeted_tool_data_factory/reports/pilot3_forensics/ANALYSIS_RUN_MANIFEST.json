@@ -1,0 +1,270 @@
+{
+  "cli_args": {
+    "n_boot": 20000,
+    "output_dir": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\reports\\pilot3_forensics",
+    "repo_root": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0",
+    "seed": 42
+  },
+  "discovered_paths": {
+    "bundle_sha_manifest": {
+      "artifact_type": "sha_manifest",
+      "exists": true,
+      "key": "bundle_sha_manifest",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\runpod_bundle_pilot3\\MANIFEST.sha256.json",
+      "reason_unused": "not yet selected",
+      "used": false
+    },
+    "c0_hf_trajectories": {
+      "artifact_type": "eval_trajectory",
+      "exists": true,
+      "key": "c0_hf_trajectories",
+      "notes": "C0 HF backend confound arm",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot2\\phase1_canary_from_zip\\eval\\C0_nestful500\\final_eval_trajectories.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "c0_manifest": {
+      "artifact_type": "eval_manifest",
+      "exists": true,
+      "key": "c0_manifest",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\eval_C0_nestful500_vllm_matched_v2\\eval_manifest.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "c0_metrics": {
+      "artifact_type": "metrics",
+      "exists": true,
+      "key": "c0_metrics",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\eval_C0_nestful500_vllm_matched_v2\\metrics_merged.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "c0_shards_dir": {
+      "artifact_type": "shards_dir",
+      "exists": true,
+      "key": "c0_shards_dir",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\eval_C0_nestful500_vllm_matched_v2\\shards",
+      "reason_unused": "",
+      "used": true
+    },
+    "c0_trajectories": {
+      "artifact_type": "eval_trajectory",
+      "exists": true,
+      "key": "c0_trajectories",
+      "notes": "C0 matched vLLM preferred",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\eval_C0_nestful500_vllm_matched_v2\\final_eval_trajectories.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "d1_manifest": {
+      "artifact_type": "eval_manifest",
+      "exists": true,
+      "key": "d1_manifest",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\eval\\D1_nestful500\\eval_manifest.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "d1_metrics": {
+      "artifact_type": "metrics",
+      "exists": true,
+      "key": "d1_metrics",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\eval\\D1_nestful500\\metrics_merged.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "d1_predictions": {
+      "artifact_type": "predictions",
+      "exists": true,
+      "key": "d1_predictions",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\eval\\D1_nestful500\\final_eval_predictions.partial.jsonl",
+      "reason_unused": "not yet selected",
+      "used": false
+    },
+    "d1_shards_dir": {
+      "artifact_type": "shards_dir",
+      "exists": true,
+      "key": "d1_shards_dir",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\eval\\D1_nestful500\\shards",
+      "reason_unused": "",
+      "used": true
+    },
+    "d1_trajectories": {
+      "artifact_type": "eval_trajectory",
+      "exists": true,
+      "key": "d1_trajectories",
+      "notes": "D1 vLLM",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\eval\\D1_nestful500\\final_eval_trajectories.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "diagnostic_data": {
+      "artifact_type": "nestful_diagnostic",
+      "exists": true,
+      "key": "diagnostic_data",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\runpod_bundle_pilot2\\data\\nestful_diagnostic_500.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "export_manifest": {
+      "artifact_type": "export_manifest",
+      "exists": true,
+      "key": "export_manifest",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\manifest_pilot3.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "full_train_data": {
+      "artifact_type": "train_grpo",
+      "exists": true,
+      "key": "full_train_data",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\train_grpo_pilot3.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "generation_cells": {
+      "artifact_type": "generation_cells",
+      "exists": true,
+      "key": "generation_cells",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\candidates\\cells_pilot3.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "heldout_data": {
+      "artifact_type": "train_grpo",
+      "exists": true,
+      "key": "heldout_data",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\heldout_grpo_pilot3.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "pilot2_train": {
+      "artifact_type": "train_grpo",
+      "exists": true,
+      "key": "pilot2_train",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot2\\train_grpo_pilot2.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "preflight_gold_replay": {
+      "artifact_type": "preflight",
+      "exists": true,
+      "key": "preflight_gold_replay",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\preflight_gold_replay.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "profile_match": {
+      "artifact_type": "profile_match",
+      "exists": true,
+      "key": "profile_match",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\profile_match_pilot3.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "reserve_data": {
+      "artifact_type": "train_grpo",
+      "exists": true,
+      "key": "reserve_data",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\export_pilot3\\reserve_grpo_pilot3.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "rollout_log": {
+      "artifact_type": "rollouts",
+      "exists": true,
+      "key": "rollout_log",
+      "notes": "Pilot2 signal_probe rollouts only (not Pilot3 D1)",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot2\\signal_probe_from_zip\\signal_probe\\rollouts.jsonl",
+      "reason_unused": "Pilot2 rollouts are not D1 training rollouts; reward cell audit limited",
+      "used": false
+    },
+    "selection_trace": {
+      "artifact_type": "selection_trace",
+      "exists": true,
+      "key": "selection_trace",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\selected\\selection_trace_pilot3.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "target_profile": {
+      "artifact_type": "target_profile",
+      "exists": true,
+      "key": "target_profile",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\profiles\\nestful_profile.json",
+      "reason_unused": "",
+      "used": true
+    },
+    "train_data": {
+      "artifact_type": "train_grpo",
+      "exists": true,
+      "key": "train_data",
+      "notes": "D1 trained subset n=300",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\train_subset_300.jsonl",
+      "reason_unused": "",
+      "used": true
+    },
+    "train_log": {
+      "artifact_type": "train_log",
+      "exists": true,
+      "key": "train_log",
+      "notes": "",
+      "path": "C:\\Users\\Šunka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\runpod_pilot3_from_zip2\\runpod_pilot3\\train_nestful500\\run_train_nestful500_20260727_005500.log",
+      "reason_unused": "",
+      "used": true
+    }
+  },
+  "git": {
+    "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+    "dirty": true
+  },
+  "headline_check": {
+    "loss_to_win": 27,
+    "win_to_loss": 16,
+    "wins_c0": 277,
+    "wins_d1": 288
+  },
+  "input_sha256": {
+    "c0_trajectories": "567752bfa3a56d9e7aa67f6e517ad898d44809bc8681cbc7e25e4d86e977af55",
+    "d1_trajectories": "4afca8fb87f85bb3c2f7528c2f9d855ee8829bb630415aa412e35f20266256c2",
+    "diagnostic_data": "db1525560b20b47ea5567bc52a64f6134655908e96a7b972d2b9bb555045086c",
+    "full_train_data": "77d7e2bf51acd9a998d4cd202f6b7add7e841a41eb31cc74af249745f765e538",
+    "train_data": "8b0a16a39a1b5815ae768ac4cd57a9941114426c91465e28783dfad941939c69",
+    "train_log": "9f2ad78c1676463648c8ed773331db06cc4380fb31b6d677f8e152f30198fa5b"
+  },
+  "package_version": "1.0.0",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "plots_written": [
+    "plots/paired_transitions.png",
+    "plots/win_by_call_bucket.png",
+    "plots/failure_transition_heatmap.png",
+    "plots/topology_freq_train300.png",
+    "plots/topology_cumulative_train300.png",
+    "plots/coverage_vs_net_gain.png",
+    "plots/ood_decile_vs_win.png",
+    "plots/train300_vs_rest_cell_diff.png",
+    "plots/distractor_hardness.png"
+  ],
+  "python": "3.11.3 (tags/v3.11.3:f3909b8, Apr  4 2023, 23:49:59) [MSC v.1934 64 bit (AMD64)]",
+  "schema_version": "pilot3_forensics.v1",
+  "seed": 42,
+  "timestamp_utc": "2026-07-30T19:21:53.097940+00:00"
+}

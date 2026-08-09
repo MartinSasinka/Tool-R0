@@ -472,7 +472,8 @@ def test_verify_hashes_detects_a_mutated_artefact(tmp_path, monkeypatch):
     import hashlib
 
     payload = tmp_path / "data.jsonl"
-    payload.write_text('{"a": 1}\n', encoding="utf-8")
+    # the manifest hashes LF-normalised bytes, so write LF even on Windows
+    payload.write_bytes(b'{"a": 1}\n')
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     manifest = tmp_path / "MANIFEST.sha256.json"
     manifest.write_text(json.dumps({"files": {"data.jsonl": {"sha256": digest}}}),
@@ -485,7 +486,7 @@ def test_verify_hashes_detects_a_mutated_artefact(tmp_path, monkeypatch):
                         capture_output=True, text=True)
     assert ok.returncode == 0, ok.stdout + ok.stderr
 
-    payload.write_text('{"a": 2}\n', encoding="utf-8")
+    payload.write_bytes(b'{"a": 2}\n')
     bad = subprocess.run([sys.executable, str(script), "--manifest", str(manifest)],
                          capture_output=True, text=True)
     assert bad.returncode == 2

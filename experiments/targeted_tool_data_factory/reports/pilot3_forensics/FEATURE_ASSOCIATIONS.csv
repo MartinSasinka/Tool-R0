@@ -1,0 +1,15 @@
+a_gain_in,b_nongain_in,c_gain_out,d_nongain_out,effect,feature,level,n,note,odds_ratio,p_raw_approx,q_bh,test
+15,268,12,205,gain_association,motif,fan_in,500,p-values are approximate chi-square proxies; interpret with effect size and n,0.9561567164179104,0.9936826963831056,0.9936826963831056,gain~motif=fan_in
+12,199,15,274,gain_association,motif,linear,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.101507537688442,0.9709573752405757,0.9936826963831056,gain~motif=linear
+0,6,27,467,gain_association,motif,mixed,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.3076923076923077,0.8408623684083796,0.9936826963831056,gain~motif=mixed
+3,97,24,376,gain_association,call_bucket,2,500,p-values are approximate chi-square proxies; interpret with effect size and n,0.48453608247422686,0.49424613595734446,0.9936826963831056,gain~call_bucket=2
+6,94,21,379,gain_association,call_bucket,3,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.1519756838905775,0.9569107977322742,0.9936826963831056,gain~call_bucket=3
+3,97,24,376,gain_association,call_bucket,4,500,p-values are approximate chi-square proxies; interpret with effect size and n,0.48453608247422686,0.49424613595734446,0.9936826963831056,gain~call_bucket=4
+8,92,19,381,gain_association,call_bucket,5,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.7437070938215102,0.4373291599352935,0.9936826963831056,gain~call_bucket=5
+7,93,20,380,gain_association,call_bucket,6+,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.4301075268817205,0.7310966472910491,0.9936826963831056,gain~call_bucket=6+
+1,6,26,467,gain_association,answer_type,bool,500,p-values are approximate chi-square proxies; interpret with effect size and n,2.9935897435897436,0.577732474472191,0.9936826963831056,gain~answer_type=bool
+0,1,27,472,gain_association,answer_type,dict,500,p-values are approximate chi-square proxies; interpret with effect size and n,5.7272727272727275,0.9718066412539095,0.9936826963831056,gain~answer_type=dict
+24,408,3,65,gain_association,answer_type,float,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.2745098039215685,0.9275285332345334,0.9936826963831056,gain~answer_type=float
+1,13,26,460,gain_association,answer_type,int,500,p-values are approximate chi-square proxies; interpret with effect size and n,1.3609467455621302,0.9580815815986794,0.9936826963831056,gain~answer_type=int
+1,21,26,452,gain_association,answer_type,list,500,p-values are approximate chi-square proxies; interpret with effect size and n,0.8278388278388278,0.9836862638975062,0.9936826963831056,gain~answer_type=list
+0,24,27,449,gain_association,answer_type,str,500,p-values are approximate chi-square proxies; interpret with effect size and n,0.33358070500927645,0.4869826848186612,0.9936826963831056,gain~answer_type=str

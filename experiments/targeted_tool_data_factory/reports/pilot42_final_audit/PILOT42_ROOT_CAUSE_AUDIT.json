@@ -1,0 +1,2006 @@
+{
+  "schema_version": "ttdf.pilot42_root_cause_audit.v1",
+  "export_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\pilot4_2_workflow_grounded_v2",
+  "report_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\reports\\pilot42_final_audit",
+  "auditor": "analysis.pilot43_independent_audit (stdlib only, no producer imports)",
+  "audited_files": {
+    "train_master_3000": "train_master_3000.jsonl",
+    "heldout_500": "heldout_500.jsonl",
+    "reserve_500": "reserve_500.jsonl",
+    "selected": "selected.jsonl"
+  },
+  "n_defects_confirmed": 17,
+  "n_defects_undecidable": 0,
+  "n_defects_not_confirmed": 0,
+  "undecidable_invariants": {
+    "TYPE_TRANSITION_CHAIN": "no intermediate node values in the thin Pilot4.2 records"
+  },
+  "defects": [
+    {
+      "n": 1,
+      "defect": "zero true 6+ call tasks",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "recomputed call-count histogram from `gold_calls` over all 4 audited files: 2 calls: 1712, 3 calls: 659, 4 calls: 976, 5 calls: 653; maximum observed call count = 5",
+        "share of tasks with >= 6 calls = 0.000% (0 of 4000 records); share with >= 5 calls = 16.325%",
+        "provenance: len(record['gold_calls']) recomputed per record in train_master_3000.jsonl, heldout_500.jsonl, reserve_500.jsonl, selected.jsonl"
+      ],
+      "required_fix": "Pilot4.3 must generate programs with 6-10 calls as a first-class tier and gate on a recomputed histogram (not a declared call_count), with a hard minimum share of 6+ call tasks per split; the generator's program templates must be extended beyond the 2-5 node blueprints."
+    },
+    {
+      "n": 2,
+      "defect": "declared pattern label vs actual dependency DAG mismatch",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "selected.jsonl `pattern_family` vs independently reconstructed DAG: 2692/4000 records declare a pattern their graph does not satisfy (disagreement rate 67.300%); 900 agree and 408 declare TYPE_TRANSITION_CHAIN, which the thin export cannot decide and which is therefore scored as undecidable rather than wrong",
+        "per declared label (agree / disagree / undecidable): DIAMOND: 0 / 245 / 0; FAN_IN_SINGLE: 0 / 574 / 0; LATE_REFERENCE: 0 / 244 / 0; LINEAR_CHAIN: 819 / 82 / 0; MULTI_JOIN: 0 / 161 / 0; PARALLEL_THEN_MERGE: 0 / 163 / 0; REPEATED_PRIMITIVE: 0 / 571 / 0; REUSE_EARLY_OUTPUT: 81 / 489 / 0; TWO_STAGE_AGGREGATION: 0 / 163 / 0; TYPE_TRANSITION_CHAIN: 0 / 0 / 408",
+        "the thin training files declare NO structural label at all: `pattern_family` is absent in 4000 of 8000 audited rows - i.e. in all of train_master_3000.jsonl / heldout_500.jsonl / reserve_500.jsonl, which carry only call_count, cell_tier, gold_answer, gold_calls, question, requested_query_mode, task_id, tools, was_generated_from_workflow, workflow_id",
+        "recomputed primary pattern distribution over the 4000 unique tasks: LINEAR_CHAIN: 3184, REPEATED_PRIMITIVE: 572, DIAMOND: 244",
+        "the declared labels are near-disjoint from the structures actually present - number of records that genuinely satisfy each invariant vs number of records declaring it: LINEAR_CHAIN: satisfied by 3756, declared by 901, both 819; FAN_IN_SINGLE: satisfied by 244, declared by 574, both 0; REPEATED_PRIMITIVE: satisfied by 653, declared by 571, both 0; REUSE_EARLY_OUTPUT: satisfied by 244, declared by 570, both 81; TYPE_TRANSITION_CHAIN: satisfied by 0, declared by 408, both 0; DIAMOND: satisfied by 244, declared by 245, both 0; LATE_REFERENCE: satisfied by 0, declared by 244, both 0; TWO_STAGE_AGGREGATION: satisfied by 0, declared by 163, both 0; PARALLEL_THEN_MERGE: satisfied by 0, declared by 163, both 0; MULTI_JOIN: satisfied by 0, declared by 161, both 0",
+        "worked examples (declared label, then the reconstructed graph): p42_6aabb059b6ce declares FAN_IN_SINGLE but has 3 nodes, 2 edges and 0 join nodes, satisfying ['LINEAR_CHAIN']; p42_b8fe6f19b5c7 declares REUSE_EARLY_OUTPUT but has 3 nodes, 2 edges and 0 join nodes, satisfying ['LINEAR_CHAIN']; p42_c4cf79664f33 declares LATE_REFERENCE but has 5 nodes, 5 edges and 1 join nodes, satisfying ['DIAMOND', 'FAN_IN_SINGLE', 'FAN_OUT', 'REPEATED_PRIMITIVE', 'REUSE_EARLY_OUTPUT']; p42_d299fc7147f5 declares FAN_IN_SINGLE but has 2 nodes, 1 edges and 0 join nodes, satisfying ['LINEAR_CHAIN']"
+      ],
+      "required_fix": "The structural label must be computed from the emitted gold_calls DAG by the same code path that the audit uses, exported per record, and hard-gated: any record whose declared pattern is not satisfied by its own reconstructed graph must be rejected before selection."
+    },
+    {
+      "n": 3,
+      "defect": "low real capability and primitive diversity",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "distinct gold tool surface names actually called = 9; distinct primitives actually used = 9 (mapping source: record.tools[].semantic_id + primitive_registry.json)",
+        "distinct capability families actually used = 3: arithmetic.binary: 9468, comparison: 3021, statistics: 81",
+        "distinct exact primitive sequences = 15, top-1 sequence share = 24.400%, top-10 share = 91.900%",
+        "primitive counts: add: 3593, is_greater: 3021, increase_by_percent: 2778, decrease_by_percent: 1386, multiply: 976, subtract: 328, percent_of: 327, average_two: 81, divide: 80"
+      ],
+      "required_fix": "Pilot4.3 must impose a per-primitive and per-capability-family coverage floor measured from the exported gold_calls (for example >= 40 distinct primitives and >= 8 capability families, with no single primitive above 15% of calls and no single call sequence above 5% of tasks), and select against that recomputed coverage rather than against registry size."
+    },
+    {
+      "n": 4,
+      "defect": "only cosmetic generic/coding workflow labels over arithmetic programs",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "share of gold calls whose capability family is arithmetic/comparison/logic = 99.356% (capability families overall: arithmetic.binary: 18936, comparison: 6042, statistics: 162)",
+        "9 workflow ids carry a non-arithmetic domain label while their programs use only arithmetic/comparison primitives, e.g. boolean_logic.scale_adjust_compare -> ['arithmetic.binary', 'comparison']; date_time.scale_adjust_compare -> ['arithmetic.binary', 'comparison']; dictionary_processing.scale_adjust_compare -> ['arithmetic.binary', 'comparison']; file_path.scale_adjust_compare -> ['arithmetic.binary', 'comparison']; geometry.scale_adjust_compare -> ['arithmetic.binary', 'comparison']; list_processing.scale_adjust_compare -> ['arithmetic.binary', 'comparison']",
+        "domains present in the export (25): boolean_logic, classification, commerce, date_time, dictionary_processing, energy, file_path, geometry, inventory, list_processing, measurement, operations, personal_finance, quality, quality_control, rates, rates_and_ratios, resource_allocation, statistics, text_processing, threshold_decision, time_duration, travel, travel_distance, url_processing",
+        "workflow ids present in the export = 56 of 66 declared in workflow_registry.json"
+      ],
+      "required_fix": "A workflow label must be backed by primitives from its own domain: Pilot4.3 must require that every list/text/path/url/dictionary/date workflow uses at least one primitive from the matching capability family (sequence.*, text.*, path.*, url.*, datetime.*), verified from the exported gold_calls, and must drop domain labels that cannot be so backed."
+    },
+    {
+      "n": 5,
+      "defect": "non-functional / never-executed OpenRouter rendering and critic phases",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "llm_rendered.jsonl = 0 bytes and llm_rendered_smoke.jsonl = 0 bytes: the rendering phase produced no output at all",
+        "openrouter_smoke_summary.json: n_input=30, n_passed=0, n_reject=30, pass_rate=0.0, llm_status='failed_or_empty', critic_coverage=0.0",
+        "openrouter_failures.jsonl contains 109 failure records (HTTP codes: 429: 83, other: 26)",
+        "no exported record carries a critic verdict: critic coverage = 0/4000 unique tasks; no `llm_critic` field exists on any record, in either the thin training files or the richer selected.jsonl",
+        "freeze_manifest.json: LLM_VALIDATED=False, llm_status='partial_smoke_attempted'"
+      ],
+      "required_fix": "Pilot4.3 must treat the LLM rendering and critic phases as hard dependencies: a non-empty llm_rendered.jsonl with one record per selected task, per-task critic verdicts stored on the record, and a build that fails when rendering pass rate or critic coverage is below the configured floor instead of silently exporting template text."
+    },
+    {
+      "n": 6,
+      "defect": "overly explicit, synthetic, repetitive questions",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "exact `question` duplicate rate = 0.000% (4000 distinct texts over 4000 records)",
+        "normalized lexical skeleton concentration: 108 distinct skeletons, top-1 skeleton share = 1.300%, top-10 skeleton share = 12.300%",
+        "intent-template concentration: 25 distinct intents, top-1 intent share = 15.375%, top-10 intent template share = 72.550%",
+        "explicitness measured from the exported text: 100.000% of questions spell inputs out as a semicolon-separated fact list (mean 3.06 semicolons), 69.375% end with a 'Report x.' imperative, 97.950% contain 3 or more numeric literals (mean 4.55 numbers, mean length 33.8 words)"
+      ],
+      "required_fix": "Queries must be LLM-rendered and gated on recomputed diversity: cap the top-1 lexical skeleton share and the top-10 intent-template share (for example <= 5% and <= 25%), forbid the 'name is value; ... Report x.' scaffold, and require the target to be implied by the goal rather than named imperatively."
+    },
+    {
+      "n": 7,
+      "defect": "V4 shortcut check skipped for boolean and other non-numeric answers",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "selected.jsonl `v4_gate.search.searched`: 3021/4000 records (75.525%) never ran the shortcut search; skip reasons: non-numeric answer: 3021",
+        "skipped records by recomputed answer kind: boolean: 3021 (recomputed from `gold_answer` with bool checked before int)",
+        "v4_report.json nevertheless reports shortcut_rate=0.0 and n_shortcuts=0 over n=4000, i.e. a clean rate derived from a search that was skipped for the majority of records"
+      ],
+      "required_fix": "The V4 shortcut search must cover every answer kind: enumerate boolean and categorical answers explicitly (a boolean answer has only two candidate values, so a shortcut predictor is trivially testable), record `searched: true` per task, and fail the build when shortcut-search coverage is below 100% of selected tasks."
+    },
+    {
+      "n": 8,
+      "defect": "insufficient per-node necessity evidence",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "selected.jsonl `semantic_validation.layers.V_NODE_NECESSITY` present on 4000 records, of which 4000 carry a verdict only and 0 carry any per-node detail; observed keys = passed (4000), reasons (4000)",
+        "in the actual training artefacts the evidence is absent entirely: node-necessity coverage over the 4000 unique tasks as exported in train_master_3000.jsonl / heldout_500.jsonl / reserve_500.jsonl = 0 records with a `semantic_validation.layers.V_NODE_NECESSITY` block"
+      ],
+      "required_fix": "Necessity must be evidenced per node: for each node store the ablated-program answer and the observed answer delta, export that table on the record, and gate on 'every node changes the answer when removed' computed from the exported evidence rather than on a single boolean verdict."
+    },
+    {
+      "n": 9,
+      "defect": "workflow / program / query-template leakage between splits",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "recomputed from record content: `workflow_id` shared between train_master_3000.jsonl and heldout_500.jsonl = 49 values, i.e. 100.000% of the 49 distinct heldout workflows were already seen in train",
+        "joined via task_id onto selected.jsonl: `query_template_fingerprint` shared train/heldout = 98 (100.000% of heldout), `program_family_id` shared train/heldout = 49 (100.000% of heldout)",
+        "key-independent proxy: 98 lexical query skeletons are shared between train and heldout, i.e. 100.000% of the 98 distinct heldout skeletons",
+        "split_manifest.json declares leak_free=True while reporting soft_key_overlap = {\"query_template_fingerprint\": 1000, \"workflow_id\": 1000, \"program_family_id\": 1000}",
+        "hard keys are indeed disjoint: `semantic_program_id` shared = 0, `workflow_instance_id` shared = 0"
+      ],
+      "required_fix": "Split on the generalisation-relevant keys, not on instance ids: workflow_id, program_family_id and query_template_fingerprint must be disjoint across train and heldout, `leak_free` must be false whenever any soft-key overlap is non-zero, and the split gate must be recomputed from the exported records instead of trusting the manifest."
+    },
+    {
+      "n": 10,
+      "defect": "strongly unbalanced boolean answers",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "recomputed from `gold_answer`: 3021 boolean answers (75.525% of the 4000 selected records), overall True share = 78.120% (2360 True vs 661 False)",
+        "a majority-class baseline that always answers True therefore scores 78.120% on boolean tasks",
+        "26 workflow ids with >= 20 boolean tasks are skewed beyond 70/30, e.g. commerce.four_step_adjust_total: 82/82 True (100.000%); energy.four_step_adjust_total: 81/81 True (100.000%); inventory.four_step_adjust_total: 82/82 True (100.000%); measurement.four_step_adjust_total: 81/81 True (100.000%); operations.four_step_adjust_total: 82/82 True (100.000%); personal_finance.four_step_adjust_total: 82/82 True (100.000%)",
+        "answer kind mix recomputed from `gold_answer`: boolean: 3021, float: 979"
+      ],
+      "required_fix": "Boolean answers must be balanced by construction and gated: sample threshold literals so that the True share sits in [0.45, 0.55] overall AND per workflow / per cell, and cap the overall share of boolean answers so the dataset is not dominated by a two-way guess."
+    },
+    {
+      "n": 11,
+      "defect": "unrealistic, trivially predictable values",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "literal numeric arguments recomputed from `gold_calls` (32652 values): min=3.0, max=1800.0, mean=577.69, median=452.0, 1792 distinct values",
+        "share integer = 100.000%, share round multiple of 10 = 9.800%, share that looks like a generic random integer in 1..2000 = 100.000%",
+        "trivial predictability of the answer: the majority-class boolean baseline already reaches 78.120% (see defect 10), and no non-integer literal appears at all (share integer = 100.000%), so no realistic money/measure precision is present"
+      ],
+      "required_fix": "Values must be drawn from role- and unit-aware realistic distributions (prices with cents, rates in plausible bands, counts with realistic magnitudes, occasional outliers) and gated on recomputed realism statistics: bounded share of round integers, non-zero share of fractional values, and no single uniform range covering the majority of literals."
+    },
+    {
+      "n": 12,
+      "defect": "unmet or merely reported selection tier quotas",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "selection_report.json declares selected=4000 of requested=4000 from eligible_pool=14843 with selection_all_hard_constraints_met=True and deficit=0, but contains no per-tier quota field (tier/quota-related keys present: none), so the quota claim cannot be verified from the export",
+        "recomputed `cell_tier` counts over selected.jsonl: STRUCTURAL_ENRICHMENT: 1952, CORE_PROFILE: 1716, CAPABILITY_ENRICHMENT: 169, CHALLENGE: 163",
+        "workflow support declared in selection_report.json is extremely uneven: min=1, max=82, 7 of 56 workflows have <= 2 supporting tasks while the modal workflow has 82",
+        "call-count support per tier recomputed from `gold_calls`: CAPABILITY_ENRICHMENT: 3 calls x169; CHALLENGE: 5 calls x163; CORE_PROFILE: 2 calls x1226, 3 calls x490; STRUCTURAL_ENRICHMENT: 2 calls x486, 4 calls x976, 5 calls x490"
+      ],
+      "required_fix": "Tier and cell quotas must be declared as explicit numeric targets in the selection config, exported per tier next to the achieved count, and enforced: a shortfall in any tier (including per-workflow minimum support, for example >= 20 tasks per workflow) must make the selection gate fail rather than be reported as met."
+    },
+    {
+      "n": 13,
+      "defect": "registry size vs primitives actually used in the dataset",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "primitive_registry.json declares 89 primitives; the dataset actually uses 9 of them, i.e. registry coverage = 10.112%",
+        "workflow_registry.json declares 66 workflows; 56 appear in the exported records",
+        "distinct gold tool surfaces = 9, and the surface -> primitive map derived from `record.tools[].semantic_id` has 0 collisions"
+      ],
+      "required_fix": "Report and gate on used-primitive coverage, not registry size: export the used/declared ratio, require a configured minimum coverage of the registry, and remove or exercise primitives that no generated program ever calls."
+    },
+    {
+      "n": 14,
+      "defect": "metrics computed from metadata labels instead of exported content",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "the declared structural label disagrees with the reconstructed DAG on 2692/4000 selected records (67.300%), so any metric aggregated over `pattern_family` describes labels rather than programs",
+        "v4_report.json reports shortcut_rate=0.0 over n=4000 while 3021 of 4000 records never ran the shortcut search",
+        "validation_report.json is a four-number summary ({\"hard_gated\": 14843, \"rejected\": 5157, \"reject_reasons\": {\"v4_shortcut\": 926, \"v4_unresolved\": 604, \"query_fail\": 3930}}) with no per-task or per-layer detail, and PILOT42_DATA_QUALITY_REPORT.json reports only counts plus label-derived booleans",
+        "the thin training files contain no structural, primitive or validation metadata at all (`pattern_family` absent in 4000 of 8000 audited rows), so their quality cannot be reconstructed from declared fields - only from content, as done here"
+      ],
+      "required_fix": "Every reported metric must be recomputed from the exported JSONL content by an auditor that cannot import producer code (this package), the audit must run as part of the build, and the freeze must carry the auditor's verdict rather than producer-side self-reports."
+    },
+    {
+      "n": 15,
+      "defect": "mixed OpenRouter logs from different runs",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "openrouter_requests.jsonl holds 147 requests spanning 2026-07-31T14:39:28Z .. 2026-07-31T15:14:52Z with models openai/gpt-4o-mini-2024-07-18: 75, google/gemini-2.5-flash-lite: 67, mistralai/mistral-small-24b-instruct-2501: 5",
+        "models observed in the logs but not declared in openrouter_model_snapshot.json / openrouter_usage_summary.json (declared: google/gemini-2.5-flash-lite, openai/gpt-4o-mini-2024-07-18): mistralai/mistral-small-24b-instruct-2501",
+        "prompt_template_version values present: pilot41.critic.v1: 67, pilot41.writer.v1: 80 - Pilot4.1 template versions appear in a Pilot4.2 export",
+        "74 of 147 request records carry no resolvable task id (task_ids == ['unknown']), so no log line can be attributed to an exported task; openrouter_failures.jsonl adds 109 records from google/gemini-2.5-flash-lite (89), mistralai/mistral-small-24b-instruct-2501 (3) plus 17 records with no model field"
+      ],
+      "required_fix": "OpenRouter logs must be per-run and attributable: write them under a run id directory, stamp every record with the run id, the prompt template version of THIS pilot and the concrete task ids, refuse to append to a log written by a different run id or template version, and fail the freeze when the declared model set does not equal the observed model set."
+    },
+    {
+      "n": 16,
+      "defect": "incomplete reproducibility and empty input hashes",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "freeze_manifest.json provenance.input_hashes = {} (empty object: no input artefact is hash-pinned)",
+        "git state at freeze: commit=d174486ff105fc5b3daed71bdfb59ff572177fe5, dirty=True, n_dirty_files=46 - the export was produced from an uncommitted tree",
+        "freeze_manifest.json records cli_args=[\"select-pilot42\", \"--selected-target\", \"4000\", \"--resume\", \"--new-run-suffix\", \"v2\"] and seeds={\"seed\": 20260731} but LLM_VALIDATED=False and llm_status='partial_smoke_attempted', so the LLM-dependent part of the pipeline is not reproducible from the manifest",
+        "MANIFEST.sha256.json is present (6964 bytes) and hashes outputs, but no input hashes exist to tie those outputs to their sources"
+      ],
+      "required_fix": "The freeze must pin inputs: hash every config, registry, workflow blueprint, prompt template and upstream JSONL into `input_hashes`, refuse to freeze from a dirty git tree (or record the full diff), and store the resolved model snapshot plus prompt hashes so an LLM-dependent run can be replayed."
+    },
+    {
+      "n": 17,
+      "defect": "dataset markable as complete despite unmet hard gates",
+      "confirmed": "yes",
+      "measured_evidence": [
+        "freeze_manifest.json: frozen=True, AUTOMATED_GATES_PASSED=True, selection_all_hard_constraints_met=True, while LLM_VALIDATED=False, TRAINING_READY=False, HUMAN_REVIEW_PENDING=True",
+        "PILOT42_DATA_QUALITY_REPORT.json reports AUTOMATED_GATES_PASSED=True and leak_free=True on the same export that shows soft_key_overlap={\"query_template_fingerprint\": 1000, \"workflow_id\": 1000, \"program_family_id\": 1000}",
+        "this independent audit records 15 deficits and returns verdict FAIL / INDEPENDENT_AUDIT_PASSED=False",
+        "concretely unmet at freeze time: zero 6+ call tasks; LLM_VALIDATED=false; non-zero soft-key split overlap; declared pattern labels contradicted by the DAG; V4 shortcut search skipped"
+      ],
+      "required_fix": "Completion must be a conjunction of independently recomputed gates: the build may set TRAINING_READY / COMPLETE only when the independent auditor returns PASS with zero deficits, and AUTOMATED_GATES_PASSED must not be settable while any hard gate (call-count tier, pattern agreement, leakage, LLM validation, shortcut coverage) is unmet."
+    }
+  ],
+  "independent_audit": {
+    "schema_version": "ttdf.pilot43_independent_audit.v1",
+    "run_label": "pilot4_2_workflow_grounded_v2",
+    "export_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\pilot4_2_workflow_grounded_v2",
+    "out_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\reports\\pilot42_final_audit",
+    "independence": {
+      "imports": "stdlib only",
+      "producer_code_imported": false,
+      "exported_data_files_read": [
+        "heldout_500.jsonl",
+        "primitive_registry.json",
+        "reserve_500.jsonl",
+        "selected.jsonl",
+        "train_master_3000.jsonl"
+      ]
+    },
+    "verdict": "FAIL",
+    "INDEPENDENT_AUDIT_PASSED": false,
+    "deficits": [
+      "missing_field:pattern_family (absent in 4000/8000 records)",
+      "missing_field:structural_skill (absent in 4000/8000 records)",
+      "declared_pattern_disagreement measured 2692/4000 tasks vs required exactly 0",
+      "actual_pattern_disagreement measured 2692/4000 tasks vs required exactly 0",
+      "share_call_count_ge_6 measured 0.000000 vs required >= 0.050000",
+      "top10_intent_share measured 0.725500 vs required <= 0.250000",
+      "boolean_true_share measured 0.781198 vs required within [0.450, 0.550]",
+      "n_distinct_primitives measured 9.000000 vs required >= 30.000000",
+      "n_distinct_capability_families measured 3.000000 vs required >= 6.000000",
+      "top1_primitive_sequence_share measured 0.244000 vs required <= 0.100000",
+      "split_overlap[workflow_id][heldout_500] measured 49 vs required <= 0",
+      "split_overlap[workflow_id][reserve_500] measured 49 vs required <= 0",
+      "v4_coverage measured 0.000000 vs required >= 1.000000",
+      "critic_coverage measured 0.000000 vs required >= 1.000000",
+      "node_necessity_coverage measured 0.000000 vs required >= 1.000000"
+    ],
+    "disagreements": {
+      "call_count": {
+        "n_checked": 8000,
+        "n_disagree": 0,
+        "rate": 0.0,
+        "examples": []
+      },
+      "structural_pattern": {
+        "n_checked": 4000,
+        "n_disagree": 2692,
+        "rate": 0.673,
+        "examples": [
+          {
+            "task_id": "p42_6aabb059b6ce",
+            "declared": "FAN_IN_SINGLE",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_b8fe6f19b5c7",
+            "declared": "REUSE_EARLY_OUTPUT",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_c4cf79664f33",
+            "declared": "LATE_REFERENCE",
+            "recomputed_primary": "DIAMOND",
+            "recomputed_satisfied": "DIAMOND|FAN_IN_SINGLE|FAN_OUT|REPEATED_PRIMITIVE|REUSE_EARLY_OUTPUT"
+          },
+          {
+            "task_id": "p42_d299fc7147f5",
+            "declared": "FAN_IN_SINGLE",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_cff6c26a4f28",
+            "declared": "FAN_IN_SINGLE",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_3fd94a5599f2",
+            "declared": "REPEATED_PRIMITIVE",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_5fa0d0f5df06",
+            "declared": "DIAMOND",
+            "recomputed_primary": "REPEATED_PRIMITIVE",
+            "recomputed_satisfied": "LINEAR_CHAIN|REPEATED_PRIMITIVE"
+          },
+          {
+            "task_id": "p42_f592dcae5d6d",
+            "declared": "FAN_IN_SINGLE",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_0d081cc26ad7",
+            "declared": "REUSE_EARLY_OUTPUT",
+            "recomputed_primary": "LINEAR_CHAIN",
+            "recomputed_satisfied": "LINEAR_CHAIN"
+          },
+          {
+            "task_id": "p42_38a7c796adc5",
+            "declared": "FAN_IN_SINGLE",
+            "recomputed_primary": "REPEATED_PRIMITIVE",
+            "recomputed_satisfied": "LINEAR_CHAIN|REPEATED_PRIMITIVE"
+          }
+        ]
+      },
+      "actual_structural_pattern": {
+        "n_checked": 4000,
+        "n_disagree": 2692,
+        "rate": 0.673,
+        "examples": [
+          "p42_6aabb059b6ce",
+          "p42_b8fe6f19b5c7",
+          "p42_c4cf79664f33",
+          "p42_d299fc7147f5",
+          "p42_cff6c26a4f28",
+          "p42_3fd94a5599f2",
+          "p42_5fa0d0f5df06",
+          "p42_f592dcae5d6d",
+          "p42_0d081cc26ad7",
+          "p42_38a7c796adc5"
+        ]
+      },
+      "answer_type": {
+        "n_checked": 0,
+        "n_disagree": 0,
+        "rate": 0.0,
+        "examples": []
+      }
+    },
+    "counts": {
+      "train_master_3000": 3000,
+      "heldout_500": 500,
+      "reserve_500": 500,
+      "selected": 4000
+    },
+    "n_records_audited": 8000,
+    "n_unique_tasks": 4000,
+    "dedupe_key": "task_id",
+    "dedupe_note": "per-task checks cover every audited row; aggregate distributions count each task_id once",
+    "call_count": {
+      "by_split": {
+        "train_master_3000": {
+          "5": 486,
+          "2": 1269,
+          "4": 743,
+          "3": 502
+        },
+        "heldout_500": {
+          "3": 84,
+          "2": 217,
+          "5": 88,
+          "4": 111
+        },
+        "reserve_500": {
+          "2": 226,
+          "5": 79,
+          "4": 122,
+          "3": 73
+        },
+        "selected": {
+          "3": 659,
+          "5": 653,
+          "2": 1712,
+          "4": 976
+        }
+      },
+      "by_tier": {
+        "STRUCTURAL_ENRICHMENT": {
+          "5": 490,
+          "4": 976,
+          "2": 486
+        },
+        "CORE_PROFILE": {
+          "2": 1226,
+          "3": 490
+        },
+        "CHALLENGE": {
+          "5": 163
+        },
+        "CAPABILITY_ENRICHMENT": {
+          "3": 169
+        }
+      },
+      "overall": {
+        "5": 653,
+        "2": 1712,
+        "4": 976,
+        "3": 659
+      },
+      "shares": {
+        "2": 0.428,
+        "3": 0.16475,
+        "4": 0.244,
+        "5": 0.16325
+      },
+      "share_at_least": {
+        "2": 1.0,
+        "3": 0.572,
+        "4": 0.40725,
+        "5": 0.16325,
+        "6": 0.0,
+        "7": 0.0,
+        "8": 0.0
+      }
+    },
+    "patterns": {
+      "primary_distribution": {
+        "REPEATED_PRIMITIVE": 572,
+        "LINEAR_CHAIN": 3184,
+        "DIAMOND": 244
+      },
+      "satisfied_distribution": {
+        "LINEAR_CHAIN": 3756,
+        "REPEATED_PRIMITIVE": 653,
+        "REUSE_EARLY_OUTPUT": 244,
+        "DIAMOND": 244,
+        "FAN_OUT": 244,
+        "FAN_IN_SINGLE": 244
+      },
+      "undecidable_distribution": {
+        "TYPE_TRANSITION_CHAIN": 4000
+      },
+      "primary_by_call_count": {
+        "5": {
+          "REPEATED_PRIMITIVE": 490,
+          "DIAMOND": 163
+        },
+        "2": {
+          "LINEAR_CHAIN": 1630,
+          "REPEATED_PRIMITIVE": 82
+        },
+        "4": {
+          "LINEAR_CHAIN": 976
+        },
+        "3": {
+          "DIAMOND": 81,
+          "LINEAR_CHAIN": 578
+        }
+      }
+    },
+    "primitives": {
+      "primitive_mapping_available": true,
+      "primitive_mapping_source": "record.tools[].semantic_id + primitive_registry.json",
+      "surface_map_collisions": {},
+      "distinct_gold_tool_surfaces": 9,
+      "gold_tool_surface_counts": {
+        "combine_amounts": 3593,
+        "grow_by_rate": 2778,
+        "shrink_by_rate": 1386,
+        "exceeds_value": 3021,
+        "scale_quantity": 976,
+        "portion_by_rate": 327,
+        "reduce_amount": 328,
+        "midpoint_value": 81,
+        "split_evenly": 80
+      },
+      "distinct_primitives_used": 9,
+      "primitive_counts": {
+        "add": 3593,
+        "increase_by_percent": 2778,
+        "decrease_by_percent": 1386,
+        "is_greater": 3021,
+        "multiply": 976,
+        "percent_of": 327,
+        "subtract": 328,
+        "average_two": 81,
+        "divide": 80
+      },
+      "primitive_source": "surface_to_primitive",
+      "primitive_source_disagreements": 0,
+      "unmapped_surfaces": {},
+      "registry_size": 89,
+      "registry_coverage": 0.10112359550561797,
+      "capability_counts": {
+        "arithmetic.binary": 9468,
+        "comparison": 3021,
+        "statistics": 81
+      },
+      "distinct_capability_families": 3
+    },
+    "sequences": {
+      "n_distinct_primitive_sequences": 15,
+      "primitive_sequence_concentration": {
+        "total": 4000,
+        "distinct": 15,
+        "top1_share": 0.244,
+        "top10_share": 0.919
+      },
+      "top_primitive_sequences": [
+        {
+          "sequence": [
+            "multiply",
+            "increase_by_percent",
+            "add",
+            "is_greater"
+          ],
+          "n": 976
+        },
+        {
+          "sequence": [
+            "increase_by_percent",
+            "add"
+          ],
+          "n": 652
+        },
+        {
+          "sequence": [
+            "decrease_by_percent",
+            "is_greater"
+          ],
+          "n": 652
+        },
+        {
+          "sequence": [
+            "add",
+            "increase_by_percent",
+            "is_greater"
+          ],
+          "n": 497
+        },
+        {
+          "sequence": [
+            "add",
+            "increase_by_percent",
+            "decrease_by_percent",
+            "add",
+            "is_greater"
+          ],
+          "n": 490
+        },
+        {
+          "sequence": [
+            "decrease_by_percent",
+            "add"
+          ],
+          "n": 82
+        },
+        {
+          "sequence": [
+            "percent_of",
+            "subtract",
+            "add",
+            "increase_by_percent",
+            "is_greater"
+          ],
+          "n": 82
+        },
+        {
+          "sequence": [
+            "subtract",
+            "subtract"
+          ],
+          "n": 82
+        },
+        {
+          "sequence": [
+            "percent_of",
+            "subtract"
+          ],
+          "n": 82
+        },
+        {
+          "sequence": [
+            "increase_by_percent",
+            "is_greater"
+          ],
+          "n": 81
+        }
+      ],
+      "n_distinct_capability_sequences": 7,
+      "capability_sequence_concentration": {
+        "total": 4000,
+        "distinct": 7,
+        "top1_share": 0.244,
+        "top10_share": 1.0
+      }
+    },
+    "queries": {
+      "duplicate_rates_overall": {
+        "n": 4000,
+        "n_distinct_exact": 4000,
+        "exact_duplicate_rate": 0.0,
+        "n_distinct_skeleton": 108,
+        "top1_skeleton_share": 0.013,
+        "top10_skeleton_share": 0.123,
+        "n_distinct_intent": 25,
+        "top1_intent_share": 0.15375,
+        "top10_intent_share": 0.7255
+      },
+      "duplicate_rates_by_split": {
+        "train_master_3000": {
+          "n": 3000,
+          "n_distinct_exact": 3000,
+          "exact_duplicate_rate": 0.0,
+          "n_distinct_skeleton": 108,
+          "top1_skeleton_share": 0.013,
+          "top10_skeleton_share": 0.12633333333333333,
+          "n_distinct_intent": 25,
+          "top1_intent_share": 0.153,
+          "top10_intent_share": 0.732
+        },
+        "heldout_500": {
+          "n": 500,
+          "n_distinct_exact": 500,
+          "exact_duplicate_rate": 0.0,
+          "n_distinct_skeleton": 98,
+          "top1_skeleton_share": 0.022,
+          "top10_skeleton_share": 0.178,
+          "n_distinct_intent": 23,
+          "top1_intent_share": 0.146,
+          "top10_intent_share": 0.714
+        },
+        "reserve_500": {
+          "n": 500,
+          "n_distinct_exact": 500,
+          "exact_duplicate_rate": 0.0,
+          "n_distinct_skeleton": 100,
+          "top1_skeleton_share": 0.024,
+          "top10_skeleton_share": 0.182,
+          "n_distinct_intent": 23,
+          "top1_intent_share": 0.166,
+          "top10_intent_share": 0.718
+        },
+        "selected": {
+          "n": 4000,
+          "n_distinct_exact": 4000,
+          "exact_duplicate_rate": 0.0,
+          "n_distinct_skeleton": 108,
+          "top1_skeleton_share": 0.013,
+          "top10_skeleton_share": 0.123,
+          "n_distinct_intent": 25,
+          "top1_intent_share": 0.15375,
+          "top10_intent_share": 0.7255
+        }
+      },
+      "declared_query_mode_distribution": {
+        "GOAL_BASED_IMPLICIT": 735,
+        "SEMI_IMPLICIT": 574,
+        "DOMAIN_GROUNDED_IMPLICIT": 651,
+        "OPERATION_EXPLICIT_GRAPH_IMPLICIT": 1063,
+        "GRAPH_EXPLICIT": 977
+      },
+      "declared_query_mode_note": "declared-only: the export carries no independent evidence of the realised query mode"
+    },
+    "boolean_balance": {
+      "n_boolean": 3021,
+      "n_true": 2360,
+      "overall_true_share": 0.7811982787156571,
+      "by_workflow": {
+        "boolean_logic.scale_adjust_compare": {
+          "n": 2,
+          "n_true": 2,
+          "true_share": 1.0
+        },
+        "classification.scale_adjust_compare": {
+          "n": 81,
+          "n_true": 66,
+          "true_share": 0.8148148148148148
+        },
+        "commerce.discount_tax_fee_compare": {
+          "n": 81,
+          "n_true": 73,
+          "true_share": 0.9012345679012346
+        },
+        "commerce.four_step_adjust_total": {
+          "n": 82,
+          "n_true": 82,
+          "true_share": 1.0
+        },
+        "commerce.shrink_then_compare": {
+          "n": 82,
+          "n_true": 34,
+          "true_share": 0.4146341463414634
+        },
+        "commerce.six_step_pipeline": {
+          "n": 82,
+          "n_true": 77,
+          "true_share": 0.9390243902439024
+        },
+        "date_time.scale_adjust_compare": {
+          "n": 82,
+          "n_true": 73,
+          "true_share": 0.8902439024390244
+        },
+        "dictionary_processing.scale_adjust_compare": {
+          "n": 2,
+          "n_true": 2,
+          "true_share": 1.0
+        },
+        "energy.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "energy.scale_adjust_compare": {
+          "n": 81,
+          "n_true": 75,
+          "true_share": 0.9259259259259259
+        },
+        "energy.six_step_pipeline": {
+          "n": 82,
+          "n_true": 80,
+          "true_share": 0.975609756097561
+        },
+        "file_path.scale_adjust_compare": {
+          "n": 82,
+          "n_true": 74,
+          "true_share": 0.9024390243902439
+        },
+        "geometry.scale_adjust_compare": {
+          "n": 82,
+          "n_true": 75,
+          "true_share": 0.9146341463414634
+        },
+        "inventory.four_step_adjust_total": {
+          "n": 82,
+          "n_true": 82,
+          "true_share": 1.0
+        },
+        "inventory.shrink_then_compare": {
+          "n": 82,
+          "n_true": 34,
+          "true_share": 0.4146341463414634
+        },
+        "inventory.six_step_pipeline": {
+          "n": 82,
+          "n_true": 78,
+          "true_share": 0.9512195121951219
+        },
+        "list_processing.scale_adjust_compare": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        },
+        "measurement.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "measurement.shrink_then_compare": {
+          "n": 82,
+          "n_true": 33,
+          "true_share": 0.4024390243902439
+        },
+        "measurement.six_step_pipeline": {
+          "n": 82,
+          "n_true": 80,
+          "true_share": 0.975609756097561
+        },
+        "operations.four_step_adjust_total": {
+          "n": 82,
+          "n_true": 82,
+          "true_share": 1.0
+        },
+        "operations.scale_adjust_compare": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        },
+        "personal_finance.adjust_compare": {
+          "n": 81,
+          "n_true": 55,
+          "true_share": 0.6790123456790124
+        },
+        "personal_finance.four_step_adjust_total": {
+          "n": 82,
+          "n_true": 82,
+          "true_share": 1.0
+        },
+        "personal_finance.shrink_then_compare": {
+          "n": 82,
+          "n_true": 31,
+          "true_share": 0.3780487804878049
+        },
+        "quality.multi_metric_decision": {
+          "n": 82,
+          "n_true": 45,
+          "true_share": 0.5487804878048781
+        },
+        "quality_control.four_step_adjust_total": {
+          "n": 82,
+          "n_true": 82,
+          "true_share": 1.0
+        },
+        "quality_control.shrink_then_compare": {
+          "n": 81,
+          "n_true": 31,
+          "true_share": 0.38271604938271603
+        },
+        "rates.scale_aggregate_compare": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        },
+        "rates_and_ratios.four_step_adjust_total": {
+          "n": 80,
+          "n_true": 80,
+          "true_share": 1.0
+        },
+        "rates_and_ratios.shrink_then_compare": {
+          "n": 81,
+          "n_true": 28,
+          "true_share": 0.345679012345679
+        },
+        "resource_allocation.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "resource_allocation.shrink_then_compare": {
+          "n": 81,
+          "n_true": 27,
+          "true_share": 0.3333333333333333
+        },
+        "statistics.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "statistics.shrink_then_compare": {
+          "n": 81,
+          "n_true": 40,
+          "true_share": 0.49382716049382713
+        },
+        "statistics.six_step_pipeline": {
+          "n": 81,
+          "n_true": 80,
+          "true_share": 0.9876543209876543
+        },
+        "statistics.two_value_mean_threshold": {
+          "n": 81,
+          "n_true": 38,
+          "true_share": 0.4691358024691358
+        },
+        "text_processing.scale_adjust_compare": {
+          "n": 81,
+          "n_true": 72,
+          "true_share": 0.8888888888888888
+        },
+        "threshold_decision.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "threshold_decision.six_step_pipeline": {
+          "n": 81,
+          "n_true": 76,
+          "true_share": 0.9382716049382716
+        },
+        "time_duration.scale_adjust_compare": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        },
+        "travel.leg_sum_then_speed": {
+          "n": 80,
+          "n_true": 0,
+          "true_share": 0.0
+        },
+        "travel_distance.four_step_adjust_total": {
+          "n": 81,
+          "n_true": 81,
+          "true_share": 1.0
+        },
+        "url_processing.scale_adjust_compare": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        }
+      },
+      "by_intent_template": {
+        "a|is|is|is|is|is#S#3": {
+          "n": 82,
+          "n_true": 80,
+          "true_share": 0.975609756097561
+        },
+        "for|the|and|given|is|is#S#2": {
+          "n": 37,
+          "n_true": 12,
+          "true_share": 0.32432432432432434
+        },
+        "for|the|given|a|is|is#S#2": {
+          "n": 325,
+          "n_true": 195,
+          "true_share": 0.6
+        },
+        "for|the|given|is|is|is#S#2": {
+          "n": 452,
+          "n_true": 393,
+          "true_share": 0.8694690265486725
+        },
+        "in|this|and|the|and|has#S#2": {
+          "n": 41,
+          "n_true": 41,
+          "true_share": 1.0
+        },
+        "in|this|and|the|has|is#S#2": {
+          "n": 40,
+          "n_true": 40,
+          "true_share": 1.0
+        },
+        "in|this|the|has|a|is#S#2": {
+          "n": 81,
+          "n_true": 80,
+          "true_share": 0.9876543209876543
+        },
+        "in|this|the|has|is|is#S#2": {
+          "n": 327,
+          "n_true": 225,
+          "true_share": 0.6880733944954128
+        },
+        "is|is|is|an|and|it#S#3": {
+          "n": 81,
+          "n_true": 55,
+          "true_share": 0.6790123456790124
+        },
+        "is|is|is|a|and|a#S#3": {
+          "n": 163,
+          "n_true": 64,
+          "true_share": 0.39263803680981596
+        },
+        "is|is|is|is|a|and#S#3": {
+          "n": 2,
+          "n_true": 2,
+          "true_share": 1.0
+        },
+        "is|is|is|is|is|and#S#3": {
+          "n": 81,
+          "n_true": 73,
+          "true_share": 0.9012345679012346
+        },
+        "is|is|is|is|is|by#S#3": {
+          "n": 162,
+          "n_true": 162,
+          "true_share": 1.0
+        },
+        "is|is|is|is|to|for#S#3": {
+          "n": 1,
+          "n_true": 1,
+          "true_share": 1.0
+        },
+        "the|has|a|is|is|is#Q#3": {
+          "n": 81,
+          "n_true": 76,
+          "true_share": 0.9382716049382716
+        },
+        "the|has|is|is|is|a#Q#3": {
+          "n": 82,
+          "n_true": 34,
+          "true_share": 0.4146341463414634
+        },
+        "the|has|is|is|is|is#Q#3": {
+          "n": 166,
+          "n_true": 166,
+          "true_share": 1.0
+        },
+        "using|a|is|is|a|is#S#3": {
+          "n": 82,
+          "n_true": 45,
+          "true_share": 0.5487804878048781
+        },
+        "using|a|is|is|is|is#S#3": {
+          "n": 82,
+          "n_true": 78,
+          "true_share": 0.9512195121951219
+        },
+        "using|is|is|is|for|the#S#3": {
+          "n": 163,
+          "n_true": 71,
+          "true_share": 0.43558282208588955
+        },
+        "using|is|is|is|is|for#S#3": {
+          "n": 245,
+          "n_true": 222,
+          "true_share": 0.9061224489795918
+        },
+        "using|is|is|is|is|is#S#3": {
+          "n": 245,
+          "n_true": 245,
+          "true_share": 1.0
+        }
+      },
+      "by_cell": {
+        "CAPABILITY_ENRICHMENT": {
+          "n": 169,
+          "n_true": 152,
+          "true_share": 0.8994082840236687
+        },
+        "CHALLENGE": {
+          "n": 163,
+          "n_true": 118,
+          "true_share": 0.7239263803680982
+        },
+        "CORE_PROFILE": {
+          "n": 980,
+          "n_true": 545,
+          "true_share": 0.5561224489795918
+        },
+        "STRUCTURAL_ENRICHMENT": {
+          "n": 1709,
+          "n_true": 1545,
+          "true_share": 0.9040374488004681
+        }
+      }
+    },
+    "support": {
+      "cell_tier_support": {
+        "STRUCTURAL_ENRICHMENT": 1952,
+        "CORE_PROFILE": 1716,
+        "CHALLENGE": 163,
+        "CAPABILITY_ENRICHMENT": 169
+      },
+      "workflow_support": {
+        "measurement.six_step_pipeline": 82,
+        "personal_finance.adjust_compare": 81,
+        "measurement.four_step_adjust_total": 81,
+        "commerce.discount_tax_total": 81,
+        "energy.scale_adjust_compare": 81,
+        "rates_and_ratios.four_step_adjust_total": 80,
+        "travel_distance.four_step_adjust_total": 81,
+        "operations.four_step_adjust_total": 82,
+        "commerce.grow_then_add": 82,
+        "commerce.discount_then_fee": 82,
+        "commerce.discount_tax_fee_compare": 81,
+        "personal_finance.grow_then_add": 82,
+        "energy.six_step_pipeline": 82,
+        "resource_allocation.grow_then_add": 81,
+        "energy.four_step_adjust_total": 81,
+        "inventory.four_step_adjust_total": 82,
+        "inventory.grow_then_add": 82,
+        "rates_and_ratios.grow_then_add": 81,
+        "personal_finance.four_step_adjust_total": 82,
+        "file_path.scale_adjust_compare": 82,
+        "quality_control.grow_then_add": 81,
+        "statistics.shrink_then_compare": 81,
+        "quality_control.shrink_then_compare": 81,
+        "quality.multi_metric_decision": 82,
+        "statistics.four_step_adjust_total": 81,
+        "threshold_decision.six_step_pipeline": 81,
+        "inventory.shrink_then_compare": 82,
+        "commerce.shrink_then_compare": 82,
+        "rates_and_ratios.shrink_then_compare": 81,
+        "date_time.scale_adjust_compare": 82,
+        "classification.scale_adjust_compare": 81,
+        "measurement.grow_then_add": 82,
+        "text_processing.scale_adjust_compare": 81,
+        "quality_control.four_step_adjust_total": 82,
+        "statistics.six_step_pipeline": 81,
+        "inventory.six_step_pipeline": 82,
+        "commerce.six_step_pipeline": 82,
+        "resource_allocation.four_step_adjust_total": 81,
+        "threshold_decision.four_step_adjust_total": 81,
+        "boolean_logic.scale_adjust_compare": 2,
+        "measurement.shrink_then_compare": 82,
+        "geometry.scale_adjust_compare": 82,
+        "statistics.two_value_mean_threshold": 81,
+        "inventory.available_after_two_picks": 82,
+        "resource_allocation.shrink_then_compare": 81,
+        "personal_finance.shrink_then_compare": 82,
+        "commerce.four_step_adjust_total": 82,
+        "travel.leg_sum_then_speed": 80,
+        "statistics.grow_then_add": 81,
+        "commerce.portion_then_remaining": 82,
+        "dictionary_processing.scale_adjust_compare": 2,
+        "time_duration.scale_adjust_compare": 1,
+        "operations.scale_adjust_compare": 1,
+        "url_processing.scale_adjust_compare": 1,
+        "rates.scale_aggregate_compare": 1,
+        "list_processing.scale_adjust_compare": 1
+      },
+      "n_distinct_workflows": 56
+    },
+    "split_overlap": {
+      "workflow_id": {
+        "heldout_500": 49,
+        "reserve_500": 49
+      },
+      "cell_tier": {
+        "heldout_500": 4,
+        "reserve_500": 4
+      }
+    },
+    "validation_coverage": {
+      "v4": {
+        "path": "v4_gate",
+        "n": 4000,
+        "n_present": 0,
+        "coverage": 0.0,
+        "n_passed": 0,
+        "pass_rate_over_present": 0.0
+      },
+      "critic": {
+        "path": "llm_critic",
+        "n": 4000,
+        "n_present": 0,
+        "coverage": 0.0,
+        "n_passed": 0,
+        "pass_rate_over_present": 0.0
+      },
+      "node_necessity": {
+        "path": "semantic_validation.layers.V_NODE_NECESSITY",
+        "n": 4000,
+        "n_present": 0,
+        "coverage": 0.0,
+        "n_passed": 0,
+        "pass_rate_over_present": 0.0
+      }
+    },
+    "numeric_literals": {
+      "n": 16326,
+      "min": 3.0,
+      "max": 1800.0,
+      "mean": 577.6866960676222,
+      "median": 452.0,
+      "share_integer": 1.0,
+      "share_round_multiple_of_10": 0.09800318510351587,
+      "share_generic_int_1_2000": 1.0,
+      "n_distinct": 1792
+    },
+    "tolerances": {
+      "counts": "exact",
+      "rates": "0.1 percentage point",
+      "per_task_pattern_label": "exact",
+      "per_task_call_count": "exact"
+    }
+  },
+  "evidence": {
+    "primitive_to_capability": {
+      "abs_difference": "arithmetic.binary",
+      "add": "arithmetic.binary",
+      "append_value": "sequence.combine",
+      "apply_rate_override": "dictionary.update",
+      "average_two": "statistics",
+      "bitwise_and": "bitwise",
+      "bitwise_or": "bitwise",
+      "bitwise_xor": "bitwise",
+      "ceil_value": "rounding",
+      "celsius_to_fahrenheit": "conversion.numeric",
+      "circle_area": "geometry",
+      "clamp": "validation",
+      "classify_threshold": "classification.deterministic",
+      "concat_lists": "sequence.combine",
+      "concat_texts": "string.format",
+      "count_values": "sequence.reduce",
+      "cumulative_sums": "sequence.map",
+      "days_to_hours": "date_time",
+      "decrease_by_percent": "arithmetic.binary",
+      "digit_sum": "arithmetic.unary",
+      "divide": "arithmetic.binary",
+      "domain_of_url": "path_url",
+      "fahrenheit_to_celsius": "conversion.numeric",
+      "file_extension": "string.parse",
+      "filter_above": "sequence.filter",
+      "floor_divide": "arithmetic.binary",
+      "floor_value": "rounding",
+      "format_fixed": "conversion.text",
+      "format_with_unit": "string.format",
+      "grade_band": "classification.deterministic",
+      "hours_to_minutes": "date_time",
+      "hypotenuse": "geometry",
+      "increase_by_percent": "arithmetic.binary",
+      "index_of_max": "sequence.index",
+      "inverse": "arithmetic.unary",
+      "is_divisible_by": "boolean.logic",
+      "is_greater": "comparison",
+      "is_non_negative": "validation",
+      "is_within_range": "validation",
+      "join_path_segments": "path_url",
+      "join_values": "sequence.combine",
+      "km_to_meters": "conversion.numeric",
+      "left_shift": "bitwise",
+      "logical_and": "boolean.logic",
+      "logical_not": "boolean.logic",
+      "logical_or": "boolean.logic",
+      "lookup_unit_factor": "dictionary.lookup",
+      "max_two": "comparison",
+      "max_values": "sequence.reduce",
+      "mean_three": "statistics",
+      "mean_values": "statistics",
+      "median_values": "statistics",
+      "meters_to_km": "conversion.numeric",
+      "min_two": "comparison",
+      "min_values": "sequence.reduce",
+      "minutes_since_midnight": "date_time",
+      "minutes_to_seconds": "conversion.numeric",
+      "modulo": "arithmetic.binary",
+      "multiply": "arithmetic.binary",
+      "negate": "arithmetic.unary",
+      "number_to_string": "conversion.text",
+      "offset_list": "sequence.map",
+      "parse_number": "string.parse",
+      "percent_of": "arithmetic.binary",
+      "power": "arithmetic.binary",
+      "product_three": "arithmetic.reduction",
+      "range_spread": "statistics",
+      "range_three": "statistics",
+      "ratio_of": "arithmetic.binary",
+      "ratio_to_percent": "arithmetic.unary",
+      "rectangle_area": "geometry",
+      "rectangle_perimeter": "geometry",
+      "round_direction": "rounding",
+      "round_places": "rounding",
+      "round_to_int": "rounding",
+      "scale_list": "sequence.map",
+      "seconds_to_minutes": "conversion.numeric",
+      "sort_values_desc": "sequence.map",
+      "sqrt": "arithmetic.unary",
+      "square": "arithmetic.unary",
+      "subtract": "arithmetic.binary",
+      "sum_three": "arithmetic.reduction",
+      "sum_values": "sequence.reduce",
+      "tag_value": "string.format",
+      "text_length": "string.transform",
+      "text_upper": "string.transform",
+      "top_k_values": "sequence.filter",
+      "value_at_position": "sequence.index",
+      "weeks_to_days": "date_time"
+    },
+    "pattern_labels": {
+      "n_checked": 4000,
+      "n_agree": 900,
+      "n_disagree": 2692,
+      "n_undecidable": 408,
+      "disagreement_rate": 0.673,
+      "undecidable_rate": 0.102,
+      "by_declared_label": {
+        "DIAMOND": {
+          "disagree": 245
+        },
+        "FAN_IN_SINGLE": {
+          "disagree": 574
+        },
+        "LATE_REFERENCE": {
+          "disagree": 244
+        },
+        "LINEAR_CHAIN": {
+          "agree": 819,
+          "disagree": 82
+        },
+        "MULTI_JOIN": {
+          "disagree": 161
+        },
+        "PARALLEL_THEN_MERGE": {
+          "disagree": 163
+        },
+        "REPEATED_PRIMITIVE": {
+          "disagree": 571
+        },
+        "REUSE_EARLY_OUTPUT": {
+          "disagree": 489,
+          "agree": 81
+        },
+        "TWO_STAGE_AGGREGATION": {
+          "disagree": 163
+        },
+        "TYPE_TRANSITION_CHAIN": {
+          "undecidable": 408
+        }
+      },
+      "declared_label_counts": {
+        "FAN_IN_SINGLE": 574,
+        "REUSE_EARLY_OUTPUT": 570,
+        "LATE_REFERENCE": 244,
+        "REPEATED_PRIMITIVE": 571,
+        "LINEAR_CHAIN": 901,
+        "DIAMOND": 245,
+        "TWO_STAGE_AGGREGATION": 163,
+        "TYPE_TRANSITION_CHAIN": 408,
+        "PARALLEL_THEN_MERGE": 163,
+        "MULTI_JOIN": 161
+      },
+      "records_satisfying_each_label": {
+        "LINEAR_CHAIN": 3756,
+        "REUSE_EARLY_OUTPUT": 244,
+        "FAN_OUT": 244,
+        "FAN_IN_SINGLE": 244,
+        "REPEATED_PRIMITIVE": 653,
+        "DIAMOND": 244
+      },
+      "declared_vs_recomputed_primary": {
+        "DIAMOND": {
+          "REPEATED_PRIMITIVE": 82,
+          "LINEAR_CHAIN": 163
+        },
+        "FAN_IN_SINGLE": {
+          "LINEAR_CHAIN": 492,
+          "REPEATED_PRIMITIVE": 82
+        },
+        "LATE_REFERENCE": {
+          "DIAMOND": 81,
+          "REPEATED_PRIMITIVE": 82,
+          "LINEAR_CHAIN": 81
+        },
+        "LINEAR_CHAIN": {
+          "LINEAR_CHAIN": 737,
+          "REPEATED_PRIMITIVE": 82,
+          "DIAMOND": 82
+        },
+        "MULTI_JOIN": {
+          "LINEAR_CHAIN": 80,
+          "REPEATED_PRIMITIVE": 81
+        },
+        "PARALLEL_THEN_MERGE": {
+          "LINEAR_CHAIN": 82,
+          "REPEATED_PRIMITIVE": 81
+        },
+        "REPEATED_PRIMITIVE": {
+          "LINEAR_CHAIN": 571
+        },
+        "REUSE_EARLY_OUTPUT": {
+          "LINEAR_CHAIN": 407,
+          "DIAMOND": 81,
+          "REPEATED_PRIMITIVE": 82
+        },
+        "TWO_STAGE_AGGREGATION": {
+          "LINEAR_CHAIN": 163
+        },
+        "TYPE_TRANSITION_CHAIN": {
+          "LINEAR_CHAIN": 408
+        }
+      },
+      "examples": [
+        {
+          "task_id": "p42_6aabb059b6ce",
+          "declared_pattern_family": "FAN_IN_SINGLE",
+          "n_nodes": 3,
+          "n_edges": 2,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_b8fe6f19b5c7",
+          "declared_pattern_family": "REUSE_EARLY_OUTPUT",
+          "n_nodes": 3,
+          "n_edges": 2,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_c4cf79664f33",
+          "declared_pattern_family": "LATE_REFERENCE",
+          "n_nodes": 5,
+          "n_edges": 5,
+          "n_join_nodes": 1,
+          "recomputed_satisfied": [
+            "DIAMOND",
+            "FAN_IN_SINGLE",
+            "FAN_OUT",
+            "REPEATED_PRIMITIVE",
+            "REUSE_EARLY_OUTPUT"
+          ]
+        },
+        {
+          "task_id": "p42_d299fc7147f5",
+          "declared_pattern_family": "FAN_IN_SINGLE",
+          "n_nodes": 2,
+          "n_edges": 1,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_cff6c26a4f28",
+          "declared_pattern_family": "FAN_IN_SINGLE",
+          "n_nodes": 4,
+          "n_edges": 3,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_3fd94a5599f2",
+          "declared_pattern_family": "REPEATED_PRIMITIVE",
+          "n_nodes": 2,
+          "n_edges": 1,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_5fa0d0f5df06",
+          "declared_pattern_family": "DIAMOND",
+          "n_nodes": 5,
+          "n_edges": 4,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN",
+            "REPEATED_PRIMITIVE"
+          ]
+        },
+        {
+          "task_id": "p42_f592dcae5d6d",
+          "declared_pattern_family": "FAN_IN_SINGLE",
+          "n_nodes": 3,
+          "n_edges": 2,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_0d081cc26ad7",
+          "declared_pattern_family": "REUSE_EARLY_OUTPUT",
+          "n_nodes": 3,
+          "n_edges": 2,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN"
+          ]
+        },
+        {
+          "task_id": "p42_38a7c796adc5",
+          "declared_pattern_family": "FAN_IN_SINGLE",
+          "n_nodes": 5,
+          "n_edges": 4,
+          "n_join_nodes": 0,
+          "recomputed_satisfied": [
+            "LINEAR_CHAIN",
+            "REPEATED_PRIMITIVE"
+          ]
+        }
+      ]
+    },
+    "v4_search": {
+      "n_with_v4_gate": 4000,
+      "n_searched": 979,
+      "n_skipped": 3021,
+      "skipped_share": 0.75525,
+      "skip_reasons": {
+        "non-numeric answer": 3021
+      },
+      "skipped_by_answer_kind": {
+        "boolean": 3021
+      },
+      "total_by_answer_kind": {
+        "boolean": 3021,
+        "float": 979
+      }
+    },
+    "node_necessity": {
+      "n_present": 4000,
+      "n_verdict_only": 4000,
+      "n_with_per_node_detail": 0,
+      "observed_keys": {
+        "passed": 4000,
+        "reasons": 4000
+      }
+    },
+    "leakage": {
+      "n_selected_joined": 4000,
+      "keys": {
+        "workflow_id": {
+          "n_distinct_train": 56,
+          "n_distinct_heldout": 49,
+          "n_shared_train_heldout": 49,
+          "n_shared_train_reserve": 49,
+          "heldout_share_seen_in_train": 1.0
+        },
+        "query_template_fingerprint": {
+          "n_distinct_train": 108,
+          "n_distinct_heldout": 98,
+          "n_shared_train_heldout": 98,
+          "n_shared_train_reserve": 100,
+          "heldout_share_seen_in_train": 1.0
+        },
+        "program_family_id": {
+          "n_distinct_train": 56,
+          "n_distinct_heldout": 49,
+          "n_shared_train_heldout": 49,
+          "n_shared_train_reserve": 49,
+          "heldout_share_seen_in_train": 1.0
+        },
+        "semantic_program_id": {
+          "n_distinct_train": 3000,
+          "n_distinct_heldout": 500,
+          "n_shared_train_heldout": 0,
+          "n_shared_train_reserve": 0,
+          "heldout_share_seen_in_train": 0.0
+        },
+        "workflow_instance_id": {
+          "n_distinct_train": 3000,
+          "n_distinct_heldout": 500,
+          "n_shared_train_heldout": 0,
+          "n_shared_train_reserve": 0,
+          "heldout_share_seen_in_train": 0.0
+        }
+      },
+      "query_skeleton": {
+        "n_distinct_train": 108,
+        "n_distinct_heldout": 98,
+        "n_shared_train_heldout": 98,
+        "heldout_share_seen_in_train": 1.0
+      }
+    },
+    "workflow_labels": {
+      "n_workflows_in_export": 56,
+      "n_workflows_in_registry": 66,
+      "capability_families_overall": {
+        "arithmetic.binary": 18936,
+        "comparison": 6042,
+        "statistics": 162
+      },
+      "share_arithmetic_or_comparison_calls": 0.9935560859188545,
+      "n_cosmetic_domain_labels": 9,
+      "cosmetic_domain_labels": [
+        {
+          "workflow_id": "boolean_logic.scale_adjust_compare",
+          "domain": "boolean_logic",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 8,
+            "comparison": 4
+          }
+        },
+        {
+          "workflow_id": "date_time.scale_adjust_compare",
+          "domain": "date_time",
+          "coding_like_declared": false,
+          "capability_families_used": {
+            "arithmetic.binary": 328,
+            "comparison": 164
+          }
+        },
+        {
+          "workflow_id": "dictionary_processing.scale_adjust_compare",
+          "domain": "dictionary_processing",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 8,
+            "comparison": 4
+          }
+        },
+        {
+          "workflow_id": "file_path.scale_adjust_compare",
+          "domain": "file_path",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 328,
+            "comparison": 164
+          }
+        },
+        {
+          "workflow_id": "geometry.scale_adjust_compare",
+          "domain": "geometry",
+          "coding_like_declared": false,
+          "capability_families_used": {
+            "arithmetic.binary": 328,
+            "comparison": 164
+          }
+        },
+        {
+          "workflow_id": "list_processing.scale_adjust_compare",
+          "domain": "list_processing",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 4,
+            "comparison": 2
+          }
+        },
+        {
+          "workflow_id": "text_processing.scale_adjust_compare",
+          "domain": "text_processing",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 324,
+            "comparison": 162
+          }
+        },
+        {
+          "workflow_id": "time_duration.scale_adjust_compare",
+          "domain": "time_duration",
+          "coding_like_declared": false,
+          "capability_families_used": {
+            "arithmetic.binary": 4,
+            "comparison": 2
+          }
+        },
+        {
+          "workflow_id": "url_processing.scale_adjust_compare",
+          "domain": "url_processing",
+          "coding_like_declared": true,
+          "capability_families_used": {
+            "arithmetic.binary": 4,
+            "comparison": 2
+          }
+        }
+      ],
+      "domains_present": [
+        "boolean_logic",
+        "classification",
+        "commerce",
+        "date_time",
+        "dictionary_processing",
+        "energy",
+        "file_path",
+        "geometry",
+        "inventory",
+        "list_processing",
+        "measurement",
+        "operations",
+        "personal_finance",
+        "quality",
+        "quality_control",
+        "rates",
+        "rates_and_ratios",
+        "resource_allocation",
+        "statistics",
+        "text_processing",
+        "threshold_decision",
+        "time_duration",
+        "travel",
+        "travel_distance",
+        "url_processing"
+      ]
+    },
+    "openrouter": {
+      "n_failures_without_model": 17,
+      "llm_rendered_jsonl_bytes": 0,
+      "llm_rendered_smoke_jsonl_bytes": 0,
+      "n_openrouter_requests": 147,
+      "n_openrouter_failures": 109,
+      "request_models": {
+        "mistralai/mistral-small-24b-instruct-2501": 5,
+        "google/gemini-2.5-flash-lite": 67,
+        "openai/gpt-4o-mini-2024-07-18": 75
+      },
+      "request_purposes": {
+        "writer": 80,
+        "critic": 61,
+        "audit": 6
+      },
+      "prompt_template_versions": {
+        "pilot41.writer.v1": 80,
+        "pilot41.critic.v1": 67
+      },
+      "n_distinct_key_fingerprints": 1,
+      "n_requests_without_task_ids": 74,
+      "timestamp_min": "2026-07-31T14:39:28Z",
+      "timestamp_max": "2026-07-31T15:14:52Z",
+      "failure_models": {
+        "mistralai/mistral-small-24b-instruct-2501": 3,
+        "google/gemini-2.5-flash-lite": 89
+      },
+      "failure_http_codes": {
+        "429": 83,
+        "other": 26
+      },
+      "smoke_summary": {
+        "stage": "smoke",
+        "n_input": 30,
+        "n_passed": 0,
+        "n_reject": 30,
+        "pass_rate": 0.0,
+        "budget": {
+          "requests": 88,
+          "prompt_tokens": 34765,
+          "completion_tokens": 9399,
+          "usd": 0.008183,
+          "max_requests": 100000,
+          "max_usd": 20.0
+        },
+        "llm_status": "failed_or_empty",
+        "critic_coverage": 0.0
+      },
+      "usage_summary": {
+        "schema_version": "ttdf.openrouter.v41",
+        "budget": {
+          "requests": 171,
+          "prompt_tokens": 75111,
+          "completion_tokens": 17810,
+          "usd": 0.017651,
+          "max_requests": 100000,
+          "max_usd": 20.0
+        },
+        "mode": "GENERATE_NEW_LLM_OUTPUTS",
+        "writer_model": "openai/gpt-4o-mini-2024-07-18",
+        "critic_model": "google/gemini-2.5-flash-lite"
+      },
+      "model_snapshot": {
+        "writer_model": "openai/gpt-4o-mini-2024-07-18",
+        "critic_model": "google/gemini-2.5-flash-lite",
+        "audit_model": "google/gemini-2.5-flash-lite"
+      },
+      "declared_models": [
+        "google/gemini-2.5-flash-lite",
+        "openai/gpt-4o-mini-2024-07-18"
+      ],
+      "observed_models": [
+        "google/gemini-2.5-flash-lite",
+        "mistralai/mistral-small-24b-instruct-2501",
+        "openai/gpt-4o-mini-2024-07-18"
+      ],
+      "models_observed_but_not_declared": [
+        "mistralai/mistral-small-24b-instruct-2501"
+      ]
+    },
+    "explicitness": {
+      "n": 8000,
+      "share_with_semicolon_fact_list": 1.0,
+      "mean_semicolons_per_question": 3.061,
+      "share_ending_with_report_imperative": 0.69375,
+      "share_with_do_not_invent_instruction": 0.26575,
+      "mean_numeric_literals_in_text": 4.5545,
+      "share_with_3plus_numbers_in_text": 0.9795,
+      "mean_question_words": 33.76925
+    },
+    "numeric_literals": {
+      "n": 32652,
+      "min": 3.0,
+      "max": 1800.0,
+      "mean": 577.6866960676222,
+      "median": 452.0,
+      "share_integer": 1.0,
+      "share_round_multiple_of_10": 0.09800318510351587,
+      "share_generic_int_1_2000": 1.0,
+      "n_distinct": 1792
+    },
+    "type_transition": {
+      "n_usable_records": 4000,
+      "n_satisfying_type_transition_chain": 0,
+      "share": 0.0,
+      "note": "measurable only because selected.jsonl exports oracle_observations; the thin training files make this invariant undecidable"
+    },
+    "freeze_manifest": {
+      "schema_version": "ttdf.pilot42.v1",
+      "run_id": "pilot4_2_workflow_grounded",
+      "frozen": true,
+      "AUTOMATED_GATES_PASSED": true,
+      "TRAINING_READY": false,
+      "HUMAN_REVIEW_PENDING": true,
+      "LLM_VALIDATED": false,
+      "NOT_TESTED_BY_MODEL_PROBE": true,
+      "NOT_TESTED_BY_TRAINING": true,
+      "NOT_TESTED_BY_NESTFUL": true,
+      "selection_all_hard_constraints_met": true,
+      "counts": {
+        "semantic_candidates": 20000,
+        "hard_validated": 20000,
+        "v4_safe": 14843,
+        "selected": 4000,
+        "train_master": 3000,
+        "heldout": 500,
+        "reserve": 500,
+        "selection_all_hard_constraints_met": true,
+        "v4_shortcuts_selected": 0,
+        "v4_unresolved_selected": 0
+      },
+      "split_manifest": {
+        "leak_free": true,
+        "collisions": [],
+        "split_sizes": {
+          "train_master": 3000,
+          "heldout": 500,
+          "reserve": 500
+        },
+        "sizes_requested": {
+          "train_master": 3000,
+          "heldout": 500,
+          "reserve": 500
+        },
+        "hard_keys": [
+          "semantic_program_id",
+          "workflow_instance_id"
+        ],
+        "soft_keys": [
+          "query_template_fingerprint",
+          "workflow_id",
+          "program_family_id"
+        ],
+        "soft_key_overlap": {
+          "query_template_fingerprint": 1000,
+          "workflow_id": 1000,
+          "program_family_id": 1000
+        }
+      },
+      "provenance": {
+        "repro_schema_version": "ttdf.repro.v1",
+        "schema_version": "ttdf.pilot42.v1",
+        "generated_at_utc": "2026-07-31T14:50:54.959613+00:00",
+        "git": {
+          "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+          "dirty": true,
+          "n_dirty_files": 46,
+          "branch": "main"
+        },
+        "python_version": "3.11.3",
+        "platform": "Windows-10-10.0.26200-SP0",
+        "dependency_versions": {
+          "pydantic": "2.12.5",
+          "pyyaml": "6.0.1",
+          "numpy": "1.26.4",
+          "matplotlib": "3.8.4"
+        },
+        "cli_args": [
+          "select-pilot42",
+          "--selected-target",
+          "4000",
+          "--resume",
+          "--new-run-suffix",
+          "v2"
+        ],
+        "seeds": {
+          "seed": 20260731
+        },
+        "config_hash": "1f5b264dd8efffd396c47950e6eb8babce5b468a0992b2e56568da0a7b8eaa96",
+        "input_hashes": {}
+      },
+      "llm_status": "partial_smoke_attempted",
+      "openrouter_usage": {
+        "schema_version": "ttdf.openrouter.v41",
+        "budget": {
+          "requests": 171,
+          "prompt_tokens": 75111,
+          "completion_tokens": 17810,
+          "usd": 0.017651,
+          "max_requests": 100000,
+          "max_usd": 20.0
+        },
+        "mode": "GENERATE_NEW_LLM_OUTPUTS",
+        "writer_model": "openai/gpt-4o-mini-2024-07-18",
+        "critic_model": "google/gemini-2.5-flash-lite"
+      },
+      "active_output_dir": "C:\\Users\\\u0160unka\\Documents\\GitHub\\Tool-R0\\experiments\\targeted_tool_data_factory\\outputs\\pilot4_2_workflow_grounded_v2"
+    },
+    "selection_report": {
+      "requested": 4000,
+      "selected": 4000,
+      "eligible_pool": 14843,
+      "workflow_support": {
+        "boolean_logic.scale_adjust_compare": 2,
+        "classification.scale_adjust_compare": 81,
+        "commerce.discount_tax_fee_compare": 81,
+        "commerce.discount_tax_total": 81,
+        "commerce.discount_then_fee": 82,
+        "commerce.four_step_adjust_total": 82,
+        "commerce.grow_then_add": 82,
+        "commerce.portion_then_remaining": 82,
+        "commerce.shrink_then_compare": 82,
+        "commerce.six_step_pipeline": 82,
+        "date_time.scale_adjust_compare": 82,
+        "dictionary_processing.scale_adjust_compare": 2,
+        "energy.four_step_adjust_total": 81,
+        "energy.scale_adjust_compare": 81,
+        "energy.six_step_pipeline": 82,
+        "file_path.scale_adjust_compare": 82,
+        "geometry.scale_adjust_compare": 82,
+        "inventory.available_after_two_picks": 82,
+        "inventory.four_step_adjust_total": 82,
+        "inventory.grow_then_add": 82,
+        "inventory.shrink_then_compare": 82,
+        "inventory.six_step_pipeline": 82,
+        "list_processing.scale_adjust_compare": 1,
+        "measurement.four_step_adjust_total": 81,
+        "measurement.grow_then_add": 82,
+        "measurement.shrink_then_compare": 82,
+        "measurement.six_step_pipeline": 82,
+        "operations.four_step_adjust_total": 82,
+        "operations.scale_adjust_compare": 1,
+        "personal_finance.adjust_compare": 81,
+        "personal_finance.four_step_adjust_total": 82,
+        "personal_finance.grow_then_add": 82,
+        "personal_finance.shrink_then_compare": 82,
+        "quality.multi_metric_decision": 82,
+        "quality_control.four_step_adjust_total": 82,
+        "quality_control.grow_then_add": 81,
+        "quality_control.shrink_then_compare": 81,
+        "rates.scale_aggregate_compare": 1,
+        "rates_and_ratios.four_step_adjust_total": 80,
+        "rates_and_ratios.grow_then_add": 81,
+        "rates_and_ratios.shrink_then_compare": 81,
+        "resource_allocation.four_step_adjust_total": 81,
+        "resource_allocation.grow_then_add": 81,
+        "resource_allocation.shrink_then_compare": 81,
+        "statistics.four_step_adjust_total": 81,
+        "statistics.grow_then_add": 81,
+        "statistics.shrink_then_compare": 81,
+        "statistics.six_step_pipeline": 81,
+        "statistics.two_value_mean_threshold": 81,
+        "text_processing.scale_adjust_compare": 81,
+        "threshold_decision.four_step_adjust_total": 81,
+        "threshold_decision.six_step_pipeline": 81,
+        "time_duration.scale_adjust_compare": 1,
+        "travel.leg_sum_then_speed": 80,
+        "travel_distance.four_step_adjust_total": 81,
+        "url_processing.scale_adjust_compare": 1
+      },
+      "selection_all_hard_constraints_met": true,
+      "deficit": 0
+    },
+    "split_manifest": {
+      "leak_free": true,
+      "collisions": [],
+      "split_sizes": {
+        "train_master": 3000,
+        "heldout": 500,
+        "reserve": 500
+      },
+      "sizes_requested": {
+        "train_master": 3000,
+        "heldout": 500,
+        "reserve": 500
+      },
+      "hard_keys": [
+        "semantic_program_id",
+        "workflow_instance_id"
+      ],
+      "soft_keys": [
+        "query_template_fingerprint",
+        "workflow_id",
+        "program_family_id"
+      ],
+      "soft_key_overlap": {
+        "query_template_fingerprint": 1000,
+        "workflow_id": 1000,
+        "program_family_id": 1000
+      }
+    },
+    "v4_report": {
+      "n": 4000,
+      "shortcut_rate": 0.0,
+      "unresolved_rate": 0.0,
+      "n_shortcuts": 0,
+      "n_unresolved": 0
+    },
+    "validation_report": {
+      "hard_gated": 14843,
+      "rejected": 5157,
+      "reject_reasons": {
+        "v4_shortcut": 926,
+        "v4_unresolved": 604,
+        "query_fail": 3930
+      }
+    },
+    "data_quality_report": {
+      "schema_version": "ttdf.pilot42_data_quality.v1",
+      "counts": {
+        "semantic_candidates": 20000,
+        "hard_validated": 20000,
+        "v4_safe": 14843,
+        "selected": 4000,
+        "train_master": 3000,
+        "heldout": 500,
+        "reserve": 500,
+        "selection_all_hard_constraints_met": true,
+        "v4_shortcuts_selected": 0,
+        "v4_unresolved_selected": 0
+      },
+      "v4_shortcuts_selected": 0,
+      "v4_unresolved_selected": 0,
+      "selection_all_hard_constraints_met": true,
+      "leak_free": true,
+      "AUTOMATED_GATES_PASSED": true,
+      "openrouter_usd": 0.017651
+    },
+    "cell_tier_counts": {
+      "CAPABILITY_ENRICHMENT": 169,
+      "CORE_PROFILE": 1716,
+      "CHALLENGE": 163,
+      "STRUCTURAL_ENRICHMENT": 1952
+    },
+    "answer_kind_counts": {
+      "boolean": 3021,
+      "float": 979
+    },
+    "missing_pattern_family_records": 4000,
+    "query_fingerprint_example": {
+      "exact": "6d9d3f4fbb5903ad3492522517b00dbd906eb3c8b3330e401d247806638793cb",
+      "skeleton": "v <n> is <n> v <n> is <n> rate is <n> percent limit is <n> . adjust a score and compare against two successive gates for the record. report ok.",
+      "skeleton_hash": "52459286593604570f3b7e2f7a4c9542128fb369a9b98cd03ca1d574231ddbfd",
+      "intent": "is|is|is|is|a|and#S#3",
+      "intent_hash": "cb93a8b5a1e285d1281c177cbbd3efaf497d0ccc2818ed85cd44029e35936214"
+    }
+  }
+}

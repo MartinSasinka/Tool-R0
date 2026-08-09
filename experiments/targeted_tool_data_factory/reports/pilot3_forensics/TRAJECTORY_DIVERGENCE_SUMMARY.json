@@ -1,0 +1,14 @@
+{
+  "category_counts": {
+    "DIFFERENT_FIRST_TOOL": 35,
+    "DIFFERENT_LATER_TOOL": 13,
+    "IDENTICAL_CALLS_DIFFERENT_TEXT": 173,
+    "IDENTICAL_TEXT": 176,
+    "REFERENCE_DIFFERENCE": 21,
+    "SAME_TOOLS_DIFFERENT_ARGUMENTS": 14,
+    "TOOL_COUNT_DIFFERENCE": 68
+  },
+  "mean_first_divergent_turn": 0.3333333333333333,
+  "n_identical_text": 176,
+  "n_pairs": 500
+}

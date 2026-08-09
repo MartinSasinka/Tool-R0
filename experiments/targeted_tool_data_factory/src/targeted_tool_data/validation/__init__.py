@@ -177,7 +177,12 @@ def _val_key(v: Any) -> Any:
 def _match(a: Any, b: Any, tol: float) -> bool:
     if isinstance(a, (int, float)) and isinstance(b, (int, float)) \
             and not isinstance(a, bool) and not isinstance(b, bool):
-        return abs(float(a) - float(b)) <= tol
+        try:
+            return abs(float(a) - float(b)) <= tol
+        except OverflowError:
+            # a shortcut candidate that ran an exponent primitive can exceed the
+            # float range; such a value cannot equal a finite gold answer
+            return isinstance(a, int) and isinstance(b, int) and a == b
     return a == b
 
 

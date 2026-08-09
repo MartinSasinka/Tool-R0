@@ -1,0 +1,24 @@
+confidence,effect_direction,n_gained,n_lost,net_gain,pattern,possible_mechanism,support
+medium,loss,0,6,-6,SUCCESS_ALTERNATIVE_VALID -> FAIL_WRONG_FIRST_TOOL,failure-class transition associated with flips (not causal),6
+medium,gain,6,0,6,FAIL_EXECUTOR_ERROR -> SUCCESS_ALTERNATIVE_VALID,failure-class transition associated with flips (not causal),6
+medium,gain,5,0,5,FAIL_WRONG_FIRST_TOOL -> SUCCESS_ALTERNATIVE_VALID,failure-class transition associated with flips (not causal),5
+low,gain,3,0,3,FAIL_WRONG_FIRST_TOOL -> SUCCESS_OTHER_OFFICIAL,failure-class transition associated with flips (not causal),3
+low,gain,3,0,3,FAIL_NO_TOOL_CALL -> SUCCESS_ALTERNATIVE_VALID,failure-class transition associated with flips (not causal),3
+low,loss,0,2,-2,SUCCESS_ALTERNATIVE_VALID -> FAIL_WRONG_TOOL_SEQUENCE,failure-class transition associated with flips (not causal),2
+low,loss,0,2,-2,SUCCESS_ALTERNATIVE_VALID -> FAIL_EXECUTOR_ERROR,failure-class transition associated with flips (not causal),2
+low,gain,2,0,2,FAIL_PARSE_INVALID -> SUCCESS_ALTERNATIVE_VALID,failure-class transition associated with flips (not causal),2
+low,gain,2,0,2,FAIL_EXECUTOR_ERROR -> SUCCESS_STRICT_GOLD,failure-class transition associated with flips (not causal),2
+low,gain,2,0,2,FAIL_WRONG_TOOL_SEQUENCE -> SUCCESS_ALTERNATIVE_VALID,failure-class transition associated with flips (not causal),2
+low,gain,2,0,2,FAIL_WRONG_TOOL_SEQUENCE -> SUCCESS_STRICT_GOLD,failure-class transition associated with flips (not causal),2
+low,loss,0,1,-1,SUCCESS_ALTERNATIVE_VALID -> FAIL_NO_TOOL_CALL,failure-class transition associated with flips (not causal),1
+low,loss,0,1,-1,SUCCESS_STRICT_GOLD -> FAIL_EXECUTOR_ERROR,failure-class transition associated with flips (not causal),1
+low,loss,0,1,-1,SUCCESS_STRICT_GOLD -> FAIL_PARSE_INVALID,failure-class transition associated with flips (not causal),1
+low,loss,0,1,-1,SUCCESS_STRICT_GOLD -> FAIL_NO_TOOL_CALL,failure-class transition associated with flips (not causal),1
+low,gain,1,0,1,FAIL_WRONG_TOOL_SEQUENCE -> SUCCESS_OTHER_OFFICIAL,failure-class transition associated with flips (not causal),1
+low,gain,1,0,1,FAIL_EXECUTOR_ERROR -> SUCCESS_OTHER_OFFICIAL,failure-class transition associated with flips (not causal),1
+low,loss,0,1,-1,SUCCESS_OTHER_OFFICIAL -> FAIL_WRONG_FIRST_TOOL,failure-class transition associated with flips (not causal),1
+low,loss,0,1,-1,SUCCESS_ALTERNATIVE_VALID -> FAIL_EXECUTABLE_WRONG_ANSWER,failure-class transition associated with flips (not causal),1
+medium,gain,15,7,8,divergence:TOOL_COUNT_DIFFERENCE,trajectory divergence category association,22
+medium,gain,9,6,3,divergence:DIFFERENT_FIRST_TOOL,trajectory divergence category association,15
+low,neutral,2,2,0,divergence:DIFFERENT_LATER_TOOL,trajectory divergence category association,4
+low,neutral,1,1,0,divergence:REFERENCE_DIFFERENCE,trajectory divergence category association,2

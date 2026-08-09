@@ -1,0 +1,3360 @@
+{
+  "schema_version": "ttdf.capability_registry.v1",
+  "families": [
+    "arithmetic.binary",
+    "arithmetic.unary",
+    "arithmetic.reduction",
+    "comparison",
+    "boolean.logic",
+    "rounding",
+    "statistics",
+    "sequence.map",
+    "sequence.filter",
+    "sequence.reduce",
+    "sequence.index",
+    "sequence.combine",
+    "dictionary.lookup",
+    "dictionary.update",
+    "string.parse",
+    "string.transform",
+    "string.format",
+    "conversion.numeric",
+    "conversion.text",
+    "geometry",
+    "date_time",
+    "path_url",
+    "bitwise",
+    "validation",
+    "classification.deterministic"
+  ],
+  "coverage": {
+    "n_primitives": 89,
+    "n_families_declared": 25,
+    "n_families_populated": 25,
+    "empty_families": [],
+    "primitives_outside_taxonomy": [],
+    "by_family": {
+      "arithmetic.binary": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "arithmetic.reduction": [
+        "product_three",
+        "sum_three"
+      ],
+      "arithmetic.unary": [
+        "digit_sum",
+        "inverse",
+        "negate",
+        "ratio_to_percent",
+        "sqrt",
+        "square"
+      ],
+      "bitwise": [
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift"
+      ],
+      "boolean.logic": [
+        "is_divisible_by",
+        "logical_and",
+        "logical_not",
+        "logical_or"
+      ],
+      "classification.deterministic": [
+        "classify_threshold",
+        "grade_band"
+      ],
+      "comparison": [
+        "is_greater",
+        "max_two",
+        "min_two"
+      ],
+      "conversion.numeric": [
+        "celsius_to_fahrenheit",
+        "fahrenheit_to_celsius",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "seconds_to_minutes"
+      ],
+      "conversion.text": [
+        "format_fixed",
+        "number_to_string"
+      ],
+      "date_time": [
+        "days_to_hours",
+        "hours_to_minutes",
+        "minutes_since_midnight",
+        "weeks_to_days"
+      ],
+      "dictionary.lookup": [
+        "lookup_unit_factor"
+      ],
+      "dictionary.update": [
+        "apply_rate_override"
+      ],
+      "geometry": [
+        "circle_area",
+        "hypotenuse",
+        "rectangle_area",
+        "rectangle_perimeter"
+      ],
+      "path_url": [
+        "domain_of_url",
+        "join_path_segments"
+      ],
+      "rounding": [
+        "ceil_value",
+        "floor_value",
+        "round_direction",
+        "round_places",
+        "round_to_int"
+      ],
+      "sequence.combine": [
+        "append_value",
+        "concat_lists",
+        "join_values"
+      ],
+      "sequence.filter": [
+        "filter_above",
+        "top_k_values"
+      ],
+      "sequence.index": [
+        "index_of_max",
+        "value_at_position"
+      ],
+      "sequence.map": [
+        "cumulative_sums",
+        "offset_list",
+        "scale_list",
+        "sort_values_desc"
+      ],
+      "sequence.reduce": [
+        "count_values",
+        "max_values",
+        "min_values",
+        "sum_values"
+      ],
+      "statistics": [
+        "average_two",
+        "mean_three",
+        "mean_values",
+        "median_values",
+        "range_spread",
+        "range_three"
+      ],
+      "string.format": [
+        "concat_texts",
+        "format_with_unit",
+        "tag_value"
+      ],
+      "string.parse": [
+        "file_extension",
+        "parse_number"
+      ],
+      "string.transform": [
+        "text_length",
+        "text_upper"
+      ],
+      "validation": [
+        "clamp",
+        "is_non_negative",
+        "is_within_range"
+      ]
+    },
+    "family_sizes": {
+      "arithmetic.binary": 12,
+      "arithmetic.reduction": 2,
+      "arithmetic.unary": 6,
+      "bitwise": 4,
+      "boolean.logic": 4,
+      "classification.deterministic": 2,
+      "comparison": 3,
+      "conversion.numeric": 6,
+      "conversion.text": 2,
+      "date_time": 4,
+      "dictionary.lookup": 1,
+      "dictionary.update": 1,
+      "geometry": 4,
+      "path_url": 2,
+      "rounding": 5,
+      "sequence.combine": 3,
+      "sequence.filter": 2,
+      "sequence.index": 2,
+      "sequence.map": 4,
+      "sequence.reduce": 4,
+      "statistics": 6,
+      "string.format": 3,
+      "string.parse": 2,
+      "string.transform": 2,
+      "validation": 3
+    }
+  },
+  "validation_errors": [],
+  "primitives": {
+    "abs_difference": {
+      "primitive_id": "abs_difference",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "add": {
+      "primitive_id": "add",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 2
+    },
+    "append_value": {
+      "primitive_id": "append_value",
+      "capability_family": "sequence.combine",
+      "input_signature": [
+        "array",
+        "number"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "filter_above",
+        "offset_list",
+        "scale_list"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "apply_rate_override": {
+      "primitive_id": "apply_rate_override",
+      "capability_family": "dictionary.update",
+      "input_signature": [
+        "number",
+        "enum:none,half,double,quarter"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "enum_argument"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "average_two": {
+      "primitive_id": "average_two",
+      "capability_family": "statistics",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "bitwise_and": {
+      "primitive_id": "bitwise_and",
+      "capability_family": "bitwise",
+      "input_signature": [
+        "integer",
+        "integer"
+      ],
+      "output_type": "integer",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "integer_only"
+      ],
+      "semantic_neighbors": [
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift"
+      ],
+      "confusable_non_equivalents": [
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift",
+        "minutes_since_midnight"
+      ],
+      "answer_kind": "int",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "bitwise_or": {
+      "primitive_id": "bitwise_or",
+      "capability_family": "bitwise",
+      "input_signature": [
+        "integer",
+        "integer"
+      ],
+      "output_type": "integer",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "integer_only"
+      ],
+      "semantic_neighbors": [
+        "bitwise_and",
+        "bitwise_xor",
+        "left_shift"
+      ],
+      "confusable_non_equivalents": [
+        "bitwise_and",
+        "bitwise_xor",
+        "left_shift",
+        "minutes_since_midnight"
+      ],
+      "answer_kind": "int",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "bitwise_xor": {
+      "primitive_id": "bitwise_xor",
+      "capability_family": "bitwise",
+      "input_signature": [
+        "integer",
+        "integer"
+      ],
+      "output_type": "integer",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "integer_only"
+      ],
+      "semantic_neighbors": [
+        "bitwise_and",
+        "bitwise_or",
+        "left_shift"
+      ],
+      "confusable_non_equivalents": [
+        "bitwise_and",
+        "bitwise_or",
+        "left_shift",
+        "minutes_since_midnight"
+      ],
+      "answer_kind": "int",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "ceil_value": {
+      "primitive_id": "ceil_value",
+      "capability_family": "rounding",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "precision_sensitive"
+      ],
+      "semantic_neighbors": [
+        "floor_value"
+      ],
+      "confusable_non_equivalents": [
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "celsius_to_fahrenheit": {
+      "primitive_id": "celsius_to_fahrenheit",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "fahrenheit_to_celsius",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "seconds_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "circle_area": {
+      "primitive_id": "circle_area",
+      "capability_family": "geometry",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "clamp": {
+      "primitive_id": "clamp",
+      "capability_family": "validation",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "boundary_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "mean_three",
+        "product_three",
+        "range_three",
+        "sum_three"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "classify_threshold": {
+      "primitive_id": "classify_threshold",
+      "capability_family": "classification.deterministic",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output",
+        "banded"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "concat_lists": {
+      "primitive_id": "concat_lists",
+      "capability_family": "sequence.combine",
+      "input_signature": [
+        "array",
+        "array"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "concat_texts": {
+      "primitive_id": "concat_texts",
+      "capability_family": "string.format",
+      "input_signature": [
+        "string",
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "join_path_segments"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "count_values": {
+      "primitive_id": "count_values",
+      "capability_family": "sequence.reduce",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "integer",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "index_of_max"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "cumulative_sums": {
+      "primitive_id": "cumulative_sums",
+      "capability_family": "sequence.map",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "array",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [
+        "sort_values_desc"
+      ],
+      "confusable_non_equivalents": [
+        "sort_values_desc"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "days_to_hours": {
+      "primitive_id": "days_to_hours",
+      "capability_family": "date_time",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "hours_to_minutes",
+        "weeks_to_days"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "decrease_by_percent": {
+      "primitive_id": "decrease_by_percent",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "digit_sum": {
+      "primitive_id": "digit_sum",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "integer",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "round_to_int"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "divide": {
+      "primitive_id": "divide",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 2
+    },
+    "domain_of_url": {
+      "primitive_id": "domain_of_url",
+      "capability_family": "path_url",
+      "input_signature": [
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "string_structure"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "file_extension",
+        "text_upper"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "fahrenheit_to_celsius": {
+      "primitive_id": "fahrenheit_to_celsius",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "celsius_to_fahrenheit",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "seconds_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "file_extension": {
+      "primitive_id": "file_extension",
+      "capability_family": "string.parse",
+      "input_signature": [
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "domain_of_url",
+        "text_upper"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "filter_above": {
+      "primitive_id": "filter_above",
+      "capability_family": "sequence.filter",
+      "input_signature": [
+        "array",
+        "number"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output",
+        "length_varying"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "append_value",
+        "offset_list",
+        "scale_list"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "floor_divide": {
+      "primitive_id": "floor_divide",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 1
+    },
+    "floor_value": {
+      "primitive_id": "floor_value",
+      "capability_family": "rounding",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "precision_sensitive"
+      ],
+      "semantic_neighbors": [
+        "ceil_value"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "format_fixed": {
+      "primitive_id": "format_fixed",
+      "capability_family": "conversion.text",
+      "input_signature": [
+        "number",
+        "integer"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "numeric_string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "format_with_unit": {
+      "primitive_id": "format_with_unit",
+      "capability_family": "string.format",
+      "input_signature": [
+        "number",
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "grade_band": {
+      "primitive_id": "grade_band",
+      "capability_family": "classification.deterministic",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "string",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output",
+        "banded"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "number_to_string"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "hours_to_minutes": {
+      "primitive_id": "hours_to_minutes",
+      "capability_family": "date_time",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "days_to_hours",
+        "weeks_to_days"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "hypotenuse": {
+      "primitive_id": "hypotenuse",
+      "capability_family": "geometry",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "rectangle_area",
+        "rectangle_perimeter"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "increase_by_percent": {
+      "primitive_id": "increase_by_percent",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "index_of_max": {
+      "primitive_id": "index_of_max",
+      "capability_family": "sequence.index",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "integer",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "off_by_one_risk"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "count_values"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "inverse": {
+      "primitive_id": "inverse",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [
+        "negate",
+        "ratio_to_percent",
+        "sqrt",
+        "square"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "is_divisible_by": {
+      "primitive_id": "is_divisible_by",
+      "capability_family": "boolean.logic",
+      "input_signature": [
+        "number",
+        "integer"
+      ],
+      "output_type": "boolean",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "bool",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "is_greater": {
+      "primitive_id": "is_greater",
+      "capability_family": "comparison",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "boolean",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "output_equals_an_input"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "bool",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "is_non_negative": {
+      "primitive_id": "is_non_negative",
+      "capability_family": "validation",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "boolean",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "boundary_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "bool",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "is_within_range": {
+      "primitive_id": "is_within_range",
+      "capability_family": "validation",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "boolean",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "boundary_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "bool",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "join_path_segments": {
+      "primitive_id": "join_path_segments",
+      "capability_family": "path_url",
+      "input_signature": [
+        "string",
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "string_structure"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "concat_texts"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "join_values": {
+      "primitive_id": "join_values",
+      "capability_family": "sequence.combine",
+      "input_signature": [
+        "array",
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "km_to_meters": {
+      "primitive_id": "km_to_meters",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "celsius_to_fahrenheit",
+        "fahrenheit_to_celsius",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "seconds_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "left_shift": {
+      "primitive_id": "left_shift",
+      "capability_family": "bitwise",
+      "input_signature": [
+        "integer",
+        "integer"
+      ],
+      "output_type": "integer",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "integer_only"
+      ],
+      "semantic_neighbors": [
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor"
+      ],
+      "confusable_non_equivalents": [
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor",
+        "minutes_since_midnight"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "logical_and": {
+      "primitive_id": "logical_and",
+      "capability_family": "boolean.logic",
+      "input_signature": [
+        "boolean",
+        "boolean"
+      ],
+      "output_type": "boolean",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [
+        "logical_or"
+      ],
+      "confusable_non_equivalents": [
+        "logical_or"
+      ],
+      "answer_kind": "bool",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "logical_not": {
+      "primitive_id": "logical_not",
+      "capability_family": "boolean.logic",
+      "input_signature": [
+        "boolean"
+      ],
+      "output_type": "boolean",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "bool",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "logical_or": {
+      "primitive_id": "logical_or",
+      "capability_family": "boolean.logic",
+      "input_signature": [
+        "boolean",
+        "boolean"
+      ],
+      "output_type": "boolean",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [
+        "logical_and"
+      ],
+      "confusable_non_equivalents": [
+        "logical_and"
+      ],
+      "answer_kind": "bool",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "lookup_unit_factor": {
+      "primitive_id": "lookup_unit_factor",
+      "capability_family": "dictionary.lookup",
+      "input_signature": [
+        "enum:km,m,cm,mm"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "enum_argument",
+        "leaf_only"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": false,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "max_two": {
+      "primitive_id": "max_two",
+      "capability_family": "comparison",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "output_equals_an_input"
+      ],
+      "semantic_neighbors": [
+        "min_two"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "max_values": {
+      "primitive_id": "max_values",
+      "capability_family": "sequence.reduce",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [
+        "min_values",
+        "sum_values"
+      ],
+      "confusable_non_equivalents": [
+        "mean_values",
+        "median_values",
+        "min_values",
+        "range_spread",
+        "sum_values"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "mean_three": {
+      "primitive_id": "mean_three",
+      "capability_family": "statistics",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "range_three"
+      ],
+      "confusable_non_equivalents": [
+        "clamp",
+        "product_three",
+        "range_three",
+        "sum_three"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "mean_values": {
+      "primitive_id": "mean_values",
+      "capability_family": "statistics",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "median_values",
+        "range_spread"
+      ],
+      "confusable_non_equivalents": [
+        "max_values",
+        "median_values",
+        "min_values",
+        "range_spread",
+        "sum_values"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "median_values": {
+      "primitive_id": "median_values",
+      "capability_family": "statistics",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "mean_values",
+        "range_spread"
+      ],
+      "confusable_non_equivalents": [
+        "max_values",
+        "mean_values",
+        "min_values",
+        "range_spread",
+        "sum_values"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "meters_to_km": {
+      "primitive_id": "meters_to_km",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "celsius_to_fahrenheit",
+        "fahrenheit_to_celsius",
+        "km_to_meters",
+        "minutes_to_seconds",
+        "seconds_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "min_two": {
+      "primitive_id": "min_two",
+      "capability_family": "comparison",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "output_equals_an_input"
+      ],
+      "semantic_neighbors": [
+        "max_two"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "min_values": {
+      "primitive_id": "min_values",
+      "capability_family": "sequence.reduce",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [
+        "max_values",
+        "sum_values"
+      ],
+      "confusable_non_equivalents": [
+        "max_values",
+        "mean_values",
+        "median_values",
+        "range_spread",
+        "sum_values"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "minutes_since_midnight": {
+      "primitive_id": "minutes_since_midnight",
+      "capability_family": "date_time",
+      "input_signature": [
+        "integer",
+        "integer"
+      ],
+      "output_type": "integer",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "minutes_to_seconds": {
+      "primitive_id": "minutes_to_seconds",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "celsius_to_fahrenheit",
+        "fahrenheit_to_celsius",
+        "km_to_meters",
+        "meters_to_km",
+        "seconds_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "modulo": {
+      "primitive_id": "modulo",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 1
+    },
+    "multiply": {
+      "primitive_id": "multiply",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 2
+    },
+    "negate": {
+      "primitive_id": "negate",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [
+        "inverse",
+        "ratio_to_percent",
+        "sqrt",
+        "square"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "number_to_string": {
+      "primitive_id": "number_to_string",
+      "capability_family": "conversion.text",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "string",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition",
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "grade_band"
+      ],
+      "answer_kind": "numeric_string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "offset_list": {
+      "primitive_id": "offset_list",
+      "capability_family": "sequence.map",
+      "input_signature": [
+        "array",
+        "number"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [
+        "scale_list"
+      ],
+      "confusable_non_equivalents": [
+        "append_value",
+        "filter_above",
+        "scale_list"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "parse_number": {
+      "primitive_id": "parse_number",
+      "capability_family": "string.parse",
+      "input_signature": [
+        "string"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "percent_of": {
+      "primitive_id": "percent_of",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "power",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 1
+    },
+    "power": {
+      "primitive_id": "power",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "ratio_of",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 1
+    },
+    "product_three": {
+      "primitive_id": "product_three",
+      "capability_family": "arithmetic.reduction",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "sum_three"
+      ],
+      "confusable_non_equivalents": [
+        "clamp",
+        "mean_three",
+        "range_three",
+        "sum_three"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "range_spread": {
+      "primitive_id": "range_spread",
+      "capability_family": "statistics",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "mean_values",
+        "median_values"
+      ],
+      "confusable_non_equivalents": [
+        "max_values",
+        "mean_values",
+        "median_values",
+        "min_values",
+        "sum_values"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "range_three": {
+      "primitive_id": "range_three",
+      "capability_family": "statistics",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "mean_three"
+      ],
+      "confusable_non_equivalents": [
+        "clamp",
+        "mean_three",
+        "product_three",
+        "sum_three"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "ratio_of": {
+      "primitive_id": "ratio_of",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "subtract"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "rectangle_area",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "ratio_to_percent": {
+      "primitive_id": "ratio_to_percent",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [
+        "inverse",
+        "negate",
+        "sqrt",
+        "square"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "seconds_to_minutes",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "rectangle_area": {
+      "primitive_id": "rectangle_area",
+      "capability_family": "geometry",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "hypotenuse",
+        "rectangle_perimeter"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_perimeter",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "rectangle_perimeter": {
+      "primitive_id": "rectangle_perimeter",
+      "capability_family": "geometry",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "hypotenuse",
+        "rectangle_area"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "subtract"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "round_direction": {
+      "primitive_id": "round_direction",
+      "capability_family": "rounding",
+      "input_signature": [
+        "number",
+        "enum:up,down,nearest"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "precision_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "round_places": {
+      "primitive_id": "round_places",
+      "capability_family": "rounding",
+      "input_signature": [
+        "number",
+        "integer"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "precision_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "round_to_int": {
+      "primitive_id": "round_to_int",
+      "capability_family": "rounding",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "integer",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "precision_sensitive"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "digit_sum"
+      ],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "scale_list": {
+      "primitive_id": "scale_list",
+      "capability_family": "sequence.map",
+      "input_signature": [
+        "array",
+        "number"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [
+        "offset_list"
+      ],
+      "confusable_non_equivalents": [
+        "append_value",
+        "filter_above",
+        "offset_list"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "seconds_to_minutes": {
+      "primitive_id": "seconds_to_minutes",
+      "capability_family": "conversion.numeric",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "celsius_to_fahrenheit",
+        "fahrenheit_to_celsius",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "sqrt",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "sort_values_desc": {
+      "primitive_id": "sort_values_desc",
+      "capability_family": "sequence.map",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "array",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output"
+      ],
+      "semantic_neighbors": [
+        "cumulative_sums"
+      ],
+      "confusable_non_equivalents": [
+        "cumulative_sums"
+      ],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "sqrt": {
+      "primitive_id": "sqrt",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [
+        "inverse",
+        "negate",
+        "ratio_to_percent",
+        "square"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "square",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "square": {
+      "primitive_id": "square",
+      "capability_family": "arithmetic.unary",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [],
+      "semantic_neighbors": [
+        "inverse",
+        "negate",
+        "ratio_to_percent",
+        "sqrt"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "weeks_to_days"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "subtract": {
+      "primitive_id": "subtract",
+      "capability_family": "arithmetic.binary",
+      "input_signature": [
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "order_sensitive"
+      ],
+      "semantic_neighbors": [
+        "abs_difference",
+        "add",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "increase_by_percent",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of"
+      ],
+      "confusable_non_equivalents": [
+        "abs_difference",
+        "add",
+        "average_two",
+        "decrease_by_percent",
+        "divide",
+        "floor_divide",
+        "hypotenuse",
+        "increase_by_percent",
+        "max_two",
+        "min_two",
+        "modulo",
+        "multiply",
+        "percent_of",
+        "power",
+        "ratio_of",
+        "rectangle_area",
+        "rectangle_perimeter"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 2,
+      "n_surfaces_g": 2
+    },
+    "sum_three": {
+      "primitive_id": "sum_three",
+      "capability_family": "arithmetic.reduction",
+      "input_signature": [
+        "number",
+        "number",
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 3,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "multi_operand"
+      ],
+      "semantic_neighbors": [
+        "product_three"
+      ],
+      "confusable_non_equivalents": [
+        "clamp",
+        "mean_three",
+        "product_three",
+        "range_three"
+      ],
+      "answer_kind": "float",
+      "commutative": true,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "sum_values": {
+      "primitive_id": "sum_values",
+      "capability_family": "sequence.reduce",
+      "input_signature": [
+        "array"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "type_transition"
+      ],
+      "semantic_neighbors": [
+        "max_values",
+        "min_values"
+      ],
+      "confusable_non_equivalents": [
+        "max_values",
+        "mean_values",
+        "median_values",
+        "min_values",
+        "range_spread"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "tag_value": {
+      "primitive_id": "tag_value",
+      "capability_family": "string.format",
+      "input_signature": [
+        "string",
+        "number"
+      ],
+      "output_type": "string",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "text_length": {
+      "primitive_id": "text_length",
+      "capability_family": "string.transform",
+      "input_signature": [
+        "string"
+      ],
+      "output_type": "integer",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "int",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "text_upper": {
+      "primitive_id": "text_upper",
+      "capability_family": "string.transform",
+      "input_signature": [
+        "string"
+      ],
+      "output_type": "string",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "non_numeric_output"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [
+        "domain_of_url",
+        "file_extension"
+      ],
+      "answer_kind": "string",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "top_k_values": {
+      "primitive_id": "top_k_values",
+      "capability_family": "sequence.filter",
+      "input_signature": [
+        "array",
+        "integer"
+      ],
+      "output_type": "array",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "list_output",
+        "length_varying"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "list",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "value_at_position": {
+      "primitive_id": "value_at_position",
+      "capability_family": "sequence.index",
+      "input_signature": [
+        "array",
+        "integer"
+      ],
+      "output_type": "number",
+      "arity": 2,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": true,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "off_by_one_risk"
+      ],
+      "semantic_neighbors": [],
+      "confusable_non_equivalents": [],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    },
+    "weeks_to_days": {
+      "primitive_id": "weeks_to_days",
+      "capability_family": "date_time",
+      "input_signature": [
+        "number"
+      ],
+      "output_type": "number",
+      "arity": 1,
+      "deterministic": true,
+      "supports_repeated_use": true,
+      "supports_fan_in": false,
+      "supports_fan_out": true,
+      "difficulty_tags": [
+        "unit_sensitive"
+      ],
+      "semantic_neighbors": [
+        "days_to_hours",
+        "hours_to_minutes"
+      ],
+      "confusable_non_equivalents": [
+        "ceil_value",
+        "celsius_to_fahrenheit",
+        "circle_area",
+        "days_to_hours",
+        "fahrenheit_to_celsius",
+        "floor_value",
+        "hours_to_minutes",
+        "inverse",
+        "km_to_meters",
+        "meters_to_km",
+        "minutes_to_seconds",
+        "negate",
+        "ratio_to_percent",
+        "seconds_to_minutes",
+        "sqrt",
+        "square"
+      ],
+      "answer_kind": "float",
+      "commutative": false,
+      "accepts_reference_args": true,
+      "n_surfaces_a": 1,
+      "n_surfaces_g": 1
+    }
+  },
+  "provenance": {
+    "repro_schema_version": "ttdf.repro.v1",
+    "schema_version": "ttdf.capability_registry.v1",
+    "generated_at_utc": "2026-07-30T22:38:22.506193+00:00",
+    "git": {
+      "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+      "dirty": true,
+      "n_dirty_files": 32,
+      "branch": "main"
+    },
+    "python_version": "3.11.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "dependency_versions": {
+      "pydantic": "2.12.5",
+      "pyyaml": "6.0.1",
+      "numpy": "1.26.4",
+      "matplotlib": "3.8.4"
+    },
+    "cli_args": [
+      "capability-audit"
+    ],
+    "seeds": {},
+    "config_hash": "",
+    "input_hashes": {}
+  }
+}

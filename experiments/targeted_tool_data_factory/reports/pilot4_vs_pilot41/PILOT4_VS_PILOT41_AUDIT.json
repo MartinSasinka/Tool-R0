@@ -1,0 +1,246 @@
+{
+  "schema_version": "ttdf.pilot41.audit.v1",
+  "stats": {
+    "pilot3": {
+      "label": "pilot3",
+      "n": 600,
+      "call_count_dist": {
+        "None": 1.0
+      },
+      "query_mode_dist": {
+        "None": 1.0
+      },
+      "stages_related_rate": 0.0,
+      "mean_graph_edge_coverage": 0.159,
+      "high_or_complete_graph_leak_rate": 0.31,
+      "call_count_disclosed_rate": 0.0,
+      "top1_skeleton_share": 0.0017,
+      "n_distinct_skeletons": 600,
+      "singleton_cell_rate": 0.0,
+      "singleton_topology_rate": 0.0,
+      "n_cells": 1,
+      "n_topologies": 1,
+      "mean_cell_support": 600.0
+    },
+    "pilot4": {
+      "label": "pilot4",
+      "n": 600,
+      "call_count_dist": {
+        "2": 0.3133,
+        "3": 0.2267,
+        "4": 0.1433,
+        "5": 0.1,
+        "6+": 0.2167
+      },
+      "query_mode_dist": {
+        "GOAL_BASED_IMPLICIT": 0.605,
+        "PROCEDURAL_EXPLICIT": 0.125,
+        "SEMI_IMPLICIT": 0.27
+      },
+      "stages_related_rate": 0.845,
+      "mean_graph_edge_coverage": 1.3643,
+      "high_or_complete_graph_leak_rate": 0.8833,
+      "call_count_disclosed_rate": 0.845,
+      "top1_skeleton_share": 0.0017,
+      "n_distinct_skeletons": 600,
+      "singleton_cell_rate": 0.3205,
+      "singleton_topology_rate": 0.5036,
+      "n_cells": 156,
+      "n_topologies": 139,
+      "mean_cell_support": 3.85
+    },
+    "pilot41": {
+      "label": "pilot41",
+      "n": 1000,
+      "call_count_dist": {
+        "2": 0.322,
+        "3": 0.219,
+        "4": 0.134,
+        "5": 0.099,
+        "6+": 0.226
+      },
+      "query_mode_dist": {
+        "DOMAIN_GROUNDED_IMPLICIT": 0.363,
+        "GOAL_BASED_IMPLICIT": 0.44,
+        "GRAPH_EXPLICIT": 0.06,
+        "OPERATION_EXPLICIT_GRAPH_IMPLICIT": 0.044,
+        "SEMI_IMPLICIT": 0.093
+      },
+      "stages_related_rate": 0.0,
+      "mean_graph_edge_coverage": 0.0,
+      "high_or_complete_graph_leak_rate": 0.0,
+      "call_count_disclosed_rate": 0.0,
+      "top1_skeleton_share": 0.001,
+      "n_distinct_skeletons": 1000,
+      "singleton_cell_rate": 0.1029,
+      "singleton_topology_rate": 0.0541,
+      "n_cells": 68,
+      "n_topologies": 37,
+      "mean_cell_support": 14.71
+    },
+    "dev200": {
+      "label": "nestful_dev",
+      "n": 200,
+      "call_count_dist": {
+        "None": 1.0
+      },
+      "query_mode_dist": {
+        "None": 1.0
+      },
+      "stages_related_rate": 0.0,
+      "mean_graph_edge_coverage": 0.0,
+      "high_or_complete_graph_leak_rate": 0.0,
+      "call_count_disclosed_rate": 0.0,
+      "top1_skeleton_share": 1.0,
+      "n_distinct_skeletons": 1,
+      "singleton_cell_rate": 0.0,
+      "singleton_topology_rate": 0.0,
+      "n_cells": 1,
+      "n_topologies": 1,
+      "mean_cell_support": 200.0
+    }
+  },
+  "metrics": [
+    {
+      "metric": "stages_related_rate",
+      "pilot3": 0.0,
+      "pilot4": 0.845,
+      "pilot41": 0.0,
+      "dev200": 0.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "graph-explicit phrase"
+    },
+    {
+      "metric": "mean_graph_edge_coverage",
+      "pilot3": 0.159,
+      "pilot4": 1.3643,
+      "pilot41": 0.0,
+      "dev200": 0.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "dependency disclosure"
+    },
+    {
+      "metric": "high_or_complete_graph_leak_rate",
+      "pilot3": 0.31,
+      "pilot4": 0.8833,
+      "pilot41": 0.0,
+      "dev200": 0.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "graph leak class"
+    },
+    {
+      "metric": "top1_skeleton_share",
+      "pilot3": 0.0017,
+      "pilot4": 0.0017,
+      "pilot41": 0.001,
+      "dev200": 1.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "template concentration"
+    },
+    {
+      "metric": "singleton_cell_rate",
+      "pilot3": 0.0,
+      "pilot4": 0.3205,
+      "pilot41": 0.1029,
+      "dev200": 0.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "cell sparsity"
+    },
+    {
+      "metric": "n_topologies",
+      "pilot3": 1,
+      "pilot4": 139,
+      "pilot41": 37,
+      "dev200": 1,
+      "direction": "higher_is_better",
+      "verdict": "PROFILE_TRADEOFF",
+      "caveat": "topology coverage"
+    },
+    {
+      "metric": "mean_cell_support",
+      "pilot3": 600.0,
+      "pilot4": 3.85,
+      "pilot41": 14.71,
+      "dev200": 200.0,
+      "direction": "higher_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "repeated skill exposure"
+    },
+    {
+      "metric": "call_count_disclosed_rate",
+      "pilot3": 0.0,
+      "pilot4": 0.845,
+      "pilot41": 0.0,
+      "dev200": 0.0,
+      "direction": "lower_is_better",
+      "verdict": "VERIFIED_IMPROVEMENT",
+      "caveat": "call-count leakage"
+    },
+    {
+      "metric": "call_count_tv_to_dev",
+      "pilot3": 0.0,
+      "pilot4": 1.0,
+      "pilot41": 1.0,
+      "direction": "lower_is_better",
+      "verdict": "PROFILE_TRADEOFF",
+      "caveat": "profile match"
+    }
+  ],
+  "claim_classes": {
+    "VERIFIED_IMPROVEMENT": [
+      "stages_related_rate",
+      "mean_graph_edge_coverage",
+      "high_or_complete_graph_leak_rate",
+      "top1_skeleton_share",
+      "singleton_cell_rate",
+      "mean_cell_support",
+      "call_count_disclosed_rate"
+    ],
+    "PROFILE_TRADEOFF": [
+      "n_topologies",
+      "call_count_tv_to_dev"
+    ],
+    "REQUIRES_TRAINING": [
+      "NESTFUL official win",
+      "dead_group_rate"
+    ],
+    "REQUIRES_NESTFUL_EVAL": [
+      "official win delta"
+    ]
+  },
+  "provenance": {
+    "repro_schema_version": "ttdf.repro.v1",
+    "schema_version": "ttdf.pilot41.audit.v1",
+    "generated_at_utc": "2026-07-31T12:55:40.313820+00:00",
+    "git": {
+      "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+      "dirty": true,
+      "n_dirty_files": 37,
+      "branch": "main"
+    },
+    "python_version": "3.11.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "dependency_versions": {
+      "pydantic": "2.12.5",
+      "pyyaml": "6.0.1",
+      "numpy": "1.26.4",
+      "matplotlib": "3.8.4"
+    },
+    "cli_args": [
+      "audit-pilot41"
+    ],
+    "seeds": {},
+    "config_hash": "",
+    "input_hashes": {
+      "experiments/targeted_tool_data_factory/outputs/selected/export_pilot3/train_grpo_pilot3.jsonl": "77d7e2bf51acd9a998d4cd202f6b7add7e841a41eb31cc74af249745f765e538",
+      "experiments/targeted_tool_data_factory/outputs/pilot4_profile_safe/canonical.jsonl": "a5ede4b138653fa7ffd71e924a482ab4cd29e75d15e805590b38e0c951353cfa",
+      "experiments/targeted_tool_data_factory/outputs/pilot4_1_profile_safe/canonical.jsonl": "b97661573d7a92c0dc1e95d2948e36ad68277d84dede694d34fe19afdf075e73",
+      "experiments/nestful_mtgrpo_minimal/data/splits/nestful_dev.jsonl": "35f120c86f08db6c945da908cff05b7cbfda865873c074b8ed20e5bc1eee7355"
+    }
+  }
+}

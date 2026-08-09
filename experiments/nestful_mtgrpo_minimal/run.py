@@ -1124,6 +1124,29 @@ def mode_val_eval(config: dict, checkpoint: str | None) -> int:
 
 def mode_train(config: dict, checkpoint: str | None = None) -> int:
     out_dir = _outputs_dir(config)
+    # Sibling experiment + factory on path (execution_aware reward + nestful sampler).
+    _partial = os.path.join(os.path.dirname(_HERE), "nestful_mtgrpo_partial")
+    _factory_src = os.path.join(
+        os.path.dirname(_HERE), "targeted_tool_data_factory", "src")
+    for _p in (_partial, _factory_src):
+        if os.path.isdir(_p) and _p not in sys.path:
+            sys.path.insert(0, _p)
+    _policy = str((config.get("reward") or {}).get("train_policy", "")).lower()
+    if _policy in ("execution_aware", "execution"):
+        try:
+            import execution_reward as _er
+            import grpo_train as _gt
+            _er.set_weights_from_config(config)
+            _gt.episode_turn_reward_seq = _er.episode_turn_reward_seq
+            print("[train] reward wired: execution_aware "
+                  f"(from {_partial})", flush=True)
+        except Exception as exc:  # noqa: BLE001
+            raise SystemExit(
+                f"[train] ABORT: reward.train_policy=execution_aware but could not "
+                f"import nestful_mtgrpo_partial/execution_reward ({exc}). "
+                f"Ensure experiments/nestful_mtgrpo_partial is next to "
+                f"nestful_mtgrpo_minimal on the pod.") from exc
+
     registry = build_registry(config)
     paths = config["paths"]
     data_cfg = config.get("data", {})

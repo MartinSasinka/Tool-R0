@@ -1,0 +1,82 @@
+{
+  "summary": {
+    "by_ood_decile": [
+      {
+        "c0_win_rate": 0.6046511627906976,
+        "d1_win_rate": 0.6046511627906976,
+        "decile": 0,
+        "n": 43,
+        "net_gain": 0
+      },
+      {
+        "c0_win_rate": 0.5789473684210527,
+        "d1_win_rate": 0.5614035087719298,
+        "decile": 1,
+        "n": 57,
+        "net_gain": -1
+      },
+      {
+        "c0_win_rate": 0.6976744186046512,
+        "d1_win_rate": 0.7209302325581395,
+        "decile": 2,
+        "n": 43,
+        "net_gain": 1
+      },
+      {
+        "c0_win_rate": 0.4716981132075472,
+        "d1_win_rate": 0.49056603773584906,
+        "decile": 3,
+        "n": 53,
+        "net_gain": 1
+      },
+      {
+        "c0_win_rate": 0.5471698113207547,
+        "d1_win_rate": 0.5849056603773585,
+        "decile": 4,
+        "n": 53,
+        "net_gain": 2
+      },
+      {
+        "c0_win_rate": 0.36363636363636365,
+        "d1_win_rate": 0.5,
+        "decile": 5,
+        "n": 22,
+        "net_gain": 3
+      },
+      {
+        "c0_win_rate": 0.660377358490566,
+        "d1_win_rate": 0.660377358490566,
+        "decile": 6,
+        "n": 53,
+        "net_gain": 0
+      },
+      {
+        "c0_win_rate": 0.5131578947368421,
+        "d1_win_rate": 0.5394736842105263,
+        "decile": 7,
+        "n": 76,
+        "net_gain": 2
+      },
+      {
+        "c0_win_rate": 0.6875,
+        "d1_win_rate": 0.6666666666666666,
+        "decile": 8,
+        "n": 48,
+        "net_gain": -1
+      },
+      {
+        "c0_win_rate": 0.36538461538461536,
+        "d1_win_rate": 0.4423076923076923,
+        "decile": 9,
+        "n": 52,
+        "net_gain": 4
+      }
+    ],
+    "n_diagnostic": 500,
+    "n_joint_cells_diagnostic": 104,
+    "n_joint_cells_train": 58,
+    "n_train": 300,
+    "rare_combination_rate": 1.0,
+    "unseen_combination_rate": 1.0
+  }
+}

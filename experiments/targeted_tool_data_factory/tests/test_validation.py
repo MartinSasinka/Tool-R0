@@ -4,9 +4,9 @@ import copy
 from targeted_tool_data.generation import make_candidate
 from targeted_tool_data.schemas import GenerationCell, TaskRecord
 from targeted_tool_data.util import normalize_query
-from targeted_tool_data.validation import (contamination_check, dedup_pool,
-                                           minimal_path_search, v1_schema,
-                                           v2_execution, v3_semantic,
+from targeted_tool_data.validation import (_match, contamination_check,
+                                           dedup_pool, minimal_path_search,
+                                           v1_schema, v2_execution, v3_semantic,
                                            v6_distribution, validate_record)
 
 BUCKETS_CFG = {"small": [8, 9], "medium": [10, 12], "large": [13, 18]}
@@ -69,6 +69,14 @@ def test_v4_shortcut_detection_synthetic():
             assert res["single_call_shortcut"]
             return
     # if none found, that's fine too — the factory guard filters most
+
+
+def test_shortcut_search_survives_values_outside_the_float_range():
+    # an exponent primitive can produce an int larger than any float, which must
+    # not crash the search: such a value simply cannot equal a finite answer
+    huge = 10 ** 400
+    assert _match(huge, 401.268823, 1e-6) is False
+    assert _match(huge, huge, 1e-6) is True
 
 
 def test_validate_record_full_pass_rate():

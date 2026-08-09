@@ -822,6 +822,17 @@ def validate_surface_uniqueness() -> List[str]:
     return errs
 
 
+def _load_extensions() -> None:
+    """Pilot4 capability-gap primitives (boolean, geometry, bitwise, ...)."""
+    import sys
+
+    from . import extensions
+
+    extensions.register(sys.modules[__name__])
+
+
+_load_extensions()
+
 _UNIQUENESS_ERRORS = validate_surface_uniqueness()
 if _UNIQUENESS_ERRORS:                                   # pragma: no cover
     raise RuntimeError("registry surface name collision: "

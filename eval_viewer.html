@@ -1,4 +1,4 @@
-<!--python -m http.server 8765-->
+<!--w-->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -570,7 +570,7 @@
 </head>
 <body>
 
-<header>
+  <header>
   <h1>Tool-R0 <span>Eval Viewer</span></h1>
 
   <label class="drop-zone" id="dropA" title="Baseline / C0 trajectories JSONL">
@@ -607,7 +607,7 @@
     <option value="disagree">Win disagree</option>
     <option value="a_only">C0/A only</option>
     <option value="b_only">D1/B only</option>
-  </select>
+      </select>
 
   <select class="filter-sel" id="filterN" title="Filter by gold tool-call bucket">
     <option value="all">n tools: all</option>
@@ -633,7 +633,7 @@
   <div class="stat"><span class="label">D1 F1</span><span class="val" id="sF1B">—</span></div>
   <div class="stat-sep"></div>
   <div class="stat"><span class="label">Showing</span><span class="val" id="sShowing">—</span></div>
-      </div>
+    </div>
 
 <div class="ntool-wrap collapsed" id="nToolWrap">
   <button type="button" class="ntool-toggle" id="nToolToggle" title="Zobrazit / skrýt shrnutí">
@@ -655,9 +655,9 @@
             </tr>
           </thead>
           <tbody id="nToolBody"></tbody>
-        </table>
+      </table>
         <div class="ntool-note" id="nToolNoteImprove"></div>
-      </div>
+    </div>
       <div class="ntool-col">
         <h3>Co se změnilo v chování modelu</h3>
         <table class="ntool-table">
@@ -675,14 +675,14 @@
       </div>
       </div>
       </div>
-    </div>
+  </div>
 
 <div class="main">
   <aside class="sidebar">
     <div class="sidebar-hdr">
       <span>Tasks</span>
       <span id="listCount">0</span>
-    </div>
+  </div>
     <div class="task-list" id="taskList"></div>
   </aside>
   <section class="detail" id="detail">

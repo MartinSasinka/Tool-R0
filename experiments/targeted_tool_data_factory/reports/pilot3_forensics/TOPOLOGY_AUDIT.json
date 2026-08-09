@@ -1,0 +1,704 @@
+{
+  "coverage_train300_vs_diag": {
+    "diagnostic_exact_topology_coverage_rate": 0.76,
+    "diagnostic_unique": 93,
+    "diagnostic_unseen_topology_rate": 0.24,
+    "n_diagnostic": 500,
+    "n_diagnostic_covered": 380,
+    "train_unique": 38
+  },
+  "coverage_train600_vs_diag": {
+    "diagnostic_exact_topology_coverage_rate": 0.774,
+    "diagnostic_unique": 93,
+    "diagnostic_unseen_topology_rate": 0.22599999999999998,
+    "n_diagnostic": 500,
+    "n_diagnostic_covered": 387,
+    "train_unique": 47
+  },
+  "diagnostic": {
+    "effective_n_topologies": 27.548415570430613,
+    "n_programs": 500,
+    "n_unique_topology_hashes": 93,
+    "shannon_entropy": 4.78389744038377,
+    "singleton_rate": 0.6451612903225806,
+    "top10_share": 0.68,
+    "top1_share": 0.2,
+    "top5_share": 0.51,
+    "top_topologies": [
+      {
+        "count": 100,
+        "share": 0.2,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 66,
+        "share": 0.132,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 31,
+        "share": 0.062,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 30,
+        "share": 0.06,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 28,
+        "share": 0.056,
+        "topology_hash": "topo_911586a55488"
+      },
+      {
+        "count": 20,
+        "share": 0.04,
+        "topology_hash": "topo_30980484d6d7"
+      },
+      {
+        "count": 19,
+        "share": 0.038,
+        "topology_hash": "topo_5b37b75596d2"
+      },
+      {
+        "count": 17,
+        "share": 0.034,
+        "topology_hash": "topo_774030263969"
+      },
+      {
+        "count": 15,
+        "share": 0.03,
+        "topology_hash": "topo_17d840e0415f"
+      },
+      {
+        "count": 14,
+        "share": 0.028,
+        "topology_hash": "topo_0c51481d8aeb"
+      },
+      {
+        "count": 12,
+        "share": 0.024,
+        "topology_hash": "topo_6011a58939eb"
+      },
+      {
+        "count": 11,
+        "share": 0.022,
+        "topology_hash": "topo_d228dd6db98a"
+      },
+      {
+        "count": 10,
+        "share": 0.02,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 10,
+        "share": 0.02,
+        "topology_hash": "topo_52c12a6fa235"
+      },
+      {
+        "count": 7,
+        "share": 0.014,
+        "topology_hash": "topo_5dc2042eea23"
+      },
+      {
+        "count": 4,
+        "share": 0.008,
+        "topology_hash": "topo_619388d6c582"
+      },
+      {
+        "count": 4,
+        "share": 0.008,
+        "topology_hash": "topo_2b041b861492"
+      },
+      {
+        "count": 4,
+        "share": 0.008,
+        "topology_hash": "topo_37f1fc553f96"
+      },
+      {
+        "count": 4,
+        "share": 0.008,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 3,
+        "share": 0.006,
+        "topology_hash": "topo_5c49d2fff8bb"
+      }
+    ]
+  },
+  "heldout": {
+    "effective_n_topologies": 16.204421529950864,
+    "n_programs": 200,
+    "n_unique_topology_hashes": 35,
+    "shannon_entropy": 4.01831561472441,
+    "singleton_rate": 0.3142857142857143,
+    "top10_share": 0.765,
+    "top1_share": 0.245,
+    "top5_share": 0.61,
+    "top_topologies": [
+      {
+        "count": 49,
+        "share": 0.245,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 30,
+        "share": 0.15,
+        "topology_hash": "topo_911586a55488"
+      },
+      {
+        "count": 22,
+        "share": 0.11,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 11,
+        "share": 0.055,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 10,
+        "share": 0.05,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 8,
+        "share": 0.04,
+        "topology_hash": "topo_d228dd6db98a"
+      },
+      {
+        "count": 7,
+        "share": 0.035,
+        "topology_hash": "topo_f5466e583fca"
+      },
+      {
+        "count": 6,
+        "share": 0.03,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 5,
+        "share": 0.025,
+        "topology_hash": "topo_0c51481d8aeb"
+      },
+      {
+        "count": 5,
+        "share": 0.025,
+        "topology_hash": "topo_64b2717a77dd"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_30980484d6d7"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_ff8ead63c33b"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_926312b15db7"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_5eeac3554b19"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_e1b2f19eddb9"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_c39b8213eda5"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_9e01698159b0"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_eaa9138bf474"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_cd7f4c91b6f3"
+      }
+    ]
+  },
+  "methodology_limitations": [
+    "topology_hash uses call-order node indices; order-isomorphic renumberings differ",
+    "independent of tool names/labels/constants by construction"
+  ],
+  "pilot2_train": {
+    "effective_n_topologies": 12.789620604362874,
+    "n_programs": 160,
+    "n_unique_topology_hashes": 27,
+    "shannon_entropy": 3.676901563147369,
+    "singleton_rate": 0.2222222222222222,
+    "top10_share": 0.80625,
+    "top1_share": 0.3375,
+    "top5_share": 0.64375,
+    "top_topologies": [
+      {
+        "count": 54,
+        "share": 0.3375,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 17,
+        "share": 0.10625,
+        "topology_hash": "topo_911586a55488"
+      },
+      {
+        "count": 13,
+        "share": 0.08125,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 11,
+        "share": 0.06875,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 8,
+        "share": 0.05,
+        "topology_hash": "topo_5b37b75596d2"
+      },
+      {
+        "count": 6,
+        "share": 0.0375,
+        "topology_hash": "topo_64b2717a77dd"
+      },
+      {
+        "count": 6,
+        "share": 0.0375,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 6,
+        "share": 0.0375,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 4,
+        "share": 0.025,
+        "topology_hash": "topo_30980484d6d7"
+      },
+      {
+        "count": 4,
+        "share": 0.025,
+        "topology_hash": "topo_00ac72c33abd"
+      },
+      {
+        "count": 3,
+        "share": 0.01875,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 3,
+        "share": 0.01875,
+        "topology_hash": "topo_926c72bac680"
+      },
+      {
+        "count": 3,
+        "share": 0.01875,
+        "topology_hash": "topo_5cf1a13edea8"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_0c51481d8aeb"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_d4b4ab44315e"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_596ff8eb2493"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_2b041b861492"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_ff8ead63c33b"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_63f405a71afa"
+      },
+      {
+        "count": 2,
+        "share": 0.0125,
+        "topology_hash": "topo_926312b15db7"
+      }
+    ]
+  },
+  "reference_format_inventory": {
+    "counts": {
+      "pattern_0": 3662,
+      "unparsed_dollar_string": 1
+    },
+    "examples": {
+      "pattern_0": "$var1.output_0$",
+      "unparsed_dollar_string": "The cost of the item is $12.50 and the tax is $2.50"
+    }
+  },
+  "reserve": {
+    "effective_n_topologies": 12.640407979425172,
+    "n_programs": 200,
+    "n_unique_topology_hashes": 34,
+    "shannon_entropy": 3.659971123307028,
+    "singleton_rate": 0.29411764705882354,
+    "top10_share": 0.76,
+    "top1_share": 0.415,
+    "top5_share": 0.615,
+    "top_topologies": [
+      {
+        "count": 83,
+        "share": 0.415,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 16,
+        "share": 0.08,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 8,
+        "share": 0.04,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 8,
+        "share": 0.04,
+        "topology_hash": "topo_5cf1a13edea8"
+      },
+      {
+        "count": 8,
+        "share": 0.04,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 8,
+        "share": 0.04,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 6,
+        "share": 0.03,
+        "topology_hash": "topo_00ac72c33abd"
+      },
+      {
+        "count": 6,
+        "share": 0.03,
+        "topology_hash": "topo_d228dd6db98a"
+      },
+      {
+        "count": 5,
+        "share": 0.025,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_2b041b861492"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_926c72bac680"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_17d840e0415f"
+      },
+      {
+        "count": 4,
+        "share": 0.02,
+        "topology_hash": "topo_9e01698159b0"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_2b9a65f092bb"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_5b37b75596d2"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_0c51481d8aeb"
+      },
+      {
+        "count": 3,
+        "share": 0.015,
+        "topology_hash": "topo_64b2717a77dd"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_ace9c53050f0"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_ca6030f187be"
+      },
+      {
+        "count": 2,
+        "share": 0.01,
+        "topology_hash": "topo_bf579ac7c4b1"
+      }
+    ]
+  },
+  "train300": {
+    "effective_n_topologies": 16.51894408167903,
+    "n_programs": 300,
+    "n_unique_topology_hashes": 38,
+    "shannon_entropy": 4.046049565130658,
+    "singleton_rate": 0.21052631578947367,
+    "top10_share": 0.7466666666666667,
+    "top1_share": 0.3,
+    "top5_share": 0.5766666666666667,
+    "top_topologies": [
+      {
+        "count": 90,
+        "share": 0.3,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 35,
+        "share": 0.11666666666666667,
+        "topology_hash": "topo_911586a55488"
+      },
+      {
+        "count": 19,
+        "share": 0.06333333333333334,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 16,
+        "share": 0.05333333333333334,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 13,
+        "share": 0.043333333333333335,
+        "topology_hash": "topo_64b2717a77dd"
+      },
+      {
+        "count": 11,
+        "share": 0.03666666666666667,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 11,
+        "share": 0.03666666666666667,
+        "topology_hash": "topo_d228dd6db98a"
+      },
+      {
+        "count": 11,
+        "share": 0.03666666666666667,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 10,
+        "share": 0.03333333333333333,
+        "topology_hash": "topo_30980484d6d7"
+      },
+      {
+        "count": 8,
+        "share": 0.02666666666666667,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 6,
+        "share": 0.02,
+        "topology_hash": "topo_926312b15db7"
+      },
+      {
+        "count": 5,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_926c72bac680"
+      },
+      {
+        "count": 5,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_9e01698159b0"
+      },
+      {
+        "count": 5,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_8c144cdbfcfb"
+      },
+      {
+        "count": 5,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_5b37b75596d2"
+      },
+      {
+        "count": 5,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_63f405a71afa"
+      },
+      {
+        "count": 4,
+        "share": 0.013333333333333334,
+        "topology_hash": "topo_33e36888cf10"
+      },
+      {
+        "count": 3,
+        "share": 0.01,
+        "topology_hash": "topo_bf579ac7c4b1"
+      },
+      {
+        "count": 3,
+        "share": 0.01,
+        "topology_hash": "topo_2b9a65f092bb"
+      },
+      {
+        "count": 3,
+        "share": 0.01,
+        "topology_hash": "topo_ff8ead63c33b"
+      }
+    ]
+  },
+  "train600": {
+    "effective_n_topologies": 17.374837785525667,
+    "n_programs": 600,
+    "n_unique_topology_hashes": 47,
+    "shannon_entropy": 4.118927603537313,
+    "singleton_rate": 0.10638297872340426,
+    "top10_share": 0.7183333333333334,
+    "top1_share": 0.30333333333333334,
+    "top5_share": 0.6,
+    "top_topologies": [
+      {
+        "count": 182,
+        "share": 0.30333333333333334,
+        "topology_hash": "topo_fdeb50f24873"
+      },
+      {
+        "count": 82,
+        "share": 0.13666666666666666,
+        "topology_hash": "topo_911586a55488"
+      },
+      {
+        "count": 33,
+        "share": 0.055,
+        "topology_hash": "topo_bd3dd51ec1a9"
+      },
+      {
+        "count": 33,
+        "share": 0.055,
+        "topology_hash": "topo_1c8dbe1830b2"
+      },
+      {
+        "count": 30,
+        "share": 0.05,
+        "topology_hash": "topo_02b29308ce2b"
+      },
+      {
+        "count": 17,
+        "share": 0.028333333333333332,
+        "topology_hash": "topo_5296967693d8"
+      },
+      {
+        "count": 17,
+        "share": 0.028333333333333332,
+        "topology_hash": "topo_d228dd6db98a"
+      },
+      {
+        "count": 14,
+        "share": 0.023333333333333334,
+        "topology_hash": "topo_926c72bac680"
+      },
+      {
+        "count": 12,
+        "share": 0.02,
+        "topology_hash": "topo_64b2717a77dd"
+      },
+      {
+        "count": 11,
+        "share": 0.018333333333333333,
+        "topology_hash": "topo_ff8ead63c33b"
+      },
+      {
+        "count": 11,
+        "share": 0.018333333333333333,
+        "topology_hash": "topo_0c51481d8aeb"
+      },
+      {
+        "count": 11,
+        "share": 0.018333333333333333,
+        "topology_hash": "topo_33e36888cf10"
+      },
+      {
+        "count": 11,
+        "share": 0.018333333333333333,
+        "topology_hash": "topo_17d840e0415f"
+      },
+      {
+        "count": 10,
+        "share": 0.016666666666666666,
+        "topology_hash": "topo_7279e5f4b24a"
+      },
+      {
+        "count": 9,
+        "share": 0.015,
+        "topology_hash": "topo_b53a306e6f0b"
+      },
+      {
+        "count": 8,
+        "share": 0.013333333333333334,
+        "topology_hash": "topo_774030263969"
+      },
+      {
+        "count": 8,
+        "share": 0.013333333333333334,
+        "topology_hash": "topo_00ac72c33abd"
+      },
+      {
+        "count": 7,
+        "share": 0.011666666666666667,
+        "topology_hash": "topo_30980484d6d7"
+      },
+      {
+        "count": 7,
+        "share": 0.011666666666666667,
+        "topology_hash": "topo_6083e580bf00"
+      },
+      {
+        "count": 6,
+        "share": 0.01,
+        "topology_hash": "topo_47316b07929b"
+      }
+    ]
+  }
+}

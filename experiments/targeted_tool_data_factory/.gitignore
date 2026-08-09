@@ -1,4 +1,10 @@
-outputs/
+# Ignore generated factory outputs by default…
+outputs/**
 __pycache__/
 *.egg-info/
 .pytest_cache/
+
+# …but keep the frozen PROFILE / ENRICHMENT training reservoirs tracked.
+!outputs/pilot4_3_nestful_profile_1000/
+!outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
+!outputs/pilot4_3_nestful_profile_1000/train_nestful_enrichment_500.jsonl

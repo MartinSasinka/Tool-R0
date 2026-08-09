@@ -1,0 +1,6 @@
+c0_win_rate,d1_win_rate,gap_bucket,n_tasks,net_gain,note,priority,recommendation
+0.5728155339805825,0.5922330097087378,exact_full,412,8,proxy evidence only,P1,Add abstract schema-compatible primitives/surfaces for unmapped families; do not copy IBM function list.
+0.6666666666666666,0.6666666666666666,exact_low,3,0,proxy evidence only,P1,Add abstract schema-compatible primitives/surfaces for unmapped families; do not copy IBM function list.
+0.47368421052631576,0.4868421052631579,exact_none,76,1,proxy evidence only,P0,Add abstract schema-compatible primitives/surfaces for unmapped families; do not copy IBM function list.
+0.3333333333333333,0.5555555555555556,exact_partial,9,2,proxy evidence only,P1,Add abstract schema-compatible primitives/surfaces for unmapped families; do not copy IBM function list.
+,,tasks_with_any_unmapped_gold_tool,77,,Do not emit concrete IBM APIs to copy.,P0,Prioritize operation families on critical path with unmapped proxy labels.

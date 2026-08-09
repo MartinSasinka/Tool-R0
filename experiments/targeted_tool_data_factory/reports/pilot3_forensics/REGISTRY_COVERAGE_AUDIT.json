@@ -1,0 +1,92 @@
+{
+  "by_outcome": [
+    {
+      "bucket": "exact_full",
+      "c0_win_rate": 0.5728155339805825,
+      "c0_wins": 236,
+      "d1_win_rate": 0.5922330097087378,
+      "d1_wins": 244,
+      "gained": 22,
+      "lost": 14,
+      "mean_ood": 0.05291262135922319,
+      "n": 412,
+      "net_gain": 8
+    },
+    {
+      "bucket": "exact_low",
+      "c0_win_rate": 0.6666666666666666,
+      "c0_wins": 2,
+      "d1_win_rate": 0.6666666666666666,
+      "d1_wins": 2,
+      "gained": 0,
+      "lost": 0,
+      "mean_ood": 0.6222,
+      "n": 3,
+      "net_gain": 0
+    },
+    {
+      "bucket": "exact_none",
+      "c0_win_rate": 0.47368421052631576,
+      "c0_wins": 36,
+      "d1_win_rate": 0.4868421052631579,
+      "d1_wins": 37,
+      "gained": 3,
+      "lost": 2,
+      "mean_ood": 0.6830039473684206,
+      "n": 76,
+      "net_gain": 1
+    },
+    {
+      "bucket": "exact_partial",
+      "c0_win_rate": 0.3333333333333333,
+      "c0_wins": 3,
+      "d1_win_rate": 0.5555555555555556,
+      "d1_wins": 5,
+      "gained": 2,
+      "lost": 0,
+      "mean_ood": 0.32217777777777773,
+      "n": 9,
+      "net_gain": 2
+    },
+    {
+      "bucket": "ood_high",
+      "c0_win_rate": 0.4714285714285714,
+      "c0_wins": 33,
+      "d1_win_rate": 0.5,
+      "d1_wins": 35,
+      "gained": 3,
+      "lost": 1,
+      "mean_ood": 0.711355714285714,
+      "n": 70,
+      "net_gain": 2
+    },
+    {
+      "bucket": "ood_low",
+      "c0_win_rate": 0.5686746987951807,
+      "c0_wins": 236,
+      "d1_win_rate": 0.5879518072289157,
+      "d1_wins": 244,
+      "gained": 22,
+      "lost": 14,
+      "mean_ood": 0.05378313253012037,
+      "n": 415,
+      "net_gain": 8
+    },
+    {
+      "bucket": "ood_mid",
+      "c0_win_rate": 0.5333333333333333,
+      "c0_wins": 8,
+      "d1_win_rate": 0.6,
+      "d1_wins": 9,
+      "gained": 2,
+      "lost": 1,
+      "mean_ood": 0.4239733333333334,
+      "n": 15,
+      "net_gain": 1
+    }
+  ],
+  "mean_exact_coverage": 0.8382094000000002,
+  "mean_ood": 0.15694900000000028,
+  "n_tasks": 500,
+  "note": "proxy mappings are hypotheses"
+}

@@ -1,0 +1,76 @@
+metric,pilot3,pilot4_train600,pilot4_selected,target_dev200,direction,verdict,n_admissible_topologies,caveat
+mean_call_count,4.0917,3.8783,3.956,4.195,closer_to_target_is_better,further_from_target,,"structural only; matching the profile is the goal, not maximisation"
+join_rate,0.5133,0.5167,0.52,0.43,closer_to_target_is_better,further_from_target,,"measured over the whole set, not per bucket"
+multi_join_rate,0.0,0.2133,0.229,0.125,higher_is_better,improved,,pilot3 weakness; higher is only better up to the profile
+fan_out_rate,0.0,0.27,0.273,0.0,coverage_required_above_profile,coverage_added,,"dev-200 contains no fan-out, so this is deliberate coverage beyond the measured profile and a known distribution-mismatch risk"
+reuse_rate,0.0,0.27,0.273,0.0,coverage_required_above_profile,coverage_added,,"dev-200 contains no output reuse, so this is deliberate coverage beyond the measured profile and a known distribution-mismatch risk"
+late_reference_rate,0.5133,0.5167,0.52,0.435,closer_to_target_is_better,further_from_target,,profile-relative
+mean_reference_distance,1.2788,1.323,1.3359,1.2378,closer_to_target_is_better,further_from_target,,long references are harder to track but also rarer in the benchmark
+mean_depth,2.3067,2.18,2.21,,closer_to_target_is_better,descriptive,,descriptive
+mean_type_transitions,0.1433,0.3433,0.336,0.085,higher_is_better,improved,,type transitions exercise conversion capabilities
+plan_leak_rate,0.6417,0.0967,0.091,0.035,lower_is_better,improved,,"rule-based classifier, not a human judgement of realism"
+goal_based_share,0.01,0.6533,0.646,0.7,closer_to_target_is_better,closer_to_target,,target taken from the dev-200 profile
+mean_operation_explicitness,0.8378,0.235,0.2349,0.1645,lower_is_better,improved,,lexicon-based; a low value is not proof the task is implicit
+mean_sequence_leakage,0.7922,0.2141,0.2148,0.152,lower_is_better,improved,,only defined when at least two operations are cued
+mean_procedural_cue_count,6.6833,1.3467,1.308,0.645,lower_is_better,improved,,"counts surface cues, not reasoning difficulty"
+n_distinct_tool_names,132,190,190,,higher_is_better,improved,,raw surface vocabulary size
+n_distinct_output_keys,1,8,8,,higher_is_better,improved,,affects reference-format diversity
+output_key_entropy,0.0,0.7972,0.7993,,higher_is_better,improved,,"normalised entropy, comparable across sizes"
+n_distinct_tool_combinations,582,599,995,,higher_is_better,improved,,absolute count scales with n
+tool_combination_entropy,0.9973,0.9999,0.9997,,higher_is_better,improved,,"normalised, size-robust"
+n_distinct_primitives,0,80,80,,higher_is_better,improved,,capability breadth proxy
+primitive_entropy,0.0,0.9547,0.9524,,higher_is_better,improved,,"normalised, size-robust"
+n_capability_families,0,25,25,,higher_is_better,improved,,"pilot3 rows predate the taxonomy, so this is 0 for pilot3 by construction"
+top1_query_skeleton_share,0.0083,0.0017,0.001,,lower_is_better,improved,,template concentration
+top1_program_family_share,0.01,0.005,0.003,,lower_is_better,improved,,program-family concentration
+mean_offered_tool_count,11.3967,12.5133,12.51,10.99,closer_to_target_is_better,further_from_target,,"environment size, profile-relative"
+mean_schema_complexity,2.3602,2.5537,2.5761,1.9173,closer_to_target_is_better,further_from_target,,profile-relative
+mean_parameter_count,7.1183,6.905,7.107,8.01,closer_to_target_is_better,further_from_target,,profile-relative
+mean_nested_schema_depth,4.15,4.3183,4.321,3.18,closer_to_target_is_better,further_from_target,,profile-relative
+schema_compatible_distractor_share,0.0,0.95,0.955,,higher_is_better,improved,,"pilot3 has no distractor metadata, so this is 0 for pilot3 by construction"
+mean_hard_distractor_count,0.0,4.1283,4.047,,higher_is_better,improved,,hardness labels differ between pilots; not directly comparable
+bucket[2].n_distinct_topologies,1,1,1,1,higher_is_better,structurally_capped,1,"all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[2].top1_topology_share,1.0,1.0,1.0,1.0,lower_is_better,structurally_capped,1,"all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[2].normalized_entropy,0.0,0.0,0.0,0.0,higher_is_better,structurally_capped,1,"all 1 dead-call-free topologies that exist at 2 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[2].join_rate,0.0,0.0,0.0,0.0,closer_to_target_is_better,unchanged,1,conditional on the call bucket
+bucket[2].multi_join_rate,0.0,0.0,0.0,0.0,higher_is_better,unchanged,1,conditional on the call bucket
+bucket[2].fan_out_rate,0.0,0.0,0.0,0.0,coverage_required_above_profile,unchanged,1,conditional on the call bucket
+bucket[2].reuse_rate,0.0,0.0,0.0,0.0,coverage_required_above_profile,unchanged,1,conditional on the call bucket
+bucket[2].late_reference_rate,0.0,0.0,0.0,0.0,closer_to_target_is_better,unchanged,1,conditional on the call bucket
+bucket[2].mean_reference_distance,1.0,1.0,1.0,1.0,closer_to_target_is_better,unchanged,1,conditional on the call bucket
+bucket[3].n_distinct_topologies,2,3,3,4,higher_is_better,structurally_capped,3,"all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[3].top1_topology_share,0.6262,0.7206,0.743,0.6818,lower_is_better,structurally_capped,3,"all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[3].normalized_entropy,0.9536,0.7141,0.6809,0.6254,higher_is_better,structurally_capped,3,"all 3 dead-call-free topologies that exist at 3 calls are covered, so the remaining spread is fixed by the join rate the profile asks for; pilot3 scores lower on the share only because its join rate overshot that target"
+bucket[3].join_rate,0.6262,0.2794,0.257,0.2273,closer_to_target_is_better,closer_to_target,3,conditional on the call bucket
+bucket[3].multi_join_rate,0.0,0.0,0.0,0.0,higher_is_better,unchanged,3,conditional on the call bucket
+bucket[3].fan_out_rate,0.0,0.1544,0.1308,0.0,coverage_required_above_profile,coverage_added,3,conditional on the call bucket
+bucket[3].reuse_rate,0.0,0.1544,0.1308,0.0,coverage_required_above_profile,coverage_added,3,conditional on the call bucket
+bucket[3].late_reference_rate,0.6262,0.2794,0.257,0.25,closer_to_target_is_better,closer_to_target,3,conditional on the call bucket
+bucket[3].mean_reference_distance,1.3131,1.114,1.1067,1.1364,closer_to_target_is_better,closer_to_target,3,conditional on the call bucket
+bucket[4].n_distinct_topologies,3,7,7,2,higher_is_better,improved,21,distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too
+bucket[4].top1_topology_share,0.5761,0.2759,0.2555,0.6296,lower_is_better,improved,21,conditional on the call bucket
+bucket[4].normalized_entropy,0.8867,0.9158,0.9382,0.951,higher_is_better,improved,21,conditional on the call bucket
+bucket[4].join_rate,0.7717,1.0,1.0,0.6296,closer_to_target_is_better,further_from_target,21,conditional on the call bucket
+bucket[4].multi_join_rate,0.0,0.1264,0.1241,0.0,higher_is_better,improved,21,conditional on the call bucket
+bucket[4].fan_out_rate,0.0,0.4713,0.4672,0.0,coverage_required_above_profile,coverage_added,21,conditional on the call bucket
+bucket[4].reuse_rate,0.0,0.4713,0.4672,0.0,coverage_required_above_profile,coverage_added,21,conditional on the call bucket
+bucket[4].late_reference_rate,0.7717,1.0,1.0,0.6296,closer_to_target_is_better,further_from_target,21,conditional on the call bucket
+bucket[4].mean_reference_distance,1.4275,1.5659,1.5686,1.2592,closer_to_target_is_better,further_from_target,21,conditional on the call bucket
+bucket[5].n_distinct_topologies,4,18,19,4,higher_is_better,improved,315,distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too
+bucket[5].top1_topology_share,0.5484,0.15,0.099,0.3158,lower_is_better,improved,315,conditional on the call bucket
+bucket[5].normalized_entropy,0.8139,0.9273,0.972,0.9892,higher_is_better,improved,315,conditional on the call bucket
+bucket[5].join_rate,0.7419,1.0,1.0,0.7895,closer_to_target_is_better,further_from_target,315,conditional on the call bucket
+bucket[5].multi_join_rate,0.0,0.55,0.495,0.2632,higher_is_better,improved,315,conditional on the call bucket
+bucket[5].fan_out_rate,0.0,0.6333,0.5842,0.0,coverage_required_above_profile,coverage_added,315,conditional on the call bucket
+bucket[5].reuse_rate,0.0,0.6333,0.5842,0.0,coverage_required_above_profile,coverage_added,315,conditional on the call bucket
+bucket[5].late_reference_rate,0.7419,1.0,1.0,0.7895,closer_to_target_is_better,further_from_target,315,conditional on the call bucket
+bucket[5].mean_reference_distance,1.3669,1.7419,1.7432,1.3816,closer_to_target_is_better,further_from_target,315,conditional on the call bucket
+bucket[6+].n_distinct_topologies,16,62,91,26,higher_is_better,improved,,distinct-topology counts scale with the number of rows in the bucket; compare the entropy row too
+bucket[6+].top1_topology_share,0.1939,0.0465,0.0345,0.1364,lower_is_better,improved,,conditional on the call bucket
+bucket[6+].normalized_entropy,0.917,0.9582,0.9591,0.9263,higher_is_better,improved,,conditional on the call bucket
+bucket[6+].join_rate,0.7515,0.969,0.9784,1.0,closer_to_target_is_better,closer_to_target,,conditional on the call bucket
+bucket[6+].multi_join_rate,0.0,0.6512,0.6983,0.4545,higher_is_better,improved,,conditional on the call bucket
+bucket[6+].fan_out_rate,0.0,0.4806,0.5259,0.0,coverage_required_above_profile,coverage_added,,conditional on the call bucket
+bucket[6+].reuse_rate,0.0,0.4806,0.5259,0.0,coverage_required_above_profile,coverage_added,,conditional on the call bucket
+bucket[6+].late_reference_rate,0.7515,0.969,0.9784,1.0,closer_to_target_is_better,closer_to_target,,conditional on the call bucket
+bucket[6+].mean_reference_distance,1.4345,1.6553,1.6899,1.6208,closer_to_target_is_better,closer_to_target,,conditional on the call bucket
