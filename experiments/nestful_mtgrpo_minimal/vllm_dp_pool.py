@@ -267,16 +267,14 @@ def run_episode_collect(
         Trajectory, Turn, get_stage_token_budget,
         resolve_teacher_forced_prefix_n, build_teacher_forced_prefix,
     )
-    from prompt import build_messages, format_tool_response
-    from parser import parse_tool_call
     from executor import ToolExecutor
     from reward import compute_gold_observations, strict_gold_trace_reward
+    from interaction_loop import derive_interaction_budget, run_tool_agent_loop
 
-    gen = config.get("generation", {})
     exec_cfg = config.get("executor", {})
     gold_n = int(task.get("num_calls") or len(task.get("gold_calls", [])))
-    budget = get_stage_token_budget(config, gold_n, "train")
-    max_new_tokens = budget["max_new_tokens"]
+    token_budget = get_stage_token_budget(config, gold_n, "train")
+    max_new_tokens = token_budget["max_new_tokens"]
 
     if gold_obs is None:
         gold_obs = compute_gold_observations(
@@ -302,64 +300,27 @@ def run_episode_collect(
         history.extend(forced_history)
         traj.final_observation = forced_turns[-1].observation
 
-    # v2: train turn budget = gold_n + max_extra_turns_train (cap +4); default 0
-    # reproduces the legacy gold_n-turn loop exactly.
-    _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
-    _train_max_turns = max(1, min(gold_n + _extra, gold_n + 4))
-    _remaining_turns = max(1, _train_max_turns - n_forced)
-    for _step in range(_remaining_turns):
-        _turn_idx = n_forced + _step
-        messages = build_messages(task, history)
-        g = generate_fn(messages, max_new_tokens)
-        if g.get("prompt_overflow"):
-            traj.prompt_overflow = True
-            traj.clipped_any = True
-            traj.stop_reason = "prompt_overflow"
-            break
-        text = g["text"]
-        clipped = bool(g.get("clipped", False))
-        p_ids, c_ids = _encode_for_logprob(tokenizer, messages, text)
-        turn = Turn(_turn_idx, text, prompt_tokens=len(p_ids),
-                    completion_tokens=len(c_ids), clipped_completion=clipped)
+    ibudget = derive_interaction_budget(gold_n, config, mode="train")
+
+    def _encode(messages, text):
+        return _encode_for_logprob(tokenizer, messages, text)
+
+    def _on_turn(turn: Turn):
+        from prompt import build_messages as _bm
+        hist_wo = list(history)
+        if hist_wo and hist_wo[-1].get("role") == "assistant":
+            hist_wo = hist_wo[:-1]
+        msgs = _bm(task, hist_wo)
+        p_ids, c_ids = _encode(msgs, turn.model_text)
         turn_token_ids.append((p_ids, c_ids))
-        history.append({"role": "assistant", "content": text})
 
-        if clipped:
-            traj.clipped_any = True
-            turn.fail_reason = "clipped_completion"
-            traj.turns.append(turn)
-            traj.stop_reason = "clipped"
-            break
-
-        pr = parse_tool_call(text)
-        if pr.is_terminal:
-            turn.is_terminal = True
-            traj.turns.append(turn)
-            traj.stop_reason = "terminal"
-            break
-        if not pr.ok:
-            turn.fail_reason = f"parse:{pr.reason}"
-            traj.turns.append(turn)
-            traj.stop_reason = "parse_fail"
-            break
-
-        call = pr.call
-        turn.parsed_call = call
-        if os.environ.get("DEBUG_PRINT_CALLS") == "1":
-            print(f"[debug-call] task={task.get('task_id')} call={call}", flush=True)
-        res = executor.execute(call)
-        turn.observation = res.observation
-        if res.error is not None:
-            turn.fail_reason = f"exec:{res.error}"
-            traj.turns.append(turn)
-            traj.stop_reason = "executor_error"
-            break
-        traj.final_observation = res.observation
-        traj.turns.append(turn)
-        history.append({"role": "user", "content": format_tool_response(call, res.observation)})
-
-    if traj.stop_reason is None:
-        traj.stop_reason = "max_turns"
+    run_tool_agent_loop(
+        task=task, config=config, executor=executor, traj=traj,
+        history=history, generate_fn=generate_fn,
+        max_new_tokens=max_new_tokens, budget=ibudget, n_forced=n_forced,
+        lenient_parse=False, eval_hardening=False,
+        encode_fn=_encode, on_generated_turn=_on_turn,
+    )
 
     # Reward (policy-selected) computed HERE so observations never leave the worker.
     rinfo = reward_fn(traj, task, gold_obs)
@@ -393,6 +354,11 @@ def run_episode_collect(
     # train-log aggregation — scalars only, survives _sanitize_diag.
     from rollout import exec_failure_categories
     reward_diag.update(exec_failure_categories(traj))
+    meta = getattr(traj, "interaction_meta", None) or {}
+    if isinstance(meta, dict):
+        reward_diag.update(meta)
+    from success_metrics import compute_rollout_success_flags
+    reward_diag.update(compute_rollout_success_flags(traj, task, reward_diag))
 
     canary_traj = None
     if os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in ("1", "true", "yes"):

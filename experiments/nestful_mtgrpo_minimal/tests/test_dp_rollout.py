@@ -66,9 +66,18 @@ def _strict_seq():
 # ── run_episode_collect ────────────────────────────────────────────────────────
 
 def test_run_episode_collect_basic_shape():
+    state = {"n": 0}
+
     def gen(messages, max_new_tokens):
-        return {"text": _TOOL_CALL_TEXT, "prompt_tokens": 50,
-                "completion_tokens": 20, "clipped": False, "prompt_overflow": False}
+        state["n"] += 1
+        if state["n"] == 1:
+            return {"text": _TOOL_CALL_TEXT, "prompt_tokens": 50,
+                    "completion_tokens": 20, "clipped": False,
+                    "prompt_overflow": False}
+        # Final-answer opportunity after tool budget.
+        return {"text": "<tool_call_answer>[]</tool_call_answer>",
+                "prompt_tokens": 50, "completion_tokens": 5,
+                "clipped": False, "prompt_overflow": False}
 
     res = run_episode_collect(
         tokenizer=_FakeTok(), task=_TASK, config=_CONFIG, registry=None,
@@ -76,8 +85,8 @@ def test_run_episode_collect_basic_shape():
     )
     assert isinstance(res, RolloutResult)
     assert res.error is None
-    # one gold turn -> one generated turn -> one (prompt_ids, completion_ids) pair
-    assert len(res.turn_token_ids) == 1
+    # 1 tool turn + 1 final [] turn (reserved final-answer opportunity)
+    assert len(res.turn_token_ids) == 2
     p_ids, c_ids = res.turn_token_ids[0]
     assert isinstance(p_ids, list) and all(isinstance(x, int) for x in p_ids)
     assert isinstance(c_ids, list) and all(isinstance(x, int) for x in c_ids)
@@ -86,7 +95,8 @@ def test_run_episode_collect_basic_shape():
     assert isinstance(res.episode_reward, float)
     assert 0.0 <= res.episode_reward <= 1.0
     # r_seq has one entry per generated turn.
-    assert len(res.r_seq) == 1
+    assert len(res.r_seq) == 2
+    assert res.stop_reason in ("terminal", "terminal_answer")
 
 
 def test_run_episode_collect_prompt_overflow():
@@ -119,7 +129,7 @@ def test_run_episode_collect_parse_fail():
     assert res.num_tool_calls == 0
     assert res.zero_tool_calls is True
     assert res.episode_reward == 0.0
-    assert res.stop_reason in ("parse_fail", "terminal")
+    assert res.stop_reason in ("parse_fail", "terminal", "terminal_answer")
 
 
 # ── reward-policy resolution ────────────────────────────────────────────────────

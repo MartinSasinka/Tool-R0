@@ -350,20 +350,23 @@ def run_episode(
         generate_fn: optional callable(messages, max_new_tokens)->dict for testing
                      or vLLM; defaults to transformers generate_once.
     """
+    from interaction_loop import derive_interaction_budget, run_tool_agent_loop
+
     gen_cfg = config.get("generation", {})
     exec_cfg = config.get("executor", {})
 
     gold_num_turns = int(task.get("num_calls") or len(task.get("gold_calls", [])))
-    eval_like = is_eval if is_eval is not None else (mode == "eval")
-    if max_turns is None:
-        extra = int(gen_cfg.get("max_extra_turns_eval", 1)) if eval_like else 0
-        max_turns = gold_num_turns + extra
-    # Hard safety cap.
-    max_turns = max(1, min(max_turns, gold_num_turns + 4))
+    eval_like = is_eval if is_eval is not None else (mode in ("eval", "smoke"))
+    ibudget = derive_interaction_budget(gold_num_turns, config, mode=mode)
+    # Legacy override: explicit max_turns still means assistant generations.
+    if max_turns is not None:
+        ibudget.max_assistant_turns = max(1, int(max_turns))
+        if ibudget.reserve_final_answer_turn:
+            ibudget.max_tool_calls = max(0, ibudget.max_assistant_turns - 1)
 
-    budget = get_stage_token_budget(config, gold_num_turns, mode)
-    max_new_tokens = budget["max_new_tokens"]
-    max_prompt_tokens = budget["max_prompt_tokens"]
+    token_budget = get_stage_token_budget(config, gold_num_turns, mode)
+    max_new_tokens = token_budget["max_new_tokens"]
+    max_prompt_tokens = token_budget["max_prompt_tokens"]
     temperature = float(gen_cfg.get("temperature", 0.7))
     top_p = float(gen_cfg.get("top_p", 0.95))
 
@@ -383,82 +386,19 @@ def run_episode(
 
     history: List[Dict[str, str]] = []
 
-    for turn_idx in range(max_turns):
-        messages = build_messages(task, history, eval_hardening=eval_like)
+    def _gen(messages, max_new):
         if generate_fn is not None:
-            g = generate_fn(messages, max_new_tokens)
-        else:
-            g = generate_once(
-                model, tokenizer, messages, max_new_tokens,
-                temperature=temperature, top_p=top_p,
-                max_prompt_tokens=max_prompt_tokens,
-            )
-
-        turn = Turn(
-            turn_idx=turn_idx,
-            model_text=g["text"],
-            prompt_tokens=g.get("prompt_tokens", 0),
-            completion_tokens=g.get("completion_tokens", 0),
-            clipped_completion=bool(g.get("clipped", False)),
+            return generate_fn(messages, max_new)
+        return generate_once(
+            model, tokenizer, messages, max_new,
+            temperature=temperature, top_p=top_p,
+            max_prompt_tokens=max_prompt_tokens,
         )
-        if g.get("prompt_overflow"):
-            # The accumulated multi-turn history (or a runaway tool observation)
-            # pushed the prompt past the context window. Generation was skipped
-            # and returned empty text — there is nothing to parse, so end the
-            # episode cleanly instead of looping on empty turns.
-            traj.prompt_overflow = True
-            turn.fail_reason = "prompt_overflow"
-            traj.turns.append(turn)
-            traj.stop_reason = "prompt_overflow"
-            break
 
-        history.append({"role": "assistant", "content": g["text"]})
-
-        if turn.clipped_completion:
-            traj.clipped_any = True
-            turn.fail_reason = "clipped_completion"
-            traj.turns.append(turn)
-            traj.stop_reason = "clipped"
-            break
-
-        pr = parse_tool_call(g["text"], lenient=eval_like)
-        if pr.is_terminal:
-            turn.is_terminal = True
-            traj.turns.append(turn)
-            traj.stop_reason = "terminal"
-            break
-        if not pr.ok:
-            turn.fail_reason = f"parse:{pr.reason}"
-            traj.turns.append(turn)
-            history.append({
-                "role": "user",
-                "content": "[tool error: could not parse a single valid tool call]",
-            })
-            traj.stop_reason = "parse_fail"
-            break
-
-        call = pr.call
-        turn.parsed_call = call
-        exec_res = executor.execute(call)
-        turn.observation = exec_res.observation
-
-        if exec_res.error is not None:
-            turn.fail_reason = f"exec:{exec_res.error}"
-            traj.turns.append(turn)
-            history.append({
-                "role": "user",
-                "content": format_tool_response(call, f"[error: {exec_res.error}]"),
-            })
-            traj.stop_reason = "executor_error"
-            break
-
-        traj.final_observation = exec_res.observation
-        traj.turns.append(turn)
-        history.append({
-            "role": "user",
-            "content": format_tool_response(call, exec_res.observation),
-        })
-
-    if traj.stop_reason is None:
-        traj.stop_reason = "max_turns"
+    run_tool_agent_loop(
+        task=task, config=config, executor=executor, traj=traj,
+        history=history, generate_fn=_gen, max_new_tokens=max_new_tokens,
+        budget=ibudget, n_forced=0, lenient_parse=eval_like,
+        eval_hardening=eval_like,
+    )
     return traj

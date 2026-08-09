@@ -73,9 +73,16 @@ data:
   eval_paradigm: react
   num_icl_examples: 1
 
+interaction:
+  reserve_final_answer_turn: true
+  max_tool_calls: auto
+  max_assistant_turns: auto_plus_final
+  # tool_call_slack inherits train.max_extra_turns_train (default 0) — unchanged.
+
 generation:
   max_turns: auto
   max_extra_turns_eval: 1
+  reserve_final_answer_turn: true
   max_new_tokens_smoke: 1024
   max_new_tokens_train: 2048
   max_new_tokens_eval: 2560

@@ -364,7 +364,7 @@ def test_run_episode_uses_generate_fn():
                        generate_fn=fake_generate_fn)
 
     assert call_count["n"] >= 1, "generate_fn was never called"
-    assert traj.stop_reason == "terminal"
+    assert traj.stop_reason in ("terminal", "terminal_answer")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

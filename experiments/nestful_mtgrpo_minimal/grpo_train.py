@@ -362,7 +362,7 @@ def _generate_with_ids(model, tokenizer, messages, max_new_tokens, temperature, 
 
 
 def _rollout_episode_for_train(
-    model, tokenizer, task, config, registry, max_turns, *, vllm_gen_fn=None,
+    model, tokenizer, task, config, registry, max_turns=None, *, vllm_gen_fn=None,
     gold_obs=None,
 ) -> Episode:
     """Run one episode for GRPO.
@@ -378,14 +378,18 @@ def _rollout_episode_for_train(
     teacher-forced continuation training (``train.teacher_forced_prefix_calls``
     > 0) — see rollout.resolve_teacher_forced_prefix_n.
     """
+    from interaction_loop import derive_interaction_budget, run_tool_agent_loop
+    import torch
+
     gen = config.get("generation", {})
     exec_cfg = config.get("executor", {})
     gold_n = int(task.get("num_calls") or len(task.get("gold_calls", [])))
-    budget = get_stage_token_budget(config, gold_n, "train")
-    max_new_tokens = budget["max_new_tokens"]
+    token_budget = get_stage_token_budget(config, gold_n, "train")
+    max_new_tokens = token_budget["max_new_tokens"]
     # Prompt budget for the HF generation path = context window minus the room
     # reserved for the completion. Used to skip overlong-prompt episodes.
-    hf_prompt_budget = max(0, int(budget.get("max_model_length", 0)) - int(max_new_tokens))
+    hf_prompt_budget = max(
+        0, int(token_budget.get("max_model_length", 0)) - int(max_new_tokens))
     temperature = float(gen.get("temperature", 0.7))
     top_p = float(gen.get("top_p", 0.95))
 
@@ -407,75 +411,59 @@ def _rollout_episode_for_train(
         traj.turns.extend(forced_turns)
         history.extend(forced_history)
         traj.final_observation = forced_turns[-1].observation
-    max_turns = max(1, max_turns - n_forced)
 
-    for _step in range(max_turns):
-        turn_idx = n_forced + _step
-        messages = build_messages(task, history)
+    ibudget = derive_interaction_budget(gold_n, config, mode="train")
+    # Legacy callers may pass an explicit assistant-turn count via max_turns.
+    if max_turns is not None and int(max_turns) > 0:
+        # Interpret as total assistant generations including forced prefix.
+        ibudget.max_assistant_turns = max(int(max_turns), n_forced + 1)
+        if ibudget.reserve_final_answer_turn:
+            ibudget.max_tool_calls = max(0, ibudget.max_assistant_turns - 1)
+
+    def _gen(messages, max_new):
         if vllm_gen_fn is not None:
-            # vLLM generates text; re-tokenise to get token IDs for log-probs.
-            g = vllm_gen_fn(messages, max_new_tokens)
-            if g.get("prompt_overflow"):
-                # Prompt exceeded vLLM context window — treat as a clipped episode
-                # so it is masked from GRPO updates (same as HF prompt_overflow).
-                traj.prompt_overflow = True
-                traj.clipped_any = True
-                traj.stop_reason = "prompt_overflow"
-                break
-            text = g["text"]
-            c_len = g["completion_tokens"]
-            clipped = g["clipped"]
+            return vllm_gen_fn(messages, max_new)
+        text, p_ids, c_ids, p_len, c_len, clipped, overflow = _generate_with_ids(
+            model, tokenizer, messages, max_new, temperature, top_p,
+            max_prompt_tokens=hf_prompt_budget,
+        )
+        return {
+            "text": text, "clipped": clipped, "prompt_overflow": overflow,
+            "prompt_tokens": p_len, "completion_tokens": c_len,
+            "_p_ids": p_ids, "_c_ids": c_ids,
+        }
+
+    def _encode(messages, text):
+        if vllm_gen_fn is not None:
             p_ids, c_ids = _retokenize_for_logprob(tokenizer, messages, text)
-            p_len = int(p_ids.shape[0])
-        else:
-            text, p_ids, c_ids, p_len, c_len, clipped, overflow = _generate_with_ids(
-                model, tokenizer, messages, max_new_tokens, temperature, top_p,
-                max_prompt_tokens=hf_prompt_budget,
-            )
-            if overflow:
-                traj.prompt_overflow = True
-                traj.clipped_any = True
-                traj.stop_reason = "prompt_overflow"
-                break
-        turn = Turn(turn_idx, text, prompt_tokens=p_len,
-                    completion_tokens=c_len, clipped_completion=clipped)
-        turn_tokens.append(TurnTokens(p_ids.detach().cpu(), c_ids.detach().cpu()))
-        history.append({"role": "assistant", "content": text})
+            return p_ids.detach().cpu().tolist(), c_ids.detach().cpu().tolist()
+        # HF path: regenerate ids via retokenize for consistency
+        p_ids, c_ids = _retokenize_for_logprob(tokenizer, messages, text)
+        return p_ids.detach().cpu().tolist(), c_ids.detach().cpu().tolist()
 
-        if clipped:
-            traj.clipped_any = True
-            turn.fail_reason = "clipped_completion"
-            traj.turns.append(turn)
-            traj.stop_reason = "clipped"
-            break
+    def _on_turn(turn: Turn):
+        # Collect tokens for every generated turn that was encoded.
+        # Re-encode from history: last assistant message is turn.model_text.
+        msgs = build_messages(task, history[:-1] if history else [])
+        # history already includes this assistant message; rebuild without it
+        hist_wo = []
+        for h in history:
+            hist_wo.append(h)
+        if hist_wo and hist_wo[-1].get("role") == "assistant":
+            hist_wo = hist_wo[:-1]
+        msgs = build_messages(task, hist_wo)
+        p_list, c_list = _encode(msgs, turn.model_text)
+        turn_tokens.append(TurnTokens(
+            torch.tensor(p_list, dtype=torch.long),
+            torch.tensor(c_list, dtype=torch.long),
+        ))
 
-        pr = parse_tool_call(text)
-        if pr.is_terminal:
-            turn.is_terminal = True
-            traj.turns.append(turn)
-            traj.stop_reason = "terminal"
-            break
-        if not pr.ok:
-            turn.fail_reason = f"parse:{pr.reason}"
-            traj.turns.append(turn)
-            traj.stop_reason = "parse_fail"
-            break
-
-        call = pr.call
-        turn.parsed_call = call
-        res = executor.execute(call)
-        turn.observation = res.observation
-        if res.error is not None:
-            turn.fail_reason = f"exec:{res.error}"
-            traj.turns.append(turn)
-            traj.stop_reason = "executor_error"
-            break
-        traj.final_observation = res.observation
-        traj.turns.append(turn)
-        history.append({"role": "user", "content": format_tool_response(call, res.observation)})
-
-    if traj.stop_reason is None:
-        traj.stop_reason = "max_turns"
+    run_tool_agent_loop(
+        task=task, config=config, executor=executor, traj=traj,
+        history=history, generate_fn=_gen, max_new_tokens=max_new_tokens,
+        budget=ibudget, n_forced=n_forced, lenient_parse=False,
+        eval_hardening=False, encode_fn=_encode, on_generated_turn=_on_turn,
+    )
     return Episode(trajectory=traj, turn_tokens=turn_tokens, n_forced_turns=n_forced)
 
 
@@ -831,6 +819,27 @@ def train(
         "data_parallel_rollout": rollout_pool is not None,
     }
     _log({"reward_dispatch": dispatch_info})
+    # P43 interaction fail-fast + budget mapping (tool vs final-answer turn).
+    from interaction_loop import assert_p43_interaction_config, log_budget_mapping
+    assert_p43_interaction_config(config)
+    _budget_map = log_budget_mapping(config, mode="train")
+    _log({
+        "win_rate_definition": "mean(official_win); "
+        "official_win = executable AND final_observation matches gold "
+        "(NESTFUL-internal; not reward>=threshold)",
+        "interaction_budget_train": _budget_map,
+        "interaction": config.get("interaction") or {
+            "reserve_final_answer_turn": True,
+            "max_tool_calls": "auto",
+            "max_assistant_turns": "auto_plus_final",
+        },
+    })
+    print("[interaction] win_rate := mean(official_win) "
+          "(executable ∧ final_obs==gold); NOT mean(reward)", flush=True)
+    print("[interaction] train budgets (gold→tools→assistant):", flush=True)
+    for row in _budget_map:
+        print(f"  gold={row['gold_calls']} → tools={row['max_tool_calls']} "
+              f"→ assistant={row['max_assistant_turns']}", flush=True)
 
     # ── Phase-P observability: per-rollout / per-group / per-step artifacts.
     # Opt-in (logging.observability_dir or TTDF_TRAIN_LOG_DIR); a null logger
@@ -1061,10 +1070,9 @@ def train(
                 gold_obs = compute_gold_observations(
                     task, registry,
                     mode=(config.get("executor", {}) or {}).get("mode", "auto"))
-                # v2: train turn budget = gold_n + max_extra_turns_train (cap +4).
-                # Default 0 reproduces the legacy max_turns_train = gold_n exactly.
-                _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
-                _train_max_turns = max(1, min(gold_n + _extra, gold_n + 4))
+                # Interaction budgets from derive_interaction_budget (tool budget
+                # + reserved final-answer assistant turn). Do not pass a bare
+                # gold_n max_turns — that starved the final [] turn.
                 for _ri, _rtask in enumerate(stamped_tasks):
                     _rseed = int(_rtask.get("_rollout_seed") or 0)
                     _turn_i = {"i": 0}
@@ -1105,7 +1113,7 @@ def train(
                         continue
                     ep = _rollout_episode_for_train(
                         model, tokenizer, _rtask, config, registry,
-                        max_turns=_train_max_turns,
+                        max_turns=None,
                         vllm_gen_fn=_gen_fn,
                         gold_obs=gold_obs,
                     )
@@ -1145,17 +1153,17 @@ def train(
             mean_r = sum(rewards) / len(rewards)
             task_id = str(task["task_id"])
             # Metric definitions (must NOT alias continuous reward):
-            #   mean_reward / episode_rewards — continuous [0,1]
-            #   terminal_success_rate — fraction terminal/final_answer pass (bool)
-            #   strict_gold_trace_pass_rate — fraction strict gold-trace success (bool)
-            #   win_rate — alias of terminal_success_rate (NOT mean_reward)
-            #   reward_win_rate — legacy fraction with episode_reward >= 0.99
-            term_success_flags = [
-                bool(d.get("terminal_success")
-                     or d.get("final_answer_pass")
-                     or d.get("final_answer_correct"))
-                for d in ep_diags
-            ]
+            #   mean_reward — continuous execution_aware_v2_p43
+            #   official_win — executable AND final_obs matches gold (NESTFUL-internal)
+            #   win_rate — mean(official_win)  *** definition logged at startup ***
+            #   final_answer_correct — terminal [] present AND obs matches gold
+            #   strict_gold_trace_pass — boolean / 0-1 only
+            from success_metrics import compute_rollout_success_flags
+            for i, (ep, d) in enumerate(zip(episodes, ep_diags)):
+                flags = compute_rollout_success_flags(ep.trajectory, task, d)
+                d.update(flags)
+            official_win_flags = [bool(d.get("official_win")) for d in ep_diags]
+            term_success_flags = [bool(d.get("final_answer_correct")) for d in ep_diags]
             strict_success_flags = [
                 _diag_bool_success(d, "strict_gold_trace_success",
                                    "strict_gold_trace_pass")
@@ -1167,8 +1175,18 @@ def train(
             strict_gold_trace_pass_rate = (
                 sum(1 for x in strict_success_flags if x) / len(strict_success_flags)
                 if strict_success_flags else 0.0)
-            win_rate = terminal_success_rate
+            win_rate = (
+                sum(1 for x in official_win_flags if x) / len(official_win_flags)
+                if official_win_flags else 0.0)
+            official_win_rate = win_rate
             reward_win_rate = _rollout_win_rate(rewards)
+            tool_trace_rate = (
+                sum(1 for d in ep_diags if d.get("tool_trace_success")) / max(len(ep_diags), 1))
+            full_seq_rate = (
+                sum(1 for d in ep_diags if d.get("full_sequence_match")) / max(len(ep_diags), 1))
+            final_present_rate = (
+                sum(1 for d in ep_diags if d.get("final_answer_present")) / max(len(ep_diags), 1))
+            final_acc = terminal_success_rate
             if epoch > 0 and task_id in task_prev_mean:
                 delta = mean_r - task_prev_mean[task_id]
                 reward_deltas.append(delta)
@@ -1269,6 +1287,12 @@ def train(
                 "strict_gold_trace_pass_rate": strict_gold_trace_pass_rate,
                 "terminal_success_rate": terminal_success_rate,
                 "win_rate": win_rate,
+                "official_win_rate": official_win_rate,
+                "win_rate_definition": "mean(official_win)",
+                "tool_trace_success_rate": tool_trace_rate,
+                "full_sequence_match_rate": full_seq_rate,
+                "final_answer_presence_rate": final_present_rate,
+                "final_answer_accuracy": final_acc,
                 "reward_win_rate": reward_win_rate,
                 "rollout_seeds": list(rollout_seeds),
                 "rollout_sampling_version": ROLLOUT_SAMPLING_VERSION,
@@ -2104,6 +2128,16 @@ def _wandb_log_task(
             "train/mean_reward": mean_r,
             "train/mean_reward_dense": mean_r,
             "train/win_rate": win_rate,
+            "train/official_win_rate": float(rec.get("official_win_rate", win_rate)),
+            "train/tool_trace_success_rate": float(
+                rec.get("tool_trace_success_rate", 0.0)),
+            "train/full_sequence_match_rate": float(
+                rec.get("full_sequence_match_rate", 0.0)),
+            "train/final_answer_presence_rate": float(
+                rec.get("final_answer_presence_rate", 0.0)),
+            "train/final_answer_accuracy": float(
+                rec.get("final_answer_accuracy", 0.0)),
+            "train/episode_reward_mean": mean_r,
             "train/max_reward": max_r,
             "train/min_reward": min_r,
             "train/n_unique_rewards": float(n_unique),
