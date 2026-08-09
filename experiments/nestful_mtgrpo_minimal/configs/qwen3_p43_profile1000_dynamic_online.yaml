@@ -19,6 +19,10 @@ paths:
   all_stages_jsonl: null
   full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
   ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
+  # P43 tools are factory primitives — NOT IBM NESTFUL helpers.
+  # Must match SYNTHETIC_TOOLS_DIR used by ToolExecutor(mode=synthetic).
+  # Pilot4.3 ops registry (597 surfaces) — NOT the older pilot2/3 190-tool adapter.
+  synthetic_tools_dir: ../targeted_tool_data_factory/trainer_adapter_p43
 
 model:
   base_model: Qwen/Qwen3-4B-Instruct-2507
@@ -27,7 +31,11 @@ model:
   revision: null
 
 executor:
-  mode: auto
+  # CRITICAL: mode=auto resolves to IBM "full" when ibm_functions_dir exists,
+  # which cannot execute Pilot4.3 tools (record_text_series, …) → execfail_runtime.
+  # Curriculum v3 bash scripts force mode=synthetic; P43 must do the same with
+  # the factory trainer_adapter registry (not curriculum-v3 synthetic_tools).
+  mode: synthetic
   ibm_call_timeout: 30.0
 
 hardware:
@@ -178,3 +186,6 @@ logging:
   use_wandb: false
   wandb_project: nestful-mtgrpo-p43
   log_samples: true
+  # Full per-rollout trajectories (tool calls, fail_reason, observations).
+  log_canary_trajectories: true
+  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online/observability

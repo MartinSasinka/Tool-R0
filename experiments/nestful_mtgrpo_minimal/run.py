@@ -254,8 +254,56 @@ def load_tokenizer_only(config: dict):
     return tok
 
 
+def _configure_synthetic_tools_dir(config: dict) -> None:
+    """Point ToolExecutor(mode=synthetic) at the correct registry tree.
+
+    P43 / factory datasets must NOT use the curriculum-v3 ``lib/synthetic_tools``
+    default. Set ``paths.synthetic_tools_dir`` (or env ``SYNTHETIC_TOOLS_DIR``)
+    to ``experiments/targeted_tool_data_factory/trainer_adapter``.
+    """
+    paths = config.get("paths") or {}
+    exec_cfg = config.get("executor") or {}
+    mode = str(exec_cfg.get("mode") or "auto").lower()
+    configured = (
+        paths.get("synthetic_tools_dir")
+        or exec_cfg.get("synthetic_tools_dir")
+        or os.environ.get("SYNTHETIC_TOOLS_DIR")
+    )
+    if mode == "synthetic" and not configured:
+        # Prefer P43 adapter (full Pilot4.3 ops); fall back to pilot2/3 adapter.
+        for leaf in ("trainer_adapter_p43", "trainer_adapter"):
+            candidate = os.path.normpath(os.path.join(
+                os.path.dirname(_HERE), "targeted_tool_data_factory", leaf))
+            if os.path.isdir(os.path.join(candidate, "lib")):
+                configured = candidate
+                break
+    if not configured:
+        return
+    abs_dir = configured if os.path.isabs(configured) else os.path.normpath(
+        os.path.join(_HERE, configured))
+    if not os.path.isdir(os.path.join(abs_dir, "lib")):
+        raise SystemExit(
+            f"[executor] ABORT: synthetic_tools_dir={abs_dir!r} has no lib/ "
+            f"(expected lib/synthetic_tools.py).")
+    os.environ["SYNTHETIC_TOOLS_DIR"] = abs_dir
+    # Force registry reload if a previous import cached the v3 default.
+    try:
+        from synthetic_tool_registry import reset_synthetic_registry
+        reset_synthetic_registry()
+    except Exception:  # noqa: BLE001
+        pass
+    print(f"[executor] SYNTHETIC_TOOLS_DIR={abs_dir}", flush=True)
+
+
 def build_registry(config: dict):
     paths = config.get("paths", {})
+    exec_mode = str((config.get("executor") or {}).get("mode") or "auto").lower()
+    # Synthetic mode does not need the IBM registry; avoid implying full/IBM.
+    if exec_mode == "synthetic":
+        _configure_synthetic_tools_dir(config)
+        print("[executor] mode=synthetic (factory/curriculum registry via "
+              "SYNTHETIC_TOOLS_DIR); IBM registry not loaded.", flush=True)
+        return None
     funcs_dir = detect_ibm_functions_dir(
         explicit=paths.get("ibm_functions_dir"),
         repo_root=_HERE,
@@ -1132,6 +1180,10 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
     for _p in (_partial, _factory_src, _experiments):
         if os.path.isdir(_p) and _p not in sys.path:
             sys.path.insert(0, _p)
+    # Propagate canary traj logging to DP workers (they read env, not config).
+    _log_cfg = config.get("logging") or {}
+    if _log_cfg.get("log_canary_trajectories") or _log_cfg.get("canary_traj_log"):
+        os.environ.setdefault("CANARY_TRAJ_LOG", "1")
     _policy = str((config.get("reward") or {}).get("train_policy", "")).lower()
     if _policy in ("execution_aware", "execution",
                    "execution_aware_v2", "execution_v2",

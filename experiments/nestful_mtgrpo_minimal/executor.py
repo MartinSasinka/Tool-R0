@@ -542,8 +542,21 @@ def _prepare_synthetic_args(
         if declared == "array":
             if "min_len" in meta and len(value) < int(meta["min_len"]):
                 return resolved, f"synthetic:array_too_short:{name}:{key}"
-            if not all(isinstance(x, (int, float)) and not isinstance(x, bool)
-                       for x in value):
+            item_type = (meta.get("items") or {}).get("type", "number")
+            if item_type == "string":
+                ok_items = all(isinstance(x, str) for x in value)
+            elif item_type == "object":
+                ok_items = all(isinstance(x, dict) for x in value)
+            elif item_type == "integer":
+                ok_items = all(
+                    (isinstance(x, int) and not isinstance(x, bool))
+                    or (isinstance(x, float) and float(x).is_integer())
+                    for x in value)
+            else:  # number (default; also accepts ints)
+                ok_items = all(
+                    isinstance(x, (int, float)) and not isinstance(x, bool)
+                    for x in value)
+            if not ok_items:
                 return resolved, f"synthetic:array_element_type:{name}:{key}"
         if declared == "integer" and isinstance(value, float):
             value = int(value)
@@ -659,9 +672,29 @@ class ToolExecutor:
             obs, err = self._execute_gold_replay(idx, name, args_raw, resolved)
 
         if err is None:
-            self.by_label[label] = obs
-            self.indexed.append(obs)
+            # Store under the tool's output field so `$var_k.output_0$` works when
+            # the raw observation is itself a dict/list (Pilot4.3 mappings/records).
+            # final_observation / ExecResult.observation stay unwrapped for answer checks.
+            stored = self._store_observation(name, obs)
+            self.by_label[label] = stored
+            self.indexed.append(stored)
         return ExecResult(obs, err, name, label, resolved)
+
+    def _store_observation(self, tool_name: str, obs: Any) -> Any:
+        """Wrap observation as ``{output_field: obs}`` for ``$var.output_0$`` refs."""
+        schema = self._tool_schema.get(tool_name) or {}
+        out_key = schema.get("output_field") or schema.get("out_key")
+        if not out_key:
+            outs = schema.get("output_parameters") or {}
+            if isinstance(outs, dict) and outs:
+                out_key = next(iter(outs))
+        if not out_key and self.mode == "synthetic" and self.synthetic_registry is not None:
+            spec = self.synthetic_registry.get(tool_name) or {}
+            out_key = spec.get("out_key")
+        out_key = out_key or "output_0"
+        if isinstance(obs, dict) and set(obs.keys()) == {out_key}:
+            return obs
+        return {out_key: obs}
 
     def _execute_full(
         self, name: str, resolved: Dict[str, Any]

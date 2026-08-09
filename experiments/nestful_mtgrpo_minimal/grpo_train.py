@@ -728,8 +728,11 @@ def train(
 
     os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
     log_f = open(log_path, "a" if log_append else "w", encoding="utf-8")
-    canary_traj_log = os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in (
-        "1", "true", "yes"
+    log_cfg = config.get("logging") or {}
+    canary_traj_log = (
+        os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in ("1", "true", "yes")
+        or bool(log_cfg.get("log_canary_trajectories")
+                or log_cfg.get("canary_traj_log"))
     )
     canary_path = None
     canary_f = None
