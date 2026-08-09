@@ -39,20 +39,38 @@ def compute_rollout_success_flags(
 ) -> Dict[str, Any]:
     diag = dict(diag or {})
     gold = task.get("gold_answer")
+    # DP pool parent-side traj (_PoolTraj) has no turns/observations — prefer
+    # worker reward_diag / interaction_meta fields already merged into ``diag``.
     meta = getattr(trajectory, "interaction_meta", None) or {}
     if not isinstance(meta, dict):
         meta = {}
+    if not meta:
+        meta = {k: diag[k] for k in (
+            "final_answer_present", "final_response_turn_attempted",
+            "final_turn_tool_attempt", "tool_budget", "assistant_turn_budget",
+            "tool_calls_executed", "assistant_turns", "tool_calls_emitted",
+        ) if k in diag}
+
+    turns = getattr(trajectory, "turns", None)
+    stop_reason = getattr(trajectory, "stop_reason", None) or diag.get("stop_reason")
 
     final_present = bool(
         meta.get("final_answer_present")
-        or any(getattr(t, "is_terminal", False) for t in trajectory.turns)
-        or trajectory.stop_reason in ("terminal", "terminal_answer")
+        or diag.get("final_answer_present")
+        or (turns is not None and any(
+            getattr(t, "is_terminal", False) for t in turns))
+        or stop_reason in ("terminal", "terminal_answer")
     )
 
-    parse_fail = trajectory.stop_reason == "parse_fail"
-    exec_fail = bool(getattr(trajectory, "executor_error", False))
+    parse_fail = stop_reason == "parse_fail"
+    exec_fail = bool(
+        getattr(trajectory, "executor_error", False)
+        or diag.get("executor_error")
+        or int(diag.get("execfail_total") or 0) > 0
+    )
     clipped = bool(getattr(trajectory, "clipped_any", False))
-    zero = bool(getattr(trajectory, "zero_tool_calls", False))
+    zero = bool(getattr(trajectory, "zero_tool_calls", False)
+                or diag.get("zero_tool_calls"))
 
     # Prefer reward diag semantic completeness when present (p43).
     if "required_subgoals_completed" in diag and "required_subgoals_total" in diag:
@@ -60,9 +78,9 @@ def compute_rollout_success_flags(
         done = int(diag.get("required_subgoals_completed") or 0)
         tool_trace_success = (not parse_fail and not exec_fail and not zero
                               and total > 0 and done >= total)
-    else:
+    elif turns is not None:
         n_ok = sum(
-            1 for t in trajectory.turns
+            1 for t in turns
             if t.parsed_call is not None and not (t.fail_reason or "").startswith("exec:")
             and not (t.fail_reason or "").startswith("parse:")
             and not t.is_terminal
@@ -71,12 +89,19 @@ def compute_rollout_success_flags(
                               and n_ok >= int(task.get("num_calls")
                                               or len(task.get("gold_calls") or [])
                                               or 1))
+    else:
+        n_calls = int(getattr(trajectory, "num_tool_calls", 0)
+                      or diag.get("tool_calls_executed")
+                      or meta.get("tool_calls_executed") or 0)
+        need = int(task.get("num_calls") or len(task.get("gold_calls") or []) or 1)
+        tool_trace_success = (not parse_fail and not exec_fail and not zero
+                              and n_calls >= need)
 
     if "full_sequence_match" in diag and isinstance(diag["full_sequence_match"], bool):
         full_sequence_match = bool(diag["full_sequence_match"])
     elif diag.get("strict_gold_trace_success") is not None:
         full_sequence_match = bool(diag.get("strict_gold_trace_success"))
-    else:
+    elif hasattr(trajectory, "predicted_calls") and turns is not None:
         try:
             from metrics import compute_nestful_official_metrics
             sc = compute_nestful_official_metrics(
@@ -85,12 +110,23 @@ def compute_rollout_success_flags(
             full_sequence_match = float(sc.get("full_sequence_accuracy") or 0.0) >= 1.0 - 1e-9
         except Exception:
             full_sequence_match = False
+    else:
+        full_sequence_match = False
 
-    obs_match = _matches_gold(getattr(trajectory, "final_observation", None), gold)
+    final_obs = getattr(trajectory, "final_observation", None)
+    if final_obs is not None:
+        obs_match = _matches_gold(final_obs, gold)
+    else:
+        # Pool path: worker already scored answer match into diag.
+        obs_match = bool(
+            diag.get("final_answer_pass")
+            or diag.get("tool_final_answer_pass")
+            or diag.get("terminal_success")
+        )
     final_answer_correct = bool(final_present and obs_match)
 
     executable = (not parse_fail and not exec_fail and not zero
-                  and trajectory.stop_reason not in ("parse_fail",))
+                  and stop_reason not in ("parse_fail",))
     # Internal NESTFUL-compatible win (metrics.py). Not reward-threshold.
     official_win = bool(executable and obs_match and not clipped)
 
@@ -124,9 +160,10 @@ def compute_rollout_success_flags(
             meta.get("assistant_turn_budget")
             or getattr(trajectory, "assistant_turn_budget", 0) or 0),
         "tool_calls_executed": int(meta.get("tool_calls_executed")
-                                   or trajectory.num_tool_calls or 0),
+                                   or getattr(trajectory, "num_tool_calls", 0)
+                                   or 0),
         "assistant_turns": int(meta.get("assistant_turns") or 0),
-        "stop_reason": trajectory.stop_reason,
+        "stop_reason": stop_reason,
         "win_rate_definition": "mean(official_win); official_win=executable AND "
                                "final_observation matches gold (NESTFUL-internal)",
     }
