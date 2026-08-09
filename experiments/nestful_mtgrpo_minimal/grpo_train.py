@@ -81,11 +81,46 @@ def _verify_reward_dispatch(config: Dict[str, Any], rollout_pool) -> Dict[str, A
     allow_fb = os.environ.get("ALLOW_STRICT_REWARD_FALLBACK", "0") == "1"
     is_strict = info.get("reward_fn_module") == "reward"
     strict_requested = configured.lower() in _STRICT_POLICY_ALIASES
-    print(f"[train] reward dispatch: configured={info['configured_policy']} "
-          f"resolved={info['resolved_policy']} "
-          f"fn={info['reward_fn_module']}.{info['reward_fn_name']} "
-          f"fallback_used={str(info.get('fallback_used', False)).lower()}",
-          flush=True)
+    import inspect
+    try:
+        import nestful_core.rewards as _rw
+        reward_source_hash = hashlib.sha256(
+            inspect.getsource(_rw).encode("utf-8")).hexdigest()[:16]
+    except Exception:  # noqa: BLE001
+        reward_source_hash = "unavailable"
+    reward_config_hash = hashlib.sha256(
+        json.dumps(config.get("reward") or {}, sort_keys=True,
+                   default=str).encode("utf-8")).hexdigest()[:16]
+    info = dict(info)
+    info["reward_source_hash"] = reward_source_hash
+    info["reward_config_hash"] = reward_config_hash
+    p43_variant = (config.get("reward") or {}).get("p43_reward_variant")
+    print(
+        f"[train] reward dispatch:\n"
+        f"  requested reward policy = {info['configured_policy']}\n"
+        f"  resolved reward policy  = {info['resolved_policy']}\n"
+        f"  P43 variant             = {p43_variant}\n"
+        f"  reward implementation   = {info['reward_fn_module']}.{info['reward_fn_name']}\n"
+        f"  reward source hash      = {reward_source_hash}\n"
+        f"  reward config hash      = {reward_config_hash}\n"
+        f"  fallback_used           = {str(info.get('fallback_used', False)).lower()}",
+        flush=True,
+    )
+    req = str(info["configured_policy"]).lower()
+    res = str(info["resolved_policy"]).lower()
+    _aliases = {
+        "execution_v2_p43": "execution_aware_v2_p43",
+        "p43": "execution_aware_v2_p43",
+        "execution_v2": "execution_aware_v2",
+        "execution": "execution_aware",
+    }
+    req_n = _aliases.get(req, req)
+    res_n = _aliases.get(res, res)
+    dispatch_cfg = (config.get("reward") or {}).get("dispatch") or {}
+    if bool(dispatch_cfg.get("require_exact_policy", False)) and req_n != res_n:
+        raise RuntimeError(
+            f"[train] ABORT: requested reward policy '{req_n}' != resolved '{res_n}'. "
+            f"No fallback to execution_aware / execution_aware_v2.")
     if info.get("fallback_used") and not allow_fb:
         raise RuntimeError(
             f"[train] ABORT: reward fallback engaged for policy '{configured}' "
@@ -769,6 +804,20 @@ def train(
         "reward_fn_module": dispatch_info["reward_fn_module"],
         "reward_fn_name": dispatch_info["reward_fn_name"],
         "reward_fallback_used": bool(dispatch_info.get("fallback_used", False)),
+        "reward_source_hash": dispatch_info.get("reward_source_hash"),
+        "reward_config_hash": dispatch_info.get("reward_config_hash"),
+        "p43_reward_variant": (config.get("reward") or {}).get("p43_reward_variant"),
+        "reward_weights": (config.get("reward") or {}).get("weights"),
+        "turn_reward_policy": "s_t=0.5*exec+0.5*gold_part via _v2_seq",
+        "episode_reward_policy": dispatch_info.get("resolved_policy"),
+        "solution_equivalence_mode": (config.get("reward") or {}).get(
+            "solution_equivalence"),
+        "sampler_policy": (config.get("sampler") or {}).get("mode")
+            or (config.get("sampler") or {}).get("sampler_mode"),
+        "group_size": int((config.get("sampler") or {}).get("group_size")
+                          or (config.get("generation") or {}).get("num_generations")
+                          or 0),
+        "seed": int((config.get("experiment") or {}).get("seed") or 0),
         "mt_grpo_mode": ("single_turn_episode_level" if single_turn
                          else "turn_level_minimal" if use_turn_level
                          else "episode_level"),
@@ -1267,6 +1316,21 @@ def train(
                     if repl is not None:
                         epoch_tasks.append(repl)
                         epoch_refill_appends += 1
+                # P43 group reward diagnostics (components + collision).
+                def _comp_var(key: str):
+                    vals = [float(d.get(key)) for d in ep_diags
+                            if d.get(key) is not None]
+                    if len(vals) < 2:
+                        return 0.0 if vals else None
+                    m = sum(vals) / len(vals)
+                    return sum((x - m) ** 2 for x in vals) / len(vals)
+
+                n_unique_r = len({round(float(r), 6) for r in rewards})
+                # Collision: ≥6/8 identical final episode rewards
+                from collections import Counter as _Counter
+                _cnt = _Counter(round(float(r), 6) for r in rewards)
+                collision = bool(_cnt and _cnt.most_common(1)[0][1] >= max(
+                    6, int(0.75 * max(len(rewards), 1))))
                 group_log_f.write(json.dumps({
                     "step": global_step, "epoch": epoch,
                     "task_id": task.get("task_id"),
@@ -1275,10 +1339,21 @@ def train(
                     "n_rollouts": len(rewards),
                     "n_valid": sum(1 for p in parse_flags if p),
                     "n_terminal_success": int(sum(term_flags)),
+                    "reward_min": float(min(rewards)) if rewards else 0.0,
+                    "reward_max": float(max(rewards)) if rewards else 0.0,
                     "reward_mean": mean_r,
                     "reward_std": float(gstats.episode_reward_std),
+                    "n_unique_reward_values": n_unique_r,
+                    "reward_collision": collision,
+                    "terminal_success_count": int(sum(term_flags)),
                     "group_class": user_cls,
                     "used_for_update": nestful_eff,
+                    "variance_final": _comp_var("reward_final_outcome"),
+                    "variance_execution": _comp_var("reward_executability"),
+                    "variance_completeness": _comp_var("reward_semantic_completeness"),
+                    "variance_reference": _comp_var("reward_reference_correctness"),
+                    "variance_progress": _comp_var("reward_semantic_progress"),
+                    "variance_sequence": _comp_var("reward_gold_sequence_alignment"),
                     "trainer_dead_corrected": gstats.dead_corrected,
                     "bootstrap": was_boot,
                     "sampling_weight_before": w_before,

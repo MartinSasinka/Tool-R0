@@ -1128,15 +1128,26 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
     _partial = os.path.join(os.path.dirname(_HERE), "nestful_mtgrpo_partial")
     _factory_src = os.path.join(
         os.path.dirname(_HERE), "targeted_tool_data_factory", "src")
-    for _p in (_partial, _factory_src):
+    _experiments = os.path.dirname(_HERE)
+    for _p in (_partial, _factory_src, _experiments):
         if os.path.isdir(_p) and _p not in sys.path:
             sys.path.insert(0, _p)
     _policy = str((config.get("reward") or {}).get("train_policy", "")).lower()
     if _policy in ("execution_aware", "execution",
-                   "execution_aware_v2", "execution_v2"):
+                   "execution_aware_v2", "execution_v2",
+                   "execution_aware_v2_p43", "execution_v2_p43", "p43"):
         try:
             import grpo_train as _gt
-            if _policy in ("execution_aware_v2", "execution_v2"):
+            if _policy in ("execution_aware_v2_p43", "execution_v2_p43", "p43"):
+                import execution_reward_v2_p43 as _er
+                _label = "execution_aware_v2_p43"
+                _variant = str((config.get("reward") or {}).get(
+                    "p43_reward_variant") or "").upper()
+                if _variant not in ("A", "B"):
+                    raise SystemExit(
+                        "[train] ABORT: execution_aware_v2_p43 requires "
+                        "reward.p43_reward_variant: A|B (frozen; no auto-select).")
+            elif _policy in ("execution_aware_v2", "execution_v2"):
                 import execution_reward_v2 as _er
                 _label = "execution_aware_v2"
             else:
@@ -1145,6 +1156,8 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
             _er.set_weights_from_config(config)
             _gt.episode_turn_reward_seq = _er.episode_turn_reward_seq
             print(f"[train] reward wired: {_label} (from {_partial})", flush=True)
+        except SystemExit:
+            raise
         except Exception as exc:  # noqa: BLE001
             raise SystemExit(
                 f"[train] ABORT: reward.train_policy={_policy} but could not "

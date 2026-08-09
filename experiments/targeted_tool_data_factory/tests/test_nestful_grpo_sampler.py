@@ -197,12 +197,12 @@ def test_checkpoint_resume_rng():
 
 
 def test_ab_config_equivalence_except_sampler():
-    """A (uniform) vs online-dynamic: shared model/optim/reward; sampler differs."""
+    """A (uniform) vs online-dynamic: shared model/optim; sampler + P43 reward differ."""
     root = Path(__file__).resolve().parents[2] / "nestful_mtgrpo_minimal" / "configs"
     import yaml
     a = yaml.safe_load((root / "qwen3_p43_profile1000_uniform.yaml").read_text(encoding="utf-8"))
     b = yaml.safe_load((root / "qwen3_p43_profile1000_dynamic_online.yaml").read_text(encoding="utf-8"))
-    for key in ("finetuning", "reward", "mt_grpo"):
+    for key in ("finetuning", "mt_grpo"):
         assert a[key] == b[key], f"mismatch in {key}"
     assert a["model"]["base_model"] == b["model"]["base_model"] == "Qwen/Qwen3-4B-Instruct-2507"
     assert a["generation"]["num_generations"] == b["generation"]["num_generations"] == 8
@@ -213,6 +213,8 @@ def test_ab_config_equivalence_except_sampler():
     assert a["sampler"]["mode"] == "uniform_profile"
     assert b["sampler"]["mode"] == "dynamic_profile"
     assert b["sampler"]["bootstrap"]["enabled"] is True
+    assert b["reward"]["train_policy"] == "execution_aware_v2_p43"
+    assert b["reward"]["p43_reward_variant"] == "A"
     assert a["experiment"]["seed"] == b["experiment"]["seed"] == 42
 
 
@@ -312,4 +314,5 @@ def test_online_config_exists_and_has_bootstrap():
     assert cfg["sampler"]["bootstrap"]["enabled"] is True
     assert cfg["sampler"]["target_effective_groups"] == cfg["training"]["gradient_accumulation_steps"]
     assert cfg["training"]["target_optimizer_updates"] > 0
-    assert cfg["reward"]["train_policy"] == "execution_aware"
+    assert cfg["reward"]["train_policy"] == "execution_aware_v2_p43"
+    assert cfg["reward"]["p43_reward_variant"] == "A"

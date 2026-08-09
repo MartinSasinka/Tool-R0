@@ -10,8 +10,9 @@ This is the only genuinely new logic in ``nestful_core``. It hosts:
   ``execution_aware_v1_legacy``) that DELEGATE to the frozen
   ``reward.py`` / ``partial_reward.py`` / ``execution_reward.py`` modules, so the
   original numbers reproduce bit-for-bit.
-* NEW policies ``partial_gold_trace_v2`` and ``execution_aware_v2`` with fixed
-  edge cases and full per-component breakdowns.
+* NEW policies ``partial_gold_trace_v2``, ``execution_aware_v2``, and
+  ``execution_aware_v2_p43`` (Variant A: no episode gold-sequence double-count)
+  with fixed edge cases and full per-component breakdowns.
 * A registry (``get_episode_reward`` / ``get_episode_reward_seq``) so the trainer
   and DP-pool workers can pick a policy by name.
 
@@ -403,6 +404,351 @@ def _finish(R: float, diag: Dict[str, Any], task, trajectory, gold_observations)
 
 
 # ===========================================================================
+#  execution_aware_v2_p43 — Variant A (no episode gold-sequence; turns keep it)
+# ===========================================================================
+# Audit (P43_REWARD_CURRENT_PATH_AUDIT): gold sequence already lives in turn
+# s_t = 0.5*exec + 0.5*gold_part. Episode MUST NOT re-add w_gold_trace.
+# Runtime solution-equivalence is unavailable → always UNVERIFIED.
+
+_P43_VARIANT = "A"
+
+_P43_DEFAULTS: Dict[str, float] = {
+    "final_outcome": 0.40,
+    "executability": 0.15,
+    "semantic_completeness": 0.20,
+    "reference_correctness": 0.10,
+    "semantic_progress": 0.15,
+    # efficiency (only verified-unnecessary / clearly irrelevant extras)
+    "unnecessary_extra_call_penalty": 0.02,
+    "unnecessary_extra_call_penalty_cap": 0.10,
+    # wrong-final: monotonic ceiling (not a flat collision cap)
+    "wrong_final_ceiling": 0.45,
+}
+
+_P43_WEIGHTS: Dict[str, float] = dict(_P43_DEFAULTS)
+
+# Progress ladder for required subgoals (trajectory-level; NOT mean(s_t)).
+_P43_STATUS_SCORE = {
+    "NOT_ATTEMPTED": 0.0,
+    "WRONG_TOOL": 0.05,
+    "RIGHT_TOOL_WRONG_ARGUMENTS": 0.25,
+    "RIGHT_TOOL_PARTIAL_ARGUMENTS": 0.45,
+    "RIGHT_TOOL_BAD_REFERENCE": 0.55,
+    "CORRECT_EXECUTED": 1.0,
+}
+
+
+def set_execution_p43_weights_from_config(config: Dict[str, Any]) -> Dict[str, float]:
+    global _P43_WEIGHTS
+    _P43_WEIGHTS = dict(_P43_DEFAULTS)
+    reward = (config or {}).get("reward") or {}
+    block = (config or {}).get("execution_reward_v2_p43", {}) or {}
+    nested = reward.get("execution_reward_v2_p43") or {}
+    rw = reward.get("weights") or {}
+    eff = reward.get("efficiency") or {}
+    merged = {**block, **nested, **rw, **eff}
+    if "wrong_final_ceiling" in reward:
+        merged["wrong_final_ceiling"] = reward["wrong_final_ceiling"]
+    for k, v in merged.items():
+        if k in _P43_DEFAULTS:
+            _P43_WEIGHTS[k] = float(v)
+    print(f"[execution_aware_v2_p43] variant={_P43_VARIANT} weights={_P43_WEIGHTS}",
+          flush=True)
+    return dict(_P43_WEIGHTS)
+
+
+def get_execution_p43_weights() -> Dict[str, float]:
+    return dict(_P43_WEIGHTS)
+
+
+def _pred_successful_calls(trajectory) -> List[Dict[str, Any]]:
+    out = []
+    for t in trajectory.turns:
+        if t.parsed_call is not None and t.fail_reason is None:
+            out.append(t.parsed_call)
+    return out
+
+
+def _arg_key_overlap(pred_args: Dict[str, Any], gold_args: Dict[str, Any]) -> float:
+    gk = set((gold_args or {}).keys())
+    pk = set((pred_args or {}).keys())
+    if not gk:
+        return 1.0 if not pk else 0.0
+    return len(gk & pk) / len(gk)
+
+
+def _has_unresolved_ref_in_args(args: Dict[str, Any], seen_labels: set) -> bool:
+    for val in (args or {}).values():
+        if isinstance(val, str):
+            m = _VAR_REF_RE.match(val.strip())
+            if m and m.group(1) not in seen_labels:
+                return True
+    return False
+
+
+def _labels_before_success_index(trajectory, success_index: int) -> set:
+    """Labels produced by successful calls strictly before ``success_index``."""
+    seen: set = set()
+    si = 0
+    for idx, t in enumerate(trajectory.turns):
+        call = t.parsed_call
+        if call is None or t.fail_reason is not None:
+            continue
+        if si >= success_index:
+            break
+        label = call.get("label") or f"$var{idx + 1}"
+        seen.add(label.lstrip("$"))
+        seen.add(label)
+        si += 1
+    return seen
+
+
+def _classify_p43_subgoals(trajectory, task: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Map each gold call to a deterministic semantic-subgoal status.
+
+    Greedy match by tool name among successful executions (order-flexible for
+    independent tools; dependency violations still hurt via references / progress).
+    """
+    gold = list(task.get("gold_calls") or [])
+    preds = _pred_successful_calls(trajectory)
+    used = set()
+
+    rows: List[Dict[str, Any]] = []
+    for gi, g in enumerate(gold):
+        gname = (g.get("name") or "").strip()
+        gargs = g.get("arguments") or {}
+        best_j = None
+        best_overlap = -1.0
+        for j, p in enumerate(preds):
+            if j in used:
+                continue
+            if (p.get("name") or "").strip() != gname:
+                continue
+            ov = _arg_key_overlap(p.get("arguments") or {}, gargs)
+            if ov > best_overlap:
+                best_overlap = ov
+                best_j = j
+        if best_j is None:
+            status = "WRONG_TOOL" if preds else "NOT_ATTEMPTED"
+            rows.append({"gold_index": gi, "status": status, "score": _P43_STATUS_SCORE[status]})
+            continue
+        used.add(best_j)
+        p = preds[best_j]
+        pargs = p.get("arguments") or {}
+        prior = _labels_before_success_index(trajectory, best_j)
+        if _has_unresolved_ref_in_args(pargs, prior):
+            status = "RIGHT_TOOL_BAD_REFERENCE"
+        elif best_overlap >= 1.0 - 1e-9:
+            status = "CORRECT_EXECUTED"
+        elif best_overlap > 0.0:
+            status = "RIGHT_TOOL_PARTIAL_ARGUMENTS"
+        else:
+            status = "RIGHT_TOOL_WRONG_ARGUMENTS"
+        rows.append({
+            "gold_index": gi,
+            "status": status,
+            "score": _P43_STATUS_SCORE[status],
+            "matched_pred_index": best_j,
+            "arg_key_overlap": best_overlap,
+        })
+    return rows
+
+
+def _task_needs_references(task: Dict[str, Any]) -> bool:
+    for g in (task.get("gold_calls") or []):
+        for val in (g.get("arguments") or {}).values():
+            if isinstance(val, str) and _VAR_REF_RE.match(val.strip()):
+                return True
+    # P43 declared edges / depth
+    declared = task.get("declared") or {}
+    gf = declared.get("graph_features") or {}
+    if int(gf.get("n_edges") or 0) > 0:
+        return True
+    return False
+
+
+def _count_unnecessary_extra_calls(trajectory, task: Dict[str, Any],
+                                   final_pass: bool) -> int:
+    """Only count clearly irrelevant extras: successful calls whose tool name
+    never appears in gold, when final answer is already correct.
+    Length alone is NOT penalized.
+    """
+    if not final_pass:
+        return 0
+    gold_names = {(g.get("name") or "").strip() for g in (task.get("gold_calls") or [])}
+    n = 0
+    for p in _pred_successful_calls(trajectory):
+        if (p.get("name") or "").strip() not in gold_names:
+            n += 1
+    return n
+
+
+def execution_aware_v2_p43(
+    trajectory,
+    task: Dict[str, Any],
+    gold_observations: Optional[List[Any]] = None,
+) -> RewardResult:
+    """P43 Variant A episode reward (gold sequence stays in turn-level s_t only).
+
+        R_base = 0.40*final + 0.15*exec + 0.20*sem_complete
+               + 0.10*refs + 0.15*sem_progress
+
+    No episode gold_sequence_alignment. No raw n_missing penalty.
+    No anti-trace-drift cap. Runtime solution equivalence → UNVERIFIED.
+    """
+    w = _P43_WEIGHTS
+    gold_n = len(task.get("gold_calls") or [])
+
+    parse_err = has_parse_error(trajectory)
+    clipped = bool(trajectory.clipped_any)
+    no_tool = has_no_tool_call(trajectory)
+    term_before = terminal_before_first_successful_tool(trajectory)
+
+    answer_pass = tool_final_answer_pass(trajectory, task)
+    subgoals = _classify_p43_subgoals(trajectory, task)
+    n_completed = sum(1 for r in subgoals if r["status"] == "CORRECT_EXECUTED")
+    gold_names = {(g.get("name") or "").strip() for g in (task.get("gold_calls") or [])}
+    preds = _pred_successful_calls(trajectory)
+    relevant_success = n_completed >= 1 or any(
+        (p.get("name") or "").strip() in gold_names for p in preds)
+    # §5: no full outcome for lucky textual guess / irrelevant-tool path.
+    final_component = 1.0 if (answer_pass and relevant_success) else 0.0
+    exec_frac = executable_fraction(trajectory)
+    refs = valid_references_fraction(trajectory)
+    needs_refs = _task_needs_references(task)
+    if refs is None:
+        ref_component = 1.0 if not needs_refs else 0.0
+    else:
+        ref_component = refs
+
+    completeness = (n_completed / gold_n) if gold_n else 0.0
+    # Trajectory-level progress (NOT mean of turn gold_part / s_t).
+    progress = (sum(r["score"] for r in subgoals) / gold_n) if gold_n else 0.0
+
+    n_emitted = num_emitted_calls(trajectory)
+    n_success = num_successful_calls(trajectory)
+    # Efficiency uses outcome credit (relevant final), not bare answer match.
+    unnecessary = _count_unnecessary_extra_calls(
+        trajectory, task, final_component >= 1.0 - 1e-9)
+
+    total_refs = 0
+    valid_refs = 0
+    seen_lbl: set = set()
+    for idx, t in enumerate(trajectory.turns):
+        call = t.parsed_call
+        if call is None:
+            continue
+        for val in (call.get("arguments") or {}).values():
+            if isinstance(val, str):
+                m = _VAR_REF_RE.match(val.strip())
+                if m:
+                    total_refs += 1
+                    if m.group(1) in seen_lbl:
+                        valid_refs += 1
+        label = call.get("label") or f"$var{idx + 1}"
+        seen_lbl.add(label.lstrip("$"))
+        seen_lbl.add(label)
+
+    try:
+        strict_r = float(strict_gold_trace_reward(
+            trajectory, task, gold_observations).reward)
+    except Exception:  # noqa: BLE001
+        strict_r = 0.0
+    strict_ok = strict_r >= 1.0 - 1e-9
+
+    diag: Dict[str, Any] = {
+        "reward_type": "execution_aware_v2_p43",
+        "reward_policy": "execution_aware_v2_p43",
+        "reward_variant": _P43_VARIANT,
+        "reward_final_outcome": final_component,
+        "reward_executability": exec_frac,
+        "reward_semantic_completeness": completeness,
+        "reward_reference_correctness": ref_component,
+        "reward_semantic_progress": progress,
+        "reward_gold_sequence_alignment": None,  # Variant A: sequence in turns only
+        "terminal_success": bool(answer_pass),
+        "final_answer_pass": bool(answer_pass),
+        "tool_final_answer_pass": float(answer_pass),
+        "strict_gold_trace_success": strict_ok,
+        "strict_gold_trace_pass": bool(strict_ok),
+        "full_sequence_match": strict_ok,
+        "solution_equivalence_status": "UNVERIFIED",
+        "solution_equivalent_verified": False,
+        "required_subgoals_total": gold_n,
+        "required_subgoals_completed": n_completed,
+        "missing_required_semantic_subgoals": max(0, gold_n - n_completed),
+        "subgoal_statuses": [r["status"] for r in subgoals],
+        "emitted_calls": n_emitted,
+        "successful_calls": n_success,
+        "valid_references": valid_refs,
+        "invalid_references": max(0, total_refs - valid_refs),
+        "unnecessary_extra_calls": unnecessary,
+        "parse_error": parse_err,
+        "clipped": clipped,
+        "no_tool_call": no_tool,
+        "terminal_before_first_successful_tool": term_before,
+        "turn_reward_overlap_note": (
+            "Episode semantic_progress uses subgoal ladder scores; "
+            "turn s_t still carries positional gold_part for sequence (Variant A)."
+        ),
+        "cap_applied": None,
+        "reward_before_penalties": 0.0,
+        "reward_efficiency_penalty": 0.0,
+        "reward_final_total": 0.0,
+    }
+
+    # Hard zeros only for unusable trajectories
+    if parse_err and n_emitted == 0:
+        diag["cap_applied"] = "parse_error"
+        return _finish(0.0, diag, task, trajectory, gold_observations)
+    if no_tool and (parse_err or clipped or term_before):
+        diag["cap_applied"] = "no_usable_action"
+        return _finish(0.0, diag, task, trajectory, gold_observations)
+    if no_tool:
+        diag["cap_applied"] = "no_tool_call"
+        return _finish(0.0, diag, task, trajectory, gold_observations)
+    if clipped and n_success == 0:
+        diag["cap_applied"] = "clipped_no_progress"
+        return _finish(0.0, diag, task, trajectory, gold_observations)
+
+    R0 = (w["final_outcome"] * final_component
+          + w["executability"] * exec_frac
+          + w["semantic_completeness"] * completeness
+          + w["reference_correctness"] * ref_component
+          + w["semantic_progress"] * progress)
+    R0 = max(0.0, min(1.0, R0))
+    diag["reward_before_penalties"] = R0
+
+    eff_pen = 0.0
+    if unnecessary > 0:
+        eff_pen = min(w["unnecessary_extra_call_penalty"] * unnecessary,
+                      w["unnecessary_extra_call_penalty_cap"])
+        R0 = max(0.0, R0 - eff_pen)
+    diag["reward_efficiency_penalty"] = eff_pen
+
+    # Wrong-final: monotonic ceiling (preserves ranking among partials)
+    if final_component < 1.0 - 1e-9:
+        max_partial = (w["executability"] + w["semantic_completeness"]
+                       + w["reference_correctness"] + w["semantic_progress"])
+        quality = (R0 / max_partial) if max_partial > 1e-9 else 0.0
+        quality = max(0.0, min(1.0, quality))
+        R0 = w["wrong_final_ceiling"] * quality
+
+    # Suspicious correct final with insufficient relevant execution evidence
+    # (NOT old anti-trace-drift; equivalence is UNVERIFIED).
+    if final_component >= 1.0 - 1e-9 and n_completed == 0:
+        R0 = min(R0, 0.55)
+        diag["cap_applied"] = "final_without_completed_subgoal"
+
+    diag["reward_final_total"] = float(R0)
+    return _finish(R0, diag, task, trajectory, gold_observations)
+
+
+def execution_aware_v2_p43_seq(trajectory, task, gold_observations=None) -> Dict[str, Any]:
+    return _v2_seq(execution_aware_v2_p43, trajectory, task, gold_observations)
+
+
+# ===========================================================================
 #  partial_gold_trace_v2 — fixed graded baseline (not the primary reward)
 # ===========================================================================
 
@@ -558,6 +904,7 @@ _EPISODE_REWARD: Dict[str, Callable] = {
     "execution_aware": _execution_aware_v1,
     "execution_aware_v1_legacy": execution_aware_v1_legacy,
     "execution_aware_v2": execution_aware_v2,
+    "execution_aware_v2_p43": execution_aware_v2_p43,
 }
 
 _EPISODE_SEQ: Dict[str, Callable] = {
@@ -569,6 +916,7 @@ _EPISODE_SEQ: Dict[str, Callable] = {
     "execution_aware": _execution_v1_seq,
     "execution_aware_v1_legacy": _execution_v1_seq,
     "execution_aware_v2": execution_aware_v2_seq,
+    "execution_aware_v2_p43": execution_aware_v2_p43_seq,
 }
 
 
@@ -591,6 +939,7 @@ def get_episode_reward_seq(policy: str) -> Callable:
 
 
 def set_weights_from_config(config: Dict[str, Any]) -> None:
-    """Load v2 weights from config (both exec v2 + partial v2 blocks)."""
+    """Load v2 / P43 weights from config."""
     set_execution_v2_weights_from_config(config)
     set_partial_v2_weights_from_config(config)
+    set_execution_p43_weights_from_config(config)

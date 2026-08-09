@@ -114,6 +114,21 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
         import partial_reward
         partial_reward.set_weights_from_config(config)
         fn = partial_reward.episode_turn_reward_seq
+    elif policy in ("execution_aware_v2_p43", "execution_v2_p43", "p43"):
+        # No silent fallback to execution_aware / execution_aware_v2.
+        import execution_reward_v2_p43
+        execution_reward_v2_p43.set_weights_from_config(config)
+        fn = execution_reward_v2_p43.episode_turn_reward_seq
+        cfg_variant = str((config.get("reward") or {}).get("p43_reward_variant") or "").upper()
+        impl_variant = str(getattr(fn, "p43_reward_variant", "") or "").upper()
+        if cfg_variant and impl_variant and cfg_variant != impl_variant:
+            raise ValueError(
+                f"[reward_dispatch] P43 variant mismatch: config={cfg_variant!r} "
+                f"implementation={impl_variant!r}. Freeze one variant in YAML.")
+        if not cfg_variant:
+            raise ValueError(
+                "[reward_dispatch] reward.train_policy=execution_aware_v2_p43 requires "
+                "reward.p43_reward_variant explicitly set to A or B (no auto-select).")
     elif policy in ("execution_aware_v2", "execution_v2"):
         import execution_reward_v2
         execution_reward_v2.set_weights_from_config(config)
@@ -167,8 +182,8 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
         else:
             raise ValueError(
                 f"[reward_dispatch] Unknown reward policy '{configured}'. "
-                f"Known: partial_gold_trace, execution_aware_v2, partial_gold_trace_v2, "
-                f"execution_aware, execution_aware_v2_1_motif, "
+                f"Known: execution_aware_v2_p43, partial_gold_trace, execution_aware_v2, "
+                f"partial_gold_trace_v2, execution_aware, execution_aware_v2_1_motif, "
                 f"execution_aware_v3_1_stepwise, execution_aware_v3_2_dense, "
                 f"reward_ablation_<ARM_ID> (A0_R0_CURRENT..A4_GATED_VERIFIABLE), strict. "
                 f"Refusing to silently fall back to the strict binary reward "
@@ -177,12 +192,29 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
 
     resolved_policy = getattr(fn, "reward_policy", None) or (
         "strict" if fallback_used or policy in _STRICT_POLICY_ALIASES else configured)
+    # Normalize aliases so requested==resolved checks are stable.
+    if str(resolved_policy).lower() in ("execution_v2_p43", "p43"):
+        resolved_policy = "execution_aware_v2_p43"
+    if str(configured).lower() in ("execution_v2_p43", "p43"):
+        configured_norm = "execution_aware_v2_p43"
+    else:
+        configured_norm = configured
+    dispatch_cfg = (config.get("reward") or {}).get("dispatch") or {}
+    require_exact = bool(dispatch_cfg.get("require_exact_policy", False))
+    allow_fallback = bool(dispatch_cfg.get("allow_fallback", True))
+    if require_exact and not allow_fallback:
+        if str(configured_norm).lower() != str(resolved_policy).lower():
+            raise ValueError(
+                f"[reward_dispatch] HARD ERROR: requested={configured_norm!r} "
+                f"!= resolved={resolved_policy!r}. No fallback allowed.")
     info = {
-        "configured_policy": configured,
+        "configured_policy": configured_norm,
         "resolved_policy": resolved_policy,
         "reward_fn_module": getattr(fn, "__module__", "?"),
         "reward_fn_name": getattr(fn, "__name__", "?"),
         "fallback_used": fallback_used,
+        "p43_reward_variant": (config.get("reward") or {}).get("p43_reward_variant"),
+        "reward_implementation_module": getattr(fn, "__module__", "?"),
     }
     return fn, info
 

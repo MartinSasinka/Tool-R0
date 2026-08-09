@@ -1,16 +1,9 @@
-# MAIN first experiment: PROFILE_1000 + ONLINE dynamic sampling
-# No offline pre-training probe. Bootstrap → history-adaptive in the SAME run.
-# Enrichment OFF.
-#
-# Hyperparameters match the last functional Qwen3-4B MT-GRPO reference
-# (nestful_mtgrpo_minimal/config.yaml + curriculum defaults): QLoRA r=16/a=32,
-# lr=1e-6, kl_beta=0.02, grad_accum=4, temp=0.7, vLLM util=0.45.
-# Intentional diffs vs that reference are listed in
-# GRPO_ONLINE_DYNAMIC_READINESS_REPORT.md
+# BASELINE ablation: same hypers as dynamic_online, but original execution_aware_v2.
+# Do NOT auto-run; use for reward ablation vs execution_aware_v2_p43.
 experiment:
-  name: qwen3_p43_profile1000_dynamic_online
+  name: qwen3_p43_profile1000_dynamic_online_reward_v2_baseline
   seed: 42
-  output_dir: outputs/qwen3_p43_profile1000_dynamic_online
+  output_dir: outputs/qwen3_p43_profile1000_dynamic_online_reward_v2_baseline
 
 paths:
   train_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
@@ -23,7 +16,7 @@ paths:
 model:
   base_model: Qwen/Qwen3-4B-Instruct-2507
   lora_adapter: null
-  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online/checkpoints
+  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online_reward_v2_baseline/checkpoints
   revision: null
 
 executor:
@@ -96,36 +89,13 @@ training:
   early_abort_dead_rate_first_50: 0.95
 
 reward:
-  train_policy: execution_aware_v2_p43
-  p43_reward_variant: A
+  train_policy: execution_aware_v2
   final_eval_shadow_policy: solution_equivalent
   binary_only: false
   format_as_gate: true
-  # Variant A: gold sequence lives in turn-level s_t only (see audit).
-  gold_sequence_alignment_in_episode: false
-  weights:
-    final_outcome: 0.40
-    executability: 0.15
-    semantic_completeness: 0.20
-    reference_correctness: 0.10
-    semantic_progress: 0.15
-  solution_equivalence:
-    enabled: true
-    require_runtime_verification: true
-  efficiency:
-    penalize_verified_unnecessary_calls: true
-    unnecessary_extra_call_penalty: 0.02
-    unnecessary_extra_call_penalty_cap: 0.10
-  flat_wrong_final_cap: false
-  wrong_final_ceiling: 0.45
   dispatch:
     require_exact_policy: true
     allow_fallback: false
-  # Optional override block consumed by set_execution_p43_weights_from_config
-  execution_reward_v2_p43:
-    wrong_final_ceiling: 0.45
-    unnecessary_extra_call_penalty: 0.02
-    unnecessary_extra_call_penalty_cap: 0.10
 
 mt_grpo:
   enabled: true
