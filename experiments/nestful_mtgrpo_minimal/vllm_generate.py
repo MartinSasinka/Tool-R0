@@ -184,6 +184,7 @@ class VLLMGenerator:
         enforce_eager: bool = False,
         enable_lora: bool = False,
         max_num_seqs: Optional[int] = None,
+        seed: Optional[int] = None,
     ) -> None:
         # vLLM v1 creates a ZMQ IPC socket under VLLM_RPC_BASE_PATH. Unix domain socket
         # paths are limited to 107 chars; a long project path like
@@ -235,6 +236,10 @@ class VLLMGenerator:
             enforce_eager=enforce_eager,
             trust_remote_code=True,
         )
+        # Diversify engine RNG across DP workers (defense in depth). Per-request
+        # SamplingParams.seed is the primary uniqueness guarantee for GRPO groups.
+        if seed is not None:
+            kwargs["seed"] = int(seed)
         if self._enable_lora:
             kwargs["enable_lora"] = True
             kwargs["max_lora_rank"] = max_lora_rank
@@ -295,9 +300,17 @@ class VLLMGenerator:
 
     # ── Public API ────────────────────────────────────────────────────────────
 
-    def generate_fn(self, messages: List[Dict[str, str]], max_new_tokens: int) -> Dict[str, Any]:
+    def generate_fn(
+        self,
+        messages: List[Dict[str, str]],
+        max_new_tokens: int,
+        seed: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """Drop-in for rollout.generate_once().  Formats messages with the
         tokenizer's chat template, generates via vLLM, returns a compatible dict.
+
+        ``seed`` (optional): per-request SamplingParams.seed so DP workers with
+        identical engine state still produce independent stochastic streams.
         """
         from vllm import SamplingParams
 
@@ -331,12 +344,15 @@ class VLLMGenerator:
                 "prompt_overflow": True,
             }
 
-        params = SamplingParams(
+        sp_kwargs: Dict[str, Any] = dict(
             temperature=self._temperature,
             top_p=self._top_p,
             max_tokens=max_new_tokens,
             skip_special_tokens=True,
         )
+        if seed is not None:
+            sp_kwargs["seed"] = int(seed)
+        params = SamplingParams(**sp_kwargs)
         lora_req = self._make_lora_request()
 
         try:
@@ -486,6 +502,7 @@ def build_vllm_generator(
     *,
     adapter_path: Optional[str] = None,
     mode: str = "eval",
+    engine_seed: Optional[int] = None,
 ) -> VLLMGenerator:
     """Read hardware + generation config and return a ready VLLMGenerator.
 
@@ -559,4 +576,5 @@ def build_vllm_generator(
         enforce_eager=bool(hw.get("vllm_enforce_eager", False)),
         enable_lora=enable_lora,
         max_num_seqs=max_num_seqs,
+        seed=engine_seed,
     )

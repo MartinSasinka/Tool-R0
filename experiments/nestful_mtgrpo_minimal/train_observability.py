@@ -197,6 +197,15 @@ def rollout_rows(*, run_id: str, task: Dict[str, Any], rec: Dict[str, Any],
             "n_tool_calls": int(getattr(traj, "num_tool_calls", 0) or 0),
             "kl": kl,
             "turn_rewards": list(ep_r_seqs[ri]) if ri < len(ep_r_seqs) else [],
+            "rollout_seed": diag.get("rollout_seed"),
+            "actual_generation_seed": diag.get("actual_generation_seed"),
+            "dp_worker_id": diag.get("dp_worker_id"),
+            "request_id": diag.get("request_id"),
+            "rollout_sampling_version": diag.get("rollout_sampling_version"),
+            "terminal_success": bool(diag.get("terminal_success")
+                                     or diag.get("final_answer_pass")),
+            "strict_gold_trace_success": bool(
+                diag.get("strict_gold_trace_success")),
         })
     return rows
 

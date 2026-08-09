@@ -266,7 +266,11 @@ class NestfulProfileSampler(PromptSampler):
             prompts = list(self.profile) + list(self.enrichment)
         super().__init__(prompts, config=cfg, seed=seed)
         self.name = mode
+        # EFFECTIVE-only quota (NESTFUL profile preservation target).
         self.profile_quota = QuotaAccumulator()
+        # RAW candidate quota: advances on every planned/refill pick so bootstrap
+        # does not stick on lexicographic bucket "2" while effective total==0.
+        self.raw_quota = QuotaAccumulator()
         self.pool_actual = {"PROFILE": 0, "ENRICHMENT": 0}
         self.ext: Dict[str, Dict[str, Any]] = {}
         # Online bootstrap bookkeeping
@@ -521,6 +525,23 @@ class NestfulProfileSampler(PromptSampler):
             c[p.call_bucket] = c.get(p.call_bucket, 0) + 1
         return c
 
+    def pick_profile_bucket(self) -> str:
+        """Pick next PROFILE call bucket.
+
+        Prefer EFFECTIVE deficit once any effective group has been observed
+        (so long-run EFFECTIVE shares track NESTFUL). While effective total is
+        still 0, use RAW quota so bootstrap candidates are not stuck on "2".
+        """
+        avail = self.available_counts("PROFILE")
+        if self.profile_quota.total > 0:
+            return self.profile_quota.pick_bucket(avail)
+        return self.raw_quota.pick_bucket(avail)
+
+    def note_raw_candidate(self, bucket: str, pool: str = "PROFILE") -> None:
+        """Record a RAW candidate allocation (independent of effective)."""
+        if pool == "PROFILE":
+            self.raw_quota.observe(bucket or "2")
+
     def bootstrap_report(self) -> Dict[str, Any]:
         rows = list(self.bootstrap_groups)
         n = len(rows)
@@ -557,6 +578,7 @@ class NestfulProfileSampler(PromptSampler):
         base.update({
             "sampler_mode": self.sampler_mode,
             "profile_quota": self.profile_quota.as_dict(),
+            "raw_quota": self.raw_quota.as_dict(),
             "pool_actual": dict(self.pool_actual),
             "ext": self.ext,
             "bootstrap_complete": self.bootstrap_complete,
@@ -575,6 +597,12 @@ class NestfulProfileSampler(PromptSampler):
             shares=dict(pq.get("shares_target") or NESTFUL_CALL_SHARES),
             actual=dict(pq.get("actual_counts") or {b: 0 for b in CALL_BUCKETS}),
             total=int(pq.get("total_effective") or 0),
+        )
+        rq = state.get("raw_quota") or {}
+        self.raw_quota = QuotaAccumulator(
+            shares=dict(rq.get("shares_target") or NESTFUL_CALL_SHARES),
+            actual=dict(rq.get("actual_counts") or {b: 0 for b in CALL_BUCKETS}),
+            total=int(rq.get("total_effective") or 0),
         )
         self.pool_actual = dict(state.get("pool_actual") or {"PROFILE": 0, "ENRICHMENT": 0})
         self.ext = dict(state.get("ext") or {})
@@ -646,13 +674,15 @@ def nestful_refill_batch(
             if pool == "ENRICHMENT" and not sampler.enrichment:
                 pool = "PROFILE"
             if pool == "PROFILE":
-                bucket = sampler.profile_quota.pick_bucket(
-                    sampler.available_counts("PROFILE"))
+                bucket = sampler.pick_profile_bucket()
             else:
                 avail = sampler.available_counts("ENRICHMENT")
                 bucket = "6+" if avail.get("6+", 0) > 0 else (
                     max(avail, key=avail.get) if any(avail.values()) else "6+")
             got = sampler.sample_from_bucket(pool, bucket, 1)
+            if got:
+                sampler.note_raw_candidate(
+                    got[0].call_bucket or bucket, pool=pool)
             if not got and pool == "ENRICHMENT" and allow_cross:
                 got = sampler.sample_from_bucket("PROFILE", bucket, 1)
             if not got and pool == "PROFILE":

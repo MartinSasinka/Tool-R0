@@ -13,7 +13,10 @@ MINIMAL="$REPO/experiments/nestful_mtgrpo_minimal"
 FACTORY="$REPO/experiments/targeted_tool_data_factory"
 ADAPTER="$FACTORY/trainer_adapter_p43"
 DATA="$FACTORY/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl"
-CFG="$MINIMAL/configs/qwen3_p43_profile1000_dynamic_online.yaml"
+CFG="${CFG:-$MINIMAL/configs/qwen3_p43_profile1000_dynamic_online_samplingfix.yaml}"
+if [[ ! -f "$CFG" ]]; then
+  CFG="$MINIMAL/configs/qwen3_p43_profile1000_dynamic_online.yaml"
+fi
 
 export SYNTHETIC_TOOLS_DIR="$ADAPTER"
 export CANARY_TRAJ_LOG="${CANARY_TRAJ_LOG:-1}"

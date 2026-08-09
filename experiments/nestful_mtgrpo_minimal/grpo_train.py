@@ -843,28 +843,43 @@ def train(
     obs_batch_id = f"{obs_run_id}:{global_step_start}"
     if getattr(obs, "enabled", False):
         sample_ids = [str(t.get("task_id") or t.get("sample_id")) for t in tasks]
+        _manifest_ds = (
+            (config.get("paths") or {}).get("train_jsonl")
+            or (config.get("data") or {}).get("train_path")
+            or (config.get("data") or {}).get("train_jsonl")
+        )
         obs.write_manifest(
             config=config,
-            dataset_path=(config.get("data") or {}).get("train_path"),
+            dataset_path=_manifest_ds,
             sample_ids=sample_ids,
             subset_ids=sample_ids,
             subset_algorithm=str((config.get("data") or {})
                                  .get("subset_algorithm", "first_n_of_frozen_file")),
-            base_model=str((config.get("model") or {}).get("name", "")),
-            model_revision=str((config.get("model") or {}).get("revision", "")),
+            base_model=str((config.get("model") or {}).get("base_model")
+                           or (config.get("model") or {}).get("name") or ""),
+            model_revision=str((config.get("model") or {}).get("revision") or ""),
             tokenizer_revision=str((config.get("model") or {})
-                                   .get("tokenizer_revision", "")),
+                                   .get("tokenizer_revision") or ""),
             chat_template_sha=chat_template_hash(tokenizer),
-            seeds={"training": int(tr.get("seed", 0) or 0),
-                   "rollout": int(gen.get("seed", 0) or 0)},
+            seeds={"training": int((config.get("experiment") or {}).get("seed")
+                                   or tr.get("seed", 0) or 0),
+                   "experiment": int((config.get("experiment") or {}).get("seed")
+                                     or 0),
+                   "rollout": int(gen.get("seed")
+                                  or (config.get("experiment") or {}).get("seed")
+                                  or 0)},
             reward_version=str(dispatch_info.get("resolved_policy", "")),
             parser_version=str(config.get("parser_version", "")),
             executor_version=str(config.get("executor_version", "")),
-            sampler_version=str((config.get("sampler") or {}).get("version",
-                                                                  "none_uniform")),
+            sampler_version=str((config.get("sampler") or {}).get("version")
+                                or (config.get("sampler") or {}).get("mode")
+                                or "none_uniform"),
             sampler_config=config.get("sampler") or {},
-            extra={"reward_dispatch": dispatch_info,
-                   "num_generations": num_gen, "epochs": epochs})
+            extra=_build_train_manifest_extra(
+                config=config, dispatch_info=dispatch_info,
+                num_gen=num_gen, epochs=epochs, grad_accum=grad_accum,
+                rollout_pool=rollout_pool, vllm_gen=vllm_gen,
+            ))
     obs_epoch_groups: List[Dict[str, Any]] = []
 
     num_tasks = len(tasks)
@@ -1014,11 +1029,25 @@ def train(
             pool_first_errors: List[int] = []  # only populated on the pool path
 
             ep_diags: List[Dict[str, Any]] = []
+            # Independent per-rollout seeds (p43_independent_rollout_sampling_v1).
+            # Must NOT use [task] * num_gen — that shared one dict and left DP
+            # workers with identical unseeded CUDA RNG streams.
+            from rollout_sampling import (
+                ROLLOUT_SAMPLING_VERSION, stamp_rollout_tasks, derive_turn_seed,
+            )
+            _base_seed = int((config.get("experiment") or {}).get("seed")
+                             or tr.get("seed") or 0)
+            stamped_tasks = stamp_rollout_tasks(
+                task, num_generations=num_gen, base_seed=_base_seed,
+                global_step=global_step, epoch=epoch,
+            )
+            rollout_seeds = [int(t["_rollout_seed"]) for t in stamped_tasks]
+
             if rollout_pool is not None:
                 # Data-parallel: workers run the full episode AND apply the correct
                 # reward policy, returning token-id lists + reward + r_seq. Raw tool
                 # observations stay in the workers (never serialized).
-                results = rollout_pool.rollout_many([task] * num_gen)
+                results = rollout_pool.rollout_many(stamped_tasks)
                 for res in results:
                     if getattr(res, "error", None):
                         _log({"epoch": epoch, "task_idx": ti,
@@ -1036,11 +1065,26 @@ def train(
                 # Default 0 reproduces the legacy max_turns_train = gold_n exactly.
                 _extra = int(config.get("train", {}).get("max_extra_turns_train", 0))
                 _train_max_turns = max(1, min(gold_n + _extra, gold_n + 4))
-                for _ in range(num_gen):
+                for _ri, _rtask in enumerate(stamped_tasks):
+                    _rseed = int(_rtask.get("_rollout_seed") or 0)
+                    _turn_i = {"i": 0}
+
+                    def _seeded_vllm(messages, max_new_tokens, _rs=_rseed, _ti=_turn_i):
+                        if vllm_gen_fn is None:
+                            raise RuntimeError("vllm_gen_fn required for seeded path")
+                        seed = derive_turn_seed(_rs, _ti["i"]) if _rs else None
+                        _ti["i"] += 1
+                        try:
+                            return vllm_gen_fn(messages, max_new_tokens, seed=seed)
+                        except TypeError:
+                            # Legacy generate_fn without seed kwarg
+                            return vllm_gen_fn(messages, max_new_tokens)
+
+                    _gen_fn = _seeded_vllm if vllm_gen_fn is not None else None
                     if single_turn:
                         ep = _rollout_episode_single_turn_for_train(
-                            model, tokenizer, task, config, registry,
-                            vllm_gen_fn=vllm_gen_fn,
+                            model, tokenizer, _rtask, config, registry,
+                            vllm_gen_fn=_gen_fn,
                         )
                         # Same reward dispatch as multi-turn (module-global,
                         # monkeypatch-aware) — scored on the executed plan.
@@ -1053,14 +1097,16 @@ def train(
                         r_seq = [float(ep.reward)] if ep.turn_tokens else []
                         diag = dict(rinfo.get("diagnostics") or {})
                         diag["single_turn"] = True
+                        diag["rollout_index"] = _ri
+                        diag["rollout_seed"] = _rseed
                         episodes.append(ep)
                         ep_r_seqs.append(r_seq)
                         ep_diags.append(diag)
                         continue
                     ep = _rollout_episode_for_train(
-                        model, tokenizer, task, config, registry,
+                        model, tokenizer, _rtask, config, registry,
                         max_turns=_train_max_turns,
-                        vllm_gen_fn=vllm_gen_fn,
+                        vllm_gen_fn=_gen_fn,
                         gold_obs=gold_obs,
                     )
                     rinfo = episode_turn_reward_seq(ep.trajectory, task, gold_obs)
@@ -1089,6 +1135,8 @@ def train(
                     diag = dict(rinfo.get("diagnostics") or {})
                     diag["teacher_forced_prefix_calls"] = ep.n_forced_turns
                     diag.update(exec_failure_categories(ep.trajectory))
+                    diag["rollout_index"] = _ri
+                    diag["rollout_seed"] = _rseed
                     episodes.append(ep)
                     ep_r_seqs.append(r_seq)
                     ep_diags.append(diag)
@@ -1096,7 +1144,31 @@ def train(
             rewards = [e.reward for e in episodes]
             mean_r = sum(rewards) / len(rewards)
             task_id = str(task["task_id"])
-            win_rate = _rollout_win_rate(rewards)
+            # Metric definitions (must NOT alias continuous reward):
+            #   mean_reward / episode_rewards — continuous [0,1]
+            #   terminal_success_rate — fraction terminal/final_answer pass (bool)
+            #   strict_gold_trace_pass_rate — fraction strict gold-trace success (bool)
+            #   win_rate — alias of terminal_success_rate (NOT mean_reward)
+            #   reward_win_rate — legacy fraction with episode_reward >= 0.99
+            term_success_flags = [
+                bool(d.get("terminal_success")
+                     or d.get("final_answer_pass")
+                     or d.get("final_answer_correct"))
+                for d in ep_diags
+            ]
+            strict_success_flags = [
+                _diag_bool_success(d, "strict_gold_trace_success",
+                                   "strict_gold_trace_pass")
+                for d in ep_diags
+            ]
+            terminal_success_rate = (
+                sum(1 for x in term_success_flags if x) / len(term_success_flags)
+                if term_success_flags else 0.0)
+            strict_gold_trace_pass_rate = (
+                sum(1 for x in strict_success_flags if x) / len(strict_success_flags)
+                if strict_success_flags else 0.0)
+            win_rate = terminal_success_rate
+            reward_win_rate = _rollout_win_rate(rewards)
             if epoch > 0 and task_id in task_prev_mean:
                 delta = mean_r - task_prev_mean[task_id]
                 reward_deltas.append(delta)
@@ -1192,8 +1264,15 @@ def train(
                 "predicted_num_calls": pred_calls,
                 "gold_num_calls": gold_n,
                 **fail_counts,
-                "strict_gold_trace_pass": mean_r,
+                # Boolean-rate metrics (NOT continuous mean_reward):
+                "strict_gold_trace_pass": strict_gold_trace_pass_rate,
+                "strict_gold_trace_pass_rate": strict_gold_trace_pass_rate,
+                "terminal_success_rate": terminal_success_rate,
                 "win_rate": win_rate,
+                "reward_win_rate": reward_win_rate,
+                "rollout_seeds": list(rollout_seeds),
+                "rollout_sampling_version": ROLLOUT_SAMPLING_VERSION,
+                "n_unique_completions": len(set(comp_hashes)),
                 "max_reward": max(rewards) if rewards else 0.0,
                 "min_reward": min(rewards) if rewards else 0.0,
                 **rollout_slot_cmp,
@@ -1241,7 +1320,13 @@ def train(
             if sampler is not None:
                 term_flags = []
                 for d, r in zip(ep_diags, rewards):
-                    ok = bool(d.get("final_answer_pass") or d.get("strict_gold_trace_pass")
+                    # Prefer explicit terminal flags; do not treat continuous
+                    # strict_gold_trace_pass_rate floats as per-rollout bools.
+                    ok = bool(d.get("terminal_success")
+                              or d.get("final_answer_pass")
+                              or d.get("final_answer_correct")
+                              or _diag_bool_success(d, "strict_gold_trace_success",
+                                                    "strict_gold_trace_pass")
                               or (float(r) >= 0.99))
                     term_flags.append(1.0 if ok else 0.0)
                 parse_flags = [
@@ -1336,16 +1421,24 @@ def train(
                     6, int(0.75 * max(len(rewards), 1))))
                 group_log_f.write(json.dumps({
                     "step": global_step, "epoch": epoch,
+                    "group_id": f"{obs_run_id}:{epoch}:{ti}",
                     "task_id": task.get("task_id"),
                     "pool": task.get("_pool") or "PROFILE",
                     "call_bucket": call_bucket,
                     "n_rollouts": len(rewards),
+                    "n_unique_completions": len(set(comp_hashes)),
+                    "n_unique_completion_hashes": len(set(comp_hashes)),
+                    "completion_hashes": list(comp_hashes),
+                    "rollout_seeds": list(rollout_seeds),
+                    "rollout_sampling_version": ROLLOUT_SAMPLING_VERSION,
+                    "reward_values": [float(r) for r in rewards],
                     "n_valid": sum(1 for p in parse_flags if p),
                     "n_terminal_success": int(sum(term_flags)),
                     "reward_min": float(min(rewards)) if rewards else 0.0,
                     "reward_max": float(max(rewards)) if rewards else 0.0,
                     "reward_mean": mean_r,
                     "reward_std": float(gstats.episode_reward_std),
+                    "n_unique_rewards": n_unique_r,
                     "n_unique_reward_values": n_unique_r,
                     "reward_collision": collision,
                     "terminal_success_count": int(sum(term_flags)),
@@ -1361,6 +1454,8 @@ def train(
                     "bootstrap": was_boot,
                     "sampling_weight_before": w_before,
                     "sampling_weight_after": w_after,
+                    "raw_bucket": call_bucket,
+                    "effective_counted": bool(nestful_eff),
                 }, ensure_ascii=False) + "\n")
                 group_log_f.flush()
 
@@ -1771,6 +1866,149 @@ def _turn_returns(
 
 _WIN_REWARD_THRESHOLD = 0.99
 _ROLLOUT_DELTA_EPS = 1e-6
+
+
+def _diag_bool_success(diag: Dict[str, Any], *keys: str) -> bool:
+    """Read a boolean success flag from reward diagnostics.
+
+    Never treats arbitrary floats in ``(0,1)`` (continuous rewards) as True.
+    Accepts bool, 0/1 int, or exactly 0.0/1.0 only when the key is an explicit
+    pass flag (not a rate/mean field).
+    """
+    for k in keys:
+        if k not in diag:
+            continue
+        v = diag.get(k)
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, int) and not isinstance(v, bool):
+            return v != 0
+        if isinstance(v, float) and v in (0.0, 1.0):
+            return bool(int(v))
+        return False
+    return False
+
+
+def _build_train_manifest_extra(
+    *,
+    config: Dict[str, Any],
+    dispatch_info: Dict[str, Any],
+    num_gen: int,
+    epochs: int,
+    grad_accum: int,
+    rollout_pool,
+    vllm_gen,
+) -> Dict[str, Any]:
+    """Complete provenance for P43 training restarts (no empty placeholders)."""
+    import hashlib
+    import subprocess
+    from pathlib import Path as _P
+
+    from rollout_sampling import ROLLOUT_SAMPLING_VERSION, sampling_source_hash
+
+    model = config.get("model") or {}
+    data = config.get("data") or {}
+    paths = config.get("paths") or {}
+    gen = config.get("generation") or {}
+    tr = config.get("training") or {}
+    ft = config.get("finetuning") or {}
+    hw = config.get("hardware") or {}
+    reward = config.get("reward") or {}
+    sampler = config.get("sampler") or {}
+    exp = config.get("experiment") or {}
+
+    train_path = (paths.get("train_jsonl") or data.get("train_path")
+                  or data.get("train_jsonl") or "")
+    # Resolve relative to nestful_mtgrpo_minimal when needed
+    root = _P(__file__).resolve().parent
+    tp = _P(train_path)
+    if train_path and not tp.is_absolute():
+        tp = (root / tp).resolve()
+    ds_sha = None
+    if tp.is_file():
+        h = hashlib.sha256()
+        with open(tp, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        ds_sha = h.hexdigest()
+
+    reward_src = ""
+    try:
+        import nestful_core.rewards as _rw
+        reward_src = hashlib.sha256(
+            open(_rw.__file__, "rb").read()).hexdigest()[:16]
+    except Exception:
+        reward_src = ""
+
+    git_commit = ""
+    git_dirty = None
+    try:
+        repo = root.parents[1]
+        git_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=str(repo),
+            stderr=subprocess.DEVNULL).decode().strip()
+        dirty = subprocess.call(
+            ["git", "diff", "--quiet"], cwd=str(repo),
+            stderr=subprocess.DEVNULL)
+        git_dirty = bool(dirty != 0)
+    except Exception:
+        pass
+
+    world = 1
+    if rollout_pool is not None:
+        world = max(1, len(getattr(rollout_pool, "gpus", []) or []))
+    elif hw.get("num_gpus") not in (None, "auto"):
+        try:
+            world = int(hw.get("num_gpus"))
+        except Exception:
+            world = 1
+
+    return {
+        "reward_dispatch": dispatch_info,
+        "num_generations": num_gen,
+        "group_size": num_gen,
+        "epochs": epochs,
+        "base_model": model.get("base_model") or model.get("name") or "",
+        "base_model_revision": model.get("revision") or "",
+        "dataset_path": str(tp) if train_path else "",
+        "dataset_sha256": ds_sha,
+        "reward_policy": reward.get("train_policy")
+                        or dispatch_info.get("configured_policy"),
+        "reward_variant": reward.get("p43_reward_variant"),
+        "reward_source_hash": reward_src,
+        "sampler_policy": sampler.get("mode") or sampler.get("sampler_mode"),
+        "temperature": gen.get("temperature"),
+        "top_p": gen.get("top_p"),
+        "seed": int(exp.get("seed") or tr.get("seed") or 0),
+        "qlora": {
+            "enabled": bool(hw.get("qlora") or ft.get("method") == "qlora"),
+            "lora_r": ft.get("lora_r"),
+            "lora_alpha": ft.get("lora_alpha"),
+            "lora_dropout": ft.get("lora_dropout"),
+            "load_in_4bit": ft.get("load_in_4bit", hw.get("load_in_4bit")),
+            "bnb_4bit_quant_type": ft.get("bnb_4bit_quant_type"),
+            "target_modules": ft.get("target_modules"),
+        },
+        "learning_rate": tr.get("learning_rate"),
+        "optimizer": {
+            "gradient_accumulation_steps": tr.get("gradient_accumulation_steps"),
+            "max_grad_norm": tr.get("max_grad_norm"),
+            "per_device_train_batch_size": tr.get("per_device_train_batch_size"),
+        },
+        "kl_beta": tr.get("kl_beta"),
+        "max_turns": gen.get("max_turns"),
+        "max_generation_tokens": gen.get("max_new_tokens_train")
+                                or gen.get("max_new_tokens"),
+        "effective_group_target": sampler.get("target_effective_groups")
+                                 or grad_accum,
+        "gpu_world_size": world,
+        "git_commit": git_commit,
+        "git_dirty": git_dirty,
+        "rollout_sampling_version": ROLLOUT_SAMPLING_VERSION,
+        "rollout_sampling_source_hash": sampling_source_hash(),
+        "vllm_rollout": (vllm_gen is not None) or (rollout_pool is not None),
+        "data_parallel_rollout": rollout_pool is not None,
+    }
 
 
 def _rollout_win_rate(rewards: List[float]) -> float:

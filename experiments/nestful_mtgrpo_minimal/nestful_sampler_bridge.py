@@ -336,8 +336,7 @@ def plan_epoch_candidates(
             pool = "PROFILE"
 
         if pool == "PROFILE":
-            bucket = sampler.profile_quota.pick_bucket(
-                sampler.available_counts("PROFILE"))
+            bucket = sampler.pick_profile_bucket()
         else:
             avail = sampler.available_counts("ENRICHMENT")
             bucket = "6+" if avail.get("6+", 0) else max(
@@ -357,6 +356,7 @@ def plan_epoch_candidates(
         row = dict(task)
         row["_pool"] = pool
         row["_call_bucket"] = picks[0].call_bucket
+        sampler.note_raw_candidate(picks[0].call_bucket or bucket, pool=pool)
         out.append(row)
     return out
 
@@ -382,6 +382,8 @@ def refill_same_bucket(
             row = dict(task)
             row["_pool"] = attempt_pool
             row["_call_bucket"] = call_bucket
+            # Refill is same-bucket; still count as a RAW candidate draw.
+            sampler.note_raw_candidate(call_bucket, pool=attempt_pool)
             return row
     return None
 

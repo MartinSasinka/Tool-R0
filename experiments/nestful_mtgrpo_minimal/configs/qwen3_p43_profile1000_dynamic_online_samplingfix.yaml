@@ -1,16 +1,12 @@
+# Frozen copy of qwen3_p43_profile1000_dynamic_online.yaml after
+# p43_independent_rollout_sampling_v1 (DP vLLM per-rollout SamplingParams.seed).
+# All GRPO/QLoRA/reward/dataset hypers identical to the parent config.
 # MAIN first experiment: PROFILE_1000 + ONLINE dynamic sampling
-# No offline pre-training probe. Bootstrap → history-adaptive in the SAME run.
 # Enrichment OFF.
-#
-# Hyperparameters match the last functional Qwen3-4B MT-GRPO reference
-# (nestful_mtgrpo_minimal/config.yaml + curriculum defaults): QLoRA r=16/a=32,
-# lr=1e-6, kl_beta=0.02, grad_accum=4, temp=0.7, vLLM util=0.45.
-# Intentional diffs vs that reference are listed in
-# GRPO_ONLINE_DYNAMIC_READINESS_REPORT.md
 experiment:
-  name: qwen3_p43_profile1000_dynamic_online
+  name: qwen3_p43_profile1000_dynamic_online_samplingfix
   seed: 42
-  output_dir: outputs/qwen3_p43_profile1000_dynamic_online
+  output_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix
 
 paths:
   train_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
@@ -27,7 +23,7 @@ paths:
 model:
   base_model: Qwen/Qwen3-4B-Instruct-2507
   lora_adapter: null
-  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online/checkpoints
+  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix/checkpoints
   revision: null
 
 executor:
@@ -189,4 +185,4 @@ logging:
   log_samples: true
   # Full per-rollout trajectories (tool calls, fail_reason, observations).
   log_canary_trajectories: true
-  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online/observability
+  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix/observability

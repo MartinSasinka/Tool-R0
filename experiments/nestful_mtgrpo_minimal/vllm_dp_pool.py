@@ -514,8 +514,14 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
             tokenizer.pad_token = tokenizer.eos_token
 
         # No HF model shares this GPU -> the engine may use a high memory fraction.
-        vgen = build_vllm_generator(config, tokenizer,
-                                    adapter_path=adapter_path, mode="rollout_worker")
+        # Diversify LLM engine seed per worker (defense in depth). Per-request
+        # SamplingParams.seed from task["_rollout_seed"] is the primary fix for
+        # DP round-robin duplicate pairs (0==1, 3==4, 6==7).
+        vgen = build_vllm_generator(
+            config, tokenizer,
+            adapter_path=adapter_path, mode="rollout_worker",
+            engine_seed=int(worker_id) + 1,
+        )
         out_q.put((("__ack__", worker_id), "ready"))
     except Exception as exc:  # noqa: BLE001 — report init failure, do not hang parent
         import traceback
@@ -540,11 +546,35 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
         if cmd == "rollout":
             req_id, task = payload
             try:
+                from rollout_sampling import derive_turn_seed
+
+                rollout_seed = int(task.get("_rollout_seed") or 0)
+                turn_counter = {"i": 0}
+
+                def _seeded_generate(messages, max_new_tokens, seed=None):
+                    # Prefer explicit seed; else derive per-turn from rollout seed.
+                    if seed is None and rollout_seed:
+                        seed = derive_turn_seed(rollout_seed, turn_counter["i"])
+                    turn_counter["i"] += 1
+                    return vgen.generate_fn(messages, max_new_tokens, seed=seed)
+
                 res = run_episode_collect(
                     tokenizer=tokenizer, task=task, config=config,
-                    registry=_worker_registry(config), generate_fn=vgen.generate_fn,
+                    registry=_worker_registry(config), generate_fn=_seeded_generate,
                     reward_fn=reward_fn, gold_obs=None,
                 )
+                # Provenance for duplication audits (survives sanitize).
+                if isinstance(getattr(res, "reward_diag", None), dict):
+                    res.reward_diag.update({
+                        "rollout_index": task.get("_rollout_index"),
+                        "rollout_seed": rollout_seed or None,
+                        "actual_generation_seed": (
+                            derive_turn_seed(rollout_seed, 0) if rollout_seed else None),
+                        "rollout_sampling_version": task.get("_rollout_sampling_version"),
+                        "dp_worker_id": int(worker_id),
+                        "dp_gpu": int(gpu),
+                        "request_id": req_id,
+                    })
             except Exception as exc:  # noqa: BLE001 — never kill the worker on one task
                 import traceback
                 res = RolloutResult(error=f"{exc}\n{traceback.format_exc()}")
