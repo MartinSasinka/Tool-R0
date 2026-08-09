@@ -1132,18 +1132,23 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
         if os.path.isdir(_p) and _p not in sys.path:
             sys.path.insert(0, _p)
     _policy = str((config.get("reward") or {}).get("train_policy", "")).lower()
-    if _policy in ("execution_aware", "execution"):
+    if _policy in ("execution_aware", "execution",
+                   "execution_aware_v2", "execution_v2"):
         try:
-            import execution_reward as _er
             import grpo_train as _gt
+            if _policy in ("execution_aware_v2", "execution_v2"):
+                import execution_reward_v2 as _er
+                _label = "execution_aware_v2"
+            else:
+                import execution_reward as _er
+                _label = "execution_aware"
             _er.set_weights_from_config(config)
             _gt.episode_turn_reward_seq = _er.episode_turn_reward_seq
-            print("[train] reward wired: execution_aware "
-                  f"(from {_partial})", flush=True)
+            print(f"[train] reward wired: {_label} (from {_partial})", flush=True)
         except Exception as exc:  # noqa: BLE001
             raise SystemExit(
-                f"[train] ABORT: reward.train_policy=execution_aware but could not "
-                f"import nestful_mtgrpo_partial/execution_reward ({exc}). "
+                f"[train] ABORT: reward.train_policy={_policy} but could not "
+                f"import reward module from nestful_mtgrpo_partial ({exc}). "
                 f"Ensure experiments/nestful_mtgrpo_partial is next to "
                 f"nestful_mtgrpo_minimal on the pod.") from exc
 
