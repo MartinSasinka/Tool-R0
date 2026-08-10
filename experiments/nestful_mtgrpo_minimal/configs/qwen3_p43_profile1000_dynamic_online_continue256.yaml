@@ -113,7 +113,9 @@ training:
     expect_global_step: 127
     expect_bootstrap_complete: true
     expect_reward_policy: execution_aware_v2_p43
-    expect_dataset_sha256: 1d4269c494f2c7fea9ee161972fb3ad17717ce62d7dd3772d5014944fdd07b27
+    # LF-normalized hash (Linux/pod). Windows checkout may be CRLF
+    # (=1d4269c494f2c7fea9ee161972fb3ad17717ce62d7dd3772d5014944fdd07b27).
+    expect_dataset_sha256: 991f04931a0e5452cd86b637f2b92b9655ecd024f5c5606efa2a43b062609b2a
     # Historical P43 ckpts have no optimizer.pt; momenta reset once.
     allow_missing_optimizer: true
 

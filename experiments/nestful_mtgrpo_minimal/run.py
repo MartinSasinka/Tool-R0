@@ -1231,12 +1231,15 @@ def mode_val_eval(config: dict, checkpoint: str | None) -> int:
     return rc
 
 
-def _sha256_file(path: str) -> str:
+def _sha256_file(path: str, *, normalize_newlines: bool = True) -> str:
+    """SHA256 of a file. By default CRLF→LF so Windows/Linux checkouts match."""
     import hashlib
     h = hashlib.sha256()
     with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            h.update(chunk)
+        data = fh.read()
+    if normalize_newlines:
+        data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    h.update(data)
     return h.hexdigest()
 
 
