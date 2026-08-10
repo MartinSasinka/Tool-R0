@@ -209,7 +209,7 @@ def build_default_workflows() -> List[WorkflowBlueprint]:
         ["unit_price", "quantity", "discount_rate", "fee"],
         {"unit_price": "Money", "quantity": "Count", "discount_rate": "Percentage",
          "fee": "Money", "gross": "Money", "discounted": "Money",
-         "final_amount": "Money"},
+                                 "final_amount": "Money"},
         "final_amount", "Money",
         [_pn("arithmetic.multiply", ["unit_price", "quantity"], "gross",
              ["Money", "Count"], "Money"),

@@ -317,6 +317,61 @@ def build_registry(config: dict):
     return reg
 
 
+def _prepare_final_eval_ibm_executor(config: dict) -> None:
+    """Force IBM NESTFUL helpers for ``final_eval`` (full benchmark).
+
+    P43 / factory train configs set ``executor.mode: synthetic`` so rollouts hit
+    ``trainer_adapter_p43``. That must NOT leak into ``final_eval``, which loads
+    ``paths.full_nestful_jsonl`` and needs real IBM ``executable_functions``.
+    Mutates ``config['executor']['mode']`` to ``full`` when it was synthetic /
+    unset-as-train-default, and resolves ``paths.ibm_functions_dir`` via
+    :func:`detect_ibm_functions_dir`.
+    """
+    exec_cfg = config.setdefault("executor", {})
+    prev = str(exec_cfg.get("mode") or "auto").lower()
+    if prev == "synthetic":
+        exec_cfg["mode"] = "full"
+        print(
+            "[final_eval] overriding executor.mode=synthetic -> full "
+            "(NESTFUL IBM executable_functions; factory registry is train-only)",
+            flush=True,
+        )
+    elif prev == "auto":
+        # Prefer explicit full so ToolExecutor does not silently degrade.
+        exec_cfg["mode"] = "full"
+
+    paths = config.setdefault("paths", {})
+    detected = detect_ibm_functions_dir(
+        explicit=paths.get("ibm_functions_dir"),
+        repo_root=_HERE,
+    )
+    if detected:
+        paths["ibm_functions_dir"] = detected
+        print(f"[final_eval] ibm_functions_dir={detected}", flush=True)
+    else:
+        print(
+            "[final_eval] WARNING: IBM executable_functions not found; "
+            "ReAct tool exec / official Win will be LIMITED (gold_replay).",
+            flush=True,
+        )
+
+
+def _official_win_enabled(ibm_functions_dir: str | None) -> bool:
+    """Whether official NESTFUL Win Rate should re-exec IBM helpers.
+
+    Requires a resolvable ``executable_functions`` directory. SIGALRM is native
+    on Unix; on Windows ``nestful_official_score`` installs a threading shim.
+    """
+    if not ibm_functions_dir:
+        return False
+    if os.path.isdir(ibm_functions_dir):
+        return True
+    detected = detect_ibm_functions_dir(
+        explicit=ibm_functions_dir, repo_root=_HERE,
+    )
+    return bool(detected)
+
+
 def _parse_gpu_list(value) -> list:
     """Parse hardware.rollout_data_parallel_gpus into a list of int GPU ids.
 
@@ -757,7 +812,9 @@ def _run_direct_final_eval(
     scored_tids = [t["task_id"] for t in tasks if t["task_id"] in raw_rows]
     gold_by_tid = {t["task_id"]: t.get("gold_calls", []) for t in tasks}
     fdir = paths.get("ibm_functions_dir")
-    want_win = os.name != "nt" and bool(fdir) and os.path.isdir(fdir)
+    want_win = _official_win_enabled(fdir)
+    print(f"[final_eval] official Win Rate={'ON' if want_win else 'OFF'} "
+          f"(ibm_functions_dir={fdir!r})", flush=True)
 
     # CANONICAL official scoring — wrapped so scoring never aborts after generation.
     off_by_tid: dict = {}
@@ -835,6 +892,8 @@ def _compute_mismatch(internal: dict, official: dict, tol: float = 1e-6):
 
 def mode_final_eval(config: dict, checkpoint: str | None) -> int:
     out_dir = _outputs_dir(config)
+    # Train configs (P43) use executor.mode=synthetic; final_eval must use IBM.
+    _prepare_final_eval_ibm_executor(config)
     registry = build_registry(config)
     paths = config["paths"]
     data_cfg = config.get("data", {})
@@ -1006,7 +1065,9 @@ def mode_final_eval(config: dict, checkpoint: str | None) -> int:
                        if t["task_id"] in raw_rows and t["task_id"] in official_pred]
         items = [build_item(official_pred[tid], raw_rows[tid]) for tid in scored_tids]
         fdir = paths.get("ibm_functions_dir")
-        want_win = os.name != "nt" and bool(fdir) and os.path.isdir(fdir)
+        want_win = _official_win_enabled(fdir)
+        print(f"[final_eval] official Win Rate={'ON' if want_win else 'OFF'} "
+              f"(ibm_functions_dir={fdir!r})", flush=True)
         # Per-sample FIRST (isolates each sample's win/exec in its own try/except),
         # then reuse it for the aggregate so Win Rate is crash-proof AND the IBM
         # functions are executed only once (not twice).
@@ -1341,11 +1402,21 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
                 rollout_pool.close()
             except Exception:
                 pass
-    with open(os.path.join(out_dir, "train_summary.json"), "w", encoding="utf-8") as fh:
-        json.dump(summary, fh, indent=2, ensure_ascii=False)
-    print(f"[train] done: {json.dumps(summary)}")
+    # Training may finish successfully even if summary contains non-JSON
+    # leftovers (e.g. accidentally attached optimizer). Sanitize for dump.
+    summary_path = os.path.join(out_dir, "train_summary.json")
+    safe_summary = {k: v for k, v in (summary or {}).items()
+                    if not str(k).startswith("_")
+                    and isinstance(v, (type(None), bool, int, float, str, list, dict))}
+    try:
+        with open(summary_path, "w", encoding="utf-8") as fh:
+            json.dump(safe_summary, fh, indent=2, ensure_ascii=False, default=str)
+        print(f"[train] done: {json.dumps(safe_summary, ensure_ascii=False, default=str)}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[train] WARNING: could not write train_summary.json ({exc})", flush=True)
+        print(f"[train] done (summary keys): {sorted((summary or {}).keys())}", flush=True)
     print(f"[train] log: {log_path}")
-    _wandb_log_eval(wandb_run, {k: v for k, v in summary.items()
+    _wandb_log_eval(wandb_run, {k: v for k, v in (summary or {}).items()
                                 if isinstance(v, (int, float, bool))}, prefix="train_summary")
     _wandb_finish(wandb_run)
     return 0

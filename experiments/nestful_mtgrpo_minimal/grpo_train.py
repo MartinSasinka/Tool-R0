@@ -1867,6 +1867,8 @@ def train(
         pass
     if canary_f is not None:
         canary_f.close()
+    # Never leak non-JSON objects (AdamW was previously left under "_optimizer").
+    summary.pop("_optimizer", None)
     return summary
 
 
