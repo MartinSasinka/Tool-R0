@@ -130,19 +130,27 @@ fi
 # audits/DATASET_AUDIT.md). Refuse to use it silently; curriculum launchers always
 # provide DATA_BASE explicitly (canonical v3.1 symlinks). Dataset B was archived
 # (cleanup Phase K) to nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic.
-DATA_BASE="${DATA_BASE:-$ROOT/../nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic}"
-case "$DATA_BASE" in
-  *filtered_toolr0_synthetic*)
-    if [ "${ALLOW_LEGACY_DATASET_B:-0}" != "1" ]; then
-        echo "[data] ABORT: DATA_BASE resolves to the LEGACY dataset B:" >&2
-        echo "       $DATA_BASE" >&2
-        echo "       Set DATA_BASE to the canonical curriculum (v3.1) files, or set" >&2
-        echo "       ALLOW_LEGACY_DATASET_B=1 to override explicitly (NOT recommended)." >&2
-        exit 1
-    fi
-    echo "[data] WARNING: using LEGACY dataset B (ALLOW_LEGACY_DATASET_B=1): $DATA_BASE" >&2
-    ;;
-esac
+#
+# ONLY_FINAL_EVAL=1 does not read DATA_BASE (final_eval uses paths.full_nestful_jsonl
+# from CONFIG). Skip the legacy default entirely in that mode.
+if [ "$ONLY_FINAL_EVAL" = "1" ]; then
+    DATA_BASE="${DATA_BASE:-}"
+    echo "[data] ONLY_FINAL_EVAL=1 — DATA_BASE unused (NESTFUL from CONFIG paths)."
+else
+    DATA_BASE="${DATA_BASE:-$ROOT/../nestful_synthetic_curriculum_v3/archive/legacy_dataset_B_filtered_toolr0_synthetic}"
+    case "$DATA_BASE" in
+      *filtered_toolr0_synthetic*)
+        if [ "${ALLOW_LEGACY_DATASET_B:-0}" != "1" ]; then
+            echo "[data] ABORT: DATA_BASE resolves to the LEGACY dataset B:" >&2
+            echo "       $DATA_BASE" >&2
+            echo "       Set DATA_BASE to the canonical curriculum (v3.1) files, or set" >&2
+            echo "       ALLOW_LEGACY_DATASET_B=1 to override explicitly (NOT recommended)." >&2
+            exit 1
+        fi
+        echo "[data] WARNING: using LEGACY dataset B (ALLOW_LEGACY_DATASET_B=1): $DATA_BASE" >&2
+        ;;
+    esac
+fi
 
 # Normalize run paths to absolute (resume / symlink safety).
 if [ -d "$OUTPUT_ROOT" ]; then
@@ -1450,6 +1458,13 @@ if [ "$RUN_FINAL_EVAL" = "1" ]; then
         echo "╔══ Final eval [$label / $paradigm] ═════════════════════════════╗"
         printf "  output = %s\n" "$OUTPUT_ROOT/$subdir"
         echo "╚════════════════════════════════════════════════════════════════╝"
+        # Same data/temp overrides as stage eval: empty MAX_EVAL_TASKS → all
+        # NESTFUL tasks; EVAL_TEMPERATURE=0.0 for deterministic paper numbers.
+        # Without these, P43 train configs (max_eval_tasks=64, T=0.7) would leak.
+        local _fe_data_ov=()
+        while IFS= read -r _line; do
+            [ -n "$_line" ] && _fe_data_ov+=("$_line")
+        done < <(_data_overrides_eval)
         _run_logged "$OUTPUT_ROOT/$subdir.log" \
             "$PYTHON" "$RUN_PY" \
             --mode final_eval \
@@ -1458,6 +1473,8 @@ if [ "$RUN_FINAL_EVAL" = "1" ]; then
             --override "experiment.output_dir=$OUTPUT_ROOT/$subdir" \
             --override "data.eval_paradigm=$paradigm" \
             --override "data.num_icl_examples=$FINAL_EVAL_NUM_ICL" \
+            "${_fe_data_ov[@]}" \
+            "${EVAL_TEMP_OVERRIDE[@]}" \
             "${VLLM_OVERRIDES[@]}"
     }
 
