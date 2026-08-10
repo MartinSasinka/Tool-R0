@@ -1231,6 +1231,113 @@ def mode_val_eval(config: dict, checkpoint: str | None) -> int:
     return rc
 
 
+def _sha256_file(path: str) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _prepare_continuous_resume(config: dict, checkpoint: str | None) -> int:
+    """Validate + wire continuous resume. Returns global_step_start.
+
+    Fail-fast when ``training.resume.fail_fast`` is true (continuation runs).
+    Restores nothing itself — LoRA is loaded by ``load_model_and_tokenizer``,
+    sampler by ``maybe_restore_sampler``, optimizer by ``grpo_train.train``.
+    """
+    resume_cfg = (config.get("training") or {}).get("resume") or {}
+    fail_fast = _truthy(resume_cfg.get("fail_fast", False))
+    if not checkpoint:
+        if fail_fast:
+            raise SystemExit(
+                "[resume] ABORT: training.resume.fail_fast=true but --checkpoint "
+                "was not provided.")
+        return 0
+
+    ckpt = os.path.abspath(checkpoint)
+    if not os.path.isdir(ckpt):
+        raise SystemExit(f"[resume] ABORT: checkpoint dir missing: {ckpt}")
+    if not os.path.isfile(os.path.join(ckpt, "adapter_config.json")):
+        raise SystemExit(
+            f"[resume] ABORT: {ckpt} is not a LoRA adapter "
+            f"(missing adapter_config.json).")
+    sampler_path = os.path.join(ckpt, "sampler_state.json")
+    if not os.path.isfile(sampler_path):
+        raise SystemExit(
+            f"[resume] ABORT: missing sampler_state.json next to adapter — "
+            f"cannot resume dynamic sampler history from {ckpt}")
+
+    trainer_state_path = os.path.join(ckpt, "trainer_state.json")
+    trainer_state: dict = {}
+    if os.path.isfile(trainer_state_path):
+        with open(trainer_state_path, encoding="utf-8") as fh:
+            trainer_state = json.load(fh)
+    start_step = int(trainer_state.get("global_step")
+                     or trainer_state.get("steps")
+                     or 0)
+
+    with open(sampler_path, encoding="utf-8") as fh:
+        sampler_state = json.load(fh)
+    bootstrap_complete = bool(sampler_state.get("bootstrap_complete", False))
+
+    train_jsonl = (config.get("paths") or {}).get("train_jsonl") or ""
+    dataset_sha = _sha256_file(train_jsonl) if (
+        train_jsonl and os.path.isfile(train_jsonl)) else None
+    reward_policy = str((config.get("reward") or {}).get("train_policy") or "")
+
+    print(f"[resume] checkpoint={ckpt}", flush=True)
+    print(f"[resume] trainer_state.global_step={start_step}", flush=True)
+    print(f"[resume] sampler_state present=True "
+          f"bootstrap_complete={bootstrap_complete} "
+          f"n_observed={sampler_state.get('n_observed')} "
+          f"sampler_global_step={sampler_state.get('global_step')}", flush=True)
+    print(f"[resume] reward.train_policy={reward_policy}", flush=True)
+    print(f"[resume] dataset_sha256={dataset_sha}", flush=True)
+    print(f"[resume] optimizer.pt="
+          f"{'YES' if os.path.isfile(os.path.join(ckpt, 'optimizer.pt')) else 'NO'}",
+          flush=True)
+
+    if fail_fast:
+        expect_step = resume_cfg.get("expect_global_step")
+        if expect_step is not None and int(expect_step) != start_step:
+            raise SystemExit(
+                f"[resume] ABORT: expect_global_step={expect_step} but "
+                f"trainer_state.global_step={start_step} in {ckpt}")
+        if resume_cfg.get("expect_bootstrap_complete", True) and not bootstrap_complete:
+            raise SystemExit(
+                "[resume] ABORT: sampler bootstrap_complete=false — refusing to "
+                "restart bootstrap mid-continuation.")
+        expect_reward = str(resume_cfg.get("expect_reward_policy")
+                            or "execution_aware_v2_p43")
+        if reward_policy != expect_reward:
+            raise SystemExit(
+                f"[resume] ABORT: reward.train_policy={reward_policy!r} != "
+                f"expected {expect_reward!r}")
+        expect_sha = resume_cfg.get("expect_dataset_sha256")
+        if expect_sha and dataset_sha and dataset_sha != str(expect_sha):
+            raise SystemExit(
+                f"[resume] ABORT: dataset sha256 mismatch:\n"
+                f"  got  {dataset_sha}\n"
+                f"  want {expect_sha}")
+        if (not os.path.isfile(os.path.join(ckpt, "optimizer.pt"))
+                and not _truthy(resume_cfg.get("allow_missing_optimizer", False))):
+            raise SystemExit(
+                "[resume] ABORT: optimizer.pt missing. Set "
+                "training.resume.allow_missing_optimizer=true only if you accept "
+                "fresh AdamW momenta (historical P43 ckpts predate optimizer.pt).")
+        target = int((config.get("training") or {}).get("target_optimizer_updates") or 0)
+        if target and start_step >= target:
+            raise SystemExit(
+                f"[resume] ABORT: start_step={start_step} >= "
+                f"target_optimizer_updates={target} — nothing to train.")
+        print("[resume] fail-fast checks PASSED", flush=True)
+
+    config.setdefault("_runtime", {})["global_step_start"] = start_step
+    return start_step
+
+
 def mode_train(config: dict, checkpoint: str | None = None) -> int:
     out_dir = _outputs_dir(config)
     # Sibling experiment + factory on path (execution_aware reward + nestful sampler).
@@ -1390,12 +1497,17 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
 
     # Record the init source so grpo_train can log it into trainer_state.json.
     config.setdefault("_runtime", {})["init_checkpoint"] = checkpoint
+    global_step_start = _prepare_continuous_resume(config, checkpoint)
 
     from grpo_train import train
     log_path = os.path.join(out_dir, "train_log.jsonl")
     try:
-        summary = train(config, model, tokenizer, registry, tasks, log_path,
-                        vllm_gen=vllm_gen, rollout_pool=rollout_pool, wandb_run=wandb_run)
+        summary = train(
+            config, model, tokenizer, registry, tasks, log_path,
+            vllm_gen=vllm_gen, rollout_pool=rollout_pool, wandb_run=wandb_run,
+            global_step_start=global_step_start,
+            log_append=bool(global_step_start > 0),
+        )
     finally:
         if rollout_pool is not None:
             try:

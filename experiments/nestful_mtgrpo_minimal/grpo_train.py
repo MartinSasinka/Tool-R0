@@ -712,6 +712,23 @@ def train(
     trainable = [p for p in model.parameters() if p.requires_grad]
     if optimizer is None:
         optimizer = torch.optim.AdamW(trainable, lr=lr)
+        # Continuous resume: restore AdamW momenta when sidecar exists.
+        _init_ckpt = (config.get("_runtime") or {}).get("init_checkpoint")
+        _opt_path = (os.path.join(_init_ckpt, "optimizer.pt")
+                     if _init_ckpt else None)
+        if _opt_path and os.path.isfile(_opt_path):
+            try:
+                optimizer.load_state_dict(
+                    torch.load(_opt_path, map_location="cpu"))
+                print(f"[train] restored optimizer state from {_opt_path}",
+                      flush=True)
+            except Exception as _ol_exc:  # noqa: BLE001
+                print(f"[train] WARNING: could not load optimizer.pt ({_ol_exc}); "
+                      f"continuing with fresh AdamW momenta", flush=True)
+        elif _init_ckpt:
+            print("[train] WARNING: resume checkpoint has no optimizer.pt — "
+                  "AdamW momenta reset (LoRA + sampler + global_step still resume).",
+                  flush=True)
     has_ref = hasattr(model, "disable_adapter") and kl_beta > 0.0
 
     os.makedirs(os.path.dirname(log_path) or ".", exist_ok=True)
@@ -957,11 +974,15 @@ def train(
                                   "sampler_group_log.jsonl")
     group_log_f = open(group_log_path, "a" if log_append else "w", encoding="utf-8")
     run_out_dir = Path(os.path.dirname(log_path) or ".")
+    print(f"[train] global_step_start={global_step} "
+          f"target_optimizer_updates={target_optimizer_updates or 'epochs'}",
+          flush=True)
     if sampler is not None:
         print(f"[sampler] target_effective_groups={target_effective} "
               f"(grad_accum={grad_accum}) max_raw/cycle={max_raw_per_cycle} "
               f"target_optimizer_updates={target_optimizer_updates or 'epochs'} "
-              f"bootstrap={sampler.in_bootstrap()}", flush=True)
+              f"bootstrap={sampler.in_bootstrap()} "
+              f"bootstrap_complete={sampler.bootstrap_complete}", flush=True)
 
     for epoch in range(epochs):
         model.train()
@@ -1694,8 +1715,9 @@ def train(
             optimizer.zero_grad(set_to_none=True)
             global_step += 1
 
-        if _budget_hit:
-            break
+        # NOTE: do NOT break on _budget_hit before the epoch-end save below.
+        # Previously a budget stop discarded the last optimizer step(s) of the
+        # final epoch (adapter never written). Save first, then break.
 
         if epoch_task_groups:
             dgr = epoch_dead_groups / epoch_task_groups
@@ -1763,7 +1785,14 @@ def train(
             try:
                 model.save_pretrained(adapter_dir)
                 tokenizer.save_pretrained(adapter_dir)
-                _log({"epoch": epoch, "saved_adapter": adapter_dir})
+                _log({"epoch": epoch, "saved_adapter": adapter_dir,
+                      "budget_hit": bool(_budget_hit), "global_step": global_step})
+                # Optimizer momenta for continuous resume (AdamW). Best-effort.
+                try:
+                    torch.save(optimizer.state_dict(),
+                               os.path.join(adapter_dir, "optimizer.pt"))
+                except Exception as _oe:  # noqa: BLE001
+                    _log({"epoch": epoch, "optimizer_save_error": str(_oe)})
                 # Sampler state travels with the checkpoint so a resume restores
                 # the curriculum and per-prompt history, not just the weights.
                 if getattr(obs, "enabled", False):
@@ -1829,6 +1858,9 @@ def train(
                     elif vllm_gen is not None:
                         vllm_gen.sync_adapter(adapter_dir)
                         _log({"epoch": epoch, "vllm_adapter_synced": adapter_dir})
+
+        if _budget_hit:
+            break
 
     summary["steps"] = global_step
     summary["global_step_start"] = int(global_step_start)

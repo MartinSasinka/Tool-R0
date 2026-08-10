@@ -122,7 +122,14 @@ def maybe_restore_sampler(sampler: NestfulProfileSampler,
         return
     state = json.loads(path.read_text(encoding="utf-8"))
     sampler.load_state_dict(state)
-    print(f"[sampler] restored state from {path}", flush=True)
+    print(
+        f"[sampler] restored state from {path} "
+        f"(bootstrap_complete={sampler.bootstrap_complete} "
+        f"bootstrap_completed_at_step={sampler.bootstrap_completed_at_step} "
+        f"n_prompts={len(getattr(sampler.state, 'prompt', {}) or {})} "
+        f"in_bootstrap={sampler.in_bootstrap()})",
+        flush=True,
+    )
 
 
 def write_online_bootstrap_report(
