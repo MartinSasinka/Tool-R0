@@ -1,0 +1,714 @@
+{
+  "schema_version": "ttdf.target_profile.v2",
+  "target": "nestful",
+  "source": "nestful_dev_200",
+  "mode": "PROFILE_SAFE",
+  "n_rows": 200,
+  "call_count_dist": {
+    "2": 0.33,
+    "3": 0.22,
+    "4": 0.135,
+    "5": 0.095,
+    "6+": 0.22
+  },
+  "marginal": {
+    "motif": {
+      "fan_in": 0.305,
+      "linear": 0.55,
+      "mixed": 0.02,
+      "multi_join": 0.125
+    },
+    "answer_type": {
+      "bool": 0.02,
+      "float": 0.77,
+      "int": 0.05,
+      "list": 0.07,
+      "numeric_string": 0.02,
+      "string": 0.07
+    },
+    "query_mode": {
+      "GOAL_BASED_IMPLICIT": 0.7,
+      "PROCEDURAL_EXPLICIT": 0.035,
+      "PROCEDURAL_PARTIAL": 0.125,
+      "SEMI_IMPLICIT": 0.115,
+      "UNCLASSIFIED": 0.025
+    },
+    "offered_tool_count": {
+      "mean": 10.99,
+      "p25": 9.0,
+      "p50": 10.0,
+      "p75": 11.0,
+      "min": 7.0,
+      "max": 19.0
+    },
+    "reference_density": {
+      "mean": 0.3753,
+      "p25": 0.3333,
+      "p50": 0.375,
+      "p75": 0.4286,
+      "min": 0.1667,
+      "max": 0.6667
+    },
+    "question_chars": {
+      "mean": 167.3,
+      "p25": 118.0,
+      "p50": 155.0,
+      "p75": 206.0,
+      "min": 19.0,
+      "max": 438.0
+    }
+  },
+  "conditional": {
+    "P(motif|call_count)": {
+      "2": {
+        "linear": 1.0
+      },
+      "3": {
+        "fan_in": 0.22727,
+        "linear": 0.68182,
+        "mixed": 0.09091
+      },
+      "4": {
+        "fan_in": 0.62963,
+        "linear": 0.37037
+      },
+      "5": {
+        "fan_in": 0.52632,
+        "linear": 0.21053,
+        "multi_join": 0.26316
+      },
+      "6+": {
+        "fan_in": 0.54545,
+        "multi_join": 0.45455
+      }
+    },
+    "P(depth|call_count)": {
+      "2": {
+        "1": 1.0
+      },
+      "3": {
+        "1": 0.31818,
+        "2": 0.68182
+      },
+      "4": {
+        "2": 0.62963,
+        "3": 0.37037
+      },
+      "5": {
+        "2": 0.47368,
+        "3": 0.31579,
+        "4+": 0.21053
+      },
+      "6+": {
+        "3": 0.38636,
+        "4+": 0.61364
+      }
+    },
+    "P(join_count|call_count)": {
+      "2": {
+        "0": 1.0
+      },
+      "3": {
+        "0": 0.77273,
+        "1": 0.22727
+      },
+      "4": {
+        "0": 0.37037,
+        "1": 0.62963
+      },
+      "5": {
+        "0": 0.21053,
+        "1": 0.52632,
+        "2": 0.26316
+      },
+      "6+": {
+        "1": 0.54545,
+        "2": 0.18182,
+        "3": 0.15909,
+        "4+": 0.11364
+      }
+    },
+    "P(fan_out_count|call_count)": {
+      "2": {
+        "0": 1.0
+      },
+      "3": {
+        "0": 1.0
+      },
+      "4": {
+        "0": 1.0
+      },
+      "5": {
+        "0": 1.0
+      },
+      "6+": {
+        "0": 1.0
+      }
+    },
+    "P(reuse_count|call_count)": {
+      "2": {
+        "0": 1.0
+      },
+      "3": {
+        "0": 1.0
+      },
+      "4": {
+        "0": 1.0
+      },
+      "5": {
+        "0": 1.0
+      },
+      "6+": {
+        "0": 1.0
+      }
+    },
+    "P(reference_density|call_count)": {
+      "2": {
+        "0-0.25": 0.40909,
+        "0.25-0.5": 0.59091
+      },
+      "3": {
+        "0-0.25": 0.04545,
+        "0.25-0.5": 0.93182,
+        "0.5-0.75": 0.02273
+      },
+      "4": {
+        "0.25-0.5": 1.0
+      },
+      "5": {
+        "0.25-0.5": 1.0
+      },
+      "6+": {
+        "0.25-0.5": 0.97727,
+        "0.5-0.75": 0.02273
+      }
+    },
+    "P(answer_type|call_count)": {
+      "2": {
+        "bool": 0.06061,
+        "float": 0.39394,
+        "int": 0.13636,
+        "list": 0.18182,
+        "numeric_string": 0.06061,
+        "string": 0.16667
+      },
+      "3": {
+        "float": 0.86364,
+        "int": 0.02273,
+        "list": 0.04545,
+        "string": 0.06818
+      },
+      "4": {
+        "float": 1.0
+      },
+      "5": {
+        "float": 1.0
+      },
+      "6+": {
+        "float": 1.0
+      }
+    },
+    "P(offered_tool_count|call_count)": {
+      "2": {
+        "10-12": 0.16667,
+        "13-18": 0.5303,
+        "19+": 0.09091,
+        "<=9": 0.21212
+      },
+      "3": {
+        "10-12": 0.43182,
+        "13-18": 0.13636,
+        "<=9": 0.43182
+      },
+      "4": {
+        "10-12": 0.55556,
+        "<=9": 0.44444
+      },
+      "5": {
+        "10-12": 0.63158,
+        "<=9": 0.36842
+      },
+      "6+": {
+        "10-12": 0.59091,
+        "<=9": 0.40909
+      }
+    },
+    "P(query_mode|call_count)": {
+      "2": {
+        "GOAL_BASED_IMPLICIT": 0.69697,
+        "PROCEDURAL_EXPLICIT": 0.09091,
+        "PROCEDURAL_PARTIAL": 0.13636,
+        "UNCLASSIFIED": 0.07576
+      },
+      "3": {
+        "GOAL_BASED_IMPLICIT": 0.81818,
+        "PROCEDURAL_EXPLICIT": 0.02273,
+        "PROCEDURAL_PARTIAL": 0.11364,
+        "SEMI_IMPLICIT": 0.04545
+      },
+      "4": {
+        "GOAL_BASED_IMPLICIT": 0.62963,
+        "PROCEDURAL_PARTIAL": 0.14815,
+        "SEMI_IMPLICIT": 0.22222
+      },
+      "5": {
+        "GOAL_BASED_IMPLICIT": 0.68421,
+        "PROCEDURAL_PARTIAL": 0.05263,
+        "SEMI_IMPLICIT": 0.26316
+      },
+      "6+": {
+        "GOAL_BASED_IMPLICIT": 0.63636,
+        "PROCEDURAL_PARTIAL": 0.13636,
+        "SEMI_IMPLICIT": 0.22727
+      }
+    },
+    "P(schema_complexity|call_count)": {
+      "2": {
+        "high": 0.92424,
+        "medium": 0.07576
+      },
+      "3": {
+        "high": 1.0
+      },
+      "4": {
+        "high": 1.0
+      },
+      "5": {
+        "high": 1.0
+      },
+      "6+": {
+        "high": 1.0
+      }
+    },
+    "P(operation_explicitness|query_mode)": {
+      "GOAL_BASED_IMPLICIT": {
+        "mean": 0.0101,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "min": 0.0,
+        "max": 0.2
+      },
+      "PROCEDURAL_EXPLICIT": {
+        "mean": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "PROCEDURAL_PARTIAL": {
+        "mean": 0.5938,
+        "p25": 0.5,
+        "p50": 0.5,
+        "p75": 0.6667,
+        "min": 0.5,
+        "max": 1.0
+      },
+      "SEMI_IMPLICIT": {
+        "mean": 0.31,
+        "p25": 0.25,
+        "p50": 0.2857,
+        "p75": 0.3333,
+        "min": 0.2222,
+        "max": 0.4444
+      },
+      "UNCLASSIFIED": {
+        "mean": 0.5,
+        "p25": 0.5,
+        "p50": 0.5,
+        "p75": 0.5,
+        "min": 0.5,
+        "max": 0.5
+      }
+    },
+    "P(sequence_leakage|query_mode)": {
+      "GOAL_BASED_IMPLICIT": {
+        "mean": 0.0025,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "min": 0.0,
+        "max": 0.05
+      },
+      "PROCEDURAL_EXPLICIT": {
+        "mean": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "PROCEDURAL_PARTIAL": {
+        "mean": 0.5,
+        "p25": 0.125,
+        "p50": 0.5333,
+        "p75": 0.8125,
+        "min": 0.125,
+        "max": 0.9
+      },
+      "SEMI_IMPLICIT": {
+        "mean": 0.4313,
+        "p25": 0.0833,
+        "p50": 0.625,
+        "p75": 0.6429,
+        "min": 0.0625,
+        "max": 0.7222
+      },
+      "UNCLASSIFIED": {
+        "mean": 0.125,
+        "p25": 0.125,
+        "p50": 0.125,
+        "p75": 0.125,
+        "min": 0.125,
+        "max": 0.125
+      }
+    }
+  },
+  "topology_diversity_by_bucket": {
+    "2": {
+      "n": 66,
+      "n_distinct_topologies": 1,
+      "top1_topology_share": 1.0,
+      "normalized_entropy": 0.0,
+      "motif_distribution": {
+        "linear": 1.0
+      },
+      "join_rate": 0.0,
+      "fan_out_rate": 0.0,
+      "reuse_rate": 0.0,
+      "multi_join_rate": 0.0,
+      "late_reference_rate": 0.0,
+      "mean_reference_distance": 1.0,
+      "mean_type_transitions": 0.2273
+    },
+    "3": {
+      "n": 44,
+      "n_distinct_topologies": 4,
+      "top1_topology_share": 0.6818,
+      "normalized_entropy": 0.6254,
+      "motif_distribution": {
+        "fan_in": 0.22727,
+        "linear": 0.68182,
+        "mixed": 0.09091
+      },
+      "join_rate": 0.2273,
+      "fan_out_rate": 0.0,
+      "reuse_rate": 0.0,
+      "multi_join_rate": 0.0,
+      "late_reference_rate": 0.25,
+      "mean_reference_distance": 1.1364,
+      "mean_type_transitions": 0.0455
+    },
+    "4": {
+      "n": 27,
+      "n_distinct_topologies": 2,
+      "top1_topology_share": 0.6296,
+      "normalized_entropy": 0.951,
+      "motif_distribution": {
+        "fan_in": 0.62963,
+        "linear": 0.37037
+      },
+      "join_rate": 0.6296,
+      "fan_out_rate": 0.0,
+      "reuse_rate": 0.0,
+      "multi_join_rate": 0.0,
+      "late_reference_rate": 0.6296,
+      "mean_reference_distance": 1.2592,
+      "mean_type_transitions": 0.0
+    },
+    "5": {
+      "n": 19,
+      "n_distinct_topologies": 4,
+      "top1_topology_share": 0.3158,
+      "normalized_entropy": 0.9892,
+      "motif_distribution": {
+        "fan_in": 0.52632,
+        "linear": 0.21053,
+        "multi_join": 0.26316
+      },
+      "join_rate": 0.7895,
+      "fan_out_rate": 0.0,
+      "reuse_rate": 0.0,
+      "multi_join_rate": 0.2632,
+      "late_reference_rate": 0.7895,
+      "mean_reference_distance": 1.3816,
+      "mean_type_transitions": 0.0
+    },
+    "6+": {
+      "n": 44,
+      "n_distinct_topologies": 26,
+      "top1_topology_share": 0.1364,
+      "normalized_entropy": 0.9263,
+      "motif_distribution": {
+        "fan_in": 0.54545,
+        "multi_join": 0.45455
+      },
+      "join_rate": 1.0,
+      "fan_out_rate": 0.0,
+      "reuse_rate": 0.0,
+      "multi_join_rate": 0.4545,
+      "late_reference_rate": 1.0,
+      "mean_reference_distance": 1.6208,
+      "mean_type_transitions": 0.0
+    }
+  },
+  "graph_features": {
+    "n_nodes": {
+      "mean": 4.195,
+      "p25": 2.0,
+      "p50": 3.0,
+      "p75": 5.0,
+      "min": 2.0,
+      "max": 18.0
+    },
+    "n_edges": {
+      "mean": 3.175,
+      "p25": 1.0,
+      "p50": 2.0,
+      "p75": 4.0,
+      "min": 1.0,
+      "max": 17.0
+    },
+    "depth": {
+      "mean": 2.17,
+      "p25": 1.0,
+      "p50": 2.0,
+      "p75": 3.0,
+      "min": 1.0,
+      "max": 8.0
+    },
+    "critical_path": {
+      "mean": 3.17,
+      "p25": 2.0,
+      "p50": 3.0,
+      "p75": 4.0,
+      "min": 2.0,
+      "max": 9.0
+    },
+    "n_roots": {
+      "mean": 1.69,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 1.0,
+      "max": 9.0
+    },
+    "n_leaves": {
+      "mean": 1.02,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 1.0,
+      "min": 1.0,
+      "max": 2.0
+    },
+    "n_joins": {
+      "mean": 0.67,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "min": 0.0,
+      "max": 8.0
+    },
+    "max_indegree": {
+      "mean": 1.43,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 1.0,
+      "max": 2.0
+    },
+    "n_fan_out_nodes": {
+      "mean": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "max_outdegree": {
+      "mean": 1.0,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "n_reused_outputs": {
+      "mean": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "n_late_references": {
+      "mean": 0.675,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 1.0,
+      "min": 0.0,
+      "max": 8.0
+    },
+    "mean_reference_distance": {
+      "mean": 1.2378,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 1.5,
+      "min": 1.0,
+      "max": 2.5
+    },
+    "max_reference_distance": {
+      "mean": 2.03,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 1.0,
+      "max": 11.0
+    },
+    "n_parallel_branches": {
+      "mean": 1.69,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 1.0,
+      "max": 9.0
+    },
+    "n_type_transitions": {
+      "mean": 0.085,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "min": 0.0,
+      "max": 1.0
+    }
+  },
+  "surface_features": {
+    "parameter_count": {
+      "mean": 8.01,
+      "p25": 4.0,
+      "p50": 6.0,
+      "p75": 10.0,
+      "min": 2.0,
+      "max": 36.0
+    },
+    "required_parameter_count": {
+      "mean": 8.01,
+      "p25": 4.0,
+      "p50": 6.0,
+      "p75": 10.0,
+      "min": 2.0,
+      "max": 36.0
+    },
+    "optional_parameter_count": {
+      "mean": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "nested_schema_depth": {
+      "mean": 3.18,
+      "p25": 3.0,
+      "p50": 3.0,
+      "p75": 3.0,
+      "min": 3.0,
+      "max": 5.0
+    },
+    "repeated_tool_count": {
+      "mean": 1.575,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 0.0,
+      "max": 14.0
+    },
+    "same_family_tool_count": {
+      "mean": 1.575,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "min": 0.0,
+      "max": 14.0
+    },
+    "output_key_family": {
+      "output_0": 0.24,
+      "result": 0.76
+    },
+    "schema_complexity": {
+      "mean": 1.9173,
+      "p25": 2.0,
+      "p50": 2.0,
+      "p75": 2.0,
+      "min": 1.0,
+      "max": 4.0
+    }
+  },
+  "query_realism": {
+    "query_mode_distribution": {
+      "GOAL_BASED_IMPLICIT": 0.7,
+      "PROCEDURAL_EXPLICIT": 0.035,
+      "PROCEDURAL_PARTIAL": 0.125,
+      "SEMI_IMPLICIT": 0.115,
+      "UNCLASSIFIED": 0.025
+    },
+    "operation_explicitness_distribution": {
+      "full": 0.045,
+      "high": 0.05,
+      "low": 0.085,
+      "medium": 0.16,
+      "none": 0.66
+    },
+    "sequence_leakage_distribution": {
+      "full": 0.1,
+      "high": 0.075,
+      "low": 0.155,
+      "medium": 0.01,
+      "none": 0.66
+    },
+    "procedural_cue_distribution": {
+      "0": 0.55,
+      "1": 0.32,
+      "2": 0.105,
+      "3": 0.01,
+      "4": 0.005,
+      "5": 0.01
+    },
+    "intermediate_reference_explicitness": {
+      "share_with_explicit_reference": 0.45,
+      "mean_reference_density": 0.3753
+    },
+    "mean_operation_explicitness": 0.1645,
+    "mean_sequence_leakage": 0.152,
+    "mean_procedural_cue_count": 0.645,
+    "plan_leak_rate": 0.035
+  },
+  "provenance": {
+    "repro_schema_version": "ttdf.repro.v1",
+    "schema_version": "ttdf.target_profile.v2",
+    "generated_at_utc": "2026-07-30T22:38:24.278575+00:00",
+    "git": {
+      "commit": "d174486ff105fc5b3daed71bdfb59ff572177fe5",
+      "dirty": true,
+      "n_dirty_files": 32,
+      "branch": "main"
+    },
+    "python_version": "3.11.3",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "dependency_versions": {
+      "pydantic": "2.12.5",
+      "pyyaml": "6.0.1",
+      "numpy": "1.26.4",
+      "matplotlib": "3.8.4"
+    },
+    "cli_args": [
+      "build-profile-v2"
+    ],
+    "seeds": {},
+    "config_hash": "",
+    "input_hashes": {
+      "experiments/nestful_mtgrpo_minimal/data/splits/nestful_dev.jsonl": "35f120c86f08db6c945da908cff05b7cbfda865873c074b8ed20e5bc1eee7355"
+    }
+  }
+}

@@ -22,7 +22,7 @@ SRC_RUN="${SRC_RUN:-$MINIMAL/outputs/qwen3_p43_profile1000_dynamic_online_sampli
 CKPT="${CKPT:-$SRC_RUN/checkpoints/adapter_epoch_13}"
 
 export SYNTHETIC_TOOLS_DIR="$ADAPTER"
-export CANARY_TRAJ_LOG="${CANARY_TRAJ_LOG:-1}"
+export CANARY_TRAJ_LOG="${CANARY_TRAJ_LOG:-0}"
 export PYTHONPATH="${MINIMAL}:${FACTORY}/src:${ADAPTER}:${PYTHONPATH:-}"
 
 if [[ ! -f "$CFG" ]]; then
@@ -76,5 +76,4 @@ python run.py --mode train \
   --override hardware.rollout_data_parallel_gpus=1,2,3 \
   --override hardware.vllm_gpu_memory_utilization=0.45 \
   --override hardware.vllm_gpu_memory_utilization_dp=0.70 \
-  --override hardware.vllm_enforce_eager=true \
   "$@"

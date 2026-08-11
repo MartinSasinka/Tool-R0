@@ -2,13 +2,12 @@
 
 Failure mode prevented: analysis scripts that only ever run from an ad-hoc
 shell invocation and therefore never leave reproducible artefacts. Every step
-below is reachable as ``python -m targeted_tool_data.cli <command>`` and writes
+below is reachable as ``targeted-data <command>`` and writes
 into ``outputs/``.
 
 Windows PowerShell::
 
-    $env:PYTHONPATH="src"; python -m targeted_tool_data.cli audit-pilot42-final
-    $env:PYTHONPATH="src"; python -m targeted_tool_data.cli build-target-profile-v3
+    $env:PYTHONPATH="src"; python -m targeted_tool_data.pilot43_cli build-target-profile-v3
 
 The commands are ordered like the pipeline, and each one refuses to run when its
 predecessor's artifact is missing rather than producing an empty file.
@@ -28,7 +27,6 @@ if str(MODULE_ROOT) not in sys.path:
     sys.path.insert(0, str(MODULE_ROOT))
 
 PILOT43_COMMANDS = [
-    "audit-pilot42-final",
     "build-workflow-registry-v3",
     "validate-primitive-registry-v3",
     "build-target-profile-v3",
@@ -49,23 +47,16 @@ PILOT43_COMMANDS = [
     "prepare-human-audit-pilot43",
     "import-human-audit-pilot43",
     "probe-pilot43-grpo-signal",
-    "compare-pilot42-pilot43",
     "freeze-pilot43",
     "report-pilot43",
 ]
 
-DEFAULT_PILOT42_EXPORT = MODULE_ROOT / "outputs" / "pilot4_2_workflow_grounded_v2"
-DEFAULT_AUDIT_DIR = MODULE_ROOT / "outputs" / "pilot42_final_audit"
 DEFAULT_FINAL_DIR = MODULE_ROOT / "outputs" / "pilot4_3_nestful_final"
 
 
 def _parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="targeted-data pilot43")
     ap.add_argument("command", choices=PILOT43_COMMANDS)
-    ap.add_argument("--export-dir", default=None,
-                    help="frozen Pilot4.2 export; read-only")
-    ap.add_argument("--audit-dir", default=None,
-                    help="where the Pilot4.2 per-task ledger and defect report go")
     ap.add_argument("--output-dir", default=None,
                     help="pilot4_3_nestful_final directory")
     ap.add_argument("--profile-source", default=None,
@@ -132,18 +123,7 @@ def _need(path: Path, what: str) -> None:
         raise SystemExit(f"missing {path} -- run {what} first")
 
 
-# ── Pilot4.2 audit and registries ────────────────────────────────────────
-def _audit_pilot42_final(args: argparse.Namespace) -> int:
-    from analysis import pilot42_final_audit as audit
-
-    argv = [
-        "--export-dir", str(args.export_dir or DEFAULT_PILOT42_EXPORT),
-        "--audit-dir", str(args.audit_dir or DEFAULT_AUDIT_DIR),
-        "--final-dir", str(args.output_dir or DEFAULT_FINAL_DIR),
-    ]
-    return audit.main(argv)
-
-
+# ── Pilot 4.3 profile and registries ─────────────────────────────────────
 def _build_target_profile_v3(args: argparse.Namespace) -> int:
     from .pilot43 import profile as prof
 
@@ -558,19 +538,7 @@ def _probe(args: argparse.Namespace) -> int:
     return _emit({k: v for k, v in report.items() if k != "per_cell"})
 
 
-# ── comparison, freeze, report ───────────────────────────────────────────
-def _compare(args: argparse.Namespace) -> int:
-    from .pilot43 import reports
-
-    out_dir = _out(args)
-    audit_dir = Path(args.audit_dir or DEFAULT_AUDIT_DIR)
-    candidates = [audit_dir, out_dir]
-    source = next((d for d in candidates
-                   if (d / reports.P42_SUMMARY_FILE).is_file()
-                   or (d / reports.P42_ROOT_CAUSE_FILE).is_file()), None)
-    return _emit(reports.compare(out_dir, source))
-
-
+# ── freeze and report ────────────────────────────────────────────────────
 def _freeze(args: argparse.Namespace) -> int:
     from .pilot43 import freeze
 
@@ -603,7 +571,6 @@ def _report(args: argparse.Namespace) -> int:
 
 
 HANDLERS = {
-    "audit-pilot42-final": _audit_pilot42_final,
     "build-workflow-registry-v3": _build_workflow_registry,
     "validate-primitive-registry-v3": _validate_primitive_registry,
     "build-target-profile-v3": _build_target_profile_v3,
@@ -624,7 +591,6 @@ HANDLERS = {
     "prepare-human-audit-pilot43": _prepare_human,
     "import-human-audit-pilot43": _import_human,
     "probe-pilot43-grpo-signal": _probe,
-    "compare-pilot42-pilot43": _compare,
     "freeze-pilot43": _freeze,
     "report-pilot43": _report,
 }

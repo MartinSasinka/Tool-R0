@@ -196,26 +196,21 @@ def test_checkpoint_resume_rng():
     assert picks1 == picks2
 
 
-def test_ab_config_equivalence_except_sampler():
-    """A (uniform) vs online-dynamic: shared model/optim; sampler + P43 reward differ."""
+def test_resume_config_preserves_training_recipe():
+    """The continuation changes the budget/resume state, not the P43 recipe."""
     root = Path(__file__).resolve().parents[2] / "nestful_mtgrpo_minimal" / "configs"
     import yaml
-    a = yaml.safe_load((root / "qwen3_p43_profile1000_uniform.yaml").read_text(encoding="utf-8"))
-    b = yaml.safe_load((root / "qwen3_p43_profile1000_dynamic_online.yaml").read_text(encoding="utf-8"))
-    for key in ("finetuning", "mt_grpo"):
-        assert a[key] == b[key], f"mismatch in {key}"
-    assert a["model"]["base_model"] == b["model"]["base_model"] == "Qwen/Qwen3-4B-Instruct-2507"
-    assert a["generation"]["num_generations"] == b["generation"]["num_generations"] == 8
-    assert a["generation"]["temperature"] == b["generation"]["temperature"]
-    assert a["training"]["learning_rate"] == b["training"]["learning_rate"]
-    assert a["training"]["kl_beta"] == b["training"]["kl_beta"]
-    assert a["training"]["gradient_accumulation_steps"] == b["training"]["gradient_accumulation_steps"]
-    assert a["sampler"]["mode"] == "uniform_profile"
-    assert b["sampler"]["mode"] == "dynamic_profile"
-    assert b["sampler"]["bootstrap"]["enabled"] is True
-    assert b["reward"]["train_policy"] == "execution_aware_v2_p43"
-    assert b["reward"]["p43_reward_variant"] == "A"
-    assert a["experiment"]["seed"] == b["experiment"]["seed"] == 42
+    base = yaml.safe_load((root / "qwen3_p43_profile1000_dynamic_online_samplingfix.yaml")
+                          .read_text(encoding="utf-8"))
+    resume = yaml.safe_load((root / "qwen3_p43_profile1000_dynamic_online_continue256.yaml")
+                            .read_text(encoding="utf-8"))
+    for key in ("finetuning", "generation", "mt_grpo", "reward", "sampler"):
+        assert base[key] == resume[key], f"mismatch in {key}"
+    for key in ("learning_rate", "kl_beta", "gradient_accumulation_steps"):
+        assert base["training"][key] == resume["training"][key]
+    assert base["training"]["target_optimizer_updates"] == 128
+    assert resume["training"]["target_optimizer_updates"] == 256
+    assert resume["training"]["resume"]["expect_global_step"] == 127
 
 
 @pytest.mark.skipif(not PROFILE.exists(), reason="profile missing")
@@ -305,7 +300,7 @@ def test_online_bootstrap_uniform_then_history_adaptive():
 def test_online_config_exists_and_has_bootstrap():
     import yaml
     root = Path(__file__).resolve().parents[2] / "nestful_mtgrpo_minimal" / "configs"
-    path = root / "qwen3_p43_profile1000_dynamic_online.yaml"
+    path = root / "qwen3_p43_profile1000_dynamic_online_samplingfix.yaml"
     assert path.exists()
     cfg = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert cfg["model"]["base_model"] == "Qwen/Qwen3-4B-Instruct-2507"

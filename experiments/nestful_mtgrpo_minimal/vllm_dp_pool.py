@@ -13,7 +13,9 @@ Design (one worker per GPU, whole-episode in worker)
 ----------------------------------------------------
 * Each worker process pins itself to ONE GPU (CUDA_VISIBLE_DEVICES set BEFORE
   importing torch/vllm), builds a single vLLM engine, and runs ENTIRE episodes
-  (generate + tool-execute loop) — never touching the HF model.
+  (generate + tool-execute loop) — never touching the HF model. Episodes queued
+  on the same worker are interleaved so each assistant-turn wave is a real vLLM
+  prompt batch instead of several serial batch-size-one calls.
 * The worker also computes the training reward (strict OR partial, selected from
   ``config['reward']['train_policy']``) so that raw tool observations — which can
   be arbitrary, non-picklable Python objects — NEVER cross the process boundary.
@@ -82,18 +84,6 @@ class RolloutResult:
 _STRICT_POLICY_ALIASES = ("strict", "strict_gold_trace", "strict_gold_trace_legacy")
 
 
-def _ensure_v3_experiment_on_path() -> None:
-    """Make experiments/nestful_synthetic_curriculum_v3 importable (lib.*)."""
-    v3_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "nestful_synthetic_curriculum_v3",
-    )
-    # APPEND, don't insert(0): the v3 dir also ships its own run.py etc. and
-    # must not shadow same-named modules of the minimal experiment.
-    if os.path.isdir(v3_dir) and v3_dir not in sys.path:
-        sys.path.append(v3_dir)
-
-
 def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any]]:
     """Resolve config['reward']['train_policy'] to a reward function.
 
@@ -141,33 +131,6 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
         import execution_reward
         execution_reward.set_weights_from_config(config)
         fn = execution_reward.episode_turn_reward_seq
-    elif policy in ("execution_aware_v2_1_motif", "v2_1_motif", "motif"):
-        _ensure_v3_experiment_on_path()
-        from lib import reward_motif
-        fn = reward_motif.episode_turn_reward_seq
-    elif policy in ("execution_aware_v3_1_stepwise", "v3_1_stepwise", "stepwise"):
-        _ensure_v3_experiment_on_path()
-        from lib import reward_v3_1
-        fn = reward_v3_1.episode_turn_reward_seq
-    elif policy in ("execution_aware_v3_2_dense", "v3_2_dense", "dense"):
-        _ensure_v3_experiment_on_path()
-        from lib import reward_v3_2_dense
-        fn = reward_v3_2_dense.episode_turn_reward_seq
-    elif policy.startswith("reward_ablation_a"):
-        # Reward-only ablation (reports/reward_ablation/ABLATION_PLAN.md).
-        # `configured` carries the exact arm ID casing (e.g.
-        # "reward_ablation_A2_R3_OUTCOME_FIRST"); `policy` (lowercased) is
-        # only used to route into this branch.
-        _ensure_v3_experiment_on_path()
-        from lib import reward_ablation_registry
-        raw_arm = configured[len("reward_ablation_"):]
-        matches = [a for a in reward_ablation_registry.ARM_IDS if a.lower() == raw_arm.lower()]
-        if not matches:
-            raise ValueError(
-                f"[reward_dispatch] Unknown reward_ablation arm {configured!r}. "
-                f"Known: {[f'reward_ablation_{a}' for a in reward_ablation_registry.ARM_IDS]}"
-            )
-        fn = reward_ablation_registry.make_episode_turn_reward_seq(matches[0])
     elif policy in _STRICT_POLICY_ALIASES:
         from reward import episode_turn_reward_seq as strict_seq
         fn = strict_seq
@@ -183,9 +146,7 @@ def resolve_reward_info(config: Dict[str, Any]) -> Tuple[Callable, Dict[str, Any
             raise ValueError(
                 f"[reward_dispatch] Unknown reward policy '{configured}'. "
                 f"Known: execution_aware_v2_p43, partial_gold_trace, execution_aware_v2, "
-                f"partial_gold_trace_v2, execution_aware, execution_aware_v2_1_motif, "
-                f"execution_aware_v3_1_stepwise, execution_aware_v3_2_dense, "
-                f"reward_ablation_<ARM_ID> (A0_R0_CURRENT..A4_GATED_VERIFIABLE), strict. "
+                f"partial_gold_trace_v2, execution_aware, strict. "
                 f"Refusing to silently fall back to the strict binary reward "
                 f"(set ALLOW_STRICT_REWARD_FALLBACK=1 to override — NOT recommended)."
             )
@@ -379,6 +340,338 @@ def run_episode_collect(
     )
 
 
+@dataclass
+class _BatchedEpisodeState:
+    """Mutable state for one episode in a worker-local vLLM batch."""
+
+    task: Dict[str, Any]
+    gold_obs: Any
+    executor: Any
+    traj: Any
+    turn_token_ids: List[Tuple[List[int], List[int]]]
+    history: List[Dict[str, str]]
+    budget: Any
+    meta: Any
+    n_forced: int
+    remaining: int
+    max_new_tokens: int
+    rollout_seed: int
+    step: int = 0
+    done: bool = False
+    error: Optional[str] = None
+
+
+def _prepare_batched_episode(
+    *, tokenizer, task: Dict[str, Any], config: Dict[str, Any], registry,
+    gold_obs,
+) -> _BatchedEpisodeState:
+    """Create the same initial state as :func:`run_episode_collect`."""
+    from executor import ToolExecutor
+    from interaction_loop import InteractionMeta, derive_interaction_budget
+    from rollout import (
+        Trajectory, build_teacher_forced_prefix, get_stage_token_budget,
+        resolve_teacher_forced_prefix_n,
+    )
+
+    exec_cfg = config.get("executor", {})
+    gold_n = int(task.get("num_calls") or len(task.get("gold_calls", [])))
+    token_budget = get_stage_token_budget(config, gold_n, "train")
+    executor = ToolExecutor(
+        task, registry=registry, mode=exec_cfg.get("mode", "auto"),
+        ibm_call_timeout=float(exec_cfg.get("ibm_call_timeout", 30.0)),
+    )
+    traj = Trajectory(task["task_id"], gold_n, gold_n, executor_mode=executor.mode)
+    history: List[Dict[str, str]] = []
+    configured_prefix = int((config.get("train", {}) or {}).get(
+        "teacher_forced_prefix_calls", 0) or 0)
+    n_forced = resolve_teacher_forced_prefix_n(
+        task, configured_prefix, executor.mode, gold_obs)
+    if n_forced > 0:
+        forced_turns, forced_history = build_teacher_forced_prefix(
+            task, executor, n_forced)
+        traj.turns.extend(forced_turns)
+        history.extend(forced_history)
+        traj.final_observation = forced_turns[-1].observation
+
+    budget = derive_interaction_budget(gold_n, config, mode="train")
+    return _BatchedEpisodeState(
+        task=task,
+        gold_obs=gold_obs,
+        executor=executor,
+        traj=traj,
+        turn_token_ids=[],
+        history=history,
+        budget=budget,
+        meta=InteractionMeta(
+            tool_budget=budget.max_tool_calls,
+            assistant_turn_budget=budget.max_assistant_turns,
+        ),
+        n_forced=n_forced,
+        remaining=max(1, budget.max_assistant_turns - n_forced),
+        max_new_tokens=int(token_budget["max_new_tokens"]),
+        rollout_seed=int(task.get("_rollout_seed") or 0),
+    )
+
+
+def _finish_interaction_state(state: _BatchedEpisodeState) -> None:
+    """Apply the sequential interaction loop's end-of-budget bookkeeping."""
+    from interaction_loop import attach_budget_fields
+
+    if state.traj.stop_reason is None:
+        state.traj.stop_reason = "max_assistant_turns"
+        state.meta.stop_reason = "max_assistant_turns"
+    if state.traj.stop_reason == "terminal":
+        state.traj.stop_reason = "terminal_answer"
+        state.meta.stop_reason = "terminal_answer"
+    state.meta.final_answer_present = bool(
+        state.meta.final_answer_present
+        or any(getattr(t, "is_terminal", False) for t in state.traj.turns)
+    )
+    attach_budget_fields(state.traj, state.budget, state.meta)
+
+
+def _advance_batched_episode(
+    state: _BatchedEpisodeState,
+    messages: List[Dict[str, str]],
+    generation: Dict[str, Any],
+    tokenizer,
+) -> None:
+    """Consume one generated assistant turn, matching run_tool_agent_loop."""
+    from parser import parse_tool_call
+    from prompt import format_tool_response
+    from rollout import Turn
+
+    turn_idx = state.n_forced + state.step
+    state.step += 1
+    state.meta.assistant_turns += 1
+
+    if generation.get("prompt_overflow"):
+        state.traj.prompt_overflow = True
+        state.traj.clipped_any = True
+        state.traj.stop_reason = "prompt_overflow"
+        state.meta.stop_reason = "prompt_overflow"
+        state.done = True
+        return
+
+    text = generation.get("text") or ""
+    clipped = bool(generation.get("clipped", False))
+    p_ids, c_ids = _encode_for_logprob(tokenizer, messages, text)
+    turn = Turn(
+        turn_idx, text, prompt_tokens=len(p_ids), completion_tokens=len(c_ids),
+        clipped_completion=clipped,
+    )
+    state.turn_token_ids.append((p_ids, c_ids))
+    state.history.append({"role": "assistant", "content": text})
+
+    if clipped:
+        state.traj.clipped_any = True
+        turn.fail_reason = "clipped_completion"
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "clipped"
+        state.meta.stop_reason = "clipped"
+        state.done = True
+        return
+
+    in_final_phase = (
+        state.meta.tool_calls_executed >= state.budget.max_tool_calls)
+    if in_final_phase:
+        state.meta.final_response_turn_attempted = True
+
+    parsed = parse_tool_call(text, lenient=False)
+    if parsed.is_terminal:
+        turn.is_terminal = True
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "terminal_answer"
+        state.meta.stop_reason = "terminal_answer"
+        state.meta.final_answer_present = True
+        state.done = True
+        return
+
+    if not parsed.ok:
+        turn.fail_reason = f"parse:{parsed.reason}"
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "parse_fail"
+        state.meta.stop_reason = "parse_fail"
+        state.done = True
+        return
+
+    call = parsed.call
+    turn.parsed_call = call
+    state.meta.tool_calls_emitted += 1
+    if in_final_phase:
+        turn.fail_reason = "final_turn_tool_attempt"
+        state.meta.final_turn_tool_attempt = True
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "final_turn_tool_attempt"
+        state.meta.stop_reason = "final_turn_tool_attempt"
+        state.done = True
+        return
+
+    if state.meta.tool_calls_executed >= state.budget.max_tool_calls:
+        turn.fail_reason = "max_tool_calls"
+        state.meta.final_turn_tool_attempt = True
+        state.meta.final_response_turn_attempted = True
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "max_tool_calls"
+        state.meta.stop_reason = "max_tool_calls"
+        state.done = True
+        return
+
+    execution = state.executor.execute(call)
+    turn.observation = execution.observation
+    if execution.error is not None:
+        turn.fail_reason = f"exec:{execution.error}"
+        state.traj.turns.append(turn)
+        state.traj.stop_reason = "executor_error"
+        state.meta.stop_reason = "executor_error"
+        state.done = True
+        return
+
+    state.meta.tool_calls_executed += 1
+    state.traj.final_observation = execution.observation
+    state.traj.turns.append(turn)
+    state.history.append({
+        "role": "user",
+        "content": format_tool_response(call, execution.observation),
+    })
+    if state.step >= state.remaining:
+        state.done = True
+
+
+def _result_from_batched_episode(
+    state: _BatchedEpisodeState, reward_fn: Callable,
+) -> RolloutResult:
+    """Score a completed batched episode and build its picklable result."""
+    from reward import strict_gold_trace_reward
+    from rollout import exec_failure_categories
+    from success_metrics import compute_rollout_success_flags
+
+    _finish_interaction_state(state)
+    rinfo = reward_fn(state.traj, state.task, state.gold_obs)
+    strict_diag = strict_gold_trace_reward(
+        state.traj, state.task, state.gold_obs).diagnostics
+    r_seq_full = [float(x) for x in rinfo["r_seq"]]
+    if len(r_seq_full) != len(state.traj.turns):
+        raise RuntimeError(
+            f"[teacher_forced] reward r_seq length {len(r_seq_full)} != "
+            f"len(trajectory.turns) {len(state.traj.turns)} for task "
+            f"{state.task.get('task_id')} (n_forced={state.n_forced})")
+    r_seq = r_seq_full[state.n_forced:]
+    if len(r_seq) != len(state.turn_token_ids):
+        raise RuntimeError(
+            f"[teacher_forced] post-slice r_seq length {len(r_seq)} != "
+            f"turn_token_ids length {len(state.turn_token_ids)} for task "
+            f"{state.task.get('task_id')} (n_forced={state.n_forced})")
+
+    reward_diag = dict(rinfo.get("diagnostics") or {})
+    reward_diag["teacher_forced_prefix_calls"] = state.n_forced
+    reward_diag.update(exec_failure_categories(state.traj))
+    meta = getattr(state.traj, "interaction_meta", None) or {}
+    if isinstance(meta, dict):
+        reward_diag.update(meta)
+    reward_diag.update(compute_rollout_success_flags(
+        state.traj, state.task, reward_diag))
+    canary_traj = None
+    if os.environ.get("CANARY_TRAJ_LOG", "").strip().lower() in (
+            "1", "true", "yes"):
+        canary_traj = _build_canary_traj(state.traj, rinfo)
+    return RolloutResult(
+        turn_token_ids=state.turn_token_ids,
+        episode_reward=float(rinfo["episode_reward"]),
+        r_seq=r_seq,
+        clipped_any=bool(state.traj.clipped_any),
+        prompt_overflow=bool(state.traj.prompt_overflow),
+        zero_tool_calls=bool(state.traj.zero_tool_calls),
+        num_tool_calls=int(state.traj.num_tool_calls),
+        stop_reason=state.traj.stop_reason,
+        first_error_turn=strict_diag.get("first_error_turn"),
+        reward_diag=_sanitize_diag(reward_diag),
+        canary_traj=canary_traj,
+    )
+
+
+def run_episodes_collect_batch(
+    *, tokenizer, tasks: List[Dict[str, Any]], config: Dict[str, Any], registry,
+    generate_batch_fn: Callable[
+        [List[Tuple[List[Dict[str, str]], int, Optional[int]]]],
+        List[Dict[str, Any]]],
+    reward_fn: Callable,
+) -> List[RolloutResult]:
+    """Interleave several tool episodes and batch every assistant-turn wave.
+
+    Tasks remain independent (separate executor/history/RNG seed), but active
+    prompts are submitted to vLLM together.  This is the worker-side throughput
+    fix: a worker that owns 2-3 GRPO completions now decodes them concurrently
+    instead of making 2-3 serial ``LLM.generate([prompt])`` calls per turn.
+    """
+    import traceback
+
+    from prompt import build_messages
+    from reward import compute_gold_observations
+    from rollout_sampling import derive_turn_seed
+
+    results: List[Optional[RolloutResult]] = [None] * len(tasks)
+    states: Dict[int, _BatchedEpisodeState] = {}
+    gold_cache: Dict[str, Any] = {}
+    exec_mode = (config.get("executor", {}) or {}).get("mode", "auto")
+
+    for idx, task in enumerate(tasks):
+        try:
+            cache_key = str(task.get("task_id") or idx)
+            if cache_key not in gold_cache:
+                gold_cache[cache_key] = compute_gold_observations(
+                    task, registry, mode=exec_mode)
+            states[idx] = _prepare_batched_episode(
+                tokenizer=tokenizer, task=task, config=config, registry=registry,
+                gold_obs=gold_cache[cache_key],
+            )
+        except Exception as exc:  # isolate setup failure to one rollout
+            results[idx] = RolloutResult(
+                error=f"{exc}\n{traceback.format_exc()}")
+
+    while True:
+        active: List[Tuple[int, _BatchedEpisodeState, List[Dict[str, str]]]] = []
+        requests = []
+        for idx, state in states.items():
+            if state.done:
+                continue
+            if state.step >= state.remaining:
+                state.done = True
+                continue
+            messages = build_messages(state.task, state.history)
+            seed = (derive_turn_seed(state.rollout_seed, state.step)
+                    if state.rollout_seed else None)
+            active.append((idx, state, messages))
+            requests.append((messages, state.max_new_tokens, seed))
+        if not active:
+            break
+
+        generations = generate_batch_fn(requests)
+        if len(generations) != len(active):
+            raise RuntimeError(
+                f"batch generator returned {len(generations)} results for "
+                f"{len(active)} active episodes")
+        for (idx, state, messages), generation in zip(active, generations):
+            try:
+                _advance_batched_episode(state, messages, generation, tokenizer)
+            except Exception as exc:  # isolate executor/parser failure
+                state.error = f"{exc}\n{traceback.format_exc()}"
+                state.done = True
+
+    for idx, state in states.items():
+        if state.error:
+            results[idx] = RolloutResult(error=state.error)
+            continue
+        try:
+            results[idx] = _result_from_batched_episode(state, reward_fn)
+        except Exception as exc:
+            results[idx] = RolloutResult(
+                error=f"{exc}\n{traceback.format_exc()}")
+
+    return [r if r is not None else RolloutResult(
+        error="batch rollout produced no result") for r in results]
+
+
 def _sanitize_diag(diag: Dict[str, Any]) -> Dict[str, Any]:
     """Keep only cheap picklable scalars (and short float lists) for transport."""
     out: Dict[str, Any] = {}
@@ -448,6 +741,7 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
 
     Protocol (messages on in_q):
         ("rollout", (req_id, task))   -> out_q.put((req_id, RolloutResult))
+        ("rollout_batch", [(req_id, task), ...]) -> one result per request
         ("sync",    adapter_path)     -> out_q.put((("__ack__", worker_id), "sync"))
         ("ping",    None)             -> out_q.put((("__ack__", worker_id), "ready"))
         ("stop",    None)             -> exits
@@ -458,6 +752,7 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
         if p and p not in sys.path:
             sys.path.insert(0, p)
 
+    vgen = None
     try:
         # Resolve the reward FIRST so a dispatch failure aborts before any
         # engine is built and before any rollout happens (audit Bug 1).
@@ -494,6 +789,10 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
         out_q.put((("__ack__", worker_id), f"init_error: {exc}\n{traceback.format_exc()}"))
         return
 
+    if vgen is None:  # defensive; successful init always assigns it
+        out_q.put((("__ack__", worker_id), "init_error: vLLM generator missing"))
+        return
+
     while True:
         cmd, payload = in_q.get()
         if cmd == "stop":
@@ -508,6 +807,54 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
                 out_q.put((("__ack__", worker_id), f"sync_error: {exc}"))
                 continue
             out_q.put((("__ack__", worker_id), "sync"))
+            continue
+        if cmd == "rollout_batch":
+            request_items = list(payload)
+            try:
+                from rollout_sampling import derive_turn_seed
+
+                def _generate_wave(requests):
+                    try:
+                        return vgen.generate_batch(requests)
+                    except Exception as batch_exc:  # preserve a compatibility path
+                        print(
+                            f"[dp_worker {worker_id}] batched generation failed "
+                            f"({batch_exc}); retrying this wave request-by-request",
+                            flush=True,
+                        )
+                        return [vgen.generate_fn(messages, max_new, seed=seed)
+                                for messages, max_new, seed in requests]
+
+                batch_results = run_episodes_collect_batch(
+                    tokenizer=tokenizer,
+                    tasks=[task for _, task in request_items],
+                    config=config,
+                    registry=_worker_registry(config),
+                    generate_batch_fn=_generate_wave,
+                    reward_fn=reward_fn,
+                )
+                for (req_id, task), res in zip(request_items, batch_results):
+                    rollout_seed = int(task.get("_rollout_seed") or 0)
+                    if isinstance(getattr(res, "reward_diag", None), dict):
+                        res.reward_diag.update({
+                            "rollout_index": task.get("_rollout_index"),
+                            "rollout_seed": rollout_seed or None,
+                            "actual_generation_seed": (
+                                derive_turn_seed(rollout_seed, 0)
+                                if rollout_seed else None),
+                            "rollout_sampling_version": task.get(
+                                "_rollout_sampling_version"),
+                            "dp_worker_id": int(worker_id),
+                            "dp_gpu": int(gpu),
+                            "request_id": req_id,
+                            "worker_batch_size": len(request_items),
+                        })
+                    out_q.put((req_id, res))
+            except Exception as exc:  # never strand the parent waiting for results
+                import traceback
+                error = f"{exc}\n{traceback.format_exc()}"
+                for req_id, _task in request_items:
+                    out_q.put((req_id, RolloutResult(error=error)))
             continue
         if cmd == "rollout":
             req_id, task = payload
@@ -550,7 +897,9 @@ def _worker_main(worker_id: int, gpu: int, config: Dict[str, Any],
 
     # graceful engine teardown best-effort
     try:
-        del vgen
+        # Dropping the last reference triggers the same teardown as ``del`` and
+        # keeps static scope analysis of the nested generation callbacks sound.
+        vgen = None
     except Exception:
         pass
 
@@ -655,11 +1004,23 @@ class DataParallelRolloutPool:
     # ── public API ──────────────────────────────────────────────────────────
 
     def rollout_many(self, tasks: List[Dict[str, Any]]) -> List[RolloutResult]:
-        """Run one episode per task across the workers; results in input order."""
+        """Run episodes across workers, batching each worker's local share.
+
+        Round-robin assignment is retained, but each worker receives one batch
+        command so it can interleave the multi-turn episodes and submit every
+        active turn wave to vLLM in a single scheduler call.
+        """
         n = len(tasks)
+        if n == 0:
+            return []
+        assignments: List[List[Tuple[int, Dict[str, Any]]]] = [
+            [] for _ in self._in_qs]
         for i, task in enumerate(tasks):
             wid = i % len(self._in_qs)
-            self._in_qs[wid].put(("rollout", (i, task)))
+            assignments[wid].append((i, task))
+        for wid, batch in enumerate(assignments):
+            if batch:
+                self._in_qs[wid].put(("rollout_batch", batch))
         results: Dict[int, RolloutResult] = {}
         while len(results) < n:
             req_id, res = self._out_q.get()

@@ -27,7 +27,7 @@ PROFILE = (
     ROOT.parent / "targeted_tool_data_factory" / "outputs"
     / "pilot4_3_nestful_profile_1000" / "train_nestful_profile_1000.jsonl"
 )
-CFG = ROOT / "configs" / "qwen3_p43_profile1000_dynamic_online.yaml"
+CFG = ROOT / "configs" / "qwen3_p43_profile1000_dynamic_online_samplingfix.yaml"
 
 
 def test_1_eight_logical_rollout_ids():

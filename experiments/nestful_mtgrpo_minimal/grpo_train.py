@@ -50,6 +50,84 @@ def _policy_is_graded(policy: Optional[str]) -> bool:
     return (policy or "strict").lower() not in _STRICT_POLICY_ALIASES
 
 
+def _materialize_metric_sums(*groups):
+    """Copy detached scalar metrics to CPU with one accelerator sync.
+
+    Calling ``float(cuda_tensor)`` inside the per-turn learner loop forces a
+    device/host synchronization for every metric and every turn.  Keep the
+    logging values detached on-device, transfer them as one small vector after
+    the group, then preserve the original Python summation order on CPU.
+    This helper is metrics-only and never participates in backpropagation.
+    """
+    lengths = [len(group) for group in groups]
+    flat = [value.detach().reshape(()) for group in groups for value in group]
+    if not flat:
+        return tuple(0.0 for _ in groups)
+
+    import torch
+    cpu_values = torch.stack([value.float() for value in flat]).cpu().tolist()
+    out = []
+    offset = 0
+    for length in lengths:
+        out.append(sum(float(v) for v in cpu_values[offset:offset + length]))
+        offset += length
+    return tuple(out)
+
+
+def _summarize_timing_profile(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Summarize a short group-level rollout/learner wall-clock profile."""
+    if not rows:
+        return {}
+
+    group_values = [max(0.0, float(row.get("group_s") or 0.0)) for row in rows]
+    rollout_values = [max(0.0, float(row.get("rollout_s") or 0.0)) for row in rows]
+    learner_values = [max(0.0, float(row.get("learner_s") or 0.0)) for row in rows]
+    group_total = sum(group_values)
+    rollout_total = sum(rollout_values)
+    learner_total = sum(learner_values)
+    other_total = sum(max(g - r - l, 0.0) for g, r, l in zip(
+        group_values, rollout_values, learner_values))
+    denom = max(group_total, 1e-12)
+    rollout_share = rollout_total / denom
+    learner_share = learner_total / denom
+    other_share = other_total / denom
+    # Other work cannot overlap; rollout and learner are the only candidate
+    # phases for a one-group pipeline. This is an optimistic Amdahl ceiling.
+    overlap_floor = max(rollout_total, learner_total) + other_total
+    overlap_ceiling = group_total / overlap_floor if overlap_floor > 0 else 1.0
+
+    def _median(values):
+        ordered = sorted(values)
+        n = len(ordered)
+        mid = n // 2
+        return ((ordered[mid - 1] + ordered[mid]) / 2.0
+                if n % 2 == 0 else ordered[mid])
+
+    if learner_share >= 0.30:
+        recommendation = "batched_logprob_first"
+    elif rollout_share >= 0.70:
+        recommendation = "prefetch_candidate"
+    else:
+        recommendation = "balanced_measure_before_pipeline"
+
+    return {
+        "groups": len(rows),
+        "effective_groups": sum(bool(row.get("effective")) for row in rows),
+        "group_total_s": round(group_total, 6),
+        "rollout_total_s": round(rollout_total, 6),
+        "learner_total_s": round(learner_total, 6),
+        "other_total_s": round(other_total, 6),
+        "rollout_share": round(rollout_share, 6),
+        "learner_share": round(learner_share, 6),
+        "other_share": round(other_share, 6),
+        "group_median_s": round(_median(group_values), 6),
+        "rollout_median_s": round(_median(rollout_values), 6),
+        "learner_median_s": round(_median(learner_values), 6),
+        "perfect_overlap_speedup_ceiling": round(overlap_ceiling, 6),
+        "recommendation": recommendation,
+    }
+
+
 def _verify_reward_dispatch(config: Dict[str, Any], rollout_pool) -> Dict[str, Any]:
     """Assert (in the PARENT, before any rollout) that the configured reward
     policy is actually the one that will be used (audit Bug 1).
@@ -592,6 +670,8 @@ def _retokenize_for_logprob(tokenizer, messages, completion_text: str):
 def _sequence_logprob(model, prompt_ids, completion_ids, *, with_grad: bool):
     """Sum of log p(completion_token | prefix) under `model`. Returns (sum_logp, n_tokens)."""
     import torch
+    import torch.nn.functional as F
+
     device = next(model.parameters()).device
     p = prompt_ids.to(device)
     c = completion_ids.to(device)
@@ -600,13 +680,45 @@ def _sequence_logprob(model, prompt_ids, completion_ids, *, with_grad: bool):
     input_ids = torch.cat([p, c]).unsqueeze(0)
     ctx = torch.enable_grad() if with_grad else torch.no_grad()
     with ctx:
-        logits = model(input_ids=input_ids).logits[0]  # [T, V]
-        # Predict token t from logits at t-1.
+        # Qwen3 supports ``logits_to_keep``: run the transformer over the full
+        # prompt+completion, but apply the enormous vocabulary projection only
+        # to the completion boundary/tail.  The old code materialised [T, V]
+        # logits for thousands of prompt tokens on every policy AND reference
+        # pass, even though those rows were immediately discarded.
+        supports_tail = getattr(model, "_nestful_logits_to_keep", None)
+        output = None
+        if supports_tail is not False:
+            try:
+                output = model(
+                    input_ids=input_ids,
+                    use_cache=False,
+                    logits_to_keep=int(c.numel()) + 1,
+                )
+                supports_tail = output.logits.shape[1] == int(c.numel()) + 1
+                setattr(model, "_nestful_logits_to_keep", supports_tail)
+            except TypeError as exc:
+                # Compatibility with non-Qwen/older Transformers models.  Only
+                # swallow an unsupported-keyword error; real forward errors must
+                # still fail loudly.
+                if "logits_to_keep" not in str(exc):
+                    raise
+                setattr(model, "_nestful_logits_to_keep", False)
+                supports_tail = False
+        if output is None or not supports_tail:
+            output = model(input_ids=input_ids, use_cache=False)
+
+        logits = output.logits[0]
         start = p.numel()
         target = input_ids[0, start:]
-        pred_logits = logits[start - 1: -1, :]
-        logprobs = torch.log_softmax(pred_logits.float(), dim=-1)
-        token_logp = logprobs.gather(1, target.unsqueeze(1)).squeeze(1)
+        if supports_tail:
+            # Tail rows are [prompt_last, completion_0, ..., completion_last].
+            pred_logits = logits[:-1, :]
+        else:
+            pred_logits = logits[start - 1: -1, :]
+        # cross_entropy computes the same selected log-softmax without retaining
+        # a second [completion_tokens, vocab] log-probability tensor.
+        token_logp = -F.cross_entropy(
+            pred_logits.float(), target, reduction="none")
     return token_logp.sum(), int(target.numel())
 
 
@@ -923,27 +1035,29 @@ def train(
     # ── Nestful profile / dynamic sampler (optional; Phase GRPO-P43) ─────────
     sampler = config.get("_sampler_instance")
     if sampler is None:
-        try:
-            from nestful_sampler_bridge import (
-                build_sampler_from_config, maybe_restore_sampler,
-                plan_epoch_candidates, refill_same_bucket,
-                rewards_to_observation, save_sampler_artifacts,
-                map_group_class, pool_of,
+        # The sampler is part of the experiment definition. Import, build, or
+        # restore failures must abort rather than silently switching to
+        # sequential task order and bypassing the dynamic optimizer budget.
+        from nestful_sampler_bridge import (
+            build_sampler_from_config, maybe_restore_sampler,
+            plan_epoch_candidates, refill_same_bucket,
+            rewards_to_observation, save_sampler_artifacts,
+            map_group_class, pool_of,
+        )
+        sampler = build_sampler_from_config(config, tasks)
+        if sampler is not None:
+            maybe_restore_sampler(
+                sampler,
+                (config.get("_runtime") or {}).get("init_checkpoint"),
+                config=config,
             )
-            sampler = build_sampler_from_config(config, tasks)
-            if sampler is not None:
-                maybe_restore_sampler(
-                    sampler,
-                    (config.get("_runtime") or {}).get("init_checkpoint"))
-                config["_sampler_instance"] = sampler
-                print(f"[sampler] mode={sampler.sampler_mode} "
-                      f"profile={len(sampler.profile)} "
-                      f"enrichment={len(sampler.enrichment)} "
-                      f"group_size={num_gen}", flush=True)
-        except Exception as _samp_exc:  # noqa: BLE001
-            print(f"[sampler] bridge unavailable ({_samp_exc}); "
-                  f"falling back to sequential task order", flush=True)
-            sampler = None
+            config["_sampler_instance"] = sampler
+            print(f"[sampler] mode={sampler.sampler_mode} "
+                  f"profile={len(sampler.profile)} "
+                  f"enrichment={len(sampler.enrichment)} "
+                  f"profile_share={sampler.cfg.get('profile_share')} "
+                  f"enrichment_share={sampler.cfg.get('enrichment_share')} "
+                  f"group_size={num_gen}", flush=True)
     else:
         from nestful_sampler_bridge import (
             plan_epoch_candidates, refill_same_bucket, rewards_to_observation,
@@ -974,6 +1088,49 @@ def train(
                                   "sampler_group_log.jsonl")
     group_log_f = open(group_log_path, "a" if log_append else "w", encoding="utf-8")
     run_out_dir = Path(os.path.dirname(log_path) or ".")
+    timing_rollout_total = 0.0
+    timing_learner_total = 0.0
+    timing_groups = 0
+    timing_profile_limit = max(
+        0, int(log_cfg.get("timing_profile_groups", 0) or 0))
+    timing_profile_warmup = max(
+        0, int(log_cfg.get("timing_profile_warmup_groups", 0) or 0))
+    timing_profile_rows: List[Dict[str, Any]] = []
+    timing_profile_state = {"seen": 0, "emitted": False}
+
+    def _record_timing_profile(rec: Dict[str, Any], *, effective: bool) -> None:
+        if timing_profile_limit <= 0:
+            return
+        timing_profile_state["seen"] += 1
+        if timing_profile_state["seen"] <= timing_profile_warmup:
+            return
+        if len(timing_profile_rows) >= timing_profile_limit:
+            return
+        timing_profile_rows.append({
+            "group_s": float(rec.get("timing_group_s") or 0.0),
+            "rollout_s": float(rec.get("timing_rollout_s") or 0.0),
+            "learner_s": float(rec.get("timing_learner_s") or 0.0),
+            "effective": bool(effective),
+        })
+        if len(timing_profile_rows) != timing_profile_limit:
+            return
+        profile = _summarize_timing_profile(timing_profile_rows)
+        profile["warmup_groups_skipped"] = timing_profile_warmup
+        summary["timing_profile"] = profile
+        timing_profile_state["emitted"] = True
+        _log({"update": "timing_profile", **profile})
+        print(
+            "[timing_profile] "
+            f"groups={profile['groups']} "
+            f"rollout={100.0 * profile['rollout_share']:.1f}% "
+            f"learner={100.0 * profile['learner_share']:.1f}% "
+            f"other={100.0 * profile['other_share']:.1f}% "
+            f"perfect_overlap_ceiling="
+            f"{profile['perfect_overlap_speedup_ceiling']:.2f}x "
+            f"recommendation={profile['recommendation']}",
+            flush=True,
+        )
+
     print(f"[train] global_step_start={global_step} "
           f"target_optimizer_updates={target_optimizer_updates or 'epochs'}",
           flush=True)
@@ -1052,6 +1209,7 @@ def train(
                       "hit_raw_cap": True,
                       "raw_candidate_groups": epoch_raw_candidates})
             task = epoch_tasks[ti]
+            group_started = time.perf_counter()
             epoch_raw_candidates += 1
             gold_n = int(task.get("num_calls") or gold_n_default)
             episodes: List[Episode] = []
@@ -1073,6 +1231,7 @@ def train(
             )
             rollout_seeds = [int(t["_rollout_seed"]) for t in stamped_tasks]
 
+            rollout_started = time.perf_counter()
             if rollout_pool is not None:
                 # Data-parallel: workers run the full episode AND apply the correct
                 # reward policy, returning token-id lists + reward + r_seq. Raw tool
@@ -1169,6 +1328,10 @@ def train(
                     episodes.append(ep)
                     ep_r_seqs.append(r_seq)
                     ep_diags.append(diag)
+
+            rollout_seconds = time.perf_counter() - rollout_started
+            timing_rollout_total += rollout_seconds
+            timing_groups += 1
 
             rewards = [e.reward for e in episodes]
             mean_r = sum(rewards) / len(rewards)
@@ -1334,6 +1497,7 @@ def train(
                 ) / len(episodes),
                 "learning_rate": lr,
                 "kl_beta": kl_beta,
+                "timing_rollout_s": round(rollout_seconds, 6),
                 **_reward_component_rates(episodes, task),
             }
 
@@ -1552,6 +1716,10 @@ def train(
                     "after 100 groups — training is not learning anything.")
 
             if skip_update:
+                rec["timing_learner_s"] = 0.0
+                rec["timing_group_s"] = round(
+                    time.perf_counter() - group_started, 6)
+                _record_timing_profile(rec, effective=False)
                 dead_rec = {**rec, "update": "skipped_dead_group",
                             "group_class": user_cls,
                             "optimizer_step_executed": False, "contributing_turns": 0}
@@ -1571,13 +1739,14 @@ def train(
                 ti += 1
                 continue
 
-            step_loss = 0.0
-            kl_sum = 0.0
+            loss_metric_terms = []
+            kl_metric_terms = []
             kl_count = 0
-            logp_sum = 0.0
+            logp_metric_terms = []
             logp_count = 0
             contributing = 0
             _use_turn = use_turn_level and not force_episode_adv
+            learner_started = time.perf_counter()
             for ei, (ep, gs) in enumerate(zip(episodes, ep_returns)):
                 if mask_clipped and ep.trajectory.clipped_any:
                     continue
@@ -1612,11 +1781,11 @@ def train(
                         diff = (ref / max(1, n)) - mean_logp
                         kl_term = (diff.exp() - diff - 1.0)
                         pg_loss = pg_loss + kl_beta * kl_term
-                        kl_sum += float(kl_term.detach())
+                        kl_metric_terms.append(kl_term.detach())
                         kl_count += 1
                     (pg_loss / grad_accum).backward()
-                    step_loss += float(pg_loss.detach())
-                    logp_sum += float(mean_logp.detach())
+                    loss_metric_terms.append(pg_loss.detach())
+                    logp_metric_terms.append(mean_logp.detach())
                     logp_count += 1
                     contributing += 1
 
@@ -1625,30 +1794,53 @@ def train(
 
             total_contributing += contributing
             accum += 1
+            optimizer_step_executed = (accum % grad_accum == 0)
+            task_optimizer_step = global_step
+            step_grad_norm_tensor = None
+            if optimizer_step_executed:
+                import torch as _t
+                step_grad_norm_tensor = _t.nn.utils.clip_grad_norm_(
+                    trainable, max_grad_norm)
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+                global_step += 1
+
+            # One tiny device→host transfer for all learner metrics (including
+            # grad norm on optimizer groups), instead of 2-3 implicit CUDA
+            # synchronizations for every generated turn plus another at step.
+            metric_groups = [
+                loss_metric_terms, logp_metric_terms, kl_metric_terms]
+            if step_grad_norm_tensor is not None:
+                metric_groups.append([step_grad_norm_tensor.detach()])
+            metric_sums = _materialize_metric_sums(*metric_groups)
+            step_loss, logp_sum, kl_sum = metric_sums[:3]
+            step_grad_norm: Optional[float] = (
+                metric_sums[3] if step_grad_norm_tensor is not None else None)
+
+            learner_seconds = time.perf_counter() - learner_started
+            timing_learner_total += learner_seconds
             rec["loss"] = step_loss
             rec["contributing_turns"] = contributing
             rec["kl"] = (kl_sum / kl_count) if kl_count else 0.0
             rec["mean_logprob"] = (logp_sum / logp_count) if logp_count else 0.0
-            rec["optimizer_step_executed"] = (accum % grad_accum == 0)
+            rec["optimizer_step_executed"] = optimizer_step_executed
+            rec["timing_learner_s"] = round(learner_seconds, 6)
+            rec["timing_group_s"] = round(
+                time.perf_counter() - group_started, 6)
+            _record_timing_profile(rec, effective=True)
             _log({**rec, "update": "accumulated"})
             _wandb_log_task(
                 wandb_run, rec, stage=stage, num_tasks=num_tasks,
                 task_step=epoch * num_tasks + ti,
-                optimizer_step=global_step,
+                optimizer_step=task_optimizer_step,
                 task_prev_mean=task_prev_mean.get(task_id),
                 task_best_mean=task_best_mean.get(task_id),
             )
-
-            step_grad_norm: Optional[float] = None
-            if accum % grad_accum == 0:
-                import torch as _t
-                gnorm = _t.nn.utils.clip_grad_norm_(trainable, max_grad_norm)
-                step_grad_norm = float(gnorm)
-                _log({"epoch": epoch, "task_idx": ti, "grad_norm": step_grad_norm,
-                      "update": "optimizer_step", "global_step": global_step})
-                optimizer.step()
-                optimizer.zero_grad(set_to_none=True)
-                global_step += 1
+            if optimizer_step_executed:
+                _log({"epoch": epoch, "task_idx": ti,
+                      "grad_norm": step_grad_norm,
+                      "update": "optimizer_step",
+                      "global_step": task_optimizer_step})
                 _wandb_log_optimizer_step(
                     wandb_run, optimizer_step=global_step, grad_norm=step_grad_norm)
             _log_canary_group(
@@ -1884,6 +2076,18 @@ def train(
     summary["no_tool_call_rate"] = (agg_no_tool / agg_episodes) if agg_episodes else None
     summary["too_few_calls_rate"] = (agg_too_few / agg_episodes) if agg_episodes else None
     summary["avg_predicted_calls"] = (agg_pred_calls / agg_episodes) if agg_episodes else None
+    summary["timing_rollout_total_s"] = timing_rollout_total
+    summary["timing_learner_total_s"] = timing_learner_total
+    summary["timing_groups"] = timing_groups
+    summary["timing_rollout_mean_s"] = (
+        timing_rollout_total / timing_groups) if timing_groups else None
+    summary["timing_learner_mean_s"] = (
+        timing_learner_total / timing_groups) if timing_groups else None
+    if timing_profile_rows and not timing_profile_state["emitted"]:
+        profile = _summarize_timing_profile(timing_profile_rows)
+        profile["warmup_groups_skipped"] = timing_profile_warmup
+        profile["partial"] = True
+        summary["timing_profile"] = profile
     summary["eligible_for_best"] = bool(
         global_step > 0 and total_contributing > 0
         and (total_groups == 0 or total_dead_groups / total_groups < 0.95))
@@ -2002,11 +2206,14 @@ def _build_train_manifest_extra(
     git_dirty = None
     try:
         repo = root.parents[1]
+        safe_repo = str(repo.resolve()).replace("\\", "/")
         git_commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=str(repo),
+            ["git", "-c", f"safe.directory={safe_repo}", "rev-parse", "HEAD"],
+            cwd=str(repo),
             stderr=subprocess.DEVNULL).decode().strip()
         dirty = subprocess.call(
-            ["git", "diff", "--quiet"], cwd=str(repo),
+            ["git", "-c", f"safe.directory={safe_repo}", "diff", "--quiet"],
+            cwd=str(repo),
             stderr=subprocess.DEVNULL)
         git_dirty = bool(dirty != 0)
     except Exception:
@@ -2192,6 +2399,9 @@ def _wandb_log_task(
             "train/return_std": float(rec.get("return_std", 0.0)),
             "train/kl": float(rec.get("kl", 0.0)),
             "train/mean_logprob": float(rec.get("mean_logprob", 0.0)),
+            "train/timing_rollout_s": float(rec.get("timing_rollout_s", 0.0)),
+            "train/timing_learner_s": float(rec.get("timing_learner_s", 0.0)),
+            "train/timing_group_s": float(rec.get("timing_group_s", 0.0)),
             "train/parse_error_rate": float(rec.get("parse_error_rate", 0.0)),
             "train/no_tool_call_rate": float(rec.get("no_tool_call_rate", 0.0)),
             "train/too_few_calls_rate": float(rec.get("too_few_calls_rate", 0.0)),

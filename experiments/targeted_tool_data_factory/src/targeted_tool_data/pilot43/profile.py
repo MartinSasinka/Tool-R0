@@ -70,15 +70,13 @@ DEV_ANSWER_MAP = {"bool": "boolean", "float": "float", "int": "integer",
                   "list": "list", "string": "string", "numeric_string": "string",
                   "object": "object", "other": "string"}
 
-DEFAULT_SOURCE = Path("outputs/profiles/target_profile_v2.json")
+_FACTORY_ROOT = Path(__file__).resolve().parents[3]
+_REPO_ROOT = _FACTORY_ROOT.parent.parent
+DEFAULT_SOURCE = _FACTORY_ROOT / "data" / "target_profile_v2.json"
 
-#: repo root = .../Tool-R0 (this file sits at
-#: <repo>/experiments/targeted_tool_data_factory/src/targeted_tool_data/pilot43/)
-_REPO_ROOT = Path(__file__).resolve().parents[5]
-#: the raw NESTFUL dev-200 split target_profile_v2.json was built from; the path
-#: is the one recorded in that file's own ``provenance.input_hashes``
-DEFAULT_DEV_ROWS = (_REPO_ROOT / "experiments" / "nestful_mtgrpo_minimal" /
-                    "data" / "splits" / "nestful_dev.jsonl")
+# Frozen source rows used to derive the aggregate profile. Keeping both inputs
+# in the factory makes Pilot 4.3 generation independent of deleted experiments.
+DEFAULT_DEV_ROWS = _FACTORY_ROOT / "data" / "nestful_dev.jsonl"
 DEFAULT_OUTPUT = Path("outputs/pilot4_3_nestful_final/target_profile_v3.json")
 
 #: reported vocabulary of the recomputed P(answer_type|call_count)

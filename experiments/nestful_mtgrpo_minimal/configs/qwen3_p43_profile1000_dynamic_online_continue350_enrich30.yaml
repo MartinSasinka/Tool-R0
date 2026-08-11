@@ -1,37 +1,34 @@
-# Frozen copy of qwen3_p43_profile1000_dynamic_online.yaml after
-# p43_independent_rollout_sampling_v1 (DP vLLM per-rollout SamplingParams.seed).
-# All GRPO/QLoRA/reward/dataset hypers identical to the parent config.
-# MAIN first experiment: PROFILE_1000 + ONLINE dynamic sampling
-# Enrichment OFF.
+# Continuation of qwen3_p43_profile1000_dynamic_online_continue256:
+# resume from adapter_epoch_8 (trainer_state.global_step=200) → target 350.
+#
+# Change vs parent: enable enrichment mix ~30% effective
+# (sampler_mode=dynamic_profile_plus_enrichment, profile_share=0.70).
+# Hypers / reward / group_size unchanged. New output_dir for side-by-side artifacts.
+#
+# Speed leftovers fixed vs continue256 launch:
+#   - vllm_enforce_eager: false (no script override → CUDA graphs ON)
+#   - log_canary_trajectories: false / CANARY_TRAJ_LOG default 0
 experiment:
-  name: qwen3_p43_profile1000_dynamic_online_samplingfix
+  name: qwen3_p43_profile1000_dynamic_online_continue350_enrich30
   seed: 42
-  output_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix
+  output_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue350_enrich30
 
 paths:
   train_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
   enrichment_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_enrichment_500.jsonl
   eval_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
   all_stages_jsonl: null
-  # Official NESTFUL benchmark used by final_eval (not by P43 training rewards).
   full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
   ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
-  # P43 tools are factory primitives — NOT IBM NESTFUL helpers.
-  # Must match SYNTHETIC_TOOLS_DIR used by ToolExecutor(mode=synthetic).
-  # Pilot4.3 ops registry (597 surfaces) — NOT the older pilot2/3 190-tool adapter.
   synthetic_tools_dir: ../targeted_tool_data_factory/trainer_adapter_p43
 
 model:
   base_model: Qwen/Qwen3-4B-Instruct-2507
   lora_adapter: null
-  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix/checkpoints
+  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue350_enrich30/checkpoints
   revision: null
 
 executor:
-  # CRITICAL: mode=auto resolves to IBM "full" when ibm_functions_dir exists,
-  # which cannot execute Pilot4.3 tools (record_text_series, …) → execfail_runtime.
-  # Curriculum v3 bash scripts force mode=synthetic; P43 must do the same with
-  # the factory trainer_adapter registry (not curriculum-v3 synthetic_tools).
   mode: synthetic
   ibm_call_timeout: 30.0
 
@@ -88,16 +85,15 @@ generation:
   max_model_length: 6144
   temperature: 0.7
   top_p: 0.95
-  num_generations: 8                 # group_size = 8 (experiment requirement)
+  num_generations: 8
   rollout_sampling_version: p43_independent_rollout_sampling_v1
 
 training:
-  # Reservoir training: stop on optimizer budget, not "all 1000 tasks once".
-  epochs: 100                        # upper bound only; budget stops earlier
-  target_optimizer_updates: 128      # ≈ one mid curriculum stage (see readiness report)
+  epochs: 100
+  target_optimizer_updates: 350      # continue from 200 → 350 (+150 steps)
   learning_rate: 1.0e-6
   per_device_train_batch_size: 1
-  gradient_accumulation_steps: 4     # = target_effective_groups default
+  gradient_accumulation_steps: 4
   kl_beta: 0.02
   max_grad_norm: 1.0
   save_every_epoch: true
@@ -106,6 +102,13 @@ training:
   single_turn: false
   early_abort_checks: true
   early_abort_dead_rate_first_50: 0.95
+  resume:
+    fail_fast: true
+    expect_global_step: 200
+    expect_bootstrap_complete: true
+    expect_reward_policy: execution_aware_v2_p43
+    expect_dataset_sha256: 991f04931a0e5452cd86b637f2b92b9655ecd024f5c5606efa2a43b062609b2a
+    allow_missing_optimizer: false
 
 reward:
   train_policy: execution_aware_v2_p43
@@ -113,7 +116,6 @@ reward:
   final_eval_shadow_policy: solution_equivalent
   binary_only: false
   format_as_gate: true
-  # Variant A: gold sequence lives in turn-level s_t only (see audit).
   gold_sequence_alignment_in_episode: false
   weights:
     final_outcome: 0.40
@@ -133,7 +135,6 @@ reward:
   dispatch:
     require_exact_policy: true
     allow_fallback: false
-  # Optional override block consumed by set_execution_p43_weights_from_config
   execution_reward_v2_p43:
     wrong_final_ceiling: 0.45
     unnecessary_extra_call_penalty: 0.02
@@ -148,18 +149,17 @@ mt_grpo:
   fallback_episode_level_if_needed: true
 
 sampler:
-  mode: dynamic_profile
-  sampler_mode: dynamic_profile
+  mode: dynamic_profile_plus_enrichment
+  sampler_mode: dynamic_profile_plus_enrichment
   group_size: 8
   reward_variance_epsilon: 1.0e-6
-  # Matches gradient_accumulation_steps (effective optimizer micro-batch)
   target_effective_groups: 4
   initial_oversample_factor: 1.5
   max_oversample_factor: 3.0
   max_refill_rounds: 5
   max_raw_groups_per_update_factor: 3.0
-  profile_share: 1.0
-  enrichment_share: 0.0
+  profile_share: 0.70
+  enrichment_share: 0.30
   allow_cross_pool_refill: false
   minimum_prompt_weight: 0.05
   minimum_initial_exposures: 1
@@ -183,13 +183,16 @@ sampler:
     seen_weight: 1.0
   enrichment_schedule:
     type: constant
-    start_share: 0.0
+    start_share: 0.30
   version: nestful_profile.v1
 
 logging:
   use_wandb: false
   wandb_project: nestful-mtgrpo-p43
   log_samples: true
-  # Full per-rollout trajectories (tool calls, fail_reason, observations).
-  log_canary_trajectories: true
-  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online_samplingfix/observability
+  log_canary_trajectories: false
+  # Print one profile after two warmup groups + ten measured groups. Logging only;
+  # this does not stop training or alter sampling/gradients.
+  timing_profile_warmup_groups: 2
+  timing_profile_groups: 10
+  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue350_enrich30/observability

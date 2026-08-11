@@ -158,6 +158,34 @@ class TestVLLMGeneratorInterface:
             result = gen.generate_fn([{"role": "user", "content": "x"}], 100)
         assert result["prompt_overflow"] is False
 
+    def test_generate_batch_submits_all_prompts_in_one_engine_call(self):
+        gen, fake_llm = self._make_generator()
+        fake_llm.generate.return_value = [
+            _fake_vllm_output("first", n_tokens=3),
+            _fake_vllm_output("second", n_tokens=4),
+        ]
+        captured = []
+
+        class SP:
+            def __init__(self, **kwargs):
+                captured.append(kwargs)
+
+        fake_vllm = types.ModuleType("vllm")
+        fake_vllm.SamplingParams = SP
+        requests = [
+            ([{"role": "user", "content": "a"}], 32, 101),
+            ([{"role": "user", "content": "b"}], 48, 202),
+        ]
+        with patch.dict(sys.modules, {"vllm": fake_vllm}):
+            results = gen.generate_batch(requests)
+
+        assert [r["text"] for r in results] == ["first", "second"]
+        assert [p["seed"] for p in captured] == [101, 202]
+        args, kwargs = fake_llm.generate.call_args
+        assert len(args[0]) == 2
+        assert len(kwargs["sampling_params"]) == 2
+        assert kwargs["use_tqdm"] is False
+
     def test_generate_fn_prompt_overflow_precheck(self):
         """When the rendered prompt exceeds (max_model_len - max_new_tokens) the
         engine is NEVER called; a graceful overflow dict is returned instead."""
@@ -233,6 +261,48 @@ def test_tokenize_for_logprob_shapes():
     assert c_ids.dim() == 1, "completion_ids must be 1-D"
     assert p_ids.shape[0] > 0
     assert c_ids.shape[0] > 0
+
+
+def test_sequence_logprob_uses_only_completion_tail_logits():
+    """Qwen3's logits_to_keep must preserve the exact completion log-prob."""
+    import types as _types
+    import torch
+    import torch.nn.functional as F
+
+    from grpo_train import _sequence_logprob
+
+    class TailModel(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.scale = torch.nn.Parameter(torch.tensor(0.5))
+            self.requested = []
+
+        def forward(self, input_ids, use_cache=False, logits_to_keep=0):
+            self.requested.append(logits_to_keep)
+            vocab = 11
+            positions = torch.arange(
+                input_ids.shape[1], dtype=torch.float32).view(1, -1, 1)
+            token_axis = torch.arange(vocab, dtype=torch.float32).view(1, 1, -1)
+            logits = self.scale * (positions + token_axis)
+            if logits_to_keep:
+                logits = logits[:, -logits_to_keep:, :]
+            return _types.SimpleNamespace(logits=logits)
+
+    model = TailModel()
+    prompt = torch.tensor([1, 2, 3, 4])
+    completion = torch.tensor([5, 6, 7])
+    got, n = _sequence_logprob(
+        model, prompt, completion, with_grad=True)
+
+    full_ids = torch.cat([prompt, completion])
+    positions = torch.arange(len(full_ids), dtype=torch.float32).view(-1, 1)
+    token_axis = torch.arange(11, dtype=torch.float32).view(1, -1)
+    full_logits = model.scale * (positions + token_axis)
+    expected = -F.cross_entropy(
+        full_logits[len(prompt) - 1:-1], completion, reduction="none").sum()
+    assert n == len(completion)
+    assert model.requested == [len(completion) + 1]
+    assert torch.allclose(got, expected)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

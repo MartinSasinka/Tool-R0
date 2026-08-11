@@ -68,8 +68,13 @@ def build_sampler_from_config(config: Dict[str, Any],
     """Return NestfulProfileSampler when sampler.mode is set; else None."""
     scfg = dict(config.get("sampler") or {})
     mode = str(scfg.get("mode") or scfg.get("sampler_mode") or "").strip()
-    if not mode or mode not in SAMPLER_MODES:
+    if not mode:
         return None
+    if mode not in SAMPLER_MODES:
+        raise ValueError(
+            f"unsupported sampler mode {mode!r}; expected one of "
+            f"{', '.join(SAMPLER_MODES)}"
+        )
 
     paths = config.get("paths") or {}
     profile_path = scfg.get("profile_jsonl") or paths.get("train_jsonl")
@@ -113,21 +118,51 @@ def build_sampler_from_config(config: Dict[str, Any],
     return sampler
 
 
-def maybe_restore_sampler(sampler: NestfulProfileSampler,
-                          checkpoint_dir: Optional[str]) -> None:
+def maybe_restore_sampler(
+        sampler: NestfulProfileSampler,
+        checkpoint_dir: Optional[str],
+        config: Optional[Dict[str, Any]] = None,
+) -> None:
     if not checkpoint_dir:
         return
     path = Path(checkpoint_dir) / "sampler_state.json"
     if not path.exists():
         return
     state = json.loads(path.read_text(encoding="utf-8"))
+    prev_mode = str(getattr(sampler, "sampler_mode", "") or "")
     sampler.load_state_dict(state)
+    # Continuation configs may change pool mix (e.g. enable enrichment).
+    # load_state_dict restores sampler_mode from the checkpoint — re-apply the
+    # live config so profile/enrichment shares take effect.
+    if config is not None:
+        scfg = dict(config.get("sampler") or {})
+        live_mode = str(scfg.get("mode") or scfg.get("sampler_mode") or "").strip()
+        if live_mode:
+            sampler.sampler_mode = live_mode
+            sampler.cfg["sampler_mode"] = live_mode
+        for k in (
+            "profile_share",
+            "enrichment_share",
+            "allow_cross_pool_refill",
+            "enrichment_schedule",
+        ):
+            if k in scfg:
+                sampler.cfg[k] = scfg[k]
+        if live_mode and live_mode != str(state.get("sampler_mode") or ""):
+            print(
+                f"[sampler] override restored mode "
+                f"{state.get('sampler_mode')!r} -> {live_mode!r} "
+                f"(profile_share={sampler.cfg.get('profile_share')} "
+                f"enrichment_share={sampler.cfg.get('enrichment_share')})",
+                flush=True,
+            )
     print(
         f"[sampler] restored state from {path} "
         f"(bootstrap_complete={sampler.bootstrap_complete} "
         f"bootstrap_completed_at_step={sampler.bootstrap_completed_at_step} "
         f"n_prompts={len(getattr(sampler.state, 'prompt', {}) or {})} "
-        f"in_bootstrap={sampler.in_bootstrap()})",
+        f"in_bootstrap={sampler.in_bootstrap()} "
+        f"mode={sampler.sampler_mode} prev_built={prev_mode})",
         flush=True,
     )
 

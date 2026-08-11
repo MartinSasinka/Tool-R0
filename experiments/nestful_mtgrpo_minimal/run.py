@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """NESTFUL MT-GRPO Minimal — standalone entry point.
 
-Modes:
-    python run.py --mode smoke       --config config.yaml
-    python run.py --mode rollout_eval --config config.yaml [--checkpoint PATH]
-    python run.py --mode train        --config config.yaml
-    python run.py --mode final_eval   --config config.yaml --checkpoint PATH
+Modes use ``configs/qwen3_p43_profile1000_dynamic_online_samplingfix.yaml`` by
+default; pass ``--config`` to select the continuation configuration.
 
 This folder is a self-contained experimental artifact. It imports nothing from
 curricullum/ or nestful_evaluation/. The only external dependencies are the
@@ -18,6 +15,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Any
 
 # Make sibling modules importable whether run as `python run.py` or `-m`.
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -1343,12 +1341,10 @@ def _prepare_continuous_resume(config: dict, checkpoint: str | None) -> int:
 
 def mode_train(config: dict, checkpoint: str | None = None) -> int:
     out_dir = _outputs_dir(config)
-    # Sibling experiment + factory on path (execution_aware reward + nestful sampler).
-    _partial = os.path.join(os.path.dirname(_HERE), "nestful_mtgrpo_partial")
+    # The factory supplies the P43 sampler and tool registry. Rewards are local.
     _factory_src = os.path.join(
         os.path.dirname(_HERE), "targeted_tool_data_factory", "src")
-    _experiments = os.path.dirname(_HERE)
-    for _p in (_partial, _factory_src, _experiments):
+    for _p in (_factory_src,):
         if os.path.isdir(_p) and _p not in sys.path:
             sys.path.insert(0, _p)
     # Propagate canary traj logging to DP workers (they read env, not config).
@@ -1356,59 +1352,32 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
     if _log_cfg.get("log_canary_trajectories") or _log_cfg.get("canary_traj_log"):
         os.environ.setdefault("CANARY_TRAJ_LOG", "1")
     _policy = str((config.get("reward") or {}).get("train_policy", "")).lower()
-    if _policy in ("execution_aware", "execution",
-                   "execution_aware_v2", "execution_v2",
-                   "execution_aware_v2_p43", "execution_v2_p43", "p43"):
+    if _policy in ("execution_aware_v2_p43", "execution_v2_p43", "p43"):
         try:
             import grpo_train as _gt
-            if _policy in ("execution_aware_v2_p43", "execution_v2_p43", "p43"):
-                import execution_reward_v2_p43 as _er
-                _label = "execution_aware_v2_p43"
-                _variant = str((config.get("reward") or {}).get(
-                    "p43_reward_variant") or "").upper()
-                if _variant not in ("A", "B"):
-                    raise SystemExit(
-                        "[train] ABORT: execution_aware_v2_p43 requires "
-                        "reward.p43_reward_variant: A|B (frozen; no auto-select).")
-            elif _policy in ("execution_aware_v2", "execution_v2"):
-                import execution_reward_v2 as _er
-                _label = "execution_aware_v2"
-            else:
-                import execution_reward as _er
-                _label = "execution_aware"
+            import execution_reward_v2_p43 as _er
+            _label = "execution_aware_v2_p43"
+            _variant = str((config.get("reward") or {}).get(
+                "p43_reward_variant") or "").upper()
+            if _variant not in ("A", "B"):
+                raise SystemExit(
+                    "[train] ABORT: execution_aware_v2_p43 requires "
+                    "reward.p43_reward_variant: A|B (frozen; no auto-select).")
             _er.set_weights_from_config(config)
             _gt.episode_turn_reward_seq = _er.episode_turn_reward_seq
-            print(f"[train] reward wired: {_label} (from {_partial})", flush=True)
+            print(f"[train] reward wired: {_label} (local module)", flush=True)
         except SystemExit:
             raise
         except Exception as exc:  # noqa: BLE001
             raise SystemExit(
                 f"[train] ABORT: reward.train_policy={_policy} but could not "
-                f"import reward module from nestful_mtgrpo_partial ({exc}). "
-                f"Ensure experiments/nestful_mtgrpo_partial is next to "
-                f"nestful_mtgrpo_minimal on the pod.") from exc
+                f"import the local P43 reward module ({exc}).") from exc
 
     registry = build_registry(config)
     paths = config["paths"]
     data_cfg = config.get("data", {})
     stage = data_cfg.get("train_stage")
     seed = config.get("experiment", {}).get("seed", 42)
-
-    # ── Legacy dataset-B guard (remediation Phase 1b) ────────────────────────
-    # filtered_toolr0_synthetic is the LEGACY corpus (quality issues; see
-    # nestful_synthetic_curriculum_v3/audits/DATASET_AUDIT.md). Historical runs
-    # trained on it via the old config defaults — refuse to repeat that
-    # silently. ALLOW_LEGACY_DATASET_B=1 is the explicit escape hatch.
-    _train_data_paths = [str(paths.get("train_jsonl") or "")]
-    _train_data_paths += _parse_str_list(data_cfg.get("mixed_stage_files"))
-    _legacy_hits = [p for p in _train_data_paths if "filtered_toolr0_synthetic" in p.replace("\\", "/")]
-    if _legacy_hits and os.environ.get("ALLOW_LEGACY_DATASET_B", "0") != "1":
-        raise SystemExit(
-            "[train] ABORT: training data resolves to the LEGACY dataset B "
-            f"(filtered_toolr0_synthetic): {_legacy_hits}. Use the canonical "
-            "curriculum_v3_1 files instead, or set ALLOW_LEGACY_DATASET_B=1 "
-            "to override explicitly (NOT recommended)."
-        )
 
     # ── Mixed curriculum replay ──────────────────────────────────────────────
     # When data.mixed_replay is on, stage N trains on a weighted mix of the
@@ -1471,6 +1440,11 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
     dp_gpus = _parse_gpu_list(hw.get("rollout_data_parallel_gpus"))
     use_pool = use_vllm and bool(dp_gpus)
     if use_pool:
+        if 0 in dp_gpus:
+            raise SystemExit(
+                "[train] ABORT: rollout_data_parallel_gpus contains visible GPU 0, "
+                "which is reserved for the HF learner. Use rollout GPUs such as "
+                "1,2,3 so generation and backprop do not contend for one device.")
         # Pin the HF learner to a single GPU so it doesn't fight the rollout
         # workers for the shared devices.
         config.setdefault("hardware", {})["hf_device_map"] = {"": 0}
@@ -1489,10 +1463,13 @@ def mode_train(config: dict, checkpoint: str | None = None) -> int:
             rollout_pool = DataParallelRolloutPool(config, dp_gpus, adapter_path=checkpoint)
             print(f"[train] data-parallel rollouts on GPUs {dp_gpus}; "
                   f"HF learner pinned to visible GPU 0", flush=True)
-        except Exception as exc:  # noqa: BLE001 — degrade gracefully
-            print(f"[train] WARNING: data-parallel pool init failed ({exc}); "
-                  f"falling back to single in-process vLLM engine", flush=True)
-            rollout_pool = None
+        except Exception as exc:  # noqa: BLE001
+            # An explicitly requested 4-GPU run must never continue for hours on
+            # one GPU.  The previous silent fallback made a broken DP startup look
+            # like a merely slow training run.
+            raise RuntimeError(
+                f"[train] data-parallel rollout pool failed to start on GPUs "
+                f"{dp_gpus}; refusing silent single-GPU fallback: {exc}") from exc
     if rollout_pool is None and use_vllm:
         from vllm_generate import build_vllm_generator
         vllm_gen = build_vllm_generator(config, tokenizer, adapter_path=checkpoint, mode="train")
@@ -1578,7 +1555,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="NESTFUL MT-GRPO Minimal")
     ap.add_argument("--mode", required=True,
                     choices=["smoke", "rollout_eval", "train", "final_eval", "val_eval"])
-    ap.add_argument("--config", default=os.path.join(_HERE, "config.yaml"))
+    ap.add_argument(
+        "--config",
+        default=os.path.join(
+            _HERE, "configs", "qwen3_p43_profile1000_dynamic_online_samplingfix.yaml"),
+    )
     ap.add_argument("--checkpoint", default=None,
                     help="LoRA adapter or model path for eval modes")
     ap.add_argument("--override", action="append", default=[], metavar="KEY=VALUE",

@@ -384,32 +384,29 @@ def _limitations(p: Dict[str, Any]) -> List[str]:
 
 
 REPRODUCTION_COMMANDS = (
-    '$env:PYTHONPATH="src"',
-    "python -m targeted_tool_data.cli audit-pilot42-final",
-    "python -m targeted_tool_data.cli build-target-profile-v3",
-    "python -m targeted_tool_data.cli build-workflow-registry-v3",
-    "python -m targeted_tool_data.cli validate-primitive-registry-v3",
-    "python -m targeted_tool_data.cli generate-pilot43-semantic "
+    "targeted-data build-target-profile-v3",
+    "targeted-data build-workflow-registry-v3",
+    "targeted-data validate-primitive-registry-v3",
+    "targeted-data generate-pilot43-semantic "
     "--candidate-target 58000 --run-id pilot4_3_nestful_final",
-    "python -m targeted_tool_data.cli validate-pilot43-semantic",
-    "python -m targeted_tool_data.cli run-pilot43-v4 --all-answer-types "
+    "targeted-data validate-pilot43-semantic",
+    "targeted-data run-pilot43-v4 --all-answer-types "
     "--counterfactual-instances 5 --workers auto --resume",
-    "python -m targeted_tool_data.cli render-pilot43-openrouter --stage smoke",
-    "python -m targeted_tool_data.cli render-pilot43-openrouter --stage pilot",
-    "python -m targeted_tool_data.cli render-pilot43-openrouter --stage full",
-    "python -m targeted_tool_data.cli validate-pilot43-queries",
-    "python -m targeted_tool_data.cli select-pilot43 --profile-core 3000 "
+    "targeted-data render-pilot43-openrouter --stage smoke",
+    "targeted-data render-pilot43-openrouter --stage pilot",
+    "targeted-data render-pilot43-openrouter --stage full",
+    "targeted-data validate-pilot43-queries",
+    "targeted-data select-pilot43 --profile-core 3000 "
     "--long-horizon 1200 --capability-enrichment 600 --challenge 200 "
     "--heldout 1000 --reserve 1000",
-    "python -m targeted_tool_data.cli build-pilot43-nested-subsets",
-    "python -m targeted_tool_data.cli independent-audit-pilot43",
-    "python -m targeted_tool_data.cli prepare-human-audit-pilot43",
-    "python -m targeted_tool_data.cli import-human-audit-pilot43 "
+    "targeted-data build-pilot43-nested-subsets",
+    "targeted-data independent-audit-pilot43",
+    "targeted-data prepare-human-audit-pilot43",
+    "targeted-data import-human-audit-pilot43 "
     "--ratings outputs/pilot4_3_nestful_final/human_audit_ratings.csv",
-    "python -m targeted_tool_data.cli probe-pilot43-grpo-signal "
+    "targeted-data probe-pilot43-grpo-signal "
     "--sample-size 2000 --initial-rollouts 4 --max-rollouts 8",
-    "python -m targeted_tool_data.cli compare-pilot42-pilot43",
-    "python -m targeted_tool_data.cli freeze-pilot43",
+    "targeted-data freeze-pilot43",
 )
 
 

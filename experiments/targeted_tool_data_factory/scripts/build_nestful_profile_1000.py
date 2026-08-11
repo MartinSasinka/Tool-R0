@@ -579,7 +579,7 @@ def main() -> int:
     probe = probe[:200]
     write_jsonl(out_dir / "model_probe_sample_200.jsonl", probe, append=False)
     (out_dir / "model_probe_command.txt").write_text(
-        "python -m targeted_tool_data.cli probe-pilot43-grpo-signal "
+        "targeted-data probe-pilot43-grpo-signal "
         "--output-dir outputs/pilot4_3_nestful_profile_1000 "
         "--sample-size 200 --initial-rollouts 4 --max-rollouts 4 "
         "--provider openai_compatible_local --base-url http://127.0.0.1:1234/v1 "

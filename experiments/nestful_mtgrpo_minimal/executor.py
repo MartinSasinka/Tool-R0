@@ -11,9 +11,9 @@ Three executor modes:
                is available, so ANY parse- and schema-valid predicted call can be
                genuinely executed. win_rate / solution_equivalent_pass are REAL.
 
-  synthetic    REAL execution of the executable synthetic tool registry
-               (nestful_synthetic_curriculum_v3/lib/synthetic_tools.py) — the
-               DEFAULT training mode for synthetic curriculum datasets. Predicted
+  synthetic    REAL execution of the executable Pilot 4.3 tool registry
+               (targeted_tool_data_factory/trainer_adapter_p43/lib/synthetic_tools.py).
+               Predicted
                calls are validated against the registry schema (tool name,
                required/unknown keys, argument types and value constraints),
                $varN[.field]$ references are resolved against previous REAL
@@ -607,7 +607,7 @@ class ToolExecutor:
                     "executor.mode=synthetic requires the executable synthetic "
                     f"tool registry, which failed to load: {sreg.load_error}. "
                     "Set SYNTHETIC_TOOLS_DIR or fix "
-                    "nestful_synthetic_curriculum_v3/lib/synthetic_tools.py."
+                    "targeted_tool_data_factory/trainer_adapter_p43/lib/synthetic_tools.py."
                 )
             self.synthetic_registry = sreg
             self.mode = "synthetic"

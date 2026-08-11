@@ -15,10 +15,15 @@ path if the pool fails to start, and the integration is exercised on the pod.
 """
 from __future__ import annotations
 
+import copy
+
 import pytest
 
 import vllm_dp_pool as dp
-from vllm_dp_pool import RolloutResult, run_episode_collect, _resolve_reward_fn, _encode_for_logprob
+from vllm_dp_pool import (
+    RolloutResult, _encode_for_logprob, _resolve_reward_fn,
+    run_episode_collect, run_episodes_collect_batch,
+)
 
 
 # ── fakes ────────────────────────────────────────────────────────────────────
@@ -130,6 +135,69 @@ def test_run_episode_collect_parse_fail():
     assert res.zero_tool_calls is True
     assert res.episode_reward == 0.0
     assert res.stop_reason in ("parse_fail", "terminal", "terminal_answer")
+
+
+def test_run_episodes_collect_batch_interleaves_turn_waves():
+    tasks = [copy.deepcopy(_TASK), copy.deepcopy(_TASK)]
+    tasks[0]["task_id"] = "batch_0"
+    tasks[1]["task_id"] = "batch_1"
+    tasks[0]["_rollout_seed"] = 101
+    tasks[1]["_rollout_seed"] = 202
+    wave_sizes = []
+
+    def generate_batch(requests):
+        wave_sizes.append(len(requests))
+        text = (_TOOL_CALL_TEXT if len(wave_sizes) == 1
+                else "<tool_call_answer>[]</tool_call_answer>")
+        return [{
+            "text": text,
+            "prompt_tokens": 50,
+            "completion_tokens": 20,
+            "clipped": False,
+            "prompt_overflow": False,
+        } for _ in requests]
+
+    results = run_episodes_collect_batch(
+        tokenizer=_FakeTok(), tasks=tasks, config=_CONFIG, registry=None,
+        generate_batch_fn=generate_batch, reward_fn=_strict_seq(),
+    )
+
+    assert wave_sizes == [2, 2]
+    assert len(results) == 2
+    assert all(r.error is None for r in results)
+    assert all(r.num_tool_calls == 1 for r in results)
+    assert all(len(r.turn_token_ids) == 2 for r in results)
+
+
+def test_run_episodes_collect_batch_drops_finished_episode_from_next_wave():
+    tasks = [copy.deepcopy(_TASK), copy.deepcopy(_TASK)]
+    tasks[0]["task_id"] = "early_stop"
+    tasks[1]["task_id"] = "full_run"
+    wave_sizes = []
+
+    def generate_batch(requests):
+        wave_sizes.append(len(requests))
+        if len(wave_sizes) == 1:
+            texts = ["not a tool call", _TOOL_CALL_TEXT]
+        else:
+            texts = ["<tool_call_answer>[]</tool_call_answer>"]
+        return [{
+            "text": text,
+            "prompt_tokens": 50,
+            "completion_tokens": 20,
+            "clipped": False,
+            "prompt_overflow": False,
+        } for text in texts]
+
+    results = run_episodes_collect_batch(
+        tokenizer=_FakeTok(), tasks=tasks, config=_CONFIG, registry=None,
+        generate_batch_fn=generate_batch, reward_fn=_strict_seq(),
+    )
+
+    assert wave_sizes == [2, 1]
+    assert results[0].stop_reason == "parse_fail"
+    assert results[0].num_tool_calls == 0
+    assert results[1].num_tool_calls == 1
 
 
 # ── reward-policy resolution ────────────────────────────────────────────────────

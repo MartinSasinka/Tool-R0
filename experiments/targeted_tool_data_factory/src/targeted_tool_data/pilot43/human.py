@@ -222,7 +222,7 @@ Open `{SAMPLE_FILE}`, and for each row fill one line per reviewer in
 ## Import
 
 ```powershell
-$env:PYTHONPATH="src"; python -m targeted_tool_data.cli import-human-audit-pilot43 `
+targeted-data import-human-audit-pilot43 `
   --ratings outputs/{RUN_ID}/human_audit_ratings.csv
 ```
 
@@ -397,7 +397,7 @@ def pending_notice(out_dir: Path) -> Dict[str, Any]:
         "reason": "no reviewer ratings imported yet",
         "n_tasks_rated": 0,
         "thresholds": THRESHOLDS,
-        "next_command": ("python -m targeted_tool_data.cli "
+        "next_command": ("targeted-data "
                          "import-human-audit-pilot43 --ratings <filled csv>"),
         "sample": SAMPLE_FILE,
         "template": TEMPLATE_FILE,

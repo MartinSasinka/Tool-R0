@@ -312,99 +312,129 @@ class VLLMGenerator:
         ``seed`` (optional): per-request SamplingParams.seed so DP workers with
         identical engine state still produce independent stochastic streams.
         """
+        return self.generate_batch([(messages, max_new_tokens, seed)])[0]
+
+    def generate_batch(
+        self,
+        requests: List[tuple[List[Dict[str, str]], int, Optional[int]]],
+    ) -> List[Dict[str, Any]]:
+        """Generate several independent requests in one vLLM scheduler call.
+
+        ``LLM.generate`` automatically batches a prompt list.  The previous DP
+        worker called it once per episode/turn with ``[prompt]``, which left each
+        rollout GPU decoding batch-size one even when several GRPO completions
+        were queued for that worker.  A SamplingParams object is kept per prompt
+        so the existing independent rollout seeds are unchanged.
+        """
+        if not requests:
+            return []
+
         from vllm import SamplingParams
 
-        prompt = self._tokenizer.apply_chat_template(
-            messages,
-            add_generation_prompt=True,
-            tokenize=False,
-        )
+        results: List[Optional[Dict[str, Any]]] = [None] * len(requests)
+        prompts: List[str] = []
+        params: List[Any] = []
+        valid_indices: List[int] = []
+        prompt_lengths: List[int] = []
+        max_tokens_by_request: List[int] = []
 
-        # ── Pre-check: never even call the engine with an overlong prompt ──────
-        # The engine raises a hard ValueError ("decoder prompt ... longer than the
-        # maximum model length") that historically crashed the whole run. We must
-        # leave room for `max_new_tokens` of generation, so the prompt budget is
-        # (max_model_len - max_new_tokens). On overflow we return a graceful
-        # overflow dict instead of generating — the episode is then ended/skipped.
-        prompt_ids = self._tokenizer.encode(prompt, add_special_tokens=False)
-        est_prompt_len = len(prompt_ids)
-        prompt_budget = self._max_model_len - int(max_new_tokens)
-        if prompt_budget > 0 and est_prompt_len > prompt_budget:
-            print(
-                f"[vllm] prompt_overflow (pre-check): {est_prompt_len} tokens "
-                f"> budget {prompt_budget} (max_model_len {self._max_model_len} "
-                f"- max_new_tokens {max_new_tokens}) — skipping generation",
-                flush=True,
+        for idx, (messages, max_new_tokens, seed) in enumerate(requests):
+            prompt = self._tokenizer.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                tokenize=False,
             )
-            return {
-                "text": "",
-                "prompt_tokens": est_prompt_len,
-                "completion_tokens": 0,
-                "clipped": False,
-                "prompt_overflow": True,
-            }
-
-        sp_kwargs: Dict[str, Any] = dict(
-            temperature=self._temperature,
-            top_p=self._top_p,
-            max_tokens=max_new_tokens,
-            skip_special_tokens=True,
-        )
-        if seed is not None:
-            sp_kwargs["seed"] = int(seed)
-        params = SamplingParams(**sp_kwargs)
-        lora_req = self._make_lora_request()
-
-        try:
-            outputs = self._llm.generate([prompt], sampling_params=params, lora_request=lora_req)
-        except Exception as exc:
-            # vLLM signals an overflow in several different ways depending on
-            # version: VLLMValidationError, or a plain ValueError whose message
-            # mentions the context/model length. Match all of them so a long
-            # multi-turn history never crashes the run — the episode is skipped
-            # from GRPO updates instead, matching rollout.generate_once().
-            exc_name = type(exc).__name__
-            exc_msg = str(exc)
-            low = exc_msg.lower()
-            is_overflow = (
-                "VLLMValidationError" in exc_name
-                or "input_tokens" in exc_msg
-                or "context length" in low
-                or "maximum context" in low
-                or "maximum model length" in low          # ValueError wording (this crash)
-                or "longer than the maximum" in low        # decoder-prompt wording
-                or "max_model_len" in low
-            )
-            if is_overflow:
+            prompt_ids = self._tokenizer.encode(prompt, add_special_tokens=False)
+            est_prompt_len = len(prompt_ids)
+            prompt_budget = self._max_model_len - int(max_new_tokens)
+            if prompt_budget > 0 and est_prompt_len > prompt_budget:
                 print(
-                    f"[vllm] prompt_overflow (engine): est {est_prompt_len} tokens "
-                    f"> max_model_len {self._max_model_len} "
-                    f"— skipping episode ({exc_name})",
+                    f"[vllm] prompt_overflow (pre-check): {est_prompt_len} tokens "
+                    f"> budget {prompt_budget} (max_model_len {self._max_model_len} "
+                    f"- max_new_tokens {max_new_tokens}) — skipping generation",
                     flush=True,
                 )
-                return {
-                    "text": "",
-                    "prompt_tokens": est_prompt_len,
-                    "completion_tokens": 0,
-                    "clipped": False,
-                    "prompt_overflow": True,
-                }
-            raise
+                results[idx] = self._overflow_result(est_prompt_len)
+                continue
 
-        out = outputs[0].outputs[0]
-        completion_len = len(out.token_ids)
-        clipped = completion_len >= max_new_tokens
+            sp_kwargs: Dict[str, Any] = dict(
+                temperature=self._temperature,
+                top_p=self._top_p,
+                max_tokens=int(max_new_tokens),
+                skip_special_tokens=True,
+            )
+            if seed is not None:
+                sp_kwargs["seed"] = int(seed)
+            prompts.append(prompt)
+            params.append(SamplingParams(**sp_kwargs))
+            valid_indices.append(idx)
+            prompt_lengths.append(est_prompt_len)
+            max_tokens_by_request.append(int(max_new_tokens))
 
-        # Prompt token count from the request object (vLLM tracks this).
-        prompt_len = len(outputs[0].prompt_token_ids) if outputs[0].prompt_token_ids else 0
+        if prompts:
+            try:
+                # Disabling tqdm matters here: the old one-prompt hot path built a
+                # progress bar for every assistant turn and flooded redirected logs.
+                outputs = self._llm.generate(
+                    prompts,
+                    sampling_params=params,
+                    lora_request=self._make_lora_request(),
+                    use_tqdm=False,
+                )
+            except Exception as exc:
+                if self._is_context_overflow(exc):
+                    for idx, est_len in zip(valid_indices, prompt_lengths):
+                        results[idx] = self._overflow_result(est_len)
+                else:
+                    raise
+            else:
+                if len(outputs) != len(valid_indices):
+                    raise RuntimeError(
+                        f"vLLM returned {len(outputs)} outputs for "
+                        f"{len(valid_indices)} prompts")
+                for idx, output, max_new_tokens in zip(
+                        valid_indices, outputs, max_tokens_by_request):
+                    out = output.outputs[0]
+                    completion_len = len(out.token_ids)
+                    prompt_len = (len(output.prompt_token_ids)
+                                  if output.prompt_token_ids else 0)
+                    results[idx] = {
+                        "text": out.text,
+                        "prompt_tokens": prompt_len,
+                        "completion_tokens": completion_len,
+                        "clipped": completion_len >= max_new_tokens,
+                        "prompt_overflow": False,
+                    }
 
+        # Every slot is assigned either by the overflow pre-check or vLLM output.
+        if any(r is None for r in results):
+            raise RuntimeError("internal error: vLLM batch left an unassigned result")
+        return [r for r in results if r is not None]
+
+    @staticmethod
+    def _overflow_result(prompt_tokens: int) -> Dict[str, Any]:
         return {
-            "text": out.text,
-            "prompt_tokens": prompt_len,
-            "completion_tokens": completion_len,
-            "clipped": clipped,
-            "prompt_overflow": False,
+            "text": "",
+            "prompt_tokens": int(prompt_tokens),
+            "completion_tokens": 0,
+            "clipped": False,
+            "prompt_overflow": True,
         }
+
+    @staticmethod
+    def _is_context_overflow(exc: Exception) -> bool:
+        exc_name = type(exc).__name__
+        exc_msg = str(exc)
+        low = exc_msg.lower()
+        return (
+            "VLLMValidationError" in exc_name
+            or "input_tokens" in exc_msg
+            or "context length" in low
+            or "maximum context" in low
+            or "maximum model length" in low
+            or "longer than the maximum" in low
+            or "max_model_len" in low
+        )
 
     def sync_adapter(self, adapter_path: Optional[str]) -> None:
         """Update the LoRA adapter path used in subsequent generate_fn() calls.

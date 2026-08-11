@@ -14,16 +14,17 @@ FACTORY="$REPO/experiments/targeted_tool_data_factory"
 ADAPTER="$FACTORY/trainer_adapter_p43"
 DATA="$FACTORY/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl"
 CFG="${CFG:-$MINIMAL/configs/qwen3_p43_profile1000_dynamic_online_samplingfix.yaml}"
-if [[ ! -f "$CFG" ]]; then
-  CFG="$MINIMAL/configs/qwen3_p43_profile1000_dynamic_online.yaml"
-fi
 
 export SYNTHETIC_TOOLS_DIR="$ADAPTER"
-export CANARY_TRAJ_LOG="${CANARY_TRAJ_LOG:-1}"
+export CANARY_TRAJ_LOG="${CANARY_TRAJ_LOG:-0}"
 export PYTHONPATH="${MINIMAL}:${FACTORY}/src:${ADAPTER}:${PYTHONPATH:-}"
 
 if [[ ! -d "$ADAPTER/lib" ]]; then
   echo "[p43] ERROR: missing adapter at $ADAPTER" >&2
+  exit 1
+fi
+if [[ ! -f "$CFG" ]]; then
+  echo "[p43] ERROR: missing config $CFG" >&2
   exit 1
 fi
 if [[ ! -f "$DATA" ]]; then
@@ -40,6 +41,8 @@ echo "[p43] SYNTHETIC_TOOLS_DIR=$SYNTHETIC_TOOLS_DIR"
 echo "[p43] CANARY_TRAJ_LOG=$CANARY_TRAJ_LOG"
 echo "[p43] starting train..."
 
+# Keep config's vllm_enforce_eager=false so CUDA graphs stay enabled.  Override
+# it manually only while diagnosing a graph-capture failure.
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0,1,2,3}" \
 python run.py --mode train \
   --config "$CFG" \
@@ -47,6 +50,5 @@ python run.py --mode train \
   --override hardware.rollout_data_parallel_gpus=1,2,3 \
   --override hardware.vllm_gpu_memory_utilization=0.45 \
   --override hardware.vllm_gpu_memory_utilization_dp=0.70 \
-  --override hardware.vllm_enforce_eager=true \
   --override logging.use_wandb=true \
   "$@"

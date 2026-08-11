@@ -172,36 +172,6 @@ def test_turn_returns_formula_single_turn():
     assert abs(G[0] - 2.0) < 1e-9
 
 
-def test_example_turn_level_summary_has_correct_keys():
-    path = os.path.join(os.path.dirname(__file__), "..", "examples",
-                        "example_train_summary_turn_level.json")
-    with open(path, encoding="utf-8") as f:
-        s = json.load(f)
-    assert s["mt_grpo_mode"] == "turn_level_minimal"
-    assert s["fallback_used"] is False
-    assert "gamma" in s and "lambda_episode" in s
-
-
-def test_example_fallback_summary_has_correct_keys():
-    path = os.path.join(os.path.dirname(__file__), "..", "examples",
-                        "example_train_summary_fallback.json")
-    with open(path, encoding="utf-8") as f:
-        s = json.load(f)
-    assert s["fallback_used"] is True
-    assert s["mt_grpo_mode"] == "episode_level"
-
-
-def test_example_gold_replay_reportability():
-    path = os.path.join(os.path.dirname(__file__), "..", "examples",
-                        "example_metrics_gold_replay.json")
-    with open(path, encoding="utf-8") as f:
-        m = json.load(f)
-    assert m["executor_mode"] == "gold_replay"
-    assert m["solution_equivalent_reportable"] is False
-    assert m["win_rate_reportable"] is False
-    assert "warning" in m
-
-
 # ── token budget stage defaults ───────────────────────────────────────────────
 
 from rollout import get_stage_token_budget

@@ -49,7 +49,7 @@ THRESHOLDS = {
 
 DEFAULT_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
 RUN_COMMAND = (
-    "python -m targeted_tool_data.cli probe-pilot43-grpo-signal "
+    "targeted-data probe-pilot43-grpo-signal "
     "--sample-size 2000 --initial-rollouts 4 --max-rollouts 8 "
     "--provider openai_compatible_local --base-url http://127.0.0.1:1234/v1 "
     f"--model {DEFAULT_MODEL}"

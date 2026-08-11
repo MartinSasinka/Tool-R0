@@ -12,6 +12,7 @@ paths:
   enrichment_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_enrichment_500.jsonl
   eval_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
   all_stages_jsonl: null
+  # Official NESTFUL benchmark used by final_eval (not by P43 training rewards).
   full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
   ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
   # P43 tools are factory primitives — NOT IBM NESTFUL helpers.

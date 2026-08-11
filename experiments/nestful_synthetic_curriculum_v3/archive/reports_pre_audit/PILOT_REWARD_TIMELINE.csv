@@ -1,5 +1,0 @@
-stage,epoch,synthetic_strict_pass,synthetic_mean_reward,dead_group_rate,kl_last,too_few_calls_rate,invalid_reference_rate,clipped_rate,executable_trajectory_rate,tool_final_answer_pass_rate,num_tasks,steps
-1,1,0.235,0.235,1,0,0,0,0,0,0,800,0
-1,2,0.235,0.235,1,0,0,0,0,0,0,800,0
-2,1,0.30875,0.30953125,0.778125,0.0042635053396224976,0,0,0,0,0,1600,89
-2,2,0.308125,0.30953125,0.778125,0.02201239764690399,0,0,0,0,0,1600,89
