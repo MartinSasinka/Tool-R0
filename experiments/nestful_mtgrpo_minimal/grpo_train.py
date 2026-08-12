@@ -714,7 +714,7 @@ def _sequence_logprob(model, prompt_ids, completion_ids, *, with_grad: bool):
             # Tail rows are [prompt_last, completion_0, ..., completion_last].
             pred_logits = logits[:-1, :]
         else:
-        pred_logits = logits[start - 1: -1, :]
+            pred_logits = logits[start - 1: -1, :]
         # cross_entropy computes the same selected log-softmax without retaining
         # a second [completion_tokens, vocab] log-probability tensor.
         token_logp = -F.cross_entropy(
