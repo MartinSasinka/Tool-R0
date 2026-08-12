@@ -82,3 +82,15 @@ def test_continue350_science_and_short_profile_are_unchanged():
     assert config["logging"]["timing_profile_warmup_groups"] == 2
     assert config["logging"]["timing_profile_groups"] == 10
     assert config["logging"]["log_canary_trajectories"] is False
+
+    path550 = (
+        ROOT / "configs"
+        / "qwen3_p43_profile1000_dynamic_online_continue550_enrich30.yaml"
+    )
+    c550 = yaml.safe_load(path550.read_text(encoding="utf-8"))
+    assert c550["training"]["target_optimizer_updates"] == 550
+    assert c550["training"]["resume"]["expect_global_step"] == 350
+    assert c550["sampler"]["sampler_mode"] == (
+        "dynamic_profile_plus_enrichment")
+    assert c550["sampler"]["profile_share"] == pytest.approx(0.70)
+    assert c550["sampler"]["enrichment_share"] == pytest.approx(0.30)

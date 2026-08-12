@@ -30,6 +30,13 @@ SRC_RUN=/cesta/k/qwen3_p43_profile1000_dynamic_online_samplingfix \
 bash experiments/nestful_mtgrpo_minimal/scripts/run_p43_continue_256.sh
 ```
 
+## Pokračování 350 → 550 (enrich 30 %)
+
+```bash
+bash experiments/nestful_mtgrpo_minimal/scripts/run_p43_continue_550_enrich30.sh
+```
+
+Default CKPT: `continue350_enrich30/checkpoints/adapter_epoch_14` @ step 350.
 Konkrétní checkpoint lze přepsat proměnnou `CKPT`. Resume provádí fail-fast
 kontrolu kroku, sampler state, reward policy a hashe datasetu.
 

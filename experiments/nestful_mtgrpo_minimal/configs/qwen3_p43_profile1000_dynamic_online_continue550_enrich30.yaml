@@ -1,0 +1,197 @@
+# Continuation of qwen3_p43_profile1000_dynamic_online_continue350_enrich30:
+# resume from adapter_epoch_14 (trainer_state.global_step=350) → target 550.
+#
+# Same mix / reward / hypers as continue350 (+200 optimizer updates).
+# New output_dir for side-by-side artifacts.
+#
+# Speed leftovers fixed:
+#   - vllm_enforce_eager: false (no script override → CUDA graphs ON)
+#   - log_canary_trajectories: false / CANARY_TRAJ_LOG default 0
+experiment:
+  name: qwen3_p43_profile1000_dynamic_online_continue550_enrich30
+  seed: 42
+  output_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue550_enrich30
+
+paths:
+  train_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
+  enrichment_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_enrichment_500.jsonl
+  eval_jsonl: ../targeted_tool_data_factory/outputs/pilot4_3_nestful_profile_1000/train_nestful_profile_1000.jsonl
+  all_stages_jsonl: null
+  full_nestful_jsonl: data/NESTFUL-main/data_v2/nestful_data.jsonl
+  ibm_functions_dir: data/NESTFUL-main/data_v2/executable_functions
+  synthetic_tools_dir: ../targeted_tool_data_factory/trainer_adapter_p43
+
+model:
+  base_model: Qwen/Qwen3-4B-Instruct-2507
+  lora_adapter: null
+  output_adapter_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue550_enrich30/checkpoints
+  revision: null
+
+executor:
+  mode: synthetic
+  ibm_call_timeout: 30.0
+
+hardware:
+  device: auto
+  num_gpus: auto
+  bf16: true
+  gradient_checkpointing: true
+  load_in_4bit: true
+  qlora: true
+  use_vllm: true
+  vllm_tensor_parallel_size: 1
+  vllm_gpu_memory_utilization: 0.45
+  vllm_enforce_eager: false
+  vllm_weight_sync: after_epoch
+  rollout_data_parallel_gpus: null
+  use_flash_attention: false
+
+finetuning:
+  method: qlora
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: auto
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+data:
+  train_stage: null
+  eval_stage: null
+  max_train_tasks: null
+  max_eval_tasks: 64
+  mixed_replay: false
+  eval_paradigm: react
+  num_icl_examples: 1
+
+interaction:
+  reserve_final_answer_turn: true
+  max_tool_calls: auto
+  max_assistant_turns: auto_plus_final
+
+generation:
+  max_turns: auto
+  max_extra_turns_eval: 1
+  reserve_final_answer_turn: true
+  max_new_tokens_smoke: 1024
+  max_new_tokens_train: 2048
+  max_new_tokens_eval: 2560
+  max_new_tokens_direct: 1024
+  max_new_tokens: 2048
+  max_prompt_tokens: 4096
+  max_model_length: 6144
+  temperature: 0.7
+  top_p: 0.95
+  num_generations: 8
+  rollout_sampling_version: p43_independent_rollout_sampling_v1
+
+training:
+  epochs: 100
+  target_optimizer_updates: 550      # continue from 350 → 550 (+200 steps)
+  learning_rate: 1.0e-6
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 4
+  kl_beta: 0.02
+  max_grad_norm: 1.0
+  save_every_epoch: true
+  eval_after_epoch: false
+  mask_clipped_from_update: true
+  single_turn: false
+  early_abort_checks: true
+  early_abort_dead_rate_first_50: 0.95
+  resume:
+    fail_fast: true
+    expect_global_step: 350
+    expect_bootstrap_complete: true
+    expect_reward_policy: execution_aware_v2_p43
+    expect_dataset_sha256: 991f04931a0e5452cd86b637f2b92b9655ecd024f5c5606efa2a43b062609b2a
+    allow_missing_optimizer: false
+
+reward:
+  train_policy: execution_aware_v2_p43
+  p43_reward_variant: A
+  final_eval_shadow_policy: solution_equivalent
+  binary_only: false
+  format_as_gate: true
+  gold_sequence_alignment_in_episode: false
+  weights:
+    final_outcome: 0.40
+    executability: 0.15
+    semantic_completeness: 0.20
+    reference_correctness: 0.10
+    semantic_progress: 0.15
+  solution_equivalence:
+    enabled: true
+    require_runtime_verification: true
+  efficiency:
+    penalize_verified_unnecessary_calls: true
+    unnecessary_extra_call_penalty: 0.02
+    unnecessary_extra_call_penalty_cap: 0.10
+  flat_wrong_final_cap: false
+  wrong_final_ceiling: 0.45
+  dispatch:
+    require_exact_policy: true
+    allow_fallback: false
+  execution_reward_v2_p43:
+    wrong_final_ceiling: 0.45
+    unnecessary_extra_call_penalty: 0.02
+    unnecessary_extra_call_penalty_cap: 0.10
+
+mt_grpo:
+  enabled: true
+  mode: turn_level_minimal
+  gamma: 1.0
+  lambda_episode: 1.0
+  normalize_advantage: true
+  fallback_episode_level_if_needed: true
+
+sampler:
+  mode: dynamic_profile_plus_enrichment
+  sampler_mode: dynamic_profile_plus_enrichment
+  group_size: 8
+  reward_variance_epsilon: 1.0e-6
+  target_effective_groups: 4
+  initial_oversample_factor: 1.5
+  max_oversample_factor: 3.0
+  max_refill_rounds: 5
+  max_raw_groups_per_update_factor: 3.0
+  profile_share: 0.70
+  enrichment_share: 0.30
+  allow_cross_pool_refill: false
+  minimum_prompt_weight: 0.05
+  minimum_initial_exposures: 1
+  ema_alpha: 0.1
+  ema_decay: 0.9
+  revisit_after_steps: 50
+  all_correct_downweight_2: 0.25
+  all_correct_downweight_3: 0.10
+  all_fail_np_downweight_2: 0.25
+  drop_low_variance: true
+  effective_group_rate_warn: 0.20
+  invalid_group_rate_warn: 0.05
+  profile_tv_warn: 0.10
+  warn_window_steps: 50
+  bootstrap:
+    enabled: true
+    min_unique_profile_prompts_seen: 200
+    min_observed_groups_per_call_bucket: 25
+    prefer_unseen_prompts: true
+    unseen_weight: 2.0
+    seen_weight: 1.0
+  enrichment_schedule:
+    type: constant
+    start_share: 0.30
+  version: nestful_profile.v1
+
+logging:
+  use_wandb: false
+  wandb_project: nestful-mtgrpo-p43
+  log_samples: true
+  log_canary_trajectories: false
+  # Print one profile after two warmup groups + ten measured groups. Logging only;
+  # this does not stop training or alter sampling/gradients.
+  timing_profile_warmup_groups: 2
+  timing_profile_groups: 10
+  observability_dir: outputs/qwen3_p43_profile1000_dynamic_online_continue550_enrich30/observability
