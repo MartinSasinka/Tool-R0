@@ -501,10 +501,10 @@ def _rollout_episode_for_train(
     def _gen(messages, max_new):
         if vllm_gen_fn is not None:
             return vllm_gen_fn(messages, max_new)
-        text, p_ids, c_ids, p_len, c_len, clipped, overflow = _generate_with_ids(
+            text, p_ids, c_ids, p_len, c_len, clipped, overflow = _generate_with_ids(
             model, tokenizer, messages, max_new, temperature, top_p,
-            max_prompt_tokens=hf_prompt_budget,
-        )
+                max_prompt_tokens=hf_prompt_budget,
+            )
         return {
             "text": text, "clipped": clipped, "prompt_overflow": overflow,
             "prompt_tokens": p_len, "completion_tokens": c_len,
@@ -714,7 +714,7 @@ def _sequence_logprob(model, prompt_ids, completion_ids, *, with_grad: bool):
             # Tail rows are [prompt_last, completion_0, ..., completion_last].
             pred_logits = logits[:-1, :]
         else:
-            pred_logits = logits[start - 1: -1, :]
+        pred_logits = logits[start - 1: -1, :]
         # cross_entropy computes the same selected log-softmax without retaining
         # a second [completion_tokens, vocab] log-probability tensor.
         token_logp = -F.cross_entropy(
