@@ -65,8 +65,14 @@ echo "[final_eval] CONFIG=$CFG"
 echo "[final_eval] CHECKPOINT=${CHECKPOINT:-<base model>}"
 echo "[final_eval] OUT_DIR=$OUT_DIR"
 echo "[final_eval] USE_VLLM=$USE_VLLM EVAL_TP=$EVAL_TP VLLM_GPU_UTIL=$VLLM_GPU_UTIL"
-echo "[final_eval] MAX_TASKS=$MAX_TASKS EVAL_SET=${EVAL_SET:-<config default>}"
+echo "[final_eval] MAX_MODEL_LEN=${MAX_MODEL_LEN:-12288} MAX_TASKS=$MAX_TASKS EVAL_SET=${EVAL_SET:-<config default>}"
 echo "──────────────────────────────────────────────────────────────"
+
+# Context: train yamls often set generation.max_model_length=6144 while
+# max_new_tokens_eval=2560 → prompt budget only 3584. Prior v5 evals used
+# nestful_mtgrpo_partial token_budget up to vllm_max_model_length=12288.
+# Force that here so NESTFUL long prompts are not skipped as overflow.
+MAX_MODEL_LEN="${MAX_MODEL_LEN:-12288}"
 
 ARGS=(
   "$MINIMAL/run.py" --mode final_eval
@@ -76,6 +82,7 @@ ARGS=(
   --override generation.top_p=1.0
   --override data.num_eval_rollouts=1
   --override data.eval_paradigm=react
+  --override "generation.max_model_length=$MAX_MODEL_LEN"
 )
 
 # Train yamls often cap max_eval_tasks (e.g. 64) — force full set when MAX_TASKS=0.
