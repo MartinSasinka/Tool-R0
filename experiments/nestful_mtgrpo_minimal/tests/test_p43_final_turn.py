@@ -84,6 +84,20 @@ def test_budget_2_to_10_reserves_final():
         assert b.max_assistant_turns > b.max_tool_calls
 
 
+def test_train_budget_tool_slack_one():
+    cfg = {
+        "interaction": {
+            "reserve_final_answer_turn": True,
+            "tool_call_slack": 1,
+            "tool_call_slack_cap": 10,
+        },
+    }
+    for g in range(2, 11):
+        b = derive_interaction_budget(g, cfg, mode="train")
+        assert b.max_tool_calls == g + 1
+        assert b.max_assistant_turns == g + 2  # tools + final
+
+
 def test_fail_fast_reserve_required():
     with pytest.raises(RuntimeError):
         assert_p43_interaction_config(
@@ -223,6 +237,21 @@ def test_eval_budget_matches_historical_assistant_count():
     b = derive_interaction_budget(2, cfg, mode="eval")
     assert b.max_tool_calls == 2
     assert b.max_assistant_turns == 3  # gold + final (historical max_turns)
+
+
+def test_eval_budget_tool_slack_ten():
+    cfg = {
+        "interaction": {
+            "reserve_final_answer_turn": True,
+            "tool_call_slack": 10,
+            "tool_call_slack_cap": 10,
+        },
+        "generation": {"max_extra_turns_eval": 1},
+    }
+    b = derive_interaction_budget(6, cfg, mode="eval")
+    assert b.max_tool_calls == 16  # gold + 10
+    assert b.max_assistant_turns == 17  # tools + final
+
 
 
 def test_strict_pass_not_continuous_reward():

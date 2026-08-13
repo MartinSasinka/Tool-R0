@@ -85,7 +85,8 @@ def derive_interaction_budget(
     * eval/smoke: tool slack 0 by default (``max_extra_turns_eval`` is the
       final-answer reserve, matching historical eval ``gold_n + 1`` assistant turns)
 
-    Hard safety: tool budget capped at ``gold_n + 4`` (legacy).
+    Hard safety: tool budget capped at ``gold_n + tool_call_slack_cap``
+    (default 10; was historically 4).
     """
     config = config or {}
     gen = config.get("generation") or {}
@@ -108,8 +109,10 @@ def derive_interaction_budget(
                       train.get("max_extra_turns_train", 0)) or 0)
         final_extra = 1 if reserve else 0
 
+    slack_cap = int(inter.get("tool_call_slack_cap", 10) or 10)
+    slack_cap = max(0, slack_cap)
     max_tools = gold_n + max(0, tool_slack)
-    max_tools = max(0, min(max_tools, gold_n + 4))
+    max_tools = max(0, min(max_tools, gold_n + slack_cap))
     max_assistant = max_tools + max(0, final_extra)
     if max_assistant < 1:
         max_assistant = 1

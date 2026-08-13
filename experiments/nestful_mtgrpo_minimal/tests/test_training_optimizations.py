@@ -94,3 +94,12 @@ def test_continue350_science_and_short_profile_are_unchanged():
         "dynamic_profile_plus_enrichment")
     assert c550["sampler"]["profile_share"] == pytest.approx(0.70)
     assert c550["sampler"]["enrichment_share"] == pytest.approx(0.30)
+
+    path750 = (
+        ROOT / "configs"
+        / "qwen3_p43_profile1000_dynamic_online_continue750_enrich30.yaml"
+    )
+    c750 = yaml.safe_load(path750.read_text(encoding="utf-8"))
+    assert c750["training"]["target_optimizer_updates"] == 750
+    assert c750["training"]["resume"]["expect_global_step"] == 550
+    assert c750["sampler"]["enrichment_share"] == pytest.approx(0.30)

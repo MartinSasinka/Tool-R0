@@ -65,7 +65,7 @@ echo "[final_eval] CONFIG=$CFG"
 echo "[final_eval] CHECKPOINT=${CHECKPOINT:-<base model>}"
 echo "[final_eval] OUT_DIR=$OUT_DIR"
 echo "[final_eval] USE_VLLM=$USE_VLLM EVAL_TP=$EVAL_TP VLLM_GPU_UTIL=$VLLM_GPU_UTIL"
-echo "[final_eval] MAX_MODEL_LEN=${MAX_MODEL_LEN:-12288} MAX_TASKS=$MAX_TASKS EVAL_SET=${EVAL_SET:-<config default>}"
+echo "[final_eval] MAX_MODEL_LEN=${MAX_MODEL_LEN:-12288} TOOL_CALL_SLACK=${TOOL_CALL_SLACK:-10} MAX_TASKS=$MAX_TASKS EVAL_SET=${EVAL_SET:-<config default>}"
 echo "──────────────────────────────────────────────────────────────"
 
 # Context: train yamls often set generation.max_model_length=6144 while
@@ -73,6 +73,10 @@ echo "────────────────────────�
 # nestful_mtgrpo_partial token_budget up to vllm_max_model_length=12288.
 # Force that here so NESTFUL long prompts are not skipped as overflow.
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-12288}"
+# Eval tool budget: gold_n + TOOL_CALL_SLACK (default +10). Train still uses
+# gold_n (+0) unless configs set interaction.tool_call_slack.
+TOOL_CALL_SLACK="${TOOL_CALL_SLACK:-10}"
+TOOL_CALL_SLACK_CAP="${TOOL_CALL_SLACK_CAP:-10}"
 
 ARGS=(
   "$MINIMAL/run.py" --mode final_eval
@@ -83,6 +87,8 @@ ARGS=(
   --override data.num_eval_rollouts=1
   --override data.eval_paradigm=react
   --override "generation.max_model_length=$MAX_MODEL_LEN"
+  --override "interaction.tool_call_slack=$TOOL_CALL_SLACK"
+  --override "interaction.tool_call_slack_cap=$TOOL_CALL_SLACK_CAP"
 )
 
 # Train yamls often cap max_eval_tasks (e.g. 64) — force full set when MAX_TASKS=0.
