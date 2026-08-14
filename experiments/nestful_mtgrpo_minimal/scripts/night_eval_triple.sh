@@ -111,6 +111,7 @@ run_one() {
   else
     LABEL="$label" OUT_DIR="$out" \
       TOOL_CALL_SLACK="$slack" TOOL_CALL_SLACK_CAP="$cap" \
+      env -u CHECKPOINT \
       bash "$EVAL_SH" 2>&1 | tee -a "$LOG"
   fi
   echo "[night_eval] $n/3 DONE  $out/metrics_official.json" | tee -a "$LOG"
